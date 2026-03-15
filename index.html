@@ -167,7 +167,7 @@ nav{
 }
 .hero-stat-val{
   font-family:'Syne',sans-serif;
-  font-size:48px;color:var(--green);line-height:1;
+  font-size:48px;color:var(--green);line-height:1;font-weight:800;
 }
 .hero-stat-label{font-size:13px;color:var(--muted);margin-top:4px;letter-spacing:1px;text-transform:uppercase;}
 .hero-visual{
@@ -567,7 +567,7 @@ nav{
 .ec-price-wrap{display:flex;align-items:center;gap:10px;}
 .ec-price{
   font-family:'Syne',sans-serif;font-size:24px;
-  letter-spacing:1px;
+  letter-spacing:1px;font-weight:800;
 }
 .ec-btn{
   padding:10px 20px;border-radius:10px;
@@ -945,7 +945,7 @@ footer{
       <h1 class="hero-title">
         <span class="filled">CONNECT</span>
         <span>DANCE</span>
-        <span class="accent">MOVE</span>
+        <span class="accent" style="-webkit-text-stroke:none;">MOVE</span>
       </h1>
       <p class="hero-sub">Le premier réseau social conçu pour les danseurs. Trouvez des partenaires, découvrez des événements, échangez via votre bracelet connecté.</p>
       <div class="hero-actions">
@@ -1079,24 +1079,31 @@ footer{
         <button class="auth-tab" onclick="switchTab(this,'tab-login')">Connexion</button>
       </div>
 
+      <!-- INSCRIPTION -->
       <div id="tab-signup">
         <div class="auth-title">REJOINS<br>DANCEBAND</div>
         <p class="auth-sub">Crée ton profil en 2 minutes</p>
+        <div id="signup-error" style="display:none;background:rgba(255,77,109,0.1);border:1px solid var(--red);border-radius:10px;padding:12px;font-size:13px;color:var(--red);margin-bottom:16px;"></div>
+        <div id="signup-success" style="display:none;background:rgba(0,245,155,0.1);border:1px solid var(--green);border-radius:10px;padding:12px;font-size:13px;color:var(--green);margin-bottom:16px;"></div>
         <div class="form-group">
-          <label class="form-label">Pseudo</label>
-          <input class="form-input" type="text" placeholder="@ton_pseudo">
+          <label class="form-label">Nom complet <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+          <input id="signup-nom" class="form-input" type="text" placeholder="Ex: Sofia Martinez">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Blase de danseur <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+          <input id="signup-pseudo" class="form-input" type="text" placeholder="Ex: La Furia">
         </div>
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input class="form-input" type="email" placeholder="ton@email.com">
+          <input id="signup-email" class="form-input" type="email" placeholder="ton@email.com">
         </div>
         <div class="form-group">
           <label class="form-label">Mot de passe</label>
-          <input class="form-input" type="password" placeholder="••••••••">
+          <input id="signup-password" class="form-input" type="password" placeholder="••••••••">
         </div>
         <div class="form-group">
           <label class="form-label">Tes styles de danse</label>
-          <div class="styles-grid">
+          <div class="styles-grid" id="styles-grid">
             <button class="style-tag" onclick="toggleStyle(this)">Salsa</button>
             <button class="style-tag" onclick="toggleStyle(this)">Kizomba</button>
             <button class="style-tag" onclick="toggleStyle(this)">Hip-Hop</button>
@@ -1109,32 +1116,39 @@ footer{
         </div>
         <div class="form-group">
           <label class="form-label">Ta zone</label>
-          <select class="form-select">
+          <select id="signup-zone" class="form-select">
             <option>Paris 11e</option>
             <option>Paris 15e</option>
+            <option>Paris 18e</option>
             <option>Lyon</option>
             <option>Marseille</option>
             <option>Bordeaux</option>
+            <option>Toulouse</option>
+            <option>Nantes</option>
           </select>
         </div>
-        <button class="form-submit" onclick="showPage('profile')">Créer mon profil →</button>
+        <button id="signup-btn" class="form-submit" onclick="inscrire()">Créer mon profil →</button>
       </div>
 
+      <!-- CONNEXION -->
       <div id="tab-login" style="display:none">
         <div class="auth-title">BON<br>RETOUR !</div>
         <p class="auth-sub">Content de te revoir</p>
+        <div id="login-error" style="display:none;background:rgba(255,77,109,0.1);border:1px solid var(--red);border-radius:10px;padding:12px;font-size:13px;color:var(--red);margin-bottom:16px;"></div>
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input class="form-input" type="email" placeholder="ton@email.com">
+          <input id="login-email" class="form-input" type="email" placeholder="ton@email.com">
         </div>
         <div class="form-group">
           <label class="form-label">Mot de passe</label>
-          <input class="form-input" type="password" placeholder="••••••••">
+          <input id="login-password" class="form-input" type="password" placeholder="••••••••">
         </div>
-        <button class="form-submit" onclick="showPage('network')">Se connecter →</button>
-        <div class="auth-divider">ou</div>
-        <button class="form-submit" style="background:var(--card2);color:var(--text);border:1px solid var(--border);">Continuer avec Google</button>
+        <button id="login-btn" class="form-submit" onclick="connecter()">Se connecter →</button>
+        <div style="text-align:center;margin-top:12px;">
+          <a href="#" onclick="motDePasseOublie()" style="font-size:13px;color:var(--muted2);text-decoration:none;">Mot de passe oublié ?</a>
+        </div>
       </div>
+
     </div>
   </div>
 </div>
@@ -1365,18 +1379,102 @@ footer{
 <!-- ═══ PAGE: PROFIL ═══ -->
 <div class="page" id="page-profile">
   <div class="profile-page">
+
+    <!-- ── SOUS-PAGE: ÉDITION PROFIL ── -->
+    <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;padding-top:70px;">
+      <div style="max-width:600px;margin:0 auto;padding:24px 20px 100px;">
+
+        <!-- Header sous-page -->
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+          <button onclick="fermerEdition()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;">←</button>
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;">MODIFIER MON PROFIL</div>
+        </div>
+
+        <!-- PHOTO DE PROFIL -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:20px;">📷 Photo de profil</div>
+
+          <!-- Aperçu photo -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+            <div id="edit-avatar-wrap" style="width:110px;height:110px;border-radius:28px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:48px;overflow:hidden;position:relative;box-shadow:0 8px 32px rgba(0,245,155,0.2);">
+              <span id="edit-avatar-emoji">💃</span>
+              <img id="edit-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">
+            </div>
+
+            <!-- Options photo -->
+            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+              <button onclick="document.getElementById('photo-galerie').click()" style="padding:10px 18px;border-radius:12px;background:rgba(0,245,155,0.1);border:1px solid var(--green);color:var(--green);font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;">
+                🖼️ Photothèque
+              </button>
+              <button onclick="document.getElementById('photo-camera').click()" style="padding:10px 18px;border-radius:12px;background:rgba(77,159,255,0.1);border:1px solid var(--blue);color:var(--blue);font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;">
+                📸 Prendre une photo
+              </button>
+              <button onclick="supprimerPhoto()" style="padding:10px 18px;border-radius:12px;background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+                🗑️ Supprimer
+              </button>
+            </div>
+            <div style="font-size:11px;color:var(--muted);">JPG, PNG — max 2MB</div>
+          </div>
+
+          <!-- Inputs fichiers cachés -->
+          <input type="file" id="photo-galerie" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+          <input type="file" id="photo-camera" accept="image/*" capture="user" style="display:none" onchange="previewPhoto(this)">
+        </div>
+
+        <!-- NOM & BLASE -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:20px;">✏️ Nom & Blase</div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Nom complet <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+              <input id="profil-nom" class="form-input" type="text" placeholder="Ex: Sofia Martinez" style="background:var(--bg2)">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Blase de danseur <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+              <input id="profil-blase" class="form-input" type="text" placeholder="Ex: La Furia" style="background:var(--bg2)">
+            </div>
+          </div>
+        </div>
+
+        <!-- AFFICHAGE -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:24px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:16px;">👁️ Afficher sur mon profil</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button id="show-nom" class="style-tag selected" onclick="toggleAffichage('nom',this)">👤 Nom complet</button>
+            <button id="show-blase" class="style-tag" onclick="toggleAffichage('blase',this)">🎭 Blase</button>
+            <button id="show-les-deux" class="style-tag" onclick="toggleAffichage('les-deux',this)">✨ Les deux</button>
+          </div>
+          <div style="margin-top:12px;padding:12px 14px;background:var(--bg2);border-radius:12px;font-size:13px;color:var(--muted2);">
+            Aperçu : <span id="apercu-nom" style="color:var(--text);font-weight:800;font-size:15px;">Sofia Martinez</span>
+          </div>
+        </div>
+
+        <!-- BOUTON SAUVEGARDER -->
+        <button onclick="sauvegarderIdentite()" id="edit-save-btn" style="width:100%;padding:16px;border-radius:14px;background:var(--green);color:#080810;font-weight:800;font-size:16px;border:none;cursor:pointer;font-family:'Syne',sans-serif;letter-spacing:1px;">
+          SAUVEGARDER →
+        </button>
+        <div id="edit-save-msg" style="display:none;text-align:center;margin-top:12px;font-size:13px;color:var(--green);font-weight:700;">✅ Profil mis à jour !</div>
+
+      </div>
+    </div>
+
+    <!-- ── PROFIL PRINCIPAL ── -->
     <div class="profile-hero fade-in">
       <div class="ph-top">
-        <div class="ph-avatar">💃</div>
+        <div class="ph-avatar" id="ph-avatar" style="cursor:pointer;position:relative;overflow:hidden;" onclick="ouvrirEdition()" title="Modifier le profil">
+          <span id="ph-avatar-emoji">💃</span>
+          <img id="ph-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:24px;">
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,0);border-radius:24px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-size:24px;opacity:0;" id="ph-avatar-overlay">✏️</div>
+        </div>
         <div class="ph-info">
-          <div class="ph-name">SOFIA M.</div>
-          <div class="ph-handle">@sofia_dance · Paris 11e</div>
+          <div class="ph-name" id="ph-name-display">SOFIA M.</div>
+          <div class="ph-handle" id="ph-handle-display">Paris 11e</div>
           <div class="ph-band">
             <div class="ph-led"></div>
             Bracelet connecté · Mode Amis
           </div>
         </div>
-        <button class="ph-edit">✏️ Modifier</button>
+        <button class="ph-edit" onclick="ouvrirEdition()">✏️ Modifier</button>
       </div>
       <div class="ph-stats">
         <div class="ph-stat"><div class="ph-stat-v">247</div><div class="ph-stat-l">ÉCHANGES</div></div>
@@ -1387,7 +1485,6 @@ footer{
     </div>
 
     <div class="profile-grid">
-      <div class="profile-card">
         <div class="pc-header">
           <div class="pc-title">📍 Zone de présence</div>
           <div class="pc-badge pcb-pub">🟢 Visible</div>
@@ -1562,10 +1659,92 @@ function switchTab(btn, tabId) {
   document.getElementById('tab-login').style.display = tabId === 'tab-login' ? 'block' : 'none';
 }
 
+// ── Ouvrir / fermer sous-page édition ──
+function ouvrirEdition() {
+  document.getElementById('edit-profile-page').style.display = 'block';
+  window.scrollTo(0,0);
+}
+function fermerEdition() {
+  document.getElementById('edit-profile-page').style.display = 'none';
+}
+
+// ── Photo de profil ──
+window.previewPhoto = function(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  if (file.size > 2 * 1024 * 1024) { alert('⚠️ Photo trop lourde — max 2MB'); return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const src = e.target.result;
+    // Hero avatar
+    const emojiEl = document.getElementById('ph-avatar-emoji');
+    const imgEl   = document.getElementById('ph-avatar-img');
+    if (emojiEl) emojiEl.style.display = 'none';
+    if (imgEl)   { imgEl.src = src; imgEl.style.display = 'block'; }
+    // Aperçu sous-page édition
+    const editEmoji = document.getElementById('edit-avatar-emoji');
+    const editImg   = document.getElementById('edit-avatar-img');
+    if (editEmoji) editEmoji.style.display = 'none';
+    if (editImg)   { editImg.src = src; editImg.style.display = 'block'; }
+    window._photoBase64 = src;
+  };
+  reader.readAsDataURL(file);
+}
+
+window.supprimerPhoto = function() {
+  window._photoBase64 = null;
+  ['ph-avatar-emoji','edit-avatar-emoji'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'block';
+  });
+  ['ph-avatar-img','edit-avatar-img'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.src = ''; el.style.display = 'none'; }
+  });
+}
+
+// Avatar hover
+setTimeout(() => {
+  const av = document.getElementById('ph-avatar');
+  const ov = document.getElementById('ph-avatar-overlay');
+  if (av && ov) {
+    av.addEventListener('mouseenter', () => { ov.style.opacity='1'; ov.style.background='rgba(0,0,0,0.5)'; });
+    av.addEventListener('mouseleave', () => { ov.style.opacity='0'; ov.style.background='rgba(0,0,0,0)'; });
+  }
+}, 100);
+
 // ── Style tags ──
 function toggleStyle(el) {
   el.classList.toggle('selected');
 }
+
+// ── Choix affichage nom/blase/les deux ──
+function toggleAffichage(type, el) {
+  document.getElementById('show-nom').classList.remove('selected');
+  document.getElementById('show-blase').classList.remove('selected');
+  document.getElementById('show-les-deux').classList.remove('selected');
+  el.classList.add('selected');
+
+  const nom   = document.getElementById('profil-nom')?.value   || '';
+  const blase = document.getElementById('profil-blase')?.value || '';
+  const apercu = document.getElementById('apercu-nom');
+  if (!apercu) return;
+
+  if (type === 'nom')      apercu.textContent = nom   || 'Ton nom complet';
+  if (type === 'blase')    apercu.textContent = blase || 'Ton blase';
+  if (type === 'les-deux') apercu.textContent = [nom, blase].filter(Boolean).join(' · ') || 'Nom · Blase';
+}
+
+// Mise à jour aperçu en temps réel
+document.addEventListener('input', function(e) {
+  if (e.target.id === 'profil-nom' || e.target.id === 'profil-blase') {
+    const type = document.querySelector('#show-nom.selected') ? 'nom'
+               : document.querySelector('#show-blase.selected') ? 'blase'
+               : 'les-deux';
+    const btn = document.getElementById('show-' + type);
+    if (btn) toggleAffichage(type, btn);
+  }
+});
 
 // ── Privacy toggles ──
 function setPriv(btn, idx) {
@@ -1633,6 +1812,308 @@ function setMobileActive(el) {
   document.querySelectorAll('.mn-item').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
 }
+</script>
+
+<!-- ═══ FIREBASE AUTH ═══ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, where }
+  from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  onAuthStateChanged, signOut, sendPasswordResetEmail }
+  from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+// ── VOS CLÉS FIREBASE ──
+const firebaseConfig = {
+  apiKey: "AIzaSyD4CbfahBqGienwBiI70N7XB2OcE77Nmxk",
+  authDomain: "dance-5ed07.firebaseapp.com",
+  projectId: "dance-5ed07",
+  storageBucket: "dance-5ed07.firebasestorage.app",
+  messagingSenderId: "478944342426",
+  appId: "1:478944342426:web:db806759eacf2051238a23"
+};
+
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
+
+// ════════════════════════════════
+// INSCRIPTION
+// ════════════════════════════════
+window.inscrire = async function() {
+  const nom      = document.getElementById('signup-nom').value.trim();
+  const pseudo   = document.getElementById('signup-pseudo').value.trim();
+  const email    = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const zone     = document.getElementById('signup-zone').value;
+  const errDiv   = document.getElementById('signup-error');
+  const okDiv    = document.getElementById('signup-success');
+  const btn      = document.getElementById('signup-btn');
+
+  // Choix d'affichage : nom ou blase
+  const displayChoice = document.getElementById('display-blase').classList.contains('selected') ? 'blase' : 'nom';
+  const nomAffiche    = displayChoice === 'blase' ? pseudo : nom;
+
+  // Récupérer les styles sélectionnés
+  const styles = [...document.querySelectorAll('#styles-grid .style-tag.selected')]
+    .map(t => t.textContent);
+
+  // Validation
+  errDiv.style.display = 'none';
+  if (!nom)    { afficherErreur(errDiv, '⚠️ Entre ton nom complet'); return; }
+  if (!pseudo) { afficherErreur(errDiv, '⚠️ Entre ton blase de danseur'); return; }
+  if (!email)  { afficherErreur(errDiv, '⚠️ Entre ton email'); return; }
+  if (password.length < 6) { afficherErreur(errDiv, '⚠️ Mot de passe trop court (6 caractères min)'); return; }
+  if (styles.length === 0) { afficherErreur(errDiv, '⚠️ Choisis au moins 1 style de danse'); return; }
+
+  btn.textContent = 'Création en cours...';
+  btn.disabled = true;
+
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const uid  = cred.user.uid;
+
+    await setDoc(doc(db, 'danseurs', uid), {
+      nom,
+      pseudo,
+      displayChoice,
+      nomAffiche,
+      email,
+      styles,
+      zone,
+      visibilite: 'amis',
+      disponible: true,
+      xp: 0,
+      niveau: 1,
+      echanges: 0,
+      evenements: 0,
+      createdAt: new Date().toISOString()
+    });
+
+    okDiv.textContent = '✅ Compte créé ! Bienvenue sur DanceBand !';
+    okDiv.style.display = 'block';
+
+    setTimeout(() => {
+      chargerProfil(uid);
+      window.showPage('profile');
+    }, 1500);
+
+  } catch(e) {
+    btn.textContent = 'Créer mon profil →';
+    btn.disabled = false;
+    const msgs = {
+      'auth/email-already-in-use': '⚠️ Cet email est déjà utilisé',
+      'auth/invalid-email':        '⚠️ Email invalide',
+      'auth/weak-password':        '⚠️ Mot de passe trop faible'
+    };
+    afficherErreur(errDiv, msgs[e.code] || '❌ Erreur : ' + e.message);
+  }
+}
+
+// ════════════════════════════════
+// CONNEXION
+// ════════════════════════════════
+window.connecter = async function() {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errDiv   = document.getElementById('login-error');
+  const btn      = document.getElementById('login-btn');
+
+  errDiv.style.display = 'none';
+  if (!email)    { afficherErreur(errDiv, '⚠️ Entre ton email'); return; }
+  if (!password) { afficherErreur(errDiv, '⚠️ Entre ton mot de passe'); return; }
+
+  btn.textContent = 'Connexion...';
+  btn.disabled = true;
+
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    await chargerProfil(cred.user.uid);
+    window.showPage('profile');
+
+  } catch(e) {
+    btn.textContent = 'Se connecter →';
+    btn.disabled = false;
+    const msgs = {
+      'auth/user-not-found':   '⚠️ Aucun compte avec cet email',
+      'auth/wrong-password':   '⚠️ Mot de passe incorrect',
+      'auth/invalid-email':    '⚠️ Email invalide',
+      'auth/too-many-requests':'⚠️ Trop de tentatives, réessaie plus tard'
+    };
+    afficherErreur(errDiv, msgs[e.code] || '❌ Erreur : ' + e.message);
+  }
+}
+
+// ════════════════════════════════
+// MOT DE PASSE OUBLIÉ
+// ════════════════════════════════
+window.motDePasseOublie = async function() {
+  const email = document.getElementById('login-email').value.trim();
+  const errDiv = document.getElementById('login-error');
+  if (!email) { afficherErreur(errDiv, '⚠️ Entre ton email d\'abord'); return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    errDiv.style.background = 'rgba(0,245,155,0.1)';
+    errDiv.style.borderColor = 'var(--green)';
+    errDiv.style.color = 'var(--green)';
+    afficherErreur(errDiv, '✅ Email de réinitialisation envoyé !');
+  } catch(e) {
+    afficherErreur(errDiv, '❌ Email introuvable');
+  }
+}
+
+// ════════════════════════════════
+// SAUVEGARDER IDENTITÉ
+// ════════════════════════════════
+window.sauvegarderIdentite = async function() {
+  const user = auth.currentUser;
+  if (!user) { alert('Tu dois être connecté !'); return; }
+
+  const nom   = document.getElementById('profil-nom')?.value.trim()   || '';
+  const blase = document.getElementById('profil-blase')?.value.trim() || '';
+
+  const affichageType = document.querySelector('#show-les-deux.selected') ? 'les-deux'
+                      : document.querySelector('#show-blase.selected')    ? 'blase'
+                      : 'nom';
+
+  const nomAffiche = affichageType === 'nom'      ? nom
+                   : affichageType === 'blase'    ? blase
+                   : [nom, blase].filter(Boolean).join(' · ');
+
+  try {
+    await setDoc(doc(db, 'danseurs', user.uid), {
+      nom, blase, affichageType, nomAffiche,
+      ...(window._photoBase64 ? { photo: window._photoBase64 } : {})
+    }, { merge: true });
+
+    // Mettre à jour l'entête du profil immédiatement
+    const phName   = document.getElementById('ph-name-display');
+    const phHandle = document.getElementById('ph-handle-display');
+    if (phName)   phName.textContent   = nomAffiche.toUpperCase() || 'MON PROFIL';
+    if (phHandle) phHandle.textContent = document.getElementById('profil-zone')?.value || '';
+
+    // Afficher confirmation
+    const msg = document.getElementById('edit-save-msg');
+    const btn = document.getElementById('edit-save-btn');
+    if (msg) { msg.style.display = 'block'; }
+    if (btn) { btn.textContent = '✅ SAUVEGARDÉ !'; }
+
+    // Fermer la sous-page après 1.5s
+    setTimeout(() => {
+      fermerEdition();
+      if (btn) btn.textContent = 'SAUVEGARDER →';
+      if (msg) msg.style.display = 'none';
+    }, 1500);
+  } catch(e) {
+    console.error('Erreur sauvegarde:', e);
+    alert('Erreur lors de la sauvegarde');
+  }
+}
+window.deconnecter = async function() {
+  await signOut(auth);
+  window.showPage('home');
+  mettreAJourNav(null);
+}
+
+// ════════════════════════════════
+// CHARGER LE PROFIL
+// ════════════════════════════════
+async function chargerProfil(uid) {
+  try {
+    const snap = await getDoc(doc(db, 'danseurs', uid));
+    if (!snap.exists()) return;
+    const d = snap.data();
+
+    // Photo de profil
+    if (d.photo) {
+      ['ph-avatar-emoji','edit-avatar-emoji'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+      ['ph-avatar-img','edit-avatar-img'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.src = d.photo; el.style.display = 'block'; }
+      });
+      window._photoBase64 = d.photo;
+    }
+
+    // Nom affiché selon le choix
+    const nomAffiche = d.nomAffiche || d.pseudo || d.nom || 'Mon profil';
+
+    // Mettre à jour le profil affiché
+    const phName   = document.getElementById('ph-name-display');
+    const phHandle = document.getElementById('ph-handle-display');
+    if (phName)   phName.textContent   = nomAffiche.toUpperCase();
+    if (phHandle) phHandle.textContent = (d.zone || '');
+
+    // Remplir les champs édition
+    const champNom   = document.getElementById('profil-nom');
+    const champBlase = document.getElementById('profil-blase');
+    if (champNom)   champNom.value   = d.nom   || '';
+    if (champBlase) champBlase.value = d.blase || '';
+
+    // Sélectionner le bon bouton d'affichage
+    const type = d.affichageType || 'nom';
+    const btn  = document.getElementById('show-' + type);
+    if (btn) toggleAffichage(type, btn);
+
+    // Stats
+    const stats = document.querySelectorAll('.ph-stat-v');
+    if (stats[0]) stats[0].textContent = d.echanges   || 0;
+    if (stats[1]) stats[1].textContent = d.evenements || 0;
+    if (stats[2]) stats[2].textContent = (d.niveau    || 1) + '/5';
+
+    mettreAJourNav(d);
+
+  } catch(e) {
+    console.error('Erreur chargement profil:', e);
+  }
+}
+
+// ════════════════════════════════
+// MISE À JOUR NAVIGATION
+// ════════════════════════════════
+function mettreAJourNav(user) {
+  const cta = document.querySelector('.nav-cta');
+  if (!cta) return;
+  if (user) {
+    cta.textContent = '👤 ' + (user.pseudo || 'Profil');
+    cta.onclick = () => window.showPage('profile');
+  } else {
+    cta.textContent = 'Rejoindre →';
+    cta.onclick = () => window.showPage('auth');
+  }
+}
+
+// ════════════════════════════════
+// DÉTECTION CONNEXION AUTO
+// ════════════════════════════════
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    console.log('✅ Connecté :', user.email);
+    await chargerProfil(user.uid);
+
+    // Ajouter bouton déconnexion dans le profil
+    const editBtn = document.querySelector('.ph-edit');
+    if (editBtn) {
+      editBtn.textContent = '🚪 Déconnexion';
+      editBtn.onclick = window.deconnecter;
+    }
+  } else {
+    console.log('👤 Non connecté');
+    mettreAJourNav(null);
+  }
+});
+
+// ════════════════════════════════
+// UTILITAIRES
+// ════════════════════════════════
+function afficherErreur(el, msg) {
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+console.log('✅ Firebase Auth chargé !');
 </script>
 
 <!-- MOBILE BOTTOM NAV -->
