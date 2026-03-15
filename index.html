@@ -1443,12 +1443,195 @@ footer{
       </div>
 
       <!-- Messages -->
-      <div id="messages-container" style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;scrollbar-width:none;"></div>
+      <div id="messages-container" style="flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none;"></div>
 
-      <!-- Input -->
-      <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0;background:var(--bg);">
-        <input id="msg-input" type="text" placeholder="Écris un message..." style="flex:1;padding:12px 16px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;" onkeydown="if(event.key==='Enter')envoyerMessage()">
-        <button onclick="envoyerMessage()" style="width:44px;height:44px;border-radius:50%;background:var(--green);border:none;cursor:pointer;font-size:18px;flex-shrink:0;">↑</button>
+      <!-- Réponse en cours -->
+      <div id="reply-preview" style="display:none;padding:8px 16px;background:rgba(0,245,155,0.06);border-top:2px solid var(--green);display:none;align-items:center;gap:10px;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:2px;">↩️ Répondre à</div>
+          <div id="reply-text" style="font-size:12px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+        </div>
+        <button onclick="annulerReponse()" style="width:24px;height:24px;border-radius:6px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
+      </div>
+
+      <!-- Input zone -->
+      <div style="padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;flex-shrink:0;background:var(--bg);">
+        <!-- Bouton photo -->
+        <button onclick="document.getElementById('msg-photo-input').click()" style="width:40px;height:40px;border-radius:50%;background:var(--card2);border:1px solid var(--border);color:var(--muted2);cursor:pointer;font-size:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">🖼️</button>
+        <input type="file" id="msg-photo-input" accept="image/*" style="display:none" onchange="envoyerPhoto(this)">
+
+        <!-- Input texte -->
+        <input id="msg-input" type="text" placeholder="Message..." style="flex:1;padding:10px 16px;border-radius:22px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;min-width:0;" onkeydown="if(event.key==='Enter')envoyerMessage()">
+
+        <!-- Bouton vocal (maintien = enregistrement) -->
+        <button id="btn-vocal"
+          onmousedown="demarrerEnregistrement()" ontouchstart="demarrerEnregistrement()"
+          onmouseup="arreterEnregistrement()"   ontouchend="arreterEnregistrement()"
+          style="width:40px;height:40px;border-radius:50%;background:var(--card2);border:1px solid var(--border);color:var(--muted2);cursor:pointer;font-size:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;user-select:none;">🎤</button>
+
+        <!-- Bouton envoyer -->
+        <button onclick="envoyerMessage()" style="width:40px;height:40px;border-radius:50%;background:var(--green);border:none;cursor:pointer;font-size:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">↑</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ ESPACE ORGANISATEUR (overlay) ═══ -->
+<div id="organisateur-overlay" style="display:none;position:fixed;inset:0;z-index:250;background:var(--bg);overflow-y:auto;padding-top:70px;">
+  <div style="max-width:700px;margin:0 auto;padding:24px 20px 100px;">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+      <button onclick="fermerOrganisateur()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;">←</button>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Espace</div>
+        <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:32px;letter-spacing:-1px;">ORGANISATEUR</div>
+      </div>
+    </div>
+
+    <!-- Demande accès organisateur (si pas encore organisateur) -->
+    <div id="orga-demande" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;text-align:center;margin-bottom:20px;">
+      <div style="font-size:40px;margin-bottom:12px;">🎪</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:8px;">Devenir organisateur</div>
+      <div style="font-size:13px;color:var(--muted2);line-height:1.7;margin-bottom:20px;">Créez et gérez vos événements sur HAKO. Votre demande sera examinée par l'équipe HAKO.</div>
+      <button onclick="demanderAccesOrga()" style="padding:14px 28px;border-radius:14px;background:var(--blue);color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">Faire une demande →</button>
+      <div id="orga-demande-msg" style="display:none;margin-top:12px;font-size:13px;color:var(--green);font-weight:700;">✅ Demande envoyée ! Vous serez notifié par email.</div>
+    </div>
+
+    <!-- En attente de validation -->
+    <div id="orga-attente" style="display:none;background:rgba(255,217,61,0.06);border:1px solid rgba(255,217,61,0.2);border-radius:20px;padding:20px;margin-bottom:20px;text-align:center;">
+      <div style="font-size:13px;color:var(--yellow);font-weight:700;">⏳ Votre demande est en cours de validation par l'équipe HAKO</div>
+    </div>
+
+    <!-- Dashboard organisateur -->
+    <div id="orga-dashboard" style="display:none;">
+
+      <!-- Stats rapides -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;">
+          <div id="orga-stat-events" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--green);">0</div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Événements</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;">
+          <div id="orga-stat-inscrits" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--blue);">0</div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Inscrits</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;">
+          <div id="orga-stat-revenus" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--yellow);">0€</div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Revenus</div>
+        </div>
+      </div>
+
+      <!-- Bouton créer événement -->
+      <button onclick="ouvrirFormEvent()" style="width:100%;padding:16px;border-radius:16px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-bottom:24px;">
+        ＋ Créer un événement
+      </button>
+
+      <!-- Mes événements -->
+      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Mes événements</div>
+      <div id="orga-events-list">
+        <div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
+      </div>
+    </div>
+
+    <!-- Formulaire créer/modifier événement -->
+    <div id="orga-form" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;" id="orga-form-title">CRÉER UN ÉVÉNEMENT</div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Titre de l'événement</label>
+          <input id="ev-titre" class="form-input" type="text" placeholder="Ex: Nuit Kizomba — Bastille" style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Type</label>
+          <select id="ev-type" class="form-select">
+            <option value="soiree">🎉 Soirée</option>
+            <option value="cours">📚 Cours</option>
+            <option value="battle">🏆 Battle</option>
+            <option value="workshop">🎓 Workshop</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Date</label>
+            <input id="ev-date" class="form-input" type="date" style="background:var(--bg2)">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Heure</label>
+            <input id="ev-heure" class="form-input" type="text" placeholder="Ex: 21h00 → 04h00" style="background:var(--bg2)">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Ville</label>
+            <select id="ev-ville" class="form-select">
+              <option>Bordeaux</option><option>Grenoble</option><option>Lille</option>
+              <option>Lyon</option><option>Marseille</option><option>Nantes</option>
+              <option>Nice</option><option>Orléans</option><option selected>Paris</option>
+              <option>Strasbourg</option><option>Toulouse</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Prix (€)</label>
+            <input id="ev-prix" class="form-input" type="number" placeholder="0 = Gratuit" min="0" style="background:var(--bg2)">
+          </div>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Lieu / Adresse</label>
+          <input id="ev-lieu" class="form-input" type="text" placeholder="Ex: Le Rex Club, Paris 10e" style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Styles de danse</label>
+          <input id="ev-styles" class="form-input" type="text" placeholder="Ex: Kizomba, Semba, Tarraxo" style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Niveau</label>
+          <select id="ev-niveau" class="form-select">
+            <option>Tous niveaux</option>
+            <option>Débutants</option>
+            <option>Intermédiaire</option>
+            <option>Avancé</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Description</label>
+          <textarea id="ev-desc" class="form-input" rows="3" placeholder="Décrivez votre événement..." style="background:var(--bg2);resize:vertical;min-height:80px;"></textarea>
+        </div>
+
+        <div id="orga-form-err" style="display:none;background:rgba(255,77,109,0.1);border:1px solid var(--red);border-radius:10px;padding:12px;font-size:13px;color:var(--red);"></div>
+
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button onclick="fermerFormEvent()" style="flex:1;padding:14px;border-radius:12px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">Annuler</button>
+          <button id="ev-submit-btn" onclick="sauvegarderEvent()" style="flex:2;padding:14px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">Publier l'événement →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal inscrits -->
+    <div id="orga-inscrits-modal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;padding:20px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;">INSCRITS</div>
+          <button onclick="fermerInscrits()" style="width:32px;height:32px;border-radius:8px;background:var(--card2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:16px;">✕</button>
+        </div>
+        <div id="inscrits-list"></div>
+      </div>
+    </div>
+
+    <!-- Modal check-in NFC/QR -->
+    <div id="checkin-modal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.9);flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+      <div style="background:var(--card);border:1px solid var(--green);border-radius:24px;padding:32px;width:100%;max-width:400px;text-align:center;">
+        <div style="font-size:48px;margin-bottom:12px;">📱</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;margin-bottom:8px;">CHECK-IN BRACELET</div>
+        <div style="font-size:13px;color:var(--muted2);margin-bottom:24px;">Approchez le bracelet du téléphone ou entrez l'ID manuellement</div>
+        <input id="checkin-input" class="form-input" type="text" placeholder="ID du bracelet ou email" style="background:var(--bg2);margin-bottom:12px;text-align:center;font-size:16px;">
+        <div id="checkin-result" style="display:none;padding:12px;border-radius:12px;margin-bottom:12px;font-weight:700;font-size:14px;"></div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="fermerCheckin()" style="flex:1;padding:12px;border-radius:12px;background:transparent;border:1px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;">Fermer</button>
+          <button onclick="validerCheckin()" style="flex:2;padding:12px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;border:none;cursor:pointer;">✅ Valider</button>
+        </div>
       </div>
     </div>
 
@@ -1601,12 +1784,32 @@ footer{
         </div>
         <button class="ph-edit" onclick="ouvrirEdition()">✏️ Modifier</button>
         <button id="deco-btn" onclick="window.deconnecter()" style="display:none;padding:10px 16px;border-radius:10px;background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;align-items:center;gap:6px;">🚪 Déco</button>
+        <button id="orga-btn" onclick="ouvrirOrganisateur()" style="display:none;padding:10px 16px;border-radius:10px;background:rgba(77,159,255,0.1);border:1px solid var(--blue);color:var(--blue);font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;align-items:center;gap:6px;">🎪 Organiser</button>
       </div>
       <div class="ph-stats">
         <div class="ph-stat"><div class="ph-stat-v">247</div><div class="ph-stat-l">ÉCHANGES</div></div>
         <div class="ph-stat"><div class="ph-stat-v">32</div><div class="ph-stat-l">ÉVÉNEMENTS</div></div>
         <div class="ph-stat"><div class="ph-stat-v">4/5</div><div class="ph-stat-l">NIVEAU</div></div>
         <div class="ph-stat"><div class="ph-stat-v">#12</div><div class="ph-stat-l">CLASSEMENT</div></div>
+        <div class="ph-stat" onclick="ouvrirListeSociale('abonnements')" style="cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,245,155,0.05)'" onmouseout="this.style.background=''">
+          <div class="ph-stat-v" id="stat-abonnements">0</div>
+          <div class="ph-stat-l">ABONNEMENTS</div>
+        </div>
+        <div class="ph-stat" onclick="ouvrirListeSociale('abonnes')" style="cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,245,155,0.05)'" onmouseout="this.style.background=''">
+          <div class="ph-stat-v" id="stat-abonnes">0</div>
+          <div class="ph-stat-l">ABONNÉS</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal abonnés / abonnements -->
+    <div id="social-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:20px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:24px;width:100%;max-width:480px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;">
+        <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+          <div id="social-modal-title" style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;"></div>
+          <button onclick="fermerListeSociale()" style="width:32px;height:32px;border-radius:8px;background:var(--card2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:16px;">✕</button>
+        </div>
+        <div id="social-modal-list" style="overflow-y:auto;padding:16px;scrollbar-width:none;"></div>
       </div>
     </div>
 
@@ -2370,6 +2573,433 @@ function setMobileActive(el) {
 }
 
 // ════════════════════════════════
+// ESPACE ORGANISATEUR
+// ════════════════════════════════
+let eventEnEdition = null;
+
+window.ouvrirOrganisateur = async function() {
+  document.getElementById('organisateur-overlay').style.display = 'block';
+  window.scrollTo(0, 0);
+  await chargerDashboardOrga();
+}
+
+window.fermerOrganisateur = function() {
+  document.getElementById('organisateur-overlay').style.display = 'none';
+  fermerFormEvent();
+}
+
+async function chargerDashboardOrga() {
+  if (!window._currentUid || !window._db) return;
+  try {
+    const { getDoc, doc, collection, getDocs, query, where } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+
+    const snap = await getDoc(doc(window._db, 'danseurs', window._currentUid));
+    if (!snap.exists()) return;
+    const d = snap.data();
+
+    // Afficher la bonne section selon le statut
+    document.getElementById('orga-demande').style.display    = 'none';
+    document.getElementById('orga-attente').style.display    = 'none';
+    document.getElementById('orga-dashboard').style.display  = 'none';
+
+    if (d.organisateur === 'valide') {
+      document.getElementById('orga-dashboard').style.display = 'block';
+      await chargerMesEvents();
+    } else if (d.organisateur === 'attente') {
+      document.getElementById('orga-attente').style.display = 'block';
+    } else {
+      document.getElementById('orga-demande').style.display = 'block';
+    }
+  } catch(e) { console.error(e); }
+}
+
+window.demanderAccesOrga = async function() {
+  if (!window._currentUid || !window._db) return;
+  try {
+    const { doc, updateDoc } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+    await updateDoc(doc(window._db, 'danseurs', window._currentUid), {
+      organisateur: 'attente',
+      demandeOrgaDate: new Date().toISOString()
+    });
+    document.getElementById('orga-demande-msg').style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('orga-demande').style.display   = 'none';
+      document.getElementById('orga-attente').style.display   = 'block';
+    }, 2000);
+  } catch(e) { console.error(e); }
+}
+
+async function chargerMesEvents() {
+  try {
+    const { collection, getDocs, query, where } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+    const snap = await getDocs(query(
+      collection(window._db, 'evenements'),
+      where('organisateurUid', '==', window._currentUid)
+    ));
+
+    let totalInscrits = 0, totalRevenus = 0;
+    const events = [];
+    snap.forEach(d => {
+      const ev = { id: d.id, ...d.data() };
+      events.push(ev);
+      totalInscrits += ev.inscrits || 0;
+      totalRevenus  += (ev.inscrits || 0) * (ev.prix || 0);
+    });
+
+    document.getElementById('orga-stat-events').textContent   = events.length;
+    document.getElementById('orga-stat-inscrits').textContent  = totalInscrits;
+    document.getElementById('orga-stat-revenus').textContent   = totalRevenus + '€';
+
+    const list = document.getElementById('orga-events-list');
+    if (events.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucun événement créé pour le moment</div>';
+      return;
+    }
+
+    const typeConfig = {
+      soiree: { label:'🎉', couleur:'var(--purple)' },
+      cours:  { label:'📚', couleur:'var(--blue)'   },
+      battle: { label:'🏆', couleur:'var(--yellow)'  },
+      workshop:{ label:'🎓', couleur:'var(--green)'  },
+    };
+
+    list.innerHTML = events.map(ev => {
+      const cfg = typeConfig[ev.type] || typeConfig.soiree;
+      const date = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' }) : '—';
+      return `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px 18px;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <div style="font-size:24px;">${cfg.label}</div>
+            <div style="flex:1;">
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;">${ev.titre || 'Sans titre'}</div>
+              <div style="font-size:12px;color:var(--muted2);margin-top:2px;">📅 ${date} · 📍 ${ev.ville || ''}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:${cfg.couleur};">${ev.inscrits || 0}</div>
+              <div style="font-size:10px;color:var(--muted);">inscrits</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button onclick="voirInscrits('${ev.id}')" style="padding:7px 14px;border-radius:10px;background:rgba(77,159,255,0.1);border:1px solid var(--blue);color:var(--blue);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">👥 Inscrits</button>
+            <button onclick="ouvrirCheckin('${ev.id}')" style="padding:7px 14px;border-radius:10px;background:rgba(0,245,155,0.1);border:1px solid var(--green);color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">📱 Check-in</button>
+            <button onclick="modifierEvent('${ev.id}')" style="padding:7px 14px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">✏️ Modifier</button>
+            <button onclick="supprimerEvent('${ev.id}')" style="padding:7px 14px;border-radius:10px;background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">🗑️</button>
+          </div>
+        </div>`;
+    }).join('');
+
+  } catch(e) { console.error(e); }
+}
+
+// ── Formulaire événement ──
+window.ouvrirFormEvent = function() {
+  eventEnEdition = null;
+  document.getElementById('orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
+  document.getElementById('ev-submit-btn').textContent = 'Publier l\'événement →';
+  ['ev-titre','ev-heure','ev-lieu','ev-styles','ev-desc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('ev-prix').value = '0';
+  document.getElementById('orga-form').style.display = 'block';
+  document.getElementById('orga-dashboard').style.display = 'none';
+  document.getElementById('orga-form').scrollIntoView({ behavior: 'smooth' });
+}
+
+window.fermerFormEvent = function() {
+  document.getElementById('orga-form').style.display = 'none';
+  if (document.getElementById('orga-dashboard').style.display === 'none') {
+    document.getElementById('orga-dashboard').style.display = 'block';
+  }
+  eventEnEdition = null;
+}
+
+window.modifierEvent = async function(id) {
+  try {
+    const { getDoc, doc } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+    const snap = await getDoc(doc(window._db, 'evenements', id));
+    if (!snap.exists()) return;
+    const ev = snap.data();
+    eventEnEdition = id;
+
+    document.getElementById('ev-titre').value  = ev.titre   || '';
+    document.getElementById('ev-type').value   = ev.type    || 'soiree';
+    document.getElementById('ev-date').value   = ev.date    || '';
+    document.getElementById('ev-heure').value  = ev.heure   || '';
+    document.getElementById('ev-ville').value  = ev.ville   || 'Paris';
+    document.getElementById('ev-prix').value   = ev.prix    || 0;
+    document.getElementById('ev-lieu').value   = ev.lieu    || '';
+    document.getElementById('ev-styles').value = ev.styles  || '';
+    document.getElementById('ev-niveau').value = ev.niveau  || 'Tous niveaux';
+    document.getElementById('ev-desc').value   = ev.description || '';
+
+    document.getElementById('orga-form-title').textContent = 'MODIFIER L\'ÉVÉNEMENT';
+    document.getElementById('ev-submit-btn').textContent = 'Enregistrer les modifications →';
+    document.getElementById('orga-form').style.display = 'block';
+    document.getElementById('orga-dashboard').style.display = 'none';
+  } catch(e) { console.error(e); }
+}
+
+window.sauvegarderEvent = async function() {
+  const titre = document.getElementById('ev-titre').value.trim();
+  const errDiv = document.getElementById('orga-form-err');
+  errDiv.style.display = 'none';
+
+  if (!titre) { errDiv.textContent = '⚠️ Le titre est obligatoire'; errDiv.style.display = 'block'; return; }
+
+  const btn = document.getElementById('ev-submit-btn');
+  btn.textContent = '⏳ Publication...';
+  btn.disabled = true;
+
+  const data = {
+    titre,
+    type:          document.getElementById('ev-type').value,
+    date:          document.getElementById('ev-date').value,
+    heure:         document.getElementById('ev-heure').value,
+    ville:         document.getElementById('ev-ville').value,
+    prix:          parseFloat(document.getElementById('ev-prix').value) || 0,
+    lieu:          document.getElementById('ev-lieu').value,
+    styles:        document.getElementById('ev-styles').value,
+    niveau:        document.getElementById('ev-niveau').value,
+    description:   document.getElementById('ev-desc').value,
+    organisateurUid: window._currentUid,
+    updatedAt:     new Date().toISOString(),
+  };
+
+  try {
+    const { doc, setDoc, addDoc, collection } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+
+    if (eventEnEdition) {
+      await setDoc(doc(window._db, 'evenements', eventEnEdition), data, { merge: true });
+    } else {
+      data.inscrits = 0;
+      data.createdAt = new Date().toISOString();
+      await addDoc(collection(window._db, 'evenements'), data);
+    }
+
+    fermerFormEvent();
+    await chargerMesEvents();
+  } catch(e) {
+    errDiv.textContent = '❌ Erreur : ' + e.message;
+    errDiv.style.display = 'block';
+    btn.textContent = eventEnEdition ? 'Enregistrer →' : 'Publier →';
+    btn.disabled = false;
+  }
+}
+
+window.supprimerEvent = async function(id) {
+  if (!confirm('Supprimer cet événement définitivement ?')) return;
+  try {
+    const { doc, deleteDoc } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+    await deleteDoc(doc(window._db, 'evenements', id));
+    await chargerMesEvents();
+  } catch(e) { console.error(e); }
+}
+
+// ── Inscrits ──
+window.voirInscrits = async function(eventId) {
+  const modal = document.getElementById('orga-inscrits-modal');
+  modal.style.display = 'flex';
+  const list = document.getElementById('inscrits-list');
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);">⏳ Chargement...</div>';
+
+  try {
+    const { getDoc, doc } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+    const snap = await getDoc(doc(window._db, 'evenements', eventId));
+    if (!snap.exists()) return;
+    const ev = snap.data();
+    const participants = ev.participants || [];
+
+    if (participants.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);">Aucun inscrit pour le moment</div>';
+      return;
+    }
+
+    const profils = await Promise.all(participants.map(uid =>
+      getDoc(doc(window._db, 'danseurs', uid)).then(s => s.exists() ? { uid, ...s.data() } : { uid, nom: 'Inconnu' })
+    ));
+
+    list.innerHTML = profils.map(p => {
+      const nom = p.nomAffiche || p.nom || p.pseudo || 'Artiste';
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
+          <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px;overflow:hidden;position:relative;flex-shrink:0;">
+            ${p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:10px;">` : '💃'}
+          </div>
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">${nom}</div>
+            <div style="font-size:11px;color:var(--muted2);">${p.zone || ''}</div>
+          </div>
+          <div style="margin-left:auto;font-size:11px;color:var(--green);font-weight:700;">✅ Inscrit</div>
+        </div>`;
+    }).join('');
+  } catch(e) { console.error(e); }
+}
+
+window.fermerInscrits = function() {
+  document.getElementById('orga-inscrits-modal').style.display = 'none';
+}
+
+// ── Check-in ──
+let checkinEventId = null;
+
+window.ouvrirCheckin = function(eventId) {
+  checkinEventId = eventId;
+  document.getElementById('checkin-input').value = '';
+  document.getElementById('checkin-result').style.display = 'none';
+  document.getElementById('checkin-modal').style.display = 'flex';
+}
+
+window.fermerCheckin = function() {
+  document.getElementById('checkin-modal').style.display = 'none';
+  checkinEventId = null;
+}
+
+window.validerCheckin = async function() {
+  const input = document.getElementById('checkin-input').value.trim();
+  const result = document.getElementById('checkin-result');
+  if (!input) return;
+
+  result.style.display = 'block';
+  result.textContent = '⏳ Vérification...';
+  result.style.background = 'rgba(255,255,255,0.05)';
+  result.style.color = 'var(--muted2)';
+
+  try {
+    const { collection, query, where, getDocs, doc, updateDoc, arrayUnion } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+
+    // Chercher par email ou par UID
+    let danseurUid = null;
+    let danseurNom = '';
+
+    const q = await getDocs(query(collection(window._db, 'danseurs'), where('email', '==', input)));
+    if (!q.empty) {
+      danseurUid = q.docs[0].id;
+      const d = q.docs[0].data();
+      danseurNom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
+    } else if (input.length > 10) {
+      // Essayer comme UID direct
+      const { getDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+      const snap = await getDoc(doc(window._db, 'danseurs', input));
+      if (snap.exists()) {
+        danseurUid = input;
+        const d = snap.data();
+        danseurNom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
+      }
+    }
+
+    if (!danseurUid) {
+      result.textContent = '❌ Artiste introuvable';
+      result.style.background = 'rgba(255,77,109,0.1)';
+      result.style.color = 'var(--red)';
+      return;
+    }
+
+    // Enregistrer le check-in
+    await updateDoc(doc(window._db, 'evenements', checkinEventId), {
+      checkins: arrayUnion({ uid: danseurUid, date: new Date().toISOString() })
+    });
+
+    result.textContent = '✅ ' + danseurNom + ' — Check-in validé !';
+    result.style.background = 'rgba(0,245,155,0.1)';
+    result.style.color = 'var(--green)';
+    document.getElementById('checkin-input').value = '';
+
+  } catch(e) {
+    result.textContent = '❌ Erreur : ' + e.message;
+    result.style.background = 'rgba(255,77,109,0.1)';
+    result.style.color = 'var(--red)';
+  }
+}
+// ════════════════════════════════
+// LISTE ABONNÉS / ABONNEMENTS
+// ════════════════════════════════
+window.ouvrirListeSociale = async function(type) {
+  const modal = document.getElementById('social-modal');
+  const list  = document.getElementById('social-modal-list');
+  const title = document.getElementById('social-modal-title');
+
+  modal.style.display = 'flex';
+  title.textContent = type === 'abonnements' ? 'ABONNEMENTS' : 'ABONNÉS';
+  list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);">⏳ Chargement...</div>';
+
+  try {
+    const { getDoc, doc, collection, getDocs, query, where } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+
+    const moi = await getDoc(doc(window._db, 'danseurs', window._currentUid));
+    if (!moi.exists()) return;
+    const moiData = moi.data();
+    let uids = [];
+
+    if (type === 'abonnements') {
+      uids = moiData.abonnements || [];
+    } else {
+      const snap = await getDocs(query(
+        collection(window._db, 'danseurs'),
+        where('abonnements', 'array-contains', window._currentUid)
+      ));
+      snap.forEach(d => uids.push(d.id));
+    }
+
+    if (uids.length === 0) {
+      list.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">${type === 'abonnements' ? 'Vous ne suivez personne' : 'Personne ne vous suit encore'}</div>`;
+      return;
+    }
+
+    const profils = await Promise.all(uids.map(uid =>
+      getDoc(doc(window._db, 'danseurs', uid)).then(s => s.exists() ? { uid, ...s.data() } : null)
+    ));
+
+    const amiAbos = moiData.abonnements || [];
+    list.innerHTML = profils.filter(Boolean).map(p => {
+      const nom = p.nomAffiche || p.nom || p.pseudo || 'Artiste';
+      const estSuivi = amiAbos.includes(p.uid);
+      const estAmiMutuel = estSuivi && (p.abonnements || []).includes(window._currentUid);
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;" onclick="fermerListeSociale();ouvrirProfilArtiste('${p.uid}')">
+          <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;position:relative;flex-shrink:0;">
+            ${p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:14px;">` : '💃'}
+          </div>
+          <div style="flex:1;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">${nom}</div>
+            <div style="font-size:11px;color:var(--muted2);margin-top:2px;">
+              ${normaliserStyles(p.styles).slice(0,2).join(' · ')}
+              ${estAmiMutuel ? '<span style="color:var(--green);margin-left:4px;">🤝 Mutuel</span>' : ''}
+            </div>
+          </div>
+          <button onclick="event.stopPropagation();toggleSuivre('${p.uid}');this.textContent=mesAbonnements.has('${p.uid}')?'✓ Suivi':'+ Suivre';this.style.background=mesAbonnements.has('${p.uid}')?'rgba(0,245,155,0.1)':'transparent';this.style.borderColor=mesAbonnements.has('${p.uid}')?'var(--green)':'var(--border)';this.style.color=mesAbonnements.has('${p.uid}')?'var(--green)':'var(--muted2)'"
+            style="padding:6px 12px;border-radius:10px;font-size:11px;font-weight:800;font-family:'Syne',sans-serif;border:1.5px solid ${estSuivi ? 'var(--green)' : 'var(--border)'};background:${estSuivi ? 'rgba(0,245,155,0.1)' : 'transparent'};color:${estSuivi ? 'var(--green)' : 'var(--muted2)'};cursor:pointer;white-space:nowrap;flex-shrink:0;">
+            ${estSuivi ? '✓ Suivi' : '+ Suivre'}
+          </button>
+        </div>`;
+    }).join('');
+
+  } catch(e) { console.error(e); }
+}
+
+window.fermerListeSociale = function() {
+  document.getElementById('social-modal').style.display = 'none';
+}
+
+// ════════════════════════════════
 // SYSTÈME D'ABONNEMENT
 // ════════════════════════════════
 let mesAbonnements = new Set();
@@ -2378,14 +3008,30 @@ let convOuverte = null;
 async function chargerAbonnements() {
   if (!window._currentUid || !window._db) return;
   try {
-    const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const { getDoc, doc, collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
     const snap = await getDoc(doc(window._db, 'danseurs', window._currentUid));
     if (snap.exists()) {
       const d = snap.data();
       mesAbonnements = new Set(d.abonnements || []);
-      // Mettre à jour tous les boutons suivre
       mesAbonnements.forEach(uid => mettreAJourBtnSuivre(uid, true));
+
+      // Mettre à jour compteur abonnements
+      const statAbos = document.getElementById('stat-abonnements');
+      if (statAbos) statAbos.textContent = mesAbonnements.size;
     }
+
+    // Compter les abonnés (ceux qui me suivent)
+    const abonnesSnap = await getDocs(query(
+      collection(window._db, 'danseurs'),
+      where('abonnements', 'array-contains', window._currentUid)
+    ));
+    const statAbonnes = document.getElementById('stat-abonnes');
+    if (statAbonnes) statAbonnes.textContent = abonnesSnap.size;
+
+    // Afficher bouton organisateur
+    const orgaBtn = document.getElementById('orga-btn');
+    if (orgaBtn) orgaBtn.style.display = 'inline-flex';
+
   } catch(e) { console.error(e); }
 }
 
@@ -2561,52 +3207,234 @@ async function chargerMessagesConv(uid) {
   } catch(e) { console.error(e); }
 }
 
+// ── Variables messagerie ──
+let messageEnReponse = null;
+let mediaRecorder = null;
+let audioChunks = [];
+let enregistrement = false;
+
 function afficherMessages(msgs) {
   const container = document.getElementById('messages-container');
   if (!container) return;
-  container.innerHTML = msgs.length === 0
-    ? '<div style="text-align:center;color:var(--muted);font-size:13px;margin-top:40px;">Commencez la conversation ! 👋</div>'
-    : msgs.map(m => {
-        const estMoi = m.de === window._currentUid;
-        const date = new Date(m.date).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
-        return `
-          <div style="display:flex;flex-direction:column;align-items:${estMoi ? 'flex-end' : 'flex-start'};">
-            <div style="max-width:75%;padding:12px 16px;border-radius:${estMoi ? '18px 18px 4px 18px' : '18px 18px 18px 4px'};background:${estMoi ? 'var(--green)' : 'var(--card2)'};color:${estMoi ? '#080810' : 'var(--text)'};font-size:14px;line-height:1.5;">${m.texte}</div>
-            <div style="font-size:10px;color:var(--muted);margin-top:4px;">${date}</div>
-          </div>`;
-      }).join('');
+
+  if (msgs.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:13px;margin-top:40px;">Commencez la conversation ! 👋</div>';
+    return;
+  }
+
+  container.innerHTML = msgs.map((m, i) => {
+    const estMoi = m.de === window._currentUid;
+    const date   = new Date(m.date).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+    const bgMsg  = estMoi ? 'var(--green)' : 'var(--card2)';
+    const clrMsg = estMoi ? '#080810' : 'var(--text)';
+    const align  = estMoi ? 'flex-end' : 'flex-start';
+    const radius = estMoi ? '18px 18px 4px 18px' : '18px 18px 18px 4px';
+
+    // Contenu selon le type
+    let contenu = '';
+    if (m.type === 'photo' && m.photoUrl) {
+      contenu = `<img src="${m.photoUrl}" style="max-width:220px;border-radius:12px;cursor:pointer;display:block;" onclick="ouvrirImagePleinEcran('${m.photoUrl}')">`;
+    } else if (m.type === 'audio' && m.audioUrl) {
+      contenu = `<audio controls style="max-width:220px;filter:${estMoi ? 'invert(1)' : 'none'};"><source src="${m.audioUrl}"></audio>`;
+    } else {
+      contenu = `<span style="font-size:14px;line-height:1.5;word-break:break-word;">${m.texte || ''}</span>`;
+    }
+
+    // Message cité si réponse
+    const cite = m.repondA ? `
+      <div style="padding:6px 10px;border-radius:8px;background:rgba(0,0,0,0.15);margin-bottom:6px;border-left:2px solid rgba(255,255,255,0.4);font-size:11px;opacity:0.8;max-width:200px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">
+        ↩️ ${m.repondA}
+      </div>` : '';
+
+    return `
+      <div class="msg-wrap" data-idx="${i}" data-texte="${(m.texte || '').replace(/"/g,'&quot;')}"
+        style="display:flex;flex-direction:column;align-items:${align};touch-action:pan-y;"
+        id="msg-${i}">
+        <div class="msg-bubble" style="max-width:78%;padding:10px 14px;border-radius:${radius};background:${bgMsg};color:${clrMsg};cursor:default;">
+          ${cite}${contenu}
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px;">${date}</div>
+      </div>`;
+  }).join('');
+
   container.scrollTop = container.scrollHeight;
+
+  // Ajouter swipe sur chaque message
+  ajouterSwipeReponse();
 }
 
+function ajouterSwipeReponse() {
+  document.querySelectorAll('.msg-wrap').forEach(el => {
+    let startX = 0, startY = 0, moved = false;
+
+    el.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      moved = false;
+    }, { passive: true });
+
+    el.addEventListener('touchmove', e => {
+      const dx = e.touches[0].clientX - startX;
+      const dy = Math.abs(e.touches[0].clientY - startY);
+      if (dy > 20) return; // scroll vertical → ignorer
+      if (dx > 10 && dx < 80) {
+        el.style.transform = `translateX(${dx * 0.6}px)`;
+        el.style.transition = 'none';
+        moved = true;
+      }
+    }, { passive: true });
+
+    el.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - startX;
+      el.style.transition = 'transform 0.2s ease';
+      el.style.transform = 'translateX(0)';
+      if (moved && dx > 40) {
+        // Swipe droite → répondre
+        const texte = el.getAttribute('data-texte');
+        definirReponse(texte);
+      }
+    });
+  });
+}
+
+function definirReponse(texte) {
+  messageEnReponse = texte;
+  const preview = document.getElementById('reply-preview');
+  const replyText = document.getElementById('reply-text');
+  if (preview && replyText) {
+    replyText.textContent = texte.length > 60 ? texte.slice(0, 60) + '...' : texte;
+    preview.style.display = 'flex';
+  }
+  document.getElementById('msg-input')?.focus();
+}
+
+window.annulerReponse = function() {
+  messageEnReponse = null;
+  const preview = document.getElementById('reply-preview');
+  if (preview) preview.style.display = 'none';
+}
+
+// ── Envoyer message texte ──
 window.envoyerMessage = async function() {
   const input = document.getElementById('msg-input');
   const texte = input?.value.trim();
   if (!texte || !convOuverte || !window._currentUid) return;
-
   input.value = '';
+  await _envoyerDansConv({ type: 'texte', texte, repondA: messageEnReponse || null });
+  annulerReponse();
+}
+
+// ── Envoyer photo ──
+window.envoyerPhoto = async function(input) {
+  if (!input.files || !input.files[0] || !convOuverte) return;
+  const file = input.files[0];
+  if (file.size > 5 * 1024 * 1024) { alert('⚠️ Photo trop lourde (max 5MB)'); return; }
+
+  const btnPhoto = document.querySelector('[onclick*="msg-photo-input"]');
+  if (btnPhoto) btnPhoto.textContent = '⏳';
 
   try {
-    const { collection, addDoc, doc, setDoc, serverTimestamp } = await import(
+    // Upload sur Firebase Storage
+    const { getStorage, ref, uploadBytes, getDownloadURL } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js'
+    );
+    const storage = getStorage();
+    const convId  = [window._currentUid, convOuverte].sort().join('_');
+    const storageRef = ref(storage, `conversations/${convId}/${Date.now()}_${file.name}`);
+
+    await uploadBytes(storageRef, file);
+    const photoUrl = await getDownloadURL(storageRef);
+
+    await _envoyerDansConv({ type: 'photo', photoUrl, texte: '📷 Photo', repondA: null });
+    if (btnPhoto) btnPhoto.textContent = '🖼️';
+  } catch(e) {
+    console.error('Erreur photo:', e);
+    if (btnPhoto) btnPhoto.textContent = '🖼️';
+  }
+  input.value = '';
+}
+
+// ── Messages vocaux ──
+window.demarrerEnregistrement = async function() {
+  if (!convOuverte) return;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.start();
+    enregistrement = true;
+
+    const btn = document.getElementById('btn-vocal');
+    if (btn) {
+      btn.style.background = 'var(--red)';
+      btn.style.color = '#fff';
+      btn.textContent = '🔴';
+    }
+  } catch(e) {
+    alert('⚠️ Microphone non disponible');
+  }
+}
+
+window.arreterEnregistrement = async function() {
+  if (!mediaRecorder || !enregistrement) return;
+  enregistrement = false;
+
+  const btn = document.getElementById('btn-vocal');
+  if (btn) {
+    btn.style.background = 'var(--card2)';
+    btn.style.color = 'var(--muted2)';
+    btn.textContent = '⏳';
+  }
+
+  mediaRecorder.stop();
+  mediaRecorder.onstop = async () => {
+    try {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+
+      // Upload Firebase Storage
+      const { getStorage, ref, uploadBytes, getDownloadURL } = await import(
+        'https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js'
+      );
+      const storage    = getStorage();
+      const convId     = [window._currentUid, convOuverte].sort().join('_');
+      const storageRef = ref(storage, `conversations/${convId}/vocal_${Date.now()}.webm`);
+
+      await uploadBytes(storageRef, audioBlob);
+      const audioUrl = await getDownloadURL(storageRef);
+
+      await _envoyerDansConv({ type: 'audio', audioUrl, texte: '🎤 Message vocal', repondA: null });
+
+      // Arrêter le micro
+      mediaRecorder.stream.getTracks().forEach(t => t.stop());
+    } catch(e) {
+      console.error('Erreur vocal:', e);
+    }
+    if (btn) btn.textContent = '🎤';
+  };
+}
+
+// ── Fonction commune d'envoi ──
+async function _envoyerDansConv(data) {
+  try {
+    const { collection, addDoc, doc, setDoc } = await import(
       'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
     );
     const convId = [window._currentUid, convOuverte].sort().join('_');
 
-    // Créer la conversation si elle n'existe pas
     await setDoc(doc(window._db, 'conversations', convId), {
       participants: [window._currentUid, convOuverte],
-      dernierMessage: texte,
+      dernierMessage: data.texte || '',
       date: new Date().toISOString()
     }, { merge: true });
 
-    // Ajouter le message
     await addDoc(collection(window._db, 'conversations', convId, 'messages'), {
       de: window._currentUid,
-      texte,
       date: new Date().toISOString(),
-      lu: false
+      lu: false,
+      ...data
     });
 
-    // Notifier le destinataire
     const { updateDoc, arrayUnion } = await import(
       'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
     );
@@ -2618,8 +3446,16 @@ window.envoyerMessage = async function() {
         lu: false
       })
     });
-
   } catch(e) { console.error('Erreur envoi:', e); }
+}
+
+// ── Ouvrir image plein écran ──
+window.ouvrirImagePleinEcran = function(url) {
+  const div = document.createElement('div');
+  div.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;cursor:pointer;';
+  div.innerHTML = `<img src="${url}" style="max-width:95%;max-height:95%;border-radius:12px;object-fit:contain;">`;
+  div.onclick = () => document.body.removeChild(div);
+  document.body.appendChild(div);
 }
 
 // Charger messages quand on clique sur l'onglet
@@ -3349,6 +4185,15 @@ async function chargerProfil(uid) {
       band.querySelector('span') || band.appendChild(document.createElement('span'));
       band.lastChild.textContent = ' Bracelet connecté · ' + modeTexte;
     }
+
+    // ── Abonnements / Abonnés ──
+    const abonnements = d.abonnements || [];
+    const statAbos = document.getElementById('stat-abonnements');
+    if (statAbos) statAbos.textContent = abonnements.length;
+
+    // Compter les abonnés (ceux qui me suivent) — via mesAbonnements déjà chargés
+    // On met à jour après chargerAbonnements
+    window._monProfil = d;
 
     // ── Stocker uid courant ──
     window._currentUid = uid;
