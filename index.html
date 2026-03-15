@@ -805,7 +805,10 @@ footer{
 }
 .footer-copy{font-size:13px;color:var(--muted);}
 
-/* ── SECTION MOBILE HOME ── */
+#mobile-topbar { display: none !important; }
+@media(max-width:768px) {
+  #mobile-topbar.visible { display: flex !important; }
+}
 .mobile-home-nav {
   display: none;
   margin-top: 36px;
@@ -5246,9 +5249,8 @@ function mettreAJourNav(user) {
     // Afficher nav mobile + topbar
     document.querySelector('.mobile-nav')?.classList.add('connected');
     const topbar = document.getElementById('mobile-topbar');
-    if (topbar) topbar.style.display = 'flex';
+    if (topbar) topbar.classList.add('visible');
     if (window.innerWidth <= 768) document.body.style.paddingTop = '48px';
-
     // Afficher bouton profil mobile
     const mnProfilBtn = document.getElementById('mn-profil-btn');
     if (mnProfilBtn) mnProfilBtn.style.display = 'flex';
@@ -5300,7 +5302,7 @@ function mettreAJourNav(user) {
     // Cacher nav mobile + topbar
     document.querySelector('.mobile-nav')?.classList.remove('connected');
     const topbar = document.getElementById('mobile-topbar');
-    if (topbar) topbar.style.display = 'none';
+    if (topbar) topbar.classList.remove('visible');
     document.body.style.paddingTop = '';
 
     const mnProfilBtn = document.getElementById('mn-profil-btn');
