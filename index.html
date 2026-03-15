@@ -2788,6 +2788,33 @@ function afficherErreur(el, msg) {
 }
 
 console.log('✅ Firebase Auth chargé !');
+
+// Signaler que Firebase est prêt
+window._firebaseReady = true;
+document.dispatchEvent(new Event('firebase-ready'));
+</script>
+
+<!-- Wrapper pour les boutons HTML — appelle les fonctions window quand Firebase est prêt -->
+<script>
+function _appellerQuandPret(fn, args) {
+  if (window._firebaseReady && window[fn]) {
+    window[fn](...args);
+  } else {
+    document.addEventListener('firebase-ready', () => {
+      if (window[fn]) window[fn](...args);
+    }, { once: true });
+  }
+}
+
+// Wrappers globaux accessibles depuis onclick=
+function inscrire()           { _appellerQuandPret('inscrire', []); }
+function connecter()          { _appellerQuandPret('connecter', []); }
+function motDePasseOublie()   { _appellerQuandPret('motDePasseOublie', []); }
+function sauvegarderIdentite(){ _appellerQuandPret('sauvegarderIdentite', []); }
+function deconnecter()        { _appellerQuandPret('deconnecter', []); }
+function sauvegarderZone(z)   { _appellerQuandPret('sauvegarderZone', [z]); }
+function sauvegarderDispo(d)  { _appellerQuandPret('sauvegarderDispo', [d]); }
+function sauvegarderConf(c,v) { _appellerQuandPret('sauvegarderConf', [c,v]); }
 </script>
 
 <!-- MOBILE BOTTOM NAV -->
