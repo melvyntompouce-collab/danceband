@@ -2,7 +2,9 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>HAKO — Le réseau des artistes</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -804,10 +806,14 @@ footer{
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-top: 1px solid var(--border);
-  z-index: 200;
-  padding: 0 8px 10px;
+  z-index: 9999;
+  padding: 0 8px env(safe-area-inset-bottom, 10px);
   align-items: center;
   justify-content: space-around;
+  /* iOS fix */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
 }
 .mn-item {
   display: flex; flex-direction: column; align-items: center; gap: 4px;
@@ -840,7 +846,7 @@ footer{
   nav .nav-links { display: none !important; }
 
   /* Add padding for mobile nav */
-  .page { padding-bottom: 80px; }
+  .page { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
 
   /* Hide desktop nav completely on small screens */
   nav { padding: 0 4%; }
