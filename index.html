@@ -2202,9 +2202,23 @@ footer{
       </div>
 
       <div class="profile-card" style="margin-top:12px;">
-        <div class="pc-header">
+        <div class="pc-header" style="flex-direction:column;align-items:flex-start;gap:10px;">
           <div class="pc-title">Confidentialité</div>
-          <div class="pc-badge pcb-amis">Mode Amis</div>
+          <!-- Boutons mode global -->
+          <div style="display:flex;gap:6px;width:100%;">
+            <button id="mode-public" onclick="setModeGlobal('public')"
+              style="flex:1;padding:8px 4px;border-radius:10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;border:1.5px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;">
+              🟢 PUBLIC
+            </button>
+            <button id="mode-amis" onclick="setModeGlobal('amis')"
+              style="flex:1;padding:8px 4px;border-radius:10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;border:1.5px solid var(--yellow);background:rgba(255,217,61,0.1);color:var(--yellow);cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;">
+              🟡 AMIS
+            </button>
+            <button id="mode-prive" onclick="setModeGlobal('prive')"
+              style="flex:1;padding:8px 4px;border-radius:10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;border:1.5px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;">
+              🔴 PRIVÉ
+            </button>
+          </div>
         </div>
         <div class="priv-row">
           <div class="priv-left">
@@ -2564,16 +2578,109 @@ document.addEventListener('input', function(e) {
 });
 
 // ── Privacy toggles ──
+// ── Mode global confidentialité ──
+function mettreAJourBoutonsModeGlobal(mode) {
+  const styles = {
+    public: { border:'var(--green)',  bg:'rgba(0,245,155,0.1)',  color:'var(--green)',  text:'🟢 PUBLIC' },
+    amis:   { border:'var(--yellow)', bg:'rgba(255,217,61,0.1)', color:'var(--yellow)', text:'🟡 AMIS'   },
+    prive:  { border:'var(--red)',    bg:'rgba(255,77,109,0.1)', color:'var(--red)',     text:'🔴 PRIVÉ'  },
+  };
+  ['public','amis','prive'].forEach(m => {
+    const btn = document.getElementById('mode-' + m);
+    if (!btn) return;
+    if (m === mode) {
+      btn.style.borderColor = styles[m].border;
+      btn.style.background  = styles[m].bg;
+      btn.style.color       = styles[m].color;
+    } else {
+      btn.style.borderColor = 'var(--border)';
+      btn.style.background  = 'transparent';
+      btn.style.color       = 'var(--muted2)';
+    }
+  });
+}
+
+function calculerModeGlobal() {
+  // Lire tous les boutons actifs et déduire le mode le plus restrictif
+  const actifs = [...document.querySelectorAll('.priv-row .tg')].map(tg => {
+    if (tg.querySelector('.sr')) return 'prive';
+    if (tg.querySelector('.sa')) return 'amis';
+    return 'public';
+  });
+  if (actifs.includes('prive'))  return 'prive';
+  if (actifs.includes('amis'))   return 'amis';
+  return 'public';
+}
+
+window.setModeGlobal = async function(mode) {
+  const idx = { public: 0, amis: 1, prive: 2 }[mode];
+  const cls = ['sp', 'sa', 'sr'][idx];
+
+  // Mettre à jour tous les boutons individuels
+  document.querySelectorAll('.priv-row .tg').forEach(tg => {
+    tg.querySelectorAll('.to').forEach(b => b.className = 'to');
+    tg.querySelectorAll('.to')[idx]?.classList.add(cls);
+  });
+
+  // Mettre à jour l'affichage des boutons mode
+  mettreAJourBoutonsModeGlobal(mode);
+
+  // Sauvegarder tous les champs dans Firebase
+  const champs = ['nom','styles','reseaux','playlists','tel'];
+  if (!window._currentUid || !window._db) return;
+  try {
+    const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const conf = {};
+    champs.forEach(c => conf[c] = mode);
+    await setDoc(doc(window._db, 'danseurs', window._currentUid), {
+      confidentialite: conf
+    }, { merge: true });
+  } catch(e) { console.error('Mode global:', e); }
+}
+
 function setPriv(btn, idx) {
   const grp = btn.closest('.tg');
   grp.querySelectorAll('.to').forEach(b => b.className = 'to');
   btn.classList.add(['sp','sa','sr'][idx]);
-  // Identifier le champ
+
+  // Sauvegarder le champ individuel
   const row   = btn.closest('.priv-row');
   const champ = row?.querySelector('.priv-fn')?.textContent?.trim();
-  const champs = { 'Nom / Pseudo': 'nom', 'Styles': 'styles', 'Réseaux sociaux': 'reseaux', 'Playlists': 'playlists' };
+  const champs = { 'Nom / Pseudo': 'nom', 'Styles': 'styles', 'Réseaux sociaux': 'reseaux', 'Playlists': 'playlists', 'Téléphone': 'tel' };
   const valeurs = ['public','amis','prive'];
   if (champs[champ]) window.sauvegarderConf(champs[champ], valeurs[idx]);
+
+  // Recalculer le mode global uniquement vers le plus restrictif
+  // Public(0) → Amis(1) → Privé(2)
+  const ordreActuel = { public: 0, amis: 1, prive: 2 };
+  const modeGlobalActuel = calculerModeGlobalActuel();
+  const nouveauMode = valeurs[idx];
+
+  // On monte uniquement si le nouveau champ est plus restrictif que le mode global actuel
+  // On ne descend JAMAIS automatiquement
+  if (ordreActuel[nouveauMode] > ordreActuel[modeGlobalActuel]) {
+    mettreAJourBoutonsModeGlobal(nouveauMode);
+  }
+  // Sinon on recalcule quand même pour rester cohérent (sans descendre)
+  else {
+    mettreAJourBoutonsModeGlobal(modeGlobalActuel);
+  }
+}
+
+function calculerModeGlobalActuel() {
+  // D'abord essayer de lire le bouton mode actif
+  if (document.getElementById('mode-prive')?.style.background?.includes('rgba(255,77'))   return 'prive';
+  if (document.getElementById('mode-amis')?.style.background?.includes('rgba(255,217'))   return 'amis';
+  if (document.getElementById('mode-public')?.style.background?.includes('rgba(0,245'))   return 'public';
+  // Sinon déduire depuis les boutons individuels (au chargement)
+  const actifs = [...document.querySelectorAll('.priv-row .tg')].map(tg => {
+    if (tg.querySelector('.sr')) return 'prive';
+    if (tg.querySelector('.sa')) return 'amis';
+    return 'public';
+  });
+  if (actifs.includes('prive'))  return 'prive';
+  if (actifs.includes('amis'))   return 'amis';
+  return 'public';
 }
 
 // ── Zone selector ──
@@ -4944,7 +5051,7 @@ async function chargerProfil(uid) {
     if (d.confidentialite) {
       const conf = d.confidentialite;
       const rows = document.querySelectorAll('.priv-row');
-      const champs = ['nom','styles','reseaux','playlists'];
+      const champs = ['nom','styles','reseaux','playlists','tel'];
       rows.forEach((row, i) => {
         const champ = champs[i];
         if (!champ || !conf[champ]) return;
@@ -4957,6 +5064,11 @@ async function chargerProfil(uid) {
         const idx  = val === 'public' ? 0 : val === 'amis' ? 1 : 2;
         if (btns[idx]) btns[idx].classList.add(cls);
       });
+      // Initialiser le mode global selon les paramètres chargés
+      setTimeout(() => mettreAJourBoutonsModeGlobal(calculerModeGlobalActuel()), 50);
+    } else {
+      // Aucune conf → mode amis par défaut
+      setTimeout(() => mettreAJourBoutonsModeGlobal('amis'), 50);
     }
 
     // ── Genres musicaux ──
