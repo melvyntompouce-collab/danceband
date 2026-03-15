@@ -2174,7 +2174,13 @@ let markersMap = {};
 let tousLesDanseurs = [];
 let filtreActif = 'tous';
 
-// Coordonnées des villes françaises
+// ── Normaliser styles (string ou array) ──
+function normaliserStyles(styles) {
+  if (!styles) return [];
+  if (Array.isArray(styles)) return styles;
+  if (typeof styles === 'string') return styles.split(',').map(s => s.trim()).filter(Boolean);
+  return [];
+}
 const VILLES_COORDS = {
   'Paris':      [48.8566, 2.3522],
   'Lyon':       [45.7640, 4.8357],
@@ -2226,7 +2232,7 @@ function ajouterMarqueur(danseur, uid) {
   const lng = coords[1] + (Math.random() - 0.5) * 0.04;
 
   const nom = danseur.nomAffiche || danseur.nom || danseur.pseudo || 'Artiste';
-  const styles = (danseur.styles || []).slice(0, 3);
+  const styles = normaliserStyles(danseur.styles).slice(0, 3);
   const estPublic = danseur.visibilite === 'public';
   const emoji = estPublic ? '💃' : '🕺';
 
@@ -2302,7 +2308,7 @@ function afficherListeDanseurs(danseurs) {
 
   list.innerHTML = danseurs.map(d => {
     const nom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
-    const styles = (d.styles || []).slice(0, 2);
+    const styles = normaliserStyles(d.styles).slice(0, 2);
     const dotColor = d.visibilite === 'public' ? 'var(--green)' : 'var(--yellow)';
     return `
       <div class="dancer-card" onclick="focusDanseur('${d.uid}')">
@@ -2346,7 +2352,7 @@ function filtrerDanseurs() {
   if (search) {
     filtrés = filtrés.filter(d => {
       const nom = (d.nomAffiche || d.nom || d.pseudo || '').toLowerCase();
-      const styles = (d.styles || []).join(' ').toLowerCase();
+      const styles = normaliserStyles(d.styles).join(' ').toLowerCase();
       const zone = (d.zone || '').toLowerCase();
       return nom.includes(search) || styles.includes(search) || zone.includes(search);
     });
@@ -2681,14 +2687,13 @@ async function chargerProfil(uid) {
     }
 
     // ── Styles de danse ──
-    if (d.styles && Array.isArray(d.styles)) {
-      // Grille inscription
+    const stylesNorm = normaliserStyles(d.styles);
+    if (stylesNorm.length > 0) {
       document.querySelectorAll('#styles-grid .style-tag').forEach(tag => {
-        tag.classList.toggle('selected', d.styles.includes(tag.textContent.trim()));
+        tag.classList.toggle('selected', stylesNorm.includes(tag.textContent.trim()));
       });
-      // Grille édition profil
       document.querySelectorAll('#edit-styles-grid .style-tag').forEach(tag => {
-        tag.classList.toggle('selected', d.styles.includes(tag.textContent.trim()));
+        tag.classList.toggle('selected', stylesNorm.includes(tag.textContent.trim()));
       });
     }
 
