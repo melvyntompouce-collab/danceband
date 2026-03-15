@@ -7,6 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>HAKO — Le réseau des artistes</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root {
   --bg: #080810;
@@ -796,7 +798,38 @@ footer{
 }
 .footer-copy{font-size:13px;color:var(--muted);}
 
-/* ── MOBILE BOTTOM NAV ── */
+/* ── LEAFLET DARK MODE ── */
+.leaflet-container {
+  background: #0a0f1a !important;
+  font-family: 'Syne', sans-serif !important;
+}
+.leaflet-tile { filter: brightness(0.6) saturate(0.3) hue-rotate(180deg) invert(0.15); }
+.leaflet-control-zoom { display: none; }
+.leaflet-popup-content-wrapper {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+  color: var(--text) !important;
+}
+.leaflet-popup-tip { background: var(--card) !important; }
+.leaflet-popup-close-button { color: var(--muted) !important; }
+.hako-marker {
+  width: 44px; height: 44px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; border: 2px solid;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+.hako-marker:hover { transform: scale(1.15); }
+.hako-marker.public  { background: #0d2b1e; border-color: #00f59b; }
+.hako-marker.amis    { background: #2b250d; border-color: #ffd93d; }
+.popup-name { font-family:'Syne',sans-serif; font-weight:800; font-size:15px; margin-bottom:6px; }
+.popup-styles { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px; }
+.popup-tag { font-size:10px; padding:3px 8px; border-radius:6px; background:rgba(255,255,255,0.06); color:#8a8aa2; }
+.popup-zone { font-size:12px; color:#5a5a72; }
+.popup-dispo { display:inline-block; margin-top:6px; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:700; background:rgba(0,245,155,0.1); color:#00f59b; }
 .mobile-nav {
   display: none;
   position: fixed;
@@ -1193,108 +1226,43 @@ footer{
 <!-- ═══ PAGE: RÉSEAU ═══ -->
 <div class="page" id="page-network">
   <div class="network-layout">
+
+    <!-- SIDEBAR -->
     <div class="network-sidebar">
       <div class="sidebar-header">
         <div class="sidebar-title">RÉSEAU</div>
-        <input class="search-input" type="text" placeholder="🔍 Rechercher un danseur...">
-        <div class="filter-row">
-          <button class="filter-chip on">Tous</button>
-          <button class="filter-chip">Salsa</button>
-          <button class="filter-chip">Hip-Hop</button>
-          <button class="filter-chip">Kizomba</button>
-          <button class="filter-chip">Disponibles</button>
+        <input class="search-input" type="text" id="search-input" placeholder="🔍 Rechercher..." oninput="filtrerDanseurs()">
+        <div class="filter-row" id="filter-row">
+          <button class="filter-chip on" onclick="setFiltre('tous',this)">Tous</button>
+          <button class="filter-chip" onclick="setFiltre('public',this)">🟢 Public</button>
+          <button class="filter-chip" onclick="setFiltre('disponible',this)">✅ Disponibles</button>
         </div>
       </div>
-      <div class="dancer-list">
-        <div class="dancer-card featured">
-          <div class="dc-avatar" style="background:#0d2b1e">💃<div class="dc-dot" style="background:var(--green)"></div></div>
-          <div class="dc-info">
-            <div class="dc-name">Sofia M.</div>
-            <div class="dc-tags"><span class="dc-tag">Salsa</span><span class="dc-tag">Kizomba</span></div>
-            <div class="dc-zone">📍 Paris 11e · ~400m</div>
-          </div>
-          <div class="dc-action">👋</div>
-        </div>
-        <div class="dancer-card">
-          <div class="dc-avatar" style="background:#2b250d">🕺<div class="dc-dot" style="background:var(--yellow)"></div></div>
-          <div class="dc-info">
-            <div class="dc-name">Marc D.</div>
-            <div class="dc-tags"><span class="dc-tag">Hip-Hop</span><span class="dc-tag">Break</span></div>
-            <div class="dc-zone">📍 Paris 11e · ~800m</div>
-          </div>
-          <div class="dc-action">👋</div>
-        </div>
-        <div class="dancer-card">
-          <div class="dc-avatar" style="background:#1a0d2b">💃<div class="dc-dot" style="background:var(--purple)"></div></div>
-          <div class="dc-info">
-            <div class="dc-name">Léa R.</div>
-            <div class="dc-tags"><span class="dc-tag">Bachata</span><span class="dc-tag">Zouk</span></div>
-            <div class="dc-zone">📍 Paris 15e · ~1.2km</div>
-          </div>
-          <div class="dc-action">👋</div>
-        </div>
-        <div class="dancer-card">
-          <div class="dc-avatar" style="background:#0d1e2b">🕺<div class="dc-dot" style="background:var(--blue)"></div></div>
-          <div class="dc-info">
-            <div class="dc-name">Karim B.</div>
-            <div class="dc-tags"><span class="dc-tag">Afro</span><span class="dc-tag">Dancehall</span></div>
-            <div class="dc-zone">📍 Paris 11e · ~1.8km</div>
-          </div>
-          <div class="dc-action">👋</div>
-        </div>
-        <div class="dancer-card">
-          <div class="dc-avatar" style="background:#2b0d1a">💃<div class="dc-dot" style="background:var(--red)"></div></div>
-          <div class="dc-info">
-            <div class="dc-name">Yasmine K.</div>
-            <div class="dc-tags"><span class="dc-tag">Salsa</span><span class="dc-tag">Afro</span></div>
-            <div class="dc-zone">📍 Paris 20e · ~2.4km</div>
-          </div>
-          <div class="dc-action">👋</div>
-        </div>
-        <div class="dancer-card">
-          <div class="dc-avatar" style="background:#0d2b2b">🕺<div class="dc-dot" style="background:var(--green)"></div></div>
-          <div class="dc-info">
-            <div class="dc-name">Thomas V.</div>
-            <div class="dc-tags"><span class="dc-tag">Kizomba</span><span class="dc-tag">Semba</span></div>
-            <div class="dc-zone">📍 Paris 13e · ~3km</div>
-          </div>
-          <div class="dc-action">👋</div>
+      <div class="dancer-list" id="dancer-list">
+        <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">
+          ⏳ Chargement des danseurs...
         </div>
       </div>
     </div>
-    <div class="map-area">
-      <div class="map-bg-grid"></div>
-      <div class="map-zone-overlay"></div>
 
-      <div class="map-marker" style="left:45%;top:48%"><div class="mm-inner mm-green">💃</div></div>
-      <div class="map-marker" style="left:62%;top:38%"><div class="mm-inner mm-yellow">🕺</div></div>
-      <div class="map-marker" style="left:30%;top:60%"><div class="mm-inner mm-purple">💃</div></div>
-      <div class="map-marker" style="left:72%;top:65%"><div class="mm-inner mm-blue">🕺</div></div>
-      <div class="map-marker" style="left:52%;top:25%"><div class="mm-inner mm-green">💃</div></div>
-      <div class="map-marker" style="left:38%;top:35%"><div class="mm-inner mm-yellow">🕺</div></div>
+    <!-- CARTE LEAFLET -->
+    <div class="map-area" id="map-area">
+      <div id="leaflet-map" style="width:100%;height:100%;"></div>
 
-      <div class="map-event-tag" style="left:57%;top:55%">🎉 Battle Hiphop — Ce soir</div>
-      <div class="map-event-tag" style="left:35%;top:72%" >📚 Cours Salsa — Mardi</div>
-
-      <div class="map-info-box">
-        <div class="mib-label">Zone active</div>
-        <div class="mib-value">📍 Paris 11e</div>
+      <!-- Info box zone -->
+      <div class="map-info-box" id="map-info-box">
+        <div class="mib-label">Danseurs visibles</div>
+        <div class="mib-value" id="map-count">0 artistes</div>
       </div>
 
+      <!-- Contrôles -->
       <div class="map-controls">
-        <div class="map-ctrl-btn">＋</div>
-        <div class="map-ctrl-btn">－</div>
-        <div class="map-ctrl-btn">📍</div>
-        <div class="map-ctrl-btn">⚙️</div>
-      </div>
-
-      <div class="map-zone-selector">
-        <button class="mzs-btn">Ville</button>
-        <button class="mzs-btn active">Arrondissement</button>
-        <button class="mzs-btn">Quartier</button>
-        <button class="mzs-btn">5km</button>
+        <div class="map-ctrl-btn" onclick="carte && carte.zoomIn()">＋</div>
+        <div class="map-ctrl-btn" onclick="carte && carte.zoomOut()">－</div>
+        <div class="map-ctrl-btn" id="btn-locate" onclick="centrerSurMoi()" title="Ma position">📍</div>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -1906,6 +1874,218 @@ function setMobileActive(el) {
   document.querySelectorAll('.mn-item').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
 }
+
+// ════════════════════════════════
+// CARTE LEAFLET + FIREBASE
+// ════════════════════════════════
+let carte = null;
+let markersMap = {};
+let tousLesDanseurs = [];
+let filtreActif = 'tous';
+
+// Coordonnées des villes françaises
+const VILLES_COORDS = {
+  'Paris':      [48.8566, 2.3522],
+  'Lyon':       [45.7640, 4.8357],
+  'Marseille':  [43.2965, 5.3698],
+  'Bordeaux':   [44.8378, -0.5792],
+  'Toulouse':   [43.6047, 1.4442],
+  'Nantes':     [47.2184, -1.5536],
+  'Nice':       [43.7102, 7.2620],
+  'Strasbourg': [48.5734, 7.7521],
+  'Lille':      [50.6292, 3.0573],
+  'Grenoble':   [45.1885, 5.7245],
+  'Orléans':    [47.9029, 1.9039],
+};
+
+function initCarte() {
+  if (carte) return;
+  carte = L.map('leaflet-map', {
+    center: [46.8, 2.3],
+    zoom: 6,
+    zoomControl: false,
+    attributionControl: false
+  });
+
+  // Tuiles OpenStreetMap
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '© OpenStreetMap'
+  }).addTo(carte);
+
+  // Attribution discrète
+  L.control.attribution({ position: 'bottomright', prefix: false })
+    .addTo(carte);
+}
+
+function coordsVille(zone) {
+  // Cherche la ville dans le nom de zone
+  for (const [ville, coords] of Object.entries(VILLES_COORDS)) {
+    if (zone && zone.includes(ville)) return coords;
+  }
+  return [46.8, 2.3]; // France par défaut
+}
+
+function ajouterMarqueur(danseur, uid) {
+  if (!carte) return;
+
+  const coords = coordsVille(danseur.zone || '');
+  // Décalage aléatoire pour éviter superposition + respecter vie privée
+  const lat = coords[0] + (Math.random() - 0.5) * 0.04;
+  const lng = coords[1] + (Math.random() - 0.5) * 0.04;
+
+  const nom = danseur.nomAffiche || danseur.nom || danseur.pseudo || 'Artiste';
+  const styles = (danseur.styles || []).slice(0, 3);
+  const estPublic = danseur.visibilite === 'public';
+  const emoji = estPublic ? '💃' : '🕺';
+
+  // Icône custom
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="hako-marker ${estPublic ? 'public' : 'amis'}">${emoji}</div>`,
+    iconSize: [44, 44],
+    iconAnchor: [22, 22],
+    popupAnchor: [0, -26]
+  });
+
+  const marker = L.marker([lat, lng], { icon })
+    .bindPopup(`
+      <div style="min-width:160px;padding:4px">
+        <div class="popup-name">${nom}</div>
+        <div class="popup-styles">
+          ${styles.map(s => `<span class="popup-tag">${s}</span>`).join('')}
+        </div>
+        <div class="popup-zone">📍 ${danseur.zone || 'Zone non définie'}</div>
+        ${danseur.disponible ? '<div class="popup-dispo">✅ Disponible</div>' : ''}
+      </div>
+    `)
+    .addTo(carte);
+
+  markersMap[uid] = marker;
+}
+
+async function chargerCarte() {
+  if (!window._db) { setTimeout(chargerCarte, 500); return; }
+  initCarte();
+
+  try {
+    const { collection, getDocs, query, where } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+
+    const snap = await getDocs(query(
+      collection(window._db, 'danseurs'),
+      where('visibilite', 'in', ['public', 'amis'])
+    ));
+
+    tousLesDanseurs = [];
+    // Nettoyer anciens marqueurs
+    if (carte) carte.eachLayer(l => { if (l instanceof L.Marker) carte.removeLayer(l); });
+    markersMap = {};
+
+    snap.forEach(docSnap => {
+      const d = docSnap.data();
+      const uid = docSnap.id;
+      tousLesDanseurs.push({ ...d, uid });
+      ajouterMarqueur(d, uid);
+    });
+
+    afficherListeDanseurs(tousLesDanseurs);
+    document.getElementById('map-count').textContent = tousLesDanseurs.length + ' artistes';
+
+  } catch(e) {
+    console.error('Erreur chargement carte:', e);
+    document.getElementById('dancer-list').innerHTML =
+      '<div style="padding:20px;text-align:center;color:var(--red);font-size:13px;">❌ Erreur de chargement</div>';
+  }
+}
+
+function afficherListeDanseurs(danseurs) {
+  const list = document.getElementById('dancer-list');
+  if (!list) return;
+
+  if (danseurs.length === 0) {
+    list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">Aucun artiste trouvé</div>';
+    return;
+  }
+
+  list.innerHTML = danseurs.map(d => {
+    const nom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
+    const styles = (d.styles || []).slice(0, 2);
+    const dotColor = d.visibilite === 'public' ? 'var(--green)' : 'var(--yellow)';
+    return `
+      <div class="dancer-card" onclick="focusDanseur('${d.uid}')">
+        <div class="dc-avatar" style="background:#0d2b1e;position:relative">
+          ${d.photo ? `<img src="${d.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;position:absolute;inset:0;">` : '💃'}
+          <div class="dc-dot" style="background:${dotColor}"></div>
+        </div>
+        <div class="dc-info">
+          <div class="dc-name">${nom}</div>
+          <div class="dc-tags">${styles.map(s => `<span class="dc-tag">${s}</span>`).join('')}</div>
+          <div class="dc-zone">📍 ${d.zone || 'Zone non définie'}</div>
+        </div>
+        <div class="dc-action">👋</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function focusDanseur(uid) {
+  const marker = markersMap[uid];
+  if (marker && carte) {
+    carte.setView(marker.getLatLng(), 13, { animate: true });
+    marker.openPopup();
+  }
+}
+
+function setFiltre(type, btn) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('on'));
+  btn.classList.add('on');
+  filtreActif = type;
+  filtrerDanseurs();
+}
+
+function filtrerDanseurs() {
+  const search = document.getElementById('search-input')?.value.toLowerCase() || '';
+  let filtrés = tousLesDanseurs;
+
+  if (filtreActif === 'public')    filtrés = filtrés.filter(d => d.visibilite === 'public');
+  if (filtreActif === 'disponible') filtrés = filtrés.filter(d => d.disponible);
+
+  if (search) {
+    filtrés = filtrés.filter(d => {
+      const nom = (d.nomAffiche || d.nom || d.pseudo || '').toLowerCase();
+      const styles = (d.styles || []).join(' ').toLowerCase();
+      const zone = (d.zone || '').toLowerCase();
+      return nom.includes(search) || styles.includes(search) || zone.includes(search);
+    });
+  }
+
+  // Mettre à jour marqueurs visibles
+  Object.entries(markersMap).forEach(([uid, marker]) => {
+    const visible = filtrés.some(d => d.uid === uid);
+    if (visible) { if (!carte.hasLayer(marker)) marker.addTo(carte); }
+    else { if (carte.hasLayer(marker)) carte.removeLayer(marker); }
+  });
+
+  afficherListeDanseurs(filtrés);
+  document.getElementById('map-count').textContent = filtrés.length + ' artistes';
+}
+
+function centrerSurMoi() {
+  if (!navigator.geolocation) { alert('Géolocalisation non supportée'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    if (carte) carte.setView([pos.coords.latitude, pos.coords.longitude], 13, { animate: true });
+  }, () => alert('Position non disponible'));
+}
+
+// Charger la carte quand on clique sur Réseau
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('[onclick]');
+  if (btn && btn.getAttribute('onclick')?.includes("'network'")) {
+    setTimeout(chargerCarte, 200);
+  }
+});
 </script>
 
 <!-- ═══ FIREBASE AUTH ═══ -->
@@ -1930,6 +2110,10 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const db   = getFirestore(app);
 const auth = getAuth(app);
+
+// Exposer globalement pour la carte
+window._db   = db;
+window._auth = auth;
 
 // ════════════════════════════════
 // INSCRIPTION
