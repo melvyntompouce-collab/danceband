@@ -2425,9 +2425,9 @@ window.inscrire = async function() {
   const okDiv    = document.getElementById('signup-success');
   const btn      = document.getElementById('signup-btn');
 
-  // Choix d'affichage : nom ou blase
-  const displayChoice = document.getElementById('display-blase').classList.contains('selected') ? 'blase' : 'nom';
-  const nomAffiche    = displayChoice === 'blase' ? pseudo : nom;
+  // Choix d'affichage : nom par défaut (modifiable dans le profil)
+  const displayChoice = 'nom';
+  const nomAffiche    = nom || pseudo || 'Artiste';
 
   // Récupérer les styles sélectionnés
   const styles = [...document.querySelectorAll('#styles-grid .style-tag.selected')]
