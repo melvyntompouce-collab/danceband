@@ -1338,6 +1338,71 @@ footer{
   </div>
 </div>
 
+<!-- ═══ PROFIL ARTISTE (overlay) ═══ -->
+<div id="artiste-overlay" style="display:none;position:fixed;inset:0;z-index:250;background:var(--bg);overflow-y:auto;padding-top:70px;">
+  <div style="max-width:600px;margin:0 auto;padding:24px 20px 100px;">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <button onclick="fermerProfilArtiste()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button>
+      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;">PROFIL</div>
+    </div>
+
+    <!-- Hero -->
+    <div style="background:linear-gradient(135deg,#0d2b1e,#1a0d2b);border:1px solid var(--border);border-radius:24px;padding:28px;margin-bottom:16px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(0,245,155,0.1) 0%,transparent 70%);border-radius:50%;"></div>
+      <div style="display:flex;align-items:center;gap:18px;position:relative;">
+        <div id="ap-avatar" style="width:80px;height:80px;border-radius:22px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0;overflow:hidden;position:relative;box-shadow:0 8px 24px rgba(0,245,155,0.2);">
+          <span id="ap-avatar-emoji">💃</span>
+          <img id="ap-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:22px;">
+        </div>
+        <div style="flex:1;">
+          <div id="ap-name" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-0.5px;line-height:1;"></div>
+          <div id="ap-handle" style="font-size:13px;color:var(--muted2);margin-top:4px;"></div>
+          <div id="ap-zone" style="font-size:12px;color:var(--muted);margin-top:4px;">📍</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div style="display:flex;gap:0;margin-top:20px;background:rgba(255,255,255,0.04);border-radius:14px;overflow:hidden;">
+        <div style="flex:1;padding:12px;text-align:center;border-right:1px solid var(--border);">
+          <div id="ap-xp" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">XP</div>
+        </div>
+        <div style="flex:1;padding:12px;text-align:center;border-right:1px solid var(--border);">
+          <div id="ap-events" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Events</div>
+        </div>
+        <div style="flex:1;padding:12px;text-align:center;">
+          <div id="ap-niveau" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">1</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Niveau</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Styles -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:12px;">💃 Styles de danse</div>
+      <div id="ap-styles" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+    </div>
+
+    <!-- Actions -->
+    <div id="ap-info-conf" style="display:none;padding:10px 14px;border-radius:12px;background:rgba(255,217,61,0.08);border:1px solid rgba(255,217,61,0.2);font-size:12px;color:var(--yellow);margin-bottom:12px;"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button id="ap-btn-suivre" onclick="toggleSuivreOverlay()" style="flex:1;padding:14px;border-radius:14px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all 0.2s;">
+        + Suivre
+      </button>
+      <button id="ap-btn-message" onclick="ouvrirMessageDepuisProfil()" style="display:none;flex:1;padding:14px;border-radius:14px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;background:var(--green);color:#080810;border:none;cursor:pointer;">
+        💬 Message
+      </button>
+      <button id="ap-btn-tel" onclick="appellerArtiste()" style="display:none;padding:14px 18px;border-radius:14px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;background:rgba(77,159,255,0.1);color:var(--blue);border:1px solid var(--blue);cursor:pointer;">
+        📞
+      </button>
+    </div>
+
+  </div>
+</div>
+
 <!-- ═══ PAGE: MESSAGES ═══ -->
 <div class="page" id="page-messages">
   <div style="max-width:700px;margin:0 auto;padding:24px 20px 100px;">
@@ -2711,23 +2776,191 @@ function afficherListeDanseurs(danseurs) {
     const styles = normaliserStyles(d.styles).slice(0, 2);
     const dotColor = d.visibilite === 'public' ? 'var(--green)' : 'var(--yellow)';
     return `
-      <div class="dancer-card" onclick="focusDanseur('${d.uid}')">
-        <div class="dc-avatar" style="background:#0d2b1e;position:relative">
+      <div class="dancer-card">
+        <div class="dc-avatar" style="background:#0d2b1e;position:relative;cursor:pointer;" onclick="focusDanseur('${d.uid}')">
           ${d.photo ? `<img src="${d.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;position:absolute;inset:0;">` : '💃'}
           <div class="dc-dot" style="background:${dotColor}"></div>
         </div>
-        <div class="dc-info">
-          <div class="dc-name">${nom}</div>
+        <div class="dc-info" style="cursor:pointer;" onclick="ouvrirProfilArtiste('${d.uid}')">
+          <div class="dc-name" style="text-decoration:underline;text-decoration-color:rgba(255,255,255,0.2);">${nom}</div>
           <div class="dc-tags">${styles.map(s => `<span class="dc-tag">${s}</span>`).join('')}</div>
           <div class="dc-zone">📍 ${d.zone || 'Zone non définie'}</div>
         </div>
-        <button onclick="event.stopPropagation();toggleSuivre('${d.uid}')" id="btn-suivre-${d.uid}"
+        <button onclick="toggleSuivre('${d.uid}')" id="btn-suivre-${d.uid}"
           style="padding:6px 12px;border-radius:10px;font-size:11px;font-weight:800;font-family:'Syne',sans-serif;border:1.5px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all 0.2s;white-space:nowrap;">
           + Suivre
         </button>
       </div>
     `;
   }).join('');
+}
+
+// ════════════════════════════════
+// PROFIL ARTISTE
+// ════════════════════════════════
+let artisteCourant = null;
+
+window.ouvrirProfilArtiste = async function(uid) {
+  artisteCourant = uid;
+  document.getElementById('artiste-overlay').style.display = 'block';
+  window.scrollTo(0, 0);
+
+  try {
+    const { getDoc, doc } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+    const snap = await getDoc(doc(window._db, 'danseurs', uid));
+    if (!snap.exists()) return;
+    const d = snap.data();
+
+    // ── Déterminer le niveau de relation ──
+    const estMoi        = uid === window._currentUid;
+    const estSuivi      = mesAbonnements.has(uid);
+    const amiAbos       = d.abonnements || [];
+    const estAmiMutuel  = estSuivi && amiAbos.includes(window._currentUid);
+
+    // Règle : "public" → visible par tous
+    //         "amis"   → visible uniquement si ami mutuel ou soi-même
+    //         "prive"  → visible uniquement par soi-même
+    const conf = d.confidentialite || {};
+
+    function peutVoir(champ) {
+      const niveau = conf[champ] || 'public';
+      if (niveau === 'public') return true;
+      if (niveau === 'amis')   return estMoi || estAmiMutuel;
+      if (niveau === 'prive')  return estMoi;
+      return false;
+    }
+
+    function masqué(texte) {
+      return `<span style="color:var(--muted);font-size:12px;font-style:italic;">🔒 ${texte}</span>`;
+    }
+
+    // ── Nom affiché ──
+    // Le nom suit la règle confidentialité "nom"
+    let nomAffiche = '—';
+    if (peutVoir('nom')) {
+      nomAffiche = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
+    } else {
+      nomAffiche = 'Artiste #' + uid.slice(0, 5).toUpperCase();
+    }
+    document.getElementById('ap-name').textContent = nomAffiche.toUpperCase();
+
+    // ── Blase ──
+    const handleEl = document.getElementById('ap-handle');
+    if (d.blase && peutVoir('nom')) {
+      handleEl.textContent = '🎭 ' + d.blase;
+    } else {
+      handleEl.textContent = '';
+    }
+
+    // ── Zone ──
+    document.getElementById('ap-zone').textContent = '📍 ' + (d.zone || 'Zone non définie');
+
+    // ── Stats (toujours publiques) ──
+    document.getElementById('ap-xp').textContent = (d.xp || 0).toLocaleString();
+    document.getElementById('ap-events').textContent = d.evenements || 0;
+    document.getElementById('ap-niveau').textContent = calculerNiveau(d.xp || 0);
+
+    // ── Photo ──
+    const emojiEl = document.getElementById('ap-avatar-emoji');
+    const imgEl   = document.getElementById('ap-avatar-img');
+    if (d.photo) {
+      emojiEl.style.display = 'none';
+      imgEl.src = d.photo;
+      imgEl.style.display = 'block';
+    } else {
+      emojiEl.style.display = 'block';
+      imgEl.style.display = 'none';
+    }
+
+    // ── Styles ──
+    const stylesEl = document.getElementById('ap-styles');
+    if (peutVoir('styles')) {
+      const stylesNorm = normaliserStyles(d.styles);
+      stylesEl.innerHTML = stylesNorm.length
+        ? stylesNorm.map(s => `<span style="padding:6px 14px;border-radius:20px;background:rgba(255,255,255,0.05);color:var(--muted2);font-size:12px;font-weight:600;">${s}</span>`).join('')
+        : '<span style="color:var(--muted);font-size:13px;">Non renseigné</span>';
+    } else {
+      stylesEl.innerHTML = masqué('Styles privés');
+    }
+
+    // ── Section réseaux sociaux ──
+    // Ajout d'une ligne info confidentialité si nécessaire
+    const infoConf = document.getElementById('ap-info-conf');
+    if (infoConf) {
+      if (!estAmiMutuel && !estMoi) {
+        infoConf.style.display = 'block';
+        infoConf.textContent = '🔒 Certaines infos sont réservées aux amis mutuels';
+      } else {
+        infoConf.style.display = 'none';
+      }
+    }
+
+    // ── Bouton suivre ──
+    const btnSuivre = document.getElementById('ap-btn-suivre');
+    btnSuivre.style.display = estMoi ? 'none' : 'flex';
+    if (estSuivi) {
+      btnSuivre.textContent = '✓ Suivi';
+      btnSuivre.style.background = 'rgba(0,245,155,0.1)';
+      btnSuivre.style.borderColor = 'var(--green)';
+      btnSuivre.style.color = 'var(--green)';
+    } else {
+      btnSuivre.textContent = '+ Suivre';
+      btnSuivre.style.background = 'transparent';
+      btnSuivre.style.borderColor = 'var(--border)';
+      btnSuivre.style.color = 'var(--muted2)';
+    }
+
+    // ── Bouton message — amis mutuels uniquement ──
+    document.getElementById('ap-btn-message').style.display = (!estMoi && estAmiMutuel) ? 'flex' : 'none';
+
+    // ── Bouton téléphone — selon confidentialité "reseaux" ──
+    const btnTel = document.getElementById('ap-btn-tel');
+    if (d.tel && peutVoir('reseaux')) {
+      btnTel.style.display = 'flex';
+      btnTel.setAttribute('data-tel', d.tel);
+    } else {
+      btnTel.style.display = 'none';
+    }
+
+  } catch(e) { console.error('Erreur profil artiste:', e); }
+}
+
+window.fermerProfilArtiste = function() {
+  document.getElementById('artiste-overlay').style.display = 'none';
+  artisteCourant = null;
+}
+
+window.toggleSuivreOverlay = async function() {
+  if (!artisteCourant) return;
+  await toggleSuivre(artisteCourant);
+  // Rafraîchir le bouton dans l'overlay
+  const estSuivi = mesAbonnements.has(artisteCourant);
+  const btn = document.getElementById('ap-btn-suivre');
+  if (estSuivi) {
+    btn.textContent = '✓ Suivi';
+    btn.style.background = 'rgba(0,245,155,0.1)';
+    btn.style.borderColor = 'var(--green)';
+    btn.style.color = 'var(--green)';
+  } else {
+    btn.textContent = '+ Suivre';
+    btn.style.background = 'transparent';
+    btn.style.borderColor = 'var(--border)';
+    btn.style.color = 'var(--muted2)';
+  }
+}
+
+window.ouvrirMessageDepuisProfil = function() {
+  if (!artisteCourant) return;
+  fermerProfilArtiste();
+  showPage('messages');
+  setTimeout(() => ouvrirConversation(artisteCourant, document.getElementById('ap-name')?.textContent || '', ''), 300);
+}
+
+window.appellerArtiste = function() {
+  const tel = document.getElementById('ap-btn-tel')?.getAttribute('data-tel');
+  if (tel) window.location.href = 'sms:' + tel;
 }
 
 function focusDanseur(uid) {
