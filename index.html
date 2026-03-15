@@ -1269,115 +1269,56 @@ footer{
 <!-- ═══ PAGE: AGENDA ═══ -->
 <div class="page" id="page-agenda">
   <div class="agenda-page">
+
+    <!-- HEADER -->
     <div class="agenda-header">
       <div>
         <div class="section-tag">Événements & cours</div>
-        <h1 style="font-family:'Syne',sans-serif;font-size:48px;letter-spacing:2px;">AGENDA</h1>
+        <h1 style="font-family:'Syne',sans-serif;font-size:48px;letter-spacing:2px;font-weight:800;">AGENDA</h1>
       </div>
-      <div class="agenda-filters">
-        <button class="agenda-filter on">Tous</button>
-        <button class="agenda-filter">Soirées</button>
-        <button class="agenda-filter">Cours</button>
-        <button class="agenda-filter">Battles</button>
-        <button class="agenda-filter">Salsa</button>
-        <button class="agenda-filter">Hip-Hop</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div class="agenda-filters" id="agenda-filters">
+          <button class="agenda-filter on" onclick="setAgendaFiltre('tous',this)">Tous</button>
+          <button class="agenda-filter" onclick="setAgendaFiltre('soiree',this)">Soirées</button>
+          <button class="agenda-filter" onclick="setAgendaFiltre('cours',this)">Cours</button>
+          <button class="agenda-filter" onclick="setAgendaFiltre('battle',this)">Battles</button>
+          <button class="agenda-filter" onclick="setAgendaFiltre('workshop',this)">Workshops</button>
+        </div>
       </div>
     </div>
-    <div class="agenda-grid">
 
-      <div class="event-card">
-        <div class="ec-banner"><div class="ec-banner-bg" style="background:linear-gradient(135deg,#1a0526,#260d1a)"></div><span class="ec-type">🎉 SOIRÉE</span></div>
-        <div class="ec-body">
-          <div class="ec-title">Nuit Kizomba — Bastille</div>
-          <div class="ec-meta">
-            <div class="ec-mi">📅 Ce soir · 21h00 → 04h00</div>
-            <div class="ec-mi">📍 Paris 11e · Chez Louisette</div>
-            <div class="ec-mi">💃 Kizomba, Semba, Tarraxo</div>
-            <div class="ec-mi">⭐ Tous niveaux</div>
-          </div>
-        </div>
-        <div class="ec-foot">
-          <div class="ec-attendees">
-            <div class="ec-avs"><div class="ec-av" style="background:#0d2b1e">💃</div><div class="ec-av" style="background:#2b250d">🕺</div><div class="ec-av" style="background:#1a0d2b">💃</div></div>
-            <span class="ec-count">+24 inscrits</span>
-          </div>
-          <div class="ec-price-wrap">
-            <span class="ec-price" style="color:var(--green)">12€</span>
-            <button class="ec-btn ec-btn-green">Réserver 🎟️</button>
-          </div>
-        </div>
+    <!-- GRILLE EVENTS -->
+    <div class="agenda-grid" id="agenda-grid">
+      <div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted);font-size:14px;">
+        ⏳ Chargement des événements...
       </div>
-
-      <div class="event-card">
-        <div class="ec-banner"><div class="ec-banner-bg" style="background:linear-gradient(135deg,#0a1a2b,#0d2215)"></div><span class="ec-type">📚 COURS</span></div>
-        <div class="ec-body">
-          <div class="ec-title">Cours Salsa niveau 2</div>
-          <div class="ec-meta">
-            <div class="ec-mi">📅 Mardi · 19h30 → 21h00</div>
-            <div class="ec-mi">📍 Paris 15e · Studio Danza</div>
-            <div class="ec-mi">💃 Salsa cubaine</div>
-            <div class="ec-mi">⭐ Intermédiaire</div>
-          </div>
-        </div>
-        <div class="ec-foot">
-          <div class="ec-attendees">
-            <div class="ec-avs"><div class="ec-av" style="background:#0d1e2b">🕺</div><div class="ec-av" style="background:#1a1a2e">💃</div></div>
-            <span class="ec-count">+8 inscrits</span>
-          </div>
-          <div class="ec-price-wrap">
-            <span class="ec-price" style="color:var(--blue)">8€</span>
-            <button class="ec-btn ec-btn-blue">S'inscrire</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="event-card">
-        <div class="ec-banner"><div class="ec-banner-bg" style="background:linear-gradient(135deg,#2b1a0a,#1a0d0d)"></div><span class="ec-type">🏆 BATTLE</span></div>
-        <div class="ec-body">
-          <div class="ec-title">Battle Hip-Hop Open — Lyon</div>
-          <div class="ec-meta">
-            <div class="ec-mi">📅 Samedi · 18h00 → 23h00</div>
-            <div class="ec-mi">📍 Lyon · Le Transbordeur</div>
-            <div class="ec-mi">🕺 Hip-Hop, Popping, Locking</div>
-            <div class="ec-mi">💪 Tous niveaux · 1vs1</div>
-          </div>
-        </div>
-        <div class="ec-foot">
-          <div class="ec-attendees">
-            <div class="ec-avs"><div class="ec-av" style="background:#2b1a0a">🕺</div><div class="ec-av" style="background:#0d2b1e">💃</div><div class="ec-av" style="background:#1a0d2b">🕺</div></div>
-            <span class="ec-count">+48 inscrits</span>
-          </div>
-          <div class="ec-price-wrap">
-            <span class="ec-price" style="color:var(--yellow)">5€</span>
-            <button class="ec-btn ec-btn-yellow">Réserver 🎟️</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="event-card">
-        <div class="ec-banner"><div class="ec-banner-bg" style="background:linear-gradient(135deg,#1a2b0d,#0d2b1e)"></div><span class="ec-type">📚 COURS</span></div>
-        <div class="ec-body">
-          <div class="ec-title">Atelier Afro Débutants</div>
-          <div class="ec-meta">
-            <div class="ec-mi">📅 Jeudi · 18h30 → 20h00</div>
-            <div class="ec-mi">📍 Paris 18e · MJC</div>
-            <div class="ec-mi">💃 Afrobeat, Amapiano</div>
-            <div class="ec-mi">⭐ Débutants bienvenus</div>
-          </div>
-        </div>
-        <div class="ec-foot">
-          <div class="ec-attendees">
-            <div class="ec-avs"><div class="ec-av" style="background:#1a2b0d">💃</div><div class="ec-av" style="background:#2b0d2b">🕺</div></div>
-            <span class="ec-count">+12 inscrits</span>
-          </div>
-          <div class="ec-price-wrap">
-            <span class="ec-price" style="color:var(--green)">Gratuit</span>
-            <button class="ec-btn ec-btn-green">S'inscrire</button>
-          </div>
-        </div>
-      </div>
-
     </div>
+
+    <!-- MODAL DÉTAIL EVENT -->
+    <div id="event-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);overflow-y:auto;padding:20px;">
+      <div style="max-width:500px;margin:60px auto;background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;">
+        <div id="modal-banner" style="height:140px;position:relative;display:flex;align-items:flex-end;padding:16px;">
+          <div id="modal-banner-bg" style="position:absolute;inset:0;"></div>
+          <button onclick="fermerModal()" style="position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:10px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);color:white;font-size:18px;cursor:pointer;">✕</button>
+          <span id="modal-type" style="position:relative;z-index:1;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;font-family:'Syne',sans-serif;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);"></span>
+        </div>
+        <div style="padding:24px;">
+          <div id="modal-title" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;margin-bottom:16px;"></div>
+          <div id="modal-meta" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;"></div>
+          <div id="modal-desc" style="font-size:14px;color:var(--muted2);line-height:1.7;margin-bottom:20px;"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div id="modal-price" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;"></div>
+              <div id="modal-inscrits" style="font-size:12px;color:var(--muted);margin-top:2px;"></div>
+            </div>
+            <button id="modal-btn" onclick="sInscrire()" style="padding:14px 28px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">
+              🎟️ Réserver
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1854,8 +1795,203 @@ document.querySelectorAll('.rk-tab').forEach(t => {
 });
 
 // ════════════════════════════════
-// CLASSEMENT
+// AGENDA
 // ════════════════════════════════
+
+let tousLesEvents = [];
+let agendaFiltre = 'tous';
+let eventCourant = null;
+
+const TYPE_CONFIG = {
+  soiree:   { label:'🎉 SOIRÉE',   bg:'linear-gradient(135deg,#1a0526,#260d1a)', couleur:'var(--purple)' },
+  cours:    { label:'📚 COURS',    bg:'linear-gradient(135deg,#0a1a2b,#0d2215)', couleur:'var(--blue)'   },
+  battle:   { label:'🏆 BATTLE',   bg:'linear-gradient(135deg,#2b1a0a,#1a0d0d)', couleur:'var(--yellow)' },
+  workshop: { label:'🎓 WORKSHOP', bg:'linear-gradient(135deg,#1a2b0d,#0d2b1e)', couleur:'var(--green)'  },
+};
+
+function setAgendaFiltre(type, btn) {
+  document.querySelectorAll('.agenda-filter').forEach(f => f.classList.remove('on'));
+  btn.classList.add('on');
+  agendaFiltre = type;
+  afficherEvents();
+}
+
+async function chargerAgenda() {
+  if (!window._db) { setTimeout(chargerAgenda, 500); return; }
+  const grid = document.getElementById('agenda-grid');
+  if (grid) grid.innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted);">⏳ Chargement...</div>';
+
+  try {
+    const { collection, getDocs, query, orderBy, where, Timestamp } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+
+    const snap = await getDocs(query(
+      collection(window._db, 'evenements'),
+      orderBy('date', 'asc')
+    ));
+
+    tousLesEvents = [];
+    snap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
+
+    // Si aucun event en base, afficher message
+    if (tousLesEvents.length === 0) {
+      if (grid) grid.innerHTML = `
+        <div style="grid-column:1/-1;padding:60px 20px;text-align:center;">
+          <div style="font-size:48px;margin-bottom:16px;">📅</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;margin-bottom:8px;">Aucun événement pour le moment</div>
+          <div style="font-size:14px;color:var(--muted2);">Les organisateurs publieront bientôt leurs événements ici</div>
+        </div>`;
+      return;
+    }
+
+    afficherEvents();
+  } catch(e) {
+    console.error('Erreur agenda:', e);
+  }
+}
+
+function afficherEvents() {
+  const grid = document.getElementById('agenda-grid');
+  if (!grid) return;
+
+  let events = agendaFiltre === 'tous'
+    ? tousLesEvents
+    : tousLesEvents.filter(e => e.type === agendaFiltre);
+
+  if (events.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted);">Aucun événement dans cette catégorie</div>';
+    return;
+  }
+
+  grid.innerHTML = events.map(ev => {
+    const cfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.soiree;
+    const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + '€';
+    const couleurPrix = ev.prix === 0 ? 'var(--green)' : cfg.couleur;
+    const btnClass = ev.prix === 0 ? 'ec-btn-green' : ev.type === 'cours' ? 'ec-btn-blue' : ev.type === 'battle' ? 'ec-btn-yellow' : 'ec-btn-green';
+    const btnLabel = ev.type === 'cours' ? "S'inscrire" : '🎟️ Réserver';
+    const inscrits = ev.inscrits || 0;
+    const date = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' }) : '';
+
+    return `
+      <div class="event-card" onclick="ouvrirEvent('${ev.id}')">
+        <div class="ec-banner">
+          <div class="ec-banner-bg" style="background:${cfg.bg}"></div>
+          <span class="ec-type">${cfg.label}</span>
+        </div>
+        <div class="ec-body">
+          <div class="ec-title">${ev.titre || 'Événement'}</div>
+          <div class="ec-meta">
+            <div class="ec-mi">📅 ${date}${ev.heure ? ' · ' + ev.heure : ''}</div>
+            <div class="ec-mi">📍 ${ev.ville || ''} ${ev.lieu ? '· ' + ev.lieu : ''}</div>
+            ${ev.styles ? `<div class="ec-mi">💃 ${ev.styles}</div>` : ''}
+            ${ev.niveau ? `<div class="ec-mi">⭐ ${ev.niveau}</div>` : ''}
+          </div>
+        </div>
+        <div class="ec-foot">
+          <div class="ec-attendees">
+            <span class="ec-count">${inscrits > 0 ? '+' + inscrits + ' inscrits' : 'Soyez le premier !'}</span>
+          </div>
+          <div class="ec-price-wrap">
+            <span class="ec-price" style="color:${couleurPrix}">${prix}</span>
+            <button class="ec-btn ${btnClass}" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')">${btnLabel}</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function ouvrirEvent(id) {
+  const ev = tousLesEvents.find(e => e.id === id);
+  if (!ev) return;
+  eventCourant = ev;
+
+  const cfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.soiree;
+  const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + '€';
+  const date = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : '';
+
+  document.getElementById('modal-banner-bg').style.background = cfg.bg;
+  document.getElementById('modal-type').textContent = cfg.label;
+  document.getElementById('modal-title').textContent = ev.titre || '';
+  document.getElementById('modal-price').textContent = prix;
+  document.getElementById('modal-price').style.color = cfg.couleur;
+  document.getElementById('modal-inscrits').textContent = (ev.inscrits || 0) + ' personnes inscrites';
+  document.getElementById('modal-desc').textContent = ev.description || 'Aucune description disponible.';
+  document.getElementById('modal-meta').innerHTML = `
+    <div class="ec-mi">📅 ${date}${ev.heure ? ' · ' + ev.heure : ''}</div>
+    <div class="ec-mi">📍 ${ev.ville || ''} ${ev.lieu ? '· ' + ev.lieu : ''}</div>
+    ${ev.styles ? `<div class="ec-mi">💃 ${ev.styles}</div>` : ''}
+    ${ev.niveau ? `<div class="ec-mi">⭐ ${ev.niveau}</div>` : ''}
+    ${ev.organisateur ? `<div class="ec-mi">👤 Organisé par ${ev.organisateur}</div>` : ''}
+  `;
+
+  const btn = document.getElementById('modal-btn');
+  btn.textContent = ev.type === 'cours' ? "✅ S'inscrire" : '🎟️ Réserver';
+
+  document.getElementById('event-modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function fermerModal() {
+  document.getElementById('event-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+window.sInscrire = async function() {
+  if (!window._currentUid) {
+    alert('Connecte-toi pour t\'inscrire !');
+    fermerModal();
+    showPage('auth');
+    return;
+  }
+  if (!eventCourant) return;
+
+  const btn = document.getElementById('modal-btn');
+  btn.textContent = '⏳ En cours...';
+  btn.disabled = true;
+
+  try {
+    const { doc, updateDoc, increment, arrayUnion } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+
+    // Incrémenter inscrits sur l'event
+    await updateDoc(doc(window._db, 'evenements', eventCourant.id), {
+      inscrits: increment(1),
+      participants: arrayUnion(window._currentUid)
+    });
+
+    // Ajouter XP au danseur (+20 XP pour inscription event)
+    await updateDoc(doc(window._db, 'danseurs', window._currentUid), {
+      xp: increment(20),
+      evenements: increment(1)
+    });
+
+    btn.textContent = '✅ Inscrit !';
+    btn.style.background = 'var(--card2)';
+    btn.style.color = 'var(--green)';
+    btn.style.border = '1px solid var(--green)';
+
+    // Mettre à jour le compteur local
+    eventCourant.inscrits = (eventCourant.inscrits || 0) + 1;
+    document.getElementById('modal-inscrits').textContent = eventCourant.inscrits + ' personnes inscrites';
+
+    setTimeout(fermerModal, 1500);
+  } catch(e) {
+    console.error('Erreur inscription:', e);
+    btn.textContent = '❌ Erreur';
+    btn.disabled = false;
+  }
+}
+
+// Charger agenda quand on clique sur l'onglet
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('[onclick]');
+  if (btn && btn.getAttribute('onclick')?.includes("'agenda'")) {
+    setTimeout(chargerAgenda, 200);
+  }
+});
 
 // Seuils XP par niveau
 const NIVEAUX_XP = [0, 500, 1500, 3000, 5000, 8000, 12000];
@@ -2254,12 +2390,12 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
 
 // ── VOS CLÉS FIREBASE ──
 const firebaseConfig = {
-  apiKey: "AIzaSyD4CbfahBqGienwBiI70N7XB2OcE77Nmxk",
-  authDomain: "dance-5ed07.firebaseapp.com",
-  projectId: "dance-5ed07",
-  storageBucket: "dance-5ed07.firebasestorage.app",
-  messagingSenderId: "478944342426",
-  appId: "1:478944342426:web:db806759eacf2051238a23"
+  apiKey: "AIzaSyCUVW01qGM7JkULmezdeY6zvqRtsMOaEB8",
+  authDomain: "danceband2.firebaseapp.com",
+  projectId: "danceband2",
+  storageBucket: "danceband2.firebasestorage.app",
+  messagingSenderId: "397526470867",
+  appId: "1:397526470867:web:c38137a8eb3def73644426"
 };
 
 const app  = initializeApp(firebaseConfig);
