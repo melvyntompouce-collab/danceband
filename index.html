@@ -3503,25 +3503,25 @@ async function chargerAbonnements() {
       const d = snap.data();
       mesAbonnements = new Set(d.abonnements || []);
       mesAbonnements.forEach(uid => mettreAJourBtnSuivre(uid, true));
-
-      // Mettre à jour compteur abonnements
       const statAbos = document.getElementById('stat-abonnements');
       if (statAbos) statAbos.textContent = mesAbonnements.size;
     }
+  } catch(e) { console.error('Abonnements:', e); }
 
-    // Compter les abonnés (ceux qui me suivent)
+  // Comptage abonnés dans un try séparé pour ne pas bloquer
+  try {
+    const { collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
     const abonnesSnap = await getDocs(query(
       collection(window._db, 'danseurs'),
       where('abonnements', 'array-contains', window._currentUid)
     ));
     const statAbonnes = document.getElementById('stat-abonnes');
     if (statAbonnes) statAbonnes.textContent = abonnesSnap.size;
+  } catch(e) { console.error('Comptage abonnés:', e); }
 
-    // Afficher bouton organisateur
-    const orgaBtn = document.getElementById('orga-btn');
-    if (orgaBtn) orgaBtn.style.display = 'inline-flex';
-
-  } catch(e) { console.error(e); }
+  // Afficher bouton organisateur
+  const orgaBtn = document.getElementById('orga-btn');
+  if (orgaBtn) orgaBtn.style.display = 'inline-flex';
 }
 
 function mettreAJourBtnSuivre(uid, suivi) {
@@ -4925,17 +4925,14 @@ async function chargerProfil(uid) {
     const statAbos = document.getElementById('stat-abonnements');
     if (statAbos) statAbos.textContent = abonnements.length;
 
-    // Compter les abonnés (ceux qui me suivent) — via mesAbonnements déjà chargés
-    // On met à jour après chargerAbonnements
+    // ── Stocker uid courant EN PREMIER ──
+    window._currentUid = uid;
     window._monProfil = { ...d, uid };
 
-    // ── Stocker uid courant ──
-    window._currentUid = uid;
-
-    // ── Favoris ──
-    afficherFavorisProfile();
-
     mettreAJourNav(d);
+
+    // ── Favoris (après avoir assigné _currentUid) ──
+    afficherFavorisProfile().catch(e => console.error('Favoris:', e));
 
   } catch(e) {
     console.error('Erreur chargement profil:', e);
@@ -5099,9 +5096,9 @@ function mettreAJourNav(user) {
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     console.log('✅ Connecté :', user.email);
-    await chargerProfil(user.uid);
-    await chargerAbonnements();
-    await chargerFavoris();
+    try { await chargerProfil(user.uid); } catch(e) { console.error('❌ chargerProfil:', e); }
+    try { await chargerAbonnements(); }    catch(e) { console.error('❌ chargerAbonnements:', e); }
+    try { await chargerFavoris(); }        catch(e) { console.error('❌ chargerFavoris:', e); }
   } else {
     console.log('👤 Non connecté');
     mettreAJourNav(null);
