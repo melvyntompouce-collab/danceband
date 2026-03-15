@@ -1917,6 +1917,11 @@ footer{
               <input id="profil-tel" class="form-input" type="tel" placeholder="Ex: +33 6 12 34 56 78" style="background:var(--bg2)">
               <div style="font-size:11px;color:var(--muted2);margin-top:6px;">Les autres pourront vous envoyer un message directement</div>
             </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Ville <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+              <input id="profil-ville" class="form-input" type="text" placeholder="Ex: Paris, Lyon, Bordeaux..." style="background:var(--bg2)">
+              <div style="font-size:11px;color:var(--muted2);margin-top:6px;">Utilisée pour le score de compatibilité et la carte du réseau</div>
+            </div>
           </div>
         </div>
 
@@ -4822,6 +4827,7 @@ window.sauvegarderIdentite = async function() {
   const nom   = document.getElementById('profil-nom')?.value.trim()       || '';
   const blase = document.getElementById('profil-blase')?.value.trim()     || '';
   const tel   = document.getElementById('profil-tel')?.value.trim()       || '';
+  const ville = document.getElementById('profil-ville')?.value.trim()     || '';
   const instagram    = document.getElementById('profil-instagram')?.value.trim().replace('@','') || '';
   const tiktok       = document.getElementById('profil-tiktok')?.value.trim().replace('@','')    || '';
   const lien         = document.getElementById('profil-lien')?.value.trim()       || '';
@@ -4846,7 +4852,9 @@ window.sauvegarderIdentite = async function() {
 
   try {
     await setDoc(doc(db, 'danseurs', user.uid), {
-      nom, blase, tel, instagram, tiktok, lien, lienVisible,
+      nom, blase, tel,
+      ...(ville ? { ville, zone: ville } : {}),
+      instagram, tiktok, lien, lienVisible,
       spotify, applemusic, deezer, soundcloud,
       plateformesVisibles: { ...plateformesVisibles },
       affichageType, nomAffiche,
@@ -4859,7 +4867,7 @@ window.sauvegarderIdentite = async function() {
     const phName   = document.getElementById('ph-name-display');
     const phHandle = document.getElementById('ph-handle-display');
     if (phName)   phName.textContent   = nomAffiche.toUpperCase() || 'MON PROFIL';
-    if (phHandle) phHandle.textContent = document.getElementById('profil-zone')?.value || '';
+    if (phHandle) phHandle.textContent = ville || document.getElementById('profil-zone')?.value || '';
 
     // Afficher confirmation
     const msg = document.getElementById('edit-save-msg');
@@ -4918,7 +4926,8 @@ async function chargerProfil(uid) {
     // ── Champs édition ──
     const champNom      = document.getElementById('profil-nom');
     const champBlase    = document.getElementById('profil-blase');
-    const champTel      = document.getElementById('profil-tel');
+    const champTel        = document.getElementById('profil-tel');
+    const champVille      = document.getElementById('profil-ville');
     const champInsta      = document.getElementById('profil-instagram');
     const champTiktok     = document.getElementById('profil-tiktok');
     const champLien       = document.getElementById('profil-lien');
@@ -4929,6 +4938,7 @@ async function chargerProfil(uid) {
     if (champNom)         champNom.value         = d.nom        || '';
     if (champBlase)       champBlase.value       = d.blase      || '';
     if (champTel)         champTel.value         = d.tel        || '';
+    if (champVille)       champVille.value       = d.ville      || d.zone || '';
     if (champInsta)       champInsta.value       = d.instagram  || '';
     if (champTiktok)      champTiktok.value      = d.tiktok     || '';
     if (champLien)        champLien.value        = d.lien       || '';
