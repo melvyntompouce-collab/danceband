@@ -3414,14 +3414,19 @@ window.toggleFavori = async function(eventId) {
   const estFavori = mesFavoris.has(eventId);
 
   try {
-    const { doc, updateDoc, arrayUnion, arrayRemove } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+
     if (estFavori) {
-      await updateDoc(doc(window._db, 'danseurs', window._currentUid), { favoris: arrayRemove(eventId) });
       mesFavoris.delete(eventId);
     } else {
-      await updateDoc(doc(window._db, 'danseurs', window._currentUid), { favoris: arrayUnion(eventId) });
       mesFavoris.add(eventId);
     }
+
+    // Sauvegarder tout le Set en une fois — évite arrayUnion/arrayRemove
+    await setDoc(doc(window._db, 'danseurs', window._currentUid), {
+      favoris: [...mesFavoris]
+    }, { merge: true });
+
     // Mettre à jour le bouton sur la card
     const btn = document.getElementById('fav-' + eventId);
     if (btn) {
@@ -3436,36 +3441,53 @@ window.toggleFavori = async function(eventId) {
     }
     // Rafraîchir section favoris du profil
     afficherFavorisProfile();
-  } catch(e) { console.error(e); }
+  } catch(e) {
+    console.error('Erreur favori:', e);
+    // Annuler le changement local en cas d'erreur
+    if (mesFavoris.has(eventId)) mesFavoris.delete(eventId);
+    else mesFavoris.add(eventId);
+  }
 }
 
 window.toggleFavoriModal = function() {
   if (eventCourant) toggleFavori(eventCourant.id);
 }
 
-function afficherFavorisProfile() {
+async function afficherFavorisProfile() {
   const section = document.getElementById('profil-favoris-section');
   const list    = document.getElementById('profil-favoris-list');
   if (!section || !list) return;
 
-  const favEvents = tousLesEvents.filter(e => mesFavoris.has(e.id));
-  if (favEvents.length === 0) {
-    section.style.display = 'none';
-    return;
+  if (mesFavoris.size === 0) { section.style.display = 'none'; return; }
+
+  // Charger les events si pas encore chargés
+  if (tousLesEvents.length === 0 && window._db) {
+    try {
+      const { collection, getDocs, query, orderBy } = await import(
+        'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+      );
+      const snap = await getDocs(query(collection(window._db, 'evenements'), orderBy('date','asc')));
+      snap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
+    } catch(e) { console.error(e); return; }
   }
+
+  const favEvents = tousLesEvents.filter(e => mesFavoris.has(e.id));
+  if (favEvents.length === 0) { section.style.display = 'none'; return; }
 
   section.style.display = 'block';
   list.innerHTML = favEvents.map(ev => {
-    const cfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.soiree;
+    const cfg  = TYPE_CONFIG[ev.type] || TYPE_CONFIG.soiree;
     const date = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'numeric', month:'short' }) : '';
     return `
-      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;" onclick="showPage('agenda');setTimeout(()=>ouvrirEvent('${ev.id}'),300)">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;"
+           onclick="showPage('agenda');setTimeout(()=>ouvrirEvent('${ev.id}'),300)">
         <div style="width:40px;height:40px;border-radius:12px;background:${cfg.bg};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">${cfg.label.split(' ')[0]}</div>
         <div style="flex:1;min-width:0;">
           <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ev.titre}</div>
           <div style="font-size:11px;color:var(--muted2);margin-top:2px;">${date} · ${ev.ville || ''}</div>
         </div>
-        <button onclick="event.stopPropagation();toggleFavori('${ev.id}')" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--red);padding:4px;">♥</button>
+        <button onclick="event.stopPropagation();toggleFavori('${ev.id}')"
+          style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--red);padding:4px;flex-shrink:0;">♥</button>
       </div>`;
   }).join('');
 }
