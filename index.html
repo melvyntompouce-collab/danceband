@@ -805,7 +805,50 @@ footer{
 }
 .footer-copy{font-size:13px;color:var(--muted);}
 
-/* ── LEAFLET DARK MODE ── */
+/* ── SECTION MOBILE HOME ── */
+.mobile-home-nav {
+  display: none;
+  margin-top: 36px;
+}
+.mhn-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.mhn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.mhn-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text);
+}
+.mhn-card:hover { border-color: rgba(0,245,155,0.3); background: rgba(0,245,155,0.03); }
+.mhn-card svg { color: var(--green); }
+.mhn-card-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px; }
+.mhn-card-desc { font-size: 11px; color: var(--muted2); line-height: 1.4; }
+
+@media(max-width:768px) {
+  .mobile-home-nav { display: block; }
+  /* Sur mobile : cacher les boutons hero (remplacés par les cards) */
+  .hero-actions { display: none; }
+  .hero-stats   { display: none; }
+}
 .leaflet-container {
   background: #0a0f1a !important;
   font-family: 'Syne', sans-serif !important;
@@ -882,8 +925,9 @@ footer{
 }
 
 @media(max-width:768px) {
-  /* Show mobile nav, hide desktop nav */
-  .mobile-nav { display: flex !important; }
+  /* Show mobile nav only when connected (managed by JS) */
+  .mobile-nav { display: none !important; }
+  .mobile-nav.connected { display: flex !important; }
   nav .nav-cta { display: none !important; }
   #nav-login-btn { display: none !important; }
   #user-menu-wrap { display: none !important; }
@@ -900,26 +944,39 @@ footer{
   /* Hauteur nav réduite sans labels */
   .mobile-nav { height: 56px; }
 
-  /* Add padding for mobile nav */
-  .page { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+  /* Toutes les pages — même padding */
+  .page { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); min-height: 100vh; }
+  .agenda-page,
+  .profile-page,
+  .ranking-page { padding: 20px 4% !important; }
+  .network-layout { min-height: calc(100vh - 134px); }
 
   /* Hide desktop nav completely on small screens */
   nav { padding: 0 4%; }
   .logo { font-size: 22px; letter-spacing: 2px; }
 
   /* Hero */
-  .hero { padding: 40px 5% 60px; min-height: auto; }
-  .hero-title { font-size: clamp(56px, 16vw, 80px); line-height: 0.82; letter-spacing: -1px; }
+  .hero { padding: 60px 5% 80px; min-height: auto; }
+  .hero-title { font-size: clamp(56px, 16vw, 80px); line-height: 0.88; letter-spacing: -1px; margin-bottom: 28px; }
+  .hero-badge { margin-bottom: 24px; }
   .hero-sub { font-size: 15px; }
-  .hero-stats { gap: 20px; }
+  .hero-stats { gap: 20px; margin-top: 32px; }
   .hero-stat-val { font-size: 36px; }
   .btn-primary, .btn-secondary { padding: 14px 24px; font-size: 14px; }
 
   /* Features */
-  .features { padding: 60px 5%; }
-  .features-grid { grid-template-columns: 1fr; gap: 16px; }
-  .feature-card { padding: 24px; }
-  .section-title { font-size: clamp(32px, 8vw, 56px); }
+  .features { padding: 40px 5%; }
+  .features-grid { grid-template-columns: 1fr; gap: 12px; }
+  .feature-card { padding: 20px; }
+  .section-title { font-size: clamp(28px, 8vw, 48px); }
+  .section-sub { font-size: 14px; }
+
+  /* How */
+  .how { padding: 40px 5%; }
+
+  /* Footer */
+  footer { padding: 32px 5% 80px; grid-template-columns: 1fr; gap: 20px; }
+  .footer-bottom { flex-direction: column; text-align: center; padding-bottom: 20px; }
 
   /* How */
   .how { padding: 60px 5%; }
@@ -940,8 +997,11 @@ footer{
   .profile-page { padding: 24px 4%; }
   .profile-hero { padding: 24px; }
   .ph-top { flex-wrap: wrap; gap: 16px; }
-  .ph-avatar { width: 70px; height: 70px; font-size: 32px; border-radius: 20px; }
-  .ph-name { font-size: 32px; }
+  .ph-avatar { width: 64px; height: 64px; font-size: 28px; border-radius: 18px; }
+  .ph-name { font-size: 22px; letter-spacing: 0px; }
+  .ph-handle { font-size: 13px; }
+  .ph-band { font-size: 10px; padding: 5px 10px; margin-top: 8px; }
+  .ph-led { width: 6px; height: 6px; }
   .ph-stats { flex-wrap: wrap; }
   .ph-stat { min-width: 50%; border-bottom: 1px solid var(--border); }
   .ph-stat:last-child, .ph-stat:nth-last-child(2) { border-bottom: none; }
@@ -950,9 +1010,14 @@ footer{
 
   /* Ranking */
   .ranking-page { padding: 24px 4%; }
-  .rk-hero { padding: 24px; gap: 20px; }
-  .rk-pos { font-size: 72px; }
-  .rk-name { font-size: 32px; }
+  .rk-hero { padding: 20px; gap: 16px; flex-direction: column; }
+  .rk-pos { font-size: 56px; }
+  .rk-pos-wrap { display: flex; align-items: center; gap: 12px; }
+  .rk-name { font-size: 20px; letter-spacing: 0; }
+  .rk-sub { font-size: 12px; }
+  .xp-label { flex-direction: column; gap: 2px; font-size: 11px; }
+  .xp-wrap { margin-top: 12px; }
+  .rk-info { width: 100%; }
   .badges-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .badge-card { padding: 14px 8px; border-radius: 14px; }
   .badge-ico { font-size: 24px; }
@@ -968,7 +1033,7 @@ footer{
 }
 
 @media(max-width:400px) {
-  .hero-title { font-size: 52px; line-height: 0.82; letter-spacing: -1px; }
+  .hero-title { font-size: 52px; line-height: 0.88; letter-spacing: -1px; margin-bottom: 24px; }
   .hero-actions { flex-direction: column; }
   .btn-primary, .btn-secondary { width: 100%; text-align: center; }
   .badges-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1070,6 +1135,59 @@ footer{
           <div class="hero-stat-label">Badges à débloquer</div>
         </div>
       </div>
+
+      <!-- SECTION MOBILE UNIQUEMENT : boutons de navigation -->
+      <div class="mobile-home-nav">
+        <div class="mhn-title">Explorer HAKO</div>
+        <div class="mhn-grid">
+          <button class="mhn-card" onclick="showPage('network')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <div class="mhn-card-name">Réseau</div>
+            <div class="mhn-card-desc">Trouve des danseurs près de toi</div>
+          </button>
+          <button class="mhn-card" onclick="showPage('agenda')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <div class="mhn-card-name">Agenda</div>
+            <div class="mhn-card-desc">Soirées, cours & battles</div>
+          </button>
+          <button class="mhn-card" onclick="showPage('auth')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <div class="mhn-card-name">Messages</div>
+            <div class="mhn-card-desc">Connecte-toi pour accéder</div>
+          </button>
+          <button class="mhn-card" onclick="showPage('ranking')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            <div class="mhn-card-name">Classement</div>
+            <div class="mhn-card-desc">XP, niveaux & badges</div>
+          </button>
+        </div>
+
+        <!-- Bouton créer un profil -->
+        <button onclick="showPage('auth')" style="width:100%;padding:16px;border-radius:16px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-top:8px;">
+          Créer mon profil →
+        </button>
+        <button onclick="showPage('auth');document.querySelector('.auth-tab:last-child').click()" style="width:100%;padding:14px;border-radius:16px;background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:14px;border:1px solid var(--border);cursor:pointer;margin-top:8px;">
+          Déjà un compte ? Se connecter
+        </button>
+
+        <!-- Stats sur mobile -->
+        <div style="display:flex;justify-content:space-around;margin-top:28px;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:20px;">
+          <div style="text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--green);" id="stat-artistes-mobile">—</div>
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Artistes</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--green);">33</div>
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Styles</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--green);">13</div>
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Badges</div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
     <div class="hero-visual">
       <div class="hero-ring"></div>
@@ -1875,7 +1993,7 @@ footer{
           <div class="ph-handle" id="ph-handle-display">Paris 11e</div>
           <div class="ph-band">
             <div class="ph-led"></div>
-            Bracelet connecté · Mode Amis
+            Mode Amis
           </div>
         </div>
         <button class="ph-edit" onclick="ouvrirEdition()" style="display:flex;align-items:center;gap:7px;">
@@ -4501,11 +4619,14 @@ async function chargerProfil(uid) {
     // ── Bracelet ──
     const band = document.querySelector('.ph-band');
     if (band) {
-      const modeTexte = d.modeBracelet === 'public' ? '🟢 Mode Public'
-                      : d.modeBracelet === 'prive'  ? '🔴 Mode Privé'
-                      : '🟡 Mode Amis';
-      band.querySelector('span') || band.appendChild(document.createElement('span'));
-      band.lastChild.textContent = ' Bracelet connecté · ' + modeTexte;
+      const modeTexte = d.modeBracelet === 'public' ? 'Mode Public'
+                      : d.modeBracelet === 'prive'  ? 'Mode Privé'
+                      : 'Mode Amis';
+      // Mettre à jour uniquement le texte, pas le point LED
+      const led = band.querySelector('.ph-led');
+      band.innerHTML = '';
+      if (led) band.appendChild(led);
+      band.appendChild(Object.assign(document.createElement('span'), { textContent: modeTexte }));
     }
 
     // ── Abonnements / Abonnés ──
@@ -4612,6 +4733,17 @@ function mettreAJourNav(user) {
     if (loginBtn) loginBtn.style.display = 'none';
     if (menuWrap) menuWrap.style.display = 'flex';
 
+    // Afficher nav mobile
+    document.querySelector('.mobile-nav')?.classList.add('connected');
+
+    // Afficher bouton profil mobile
+    const mnProfilBtn = document.getElementById('mn-profil-btn');
+    if (mnProfilBtn) mnProfilBtn.style.display = 'flex';
+
+    // Cacher les boutons de la home mobile
+    const mhn = document.querySelector('.mobile-home-nav');
+    if (mhn) mhn.style.display = 'none';
+
     const nomCourt = user.nomAffiche || user.pseudo || user.nom || 'Mon profil';
     const nomEl = document.getElementById('user-menu-nom');
     if (nomEl) nomEl.textContent = nomCourt;
@@ -4651,6 +4783,17 @@ function mettreAJourNav(user) {
   } else {
     if (loginBtn) loginBtn.style.display = 'inline-flex';
     if (menuWrap) menuWrap.style.display = 'none';
+
+    // Cacher nav mobile
+    document.querySelector('.mobile-nav')?.classList.remove('connected');
+
+    const mnProfilBtn = document.getElementById('mn-profil-btn');
+    if (mnProfilBtn) mnProfilBtn.style.display = 'none';
+
+    // Ré-afficher les boutons home mobile
+    const mhn = document.querySelector('.mobile-home-nav');
+    if (mhn) mhn.style.display = 'block';
+
     const orgaBtn = document.getElementById('orga-btn');
     if (orgaBtn) orgaBtn.style.display = 'none';
   }
@@ -4693,7 +4836,9 @@ document.dispatchEvent(new Event('firebase-ready'));
     const snap = await getCountFromServer(collection(window._db, 'danseurs'));
     const count = snap.data().count;
     const el = document.getElementById('stat-artistes');
+    const elMobile = document.getElementById('stat-artistes-mobile');
     if (el) el.textContent = count > 0 ? count : '—';
+    if (elMobile) elMobile.textContent = count > 0 ? count : '—';
   } catch(e) {
     // Silencieux si getCountFromServer non supporté
     const el = document.getElementById('stat-artistes');
@@ -4744,13 +4889,9 @@ function sauvegarderConf(c,v) { _appellerQuandPret('sauvegarderConf', [c,v]); }
     <span class="mn-lbl">Messages</span>
     <span id="msg-badge-mobile" style="display:none;position:absolute;top:4px;right:10px;background:var(--red);color:#fff;font-size:9px;font-weight:800;padding:2px 5px;border-radius:10px;font-family:'Syne',sans-serif;">0</span>
   </button>
-  <button class="mn-item" onclick="showPage('ranking');setMobileActive(this)">
-    <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-    <span class="mn-lbl">Top</span>
-  </button>
 
-  <!-- Bouton profil mobile avec menu déroulant -->
-  <button class="mn-item" id="mn-profil-btn" onclick="toggleMobileUserMenu(this)">
+  <!-- Bouton profil mobile — visible seulement si connecté -->
+  <button class="mn-item" id="mn-profil-btn" onclick="toggleMobileUserMenu(this)" style="display:none;">
     <div id="mn-avatar" style="width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;overflow:hidden;position:relative;flex-shrink:0;">
       <span id="mn-initiale">?</span>
       <img id="mn-photo" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:7px;">
@@ -4760,7 +4901,7 @@ function sauvegarderConf(c,v) { _appellerQuandPret('sauvegarderConf', [c,v]); }
 </nav>
 
 <!-- Menu déroulant mobile profil -->
-<div id="mobile-user-dropdown" style="display:none;position:fixed;bottom:64px;right:12px;width:220px;background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:0 -4px 32px rgba(0,0,0,0.5);z-index:10000;">
+<div id="mobile-user-dropdown" style="display:none;position:fixed;bottom:calc(56px + env(safe-area-inset-bottom, 0px));right:12px;width:220px;background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:0 -4px 32px rgba(0,0,0,0.5);z-index:10000;">
   <!-- Header utilisateur -->
   <div id="mobile-menu-header" style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
     <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;overflow:hidden;position:relative;flex-shrink:0;">
