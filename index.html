@@ -1895,7 +1895,7 @@ footer{
         <div class="priv-row">
           <div class="priv-left">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <div><div class="priv-fn">Nom / Pseudo</div><div class="priv-fv">Sofia M.</div></div>
+            <div><div class="priv-fn">Nom / Pseudo</div><div class="priv-fv" id="priv-val-nom">—</div></div>
           </div>
           <div class="tg">
             <button class="to sp" onclick="setPriv(this,0)">PUB</button>
@@ -1906,7 +1906,7 @@ footer{
         <div class="priv-row">
           <div class="priv-left">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-            <div><div class="priv-fn">Styles</div><div class="priv-fv">Salsa, Kizomba</div></div>
+            <div><div class="priv-fn">Styles</div><div class="priv-fv" id="priv-val-styles">—</div></div>
           </div>
           <div class="tg">
             <button class="to" onclick="setPriv(this,0)">PUB</button>
@@ -1917,7 +1917,7 @@ footer{
         <div class="priv-row">
           <div class="priv-left">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.16 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/></svg>
-            <div><div class="priv-fn">Réseaux sociaux</div><div class="priv-fv">@sofia_dance</div></div>
+            <div><div class="priv-fn">Réseaux sociaux</div><div class="priv-fv" id="priv-val-reseaux">Non renseigné</div></div>
           </div>
           <div class="tg">
             <button class="to" onclick="setPriv(this,0)">PUB</button>
@@ -1942,7 +1942,7 @@ footer{
         <div class="priv-row">
           <div class="priv-left">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-            <div><div class="priv-fn">Playlists</div><div class="priv-fv">3 playlists</div></div>
+            <div><div class="priv-fn">Playlists</div><div class="priv-fv" id="priv-val-playlists">Non renseigné</div></div>
           </div>
           <div class="tg">
             <button class="to" onclick="setPriv(this,0)">PUB</button>
@@ -4258,9 +4258,22 @@ async function chargerProfil(uid) {
     if (champBlase) champBlase.value = d.blase || '';
     if (champTel)   champTel.value   = d.tel   || '';
 
-    // Afficher tel dans confidentialité
-    const telDisplay = document.getElementById('tel-display-priv');
-    if (telDisplay) telDisplay.textContent = d.tel || 'Non renseigné';
+    // ── Valeurs réelles dans la section confidentialité ──
+    const nomAffiche = d.nomAffiche || d.nom || d.pseudo || '—';
+    const stylesNormStr = normaliserStyles(d.styles).join(', ') || 'Non renseigné';
+
+    const privNom      = document.getElementById('priv-val-nom');
+    const privStyles   = document.getElementById('priv-val-styles');
+    const privReseaux  = document.getElementById('priv-val-reseaux');
+    const privTel      = document.getElementById('tel-display-priv');
+    const privPlaylist = document.getElementById('priv-val-playlists');
+
+    if (privNom)      privNom.textContent      = nomAffiche;
+    if (privStyles)   privStyles.textContent   = stylesNormStr;
+    if (privReseaux)  privReseaux.textContent  = d.reseaux || 'Non renseigné';
+    if (privTel)      privTel.textContent      = d.tel     || 'Non renseigné';
+    if (privPlaylist) privPlaylist.textContent  = d.playlists ? d.playlists + ' playlists' : 'Non renseigné';
+
     const type = d.affichageType || 'nom';
     const btnAff = document.getElementById('show-' + type);
     if (btnAff) toggleAffichage(type, btnAff);
