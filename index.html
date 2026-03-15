@@ -2650,24 +2650,24 @@ function setPriv(btn, idx) {
   const valeurs = ['public','amis','prive'];
   if (champs[champ]) window.sauvegarderConf(champs[champ], valeurs[idx]);
 
-  // Logique du mode global :
-  // → PUBLIC  seulement si TOUS les items sont en public
-  // → AMIS    si au moins 1 item est en amis (et aucun en privé, ou pas tous en privé)
-  // → PRIVÉ   seulement si TOUS les items sont en privé
+  // Mettre à jour le bouton global seulement si TOUS les items sont au même niveau
   const actifs = [...document.querySelectorAll('.priv-row .tg')].map(tg => {
-    if (tg.querySelector('.sr')) return 2; // privé
-    if (tg.querySelector('.sa')) return 1; // amis
-    return 0; // public
+    if (tg.querySelector('.sr')) return 'prive';
+    if (tg.querySelector('.sa')) return 'amis';
+    return 'public';
   });
-  const max = Math.max(...actifs);
-  const tousPrives = actifs.every(v => v === 2);
-  const tousPublic = actifs.every(v => v === 0);
-
-  let nouveauMode;
-  if (tousPublic)   nouveauMode = 'public';
-  else if (tousPrives) nouveauMode = 'prive';
-  else              nouveauMode = 'amis'; // mix → toujours amis
-  mettreAJourBoutonsModeGlobal(nouveauMode);
+  const tousIdentiques = actifs.every(v => v === actifs[0]);
+  if (tousIdentiques) mettreAJourBoutonsModeGlobal(actifs[0]);
+  else {
+    // Mix → aucun bouton global actif
+    ['public','amis','prive'].forEach(m => {
+      const b = document.getElementById('mode-' + m);
+      if (!b) return;
+      b.style.borderColor = 'var(--border)';
+      b.style.background  = 'transparent';
+      b.style.color       = 'var(--muted2)';
+    });
+  }
 }
 
 function calculerModeGlobalActuel() {
