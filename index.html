@@ -1737,8 +1737,51 @@ footer{
             <div class="form-group" style="margin:0">
               <label class="form-label">Numéro de téléphone <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
               <input id="profil-tel" class="form-input" type="tel" placeholder="Ex: +33 6 12 34 56 78" style="background:var(--bg2)">
-              <div style="font-size:11px;color:var(--muted2);margin-top:6px;">📲 Les autres pourront vous envoyer un message directement</div>
+              <div style="font-size:11px;color:var(--muted2);margin-top:6px;">Les autres pourront vous envoyer un message directement</div>
             </div>
+          </div>
+        </div>
+
+        <!-- RÉSEAUX SOCIAUX & LIENS -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:20px;">Réseaux sociaux & liens</div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+
+            <!-- Instagram -->
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Instagram</label>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="padding:10px 14px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);font-size:13px;color:var(--muted2);white-space:nowrap;">@</div>
+                <input id="profil-instagram" class="form-input" type="text" placeholder="votre_pseudo" style="background:var(--bg2);flex:1;">
+              </div>
+            </div>
+
+            <!-- TikTok -->
+            <div class="form-group" style="margin:0">
+              <label class="form-label">TikTok</label>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="padding:10px 14px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);font-size:13px;color:var(--muted2);white-space:nowrap;">@</div>
+                <input id="profil-tiktok" class="form-input" type="text" placeholder="votre_pseudo" style="background:var(--bg2);flex:1;">
+              </div>
+            </div>
+
+            <!-- Lien personnalisé -->
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Lien personnalisé <span style="color:var(--muted);font-weight:400">(portfolio, site...)</span></label>
+              <input id="profil-lien" class="form-input" type="url" placeholder="https://..." style="background:var(--bg2)">
+
+              <!-- Toggle visibilité du lien -->
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:10px 14px;background:var(--bg2);border-radius:12px;">
+                <div>
+                  <div style="font-size:13px;font-weight:600;">Afficher le lien sur mon profil</div>
+                  <div style="font-size:11px;color:var(--muted2);margin-top:2px;">Visible par les visiteurs de votre profil</div>
+                </div>
+                <button id="toggle-lien-btn" onclick="toggleVisibiliteLien()" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background 0.2s;background:var(--green);">
+                  <div id="toggle-lien-dot" style="width:18px;height:18px;border-radius:50%;background:#080810;position:absolute;top:3px;right:3px;transition:transform 0.2s;"></div>
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -3872,6 +3915,46 @@ window.ouvrirProfilArtiste = async function(uid) {
       stylesEl.innerHTML = masqué('Styles privés');
     }
 
+    // ── Réseaux sociaux & lien ──
+    let reseauxHtml = '';
+    if (peutVoir('reseaux')) {
+      if (d.instagram) reseauxHtml += `
+        <a href="https://instagram.com/${d.instagram}" target="_blank"
+          style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:600;text-decoration:none;margin-right:8px;margin-bottom:8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+          @${d.instagram}
+        </a>`;
+      if (d.tiktok) reseauxHtml += `
+        <a href="https://tiktok.com/@${d.tiktok}" target="_blank"
+          style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:600;text-decoration:none;margin-right:8px;margin-bottom:8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.02-.06z"/></svg>
+          @${d.tiktok}
+        </a>`;
+      if (d.lien && d.lienVisible !== false) reseauxHtml += `
+        <a href="${d.lien}" target="_blank"
+          style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:rgba(77,159,255,0.08);border:1px solid rgba(77,159,255,0.3);color:var(--blue);font-size:13px;font-weight:600;text-decoration:none;margin-bottom:8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Mon site
+        </a>`;
+    }
+
+    // Ajouter section réseaux si elle n'existe pas encore
+    let reseauxSection = document.getElementById('ap-reseaux');
+    if (!reseauxSection) {
+      reseauxSection = document.createElement('div');
+      reseauxSection.id = 'ap-reseaux';
+      reseauxSection.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;';
+      stylesEl.closest('div[style*="border-radius:20px"]')?.after(reseauxSection);
+    }
+    if (reseauxHtml) {
+      reseauxSection.style.display = 'block';
+      reseauxSection.innerHTML = `
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:12px;">Réseaux & liens</div>
+        <div style="display:flex;flex-wrap:wrap;">${reseauxHtml}</div>`;
+    } else {
+      reseauxSection.style.display = 'none';
+    }
+
     // ── Section réseaux sociaux ──
     // Ajout d'une ligne info confidentialité si nécessaire
     const infoConf = document.getElementById('ap-info-conf');
@@ -4167,9 +4250,12 @@ window.sauvegarderIdentite = async function() {
   const user = auth.currentUser;
   if (!user) { alert('Tu dois être connecté !'); return; }
 
-  const nom   = document.getElementById('profil-nom')?.value.trim()   || '';
-  const blase = document.getElementById('profil-blase')?.value.trim() || '';
-  const tel   = document.getElementById('profil-tel')?.value.trim()   || '';
+  const nom   = document.getElementById('profil-nom')?.value.trim()       || '';
+  const blase = document.getElementById('profil-blase')?.value.trim()     || '';
+  const tel   = document.getElementById('profil-tel')?.value.trim()       || '';
+  const instagram = document.getElementById('profil-instagram')?.value.trim().replace('@','') || '';
+  const tiktok    = document.getElementById('profil-tiktok')?.value.trim().replace('@','')    || '';
+  const lien      = document.getElementById('profil-lien')?.value.trim()  || '';
 
   // Récupérer les styles sélectionnés dans la sous-page édition
   const styles = [...document.querySelectorAll('#edit-styles-grid .style-tag.selected')]
@@ -4185,7 +4271,8 @@ window.sauvegarderIdentite = async function() {
 
   try {
     await setDoc(doc(db, 'danseurs', user.uid), {
-      nom, blase, tel, affichageType, nomAffiche,
+      nom, blase, tel, instagram, tiktok, lien, lienVisible,
+      affichageType, nomAffiche,
       ...(styles.length > 0 ? { styles } : {}),
       ...(window._photoBase64 ? { photo: window._photoBase64 } : {})
     }, { merge: true });
@@ -4251,12 +4338,25 @@ async function chargerProfil(uid) {
     if (phHandle) phHandle.textContent = d.zone || '';
 
     // ── Champs édition ──
-    const champNom   = document.getElementById('profil-nom');
-    const champBlase = document.getElementById('profil-blase');
-    const champTel   = document.getElementById('profil-tel');
-    if (champNom)   champNom.value   = d.nom   || '';
-    if (champBlase) champBlase.value = d.blase || '';
-    if (champTel)   champTel.value   = d.tel   || '';
+    const champNom      = document.getElementById('profil-nom');
+    const champBlase    = document.getElementById('profil-blase');
+    const champTel      = document.getElementById('profil-tel');
+    const champInsta    = document.getElementById('profil-instagram');
+    const champTiktok   = document.getElementById('profil-tiktok');
+    const champLien     = document.getElementById('profil-lien');
+    if (champNom)    champNom.value    = d.nom       || '';
+    if (champBlase)  champBlase.value  = d.blase     || '';
+    if (champTel)    champTel.value    = d.tel        || '';
+    if (champInsta)  champInsta.value  = d.instagram  || '';
+    if (champTiktok) champTiktok.value = d.tiktok     || '';
+    if (champLien)   champLien.value   = d.lien       || '';
+
+    // Toggle lien
+    lienVisible = d.lienVisible !== false;
+    const btn = document.getElementById('toggle-lien-btn');
+    const dot = document.getElementById('toggle-lien-dot');
+    if (btn) btn.style.background = lienVisible ? 'var(--green)' : 'var(--border)';
+    if (dot) dot.style.transform  = lienVisible ? 'translateX(0)' : 'translateX(-20px)';
 
     // ── Valeurs réelles dans la section confidentialité ──
     const nomPrivAffiche = d.nomAffiche || d.nom || d.pseudo || '—';
@@ -4270,7 +4370,10 @@ async function chargerProfil(uid) {
 
     if (privNom)      privNom.textContent      = nomPrivAffiche;
     if (privStyles)   privStyles.textContent   = stylesNormStr;
-    if (privReseaux)  privReseaux.textContent  = d.reseaux || 'Non renseigné';
+    if (privReseaux) {
+      const reseauxList = [d.instagram ? '@'+d.instagram+' (IG)' : '', d.tiktok ? '@'+d.tiktok+' (TK)' : ''].filter(Boolean);
+      privReseaux.textContent = reseauxList.length ? reseauxList.join(', ') : 'Non renseigné';
+    }
     if (privTel)      privTel.textContent      = d.tel     || 'Non renseigné';
     if (privPlaylist) privPlaylist.textContent  = d.playlists ? d.playlists + ' playlists' : 'Non renseigné';
 
@@ -4397,7 +4500,16 @@ window.sauvegarderConf = async function(champ, valeur) {
   console.log('✅ Confidentialité mise à jour:', champ, '→', valeur);
 }
 
-// ── Toggle menu utilisateur ──
+// ── Toggle visibilité du lien ──
+let lienVisible = true;
+
+window.toggleVisibiliteLien = function() {
+  lienVisible = !lienVisible;
+  const btn = document.getElementById('toggle-lien-btn');
+  const dot = document.getElementById('toggle-lien-dot');
+  if (btn) btn.style.background = lienVisible ? 'var(--green)' : 'var(--border)';
+  if (dot) dot.style.transform = lienVisible ? 'translateX(0)' : 'translateX(-20px)';
+}
 window.toggleUserMenu = function() {
   const dropdown = document.getElementById('user-dropdown');
   if (dropdown) {
