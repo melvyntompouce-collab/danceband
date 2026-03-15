@@ -1238,6 +1238,46 @@ footer{
         <div style="margin-top:12px;font-size:12px;color:var(--green);font-weight:700;display:flex;align-items:center;gap:4px;">Mes messages <span>→</span></div>
       </div>
     </div>
+
+    <!-- SECTION COMPATIBILITÉ -->
+    <div style="margin-top:60px;background:linear-gradient(135deg,rgba(0,245,155,0.06),rgba(155,93,229,0.06));border:1px solid rgba(0,245,155,0.15);border-radius:28px;padding:40px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <div style="width:44px;height:44px;border-radius:14px;background:rgba(0,245,155,0.1);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">⚡</div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--green);letter-spacing:2px;text-transform:uppercase;">Nouveau</div>
+          <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-0.5px;line-height:1;">Score de compatibilité</div>
+        </div>
+      </div>
+      <p style="font-size:15px;color:var(--muted2);line-height:1.7;margin-bottom:24px;max-width:600px;">HAKO calcule automatiquement votre compatibilité avec chaque danseur du réseau. Plus le score est élevé, plus vous partagez de points communs.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+        <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--text);margin-bottom:4px;">💃 Styles de danse</div>
+          <div style="font-size:12px;color:var(--muted2);">Plus vous partagez de styles, plus le score monte</div>
+          <div style="font-size:11px;color:var(--green);font-weight:700;margin-top:8px;">Jusqu'à 40 pts</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--text);margin-bottom:4px;">📍 Même ville</div>
+          <div style="font-size:12px;color:var(--muted2);">Bonus si vous êtes dans la même ville</div>
+          <div style="font-size:11px;color:var(--green);font-weight:700;margin-top:8px;">Jusqu'à 20 pts</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--text);margin-bottom:4px;">🎉 Événements</div>
+          <div style="font-size:12px;color:var(--muted2);">Événements auxquels vous vous êtes inscrits</div>
+          <div style="font-size:11px;color:var(--green);font-weight:700;margin-top:8px;">Jusqu'à 25 pts</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--text);margin-bottom:4px;">🎵 Musique</div>
+          <div style="font-size:12px;color:var(--muted2);">Genres musicaux que vous écoutez en dansant</div>
+          <div style="font-size:11px;color:var(--green);font-weight:700;margin-top:8px;">Jusqu'à 15 pts</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <span style="padding:5px 12px;border-radius:8px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.3);font-size:12px;font-weight:800;color:#00f59b;">⚡ 75%+ Excellent</span>
+        <span style="padding:5px 12px;border-radius:8px;background:rgba(255,217,61,0.1);border:1px solid rgba(255,217,61,0.3);font-size:12px;font-weight:800;color:#ffd93d;">⚡ 50% Bonne affinité</span>
+        <span style="padding:5px 12px;border-radius:8px;background:rgba(255,149,0,0.1);border:1px solid rgba(255,149,0,0.3);font-size:12px;font-weight:800;color:#ff9500;">⚡ 25% À découvrir</span>
+      </div>
+    </div>
+
   </section>
 
   <section class="how">
@@ -2105,11 +2145,15 @@ footer{
         <div class="ph-stat"><div class="ph-stat-v">32</div><div class="ph-stat-l">ÉVÉNEMENTS</div></div>
         <div class="ph-stat"><div class="ph-stat-v">4/5</div><div class="ph-stat-l">NIVEAU</div></div>
         <div class="ph-stat"><div class="ph-stat-v">#12</div><div class="ph-stat-l">CLASSEMENT</div></div>
-        <div class="ph-stat" onclick="ouvrirListeSociale('abonnements')" style="cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,245,155,0.05)'" onmouseout="this.style.background=''">
+      </div>
+
+      <!-- Abonnés / Abonnements — ligne séparée -->
+      <div style="display:flex;gap:0;margin-top:8px;background:rgba(255,255,255,0.03);border-radius:12px;overflow:hidden;">
+        <div class="ph-stat" onclick="ouvrirListeSociale('abonnements')" style="cursor:pointer;transition:background 0.2s;flex:1;border-right:1px solid var(--border);" onmouseover="this.style.background='rgba(0,245,155,0.05)'" onmouseout="this.style.background=''">
           <div class="ph-stat-v" id="stat-abonnements">0</div>
           <div class="ph-stat-l">ABONNEMENTS</div>
         </div>
-        <div class="ph-stat" onclick="ouvrirListeSociale('abonnes')" style="cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,245,155,0.05)'" onmouseout="this.style.background=''">
+        <div class="ph-stat" onclick="ouvrirListeSociale('abonnes')" style="cursor:pointer;transition:background 0.2s;flex:1;" onmouseover="this.style.background='rgba(0,245,155,0.05)'" onmouseout="this.style.background=''">
           <div class="ph-stat-v" id="stat-abonnes">0</div>
           <div class="ph-stat-l">ABONNÉS</div>
         </div>
@@ -2157,7 +2201,7 @@ footer{
         </div>
       </div>
 
-      <div class="profile-card">
+      <div class="profile-card" style="margin-top:12px;">
         <div class="pc-header">
           <div class="pc-title">Confidentialité</div>
           <div class="pc-badge pcb-amis">Mode Amis</div>
@@ -2222,20 +2266,22 @@ footer{
         </div>
       </div>
 
-      <!-- SECTION FAVORIS -->
-      <div class="profile-card" id="profil-favoris-section" style="display:none;">
+      <!-- SECTION FAVORIS (privé — visible uniquement par soi) -->
+      <div class="profile-card" id="profil-favoris-section" style="display:none;margin-top:12px;">
         <div class="pc-header">
           <div class="pc-title">Événements favoris</div>
+          <div class="pc-badge" style="background:rgba(255,77,109,0.08);color:var(--red);border:1px solid rgba(255,77,109,0.2);font-size:10px;padding:3px 8px;border-radius:6px;">Privé</div>
         </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Visible uniquement par vous</div>
         <div id="profil-favoris-list"></div>
       </div>
 
       <!-- SECTION RÉSEAUX SOCIAUX (profil perso) -->
-      <div class="profile-card" id="profil-reseaux-section" style="display:none;">
+      <div class="profile-card" id="profil-reseaux-section" style="display:none;margin-top:12px;">
         <div class="pc-header">
           <div class="pc-title">Mes réseaux & liens</div>
         </div>
-        <div id="profil-reseaux-list" style="display:flex;flex-wrap:wrap;gap:8px;padding-top:4px;"></div>
+        <div id="profil-reseaux-list" style="display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;"></div>
       </div>
 
     </div>
@@ -4831,14 +4877,16 @@ async function chargerProfil(uid) {
     const reseauxSection = document.getElementById('profil-reseaux-section');
     const reseauxList    = document.getElementById('profil-reseaux-list');
     if (reseauxSection && reseauxList) {
+      // Style compact commun
+      const bs  = 'display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none;margin-right:6px;margin-bottom:6px;white-space:nowrap;';
       let html = '';
-      if (d.instagram)  html += `<a href="https://instagram.com/${d.instagram}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:600;text-decoration:none;margin-bottom:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>@${d.instagram}</a>`;
-      if (d.tiktok)     html += `<a href="https://tiktok.com/@${d.tiktok}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:600;text-decoration:none;margin-bottom:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.02-.06z"/></svg>@${d.tiktok}</a>`;
-      if (d.lien && d.lienVisible !== false) html += `<a href="${d.lien}" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;background:rgba(77,159,255,0.08);border:1px solid rgba(77,159,255,0.3);color:var(--blue);font-size:13px;font-weight:600;text-decoration:none;margin-bottom:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Mon site</a>`;
-      if (d.spotify    && (d.plateformesVisibles?.spotify    !== false)) html += `<a href="${d.spotify}" target="_blank" style="display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:12px;background:rgba(29,185,84,0.08);border:1px solid rgba(29,185,84,0.3);color:#1db954;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:8px;">Spotify</a>`;
-      if (d.applemusic && (d.plateformesVisibles?.applemusic !== false)) html += `<a href="${d.applemusic}" target="_blank" style="display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:12px;background:rgba(252,60,68,0.08);border:1px solid rgba(252,60,68,0.3);color:#fc3c44;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:8px;">Apple Music</a>`;
-      if (d.deezer     && (d.plateformesVisibles?.deezer     !== false)) html += `<a href="${d.deezer}" target="_blank" style="display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:12px;background:rgba(162,56,255,0.08);border:1px solid rgba(162,56,255,0.3);color:#a238ff;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:8px;">Deezer</a>`;
-      if (d.soundcloud && (d.plateformesVisibles?.soundcloud !== false)) html += `<a href="${d.soundcloud}" target="_blank" style="display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:12px;background:rgba(255,85,0,0.08);border:1px solid rgba(255,85,0,0.3);color:#ff5500;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:8px;">SoundCloud</a>`;
+      if (d.instagram)  html += `<a href="https://instagram.com/${d.instagram}" target="_blank" style="${bs}background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>@${d.instagram}</a>`;
+      if (d.tiktok)     html += `<a href="https://tiktok.com/@${d.tiktok}" target="_blank" style="${bs}background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.02-.06z"/></svg>@${d.tiktok}</a>`;
+      if (d.lien && d.lienVisible !== false) html += `<a href="${d.lien}" target="_blank" style="${bs}background:rgba(77,159,255,0.08);border:1px solid rgba(77,159,255,0.3);color:var(--blue);">🔗 Mon site</a>`;
+      if (d.spotify    && d.plateformesVisibles?.spotify)    html += `<a href="${d.spotify}" target="_blank" style="${bs}background:rgba(29,185,84,0.08);border:1px solid rgba(29,185,84,0.3);color:#1db954;">Spotify</a>`;
+      if (d.applemusic && d.plateformesVisibles?.applemusic) html += `<a href="${d.applemusic}" target="_blank" style="${bs}background:rgba(252,60,68,0.08);border:1px solid rgba(252,60,68,0.3);color:#fc3c44;">Apple Music</a>`;
+      if (d.deezer     && d.plateformesVisibles?.deezer)     html += `<a href="${d.deezer}" target="_blank" style="${bs}background:rgba(162,56,255,0.08);border:1px solid rgba(162,56,255,0.3);color:#a238ff;">Deezer</a>`;
+      if (d.soundcloud && d.plateformesVisibles?.soundcloud) html += `<a href="${d.soundcloud}" target="_blank" style="${bs}background:rgba(255,85,0,0.08);border:1px solid rgba(255,85,0,0.3);color:#ff5500;">SoundCloud</a>`;
 
       reseauxSection.style.display = html ? 'block' : 'none';
       reseauxList.innerHTML = html;
