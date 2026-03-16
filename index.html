@@ -1036,28 +1036,26 @@ footer{
 }
 
 @media(max-width:768px) {
-  /* Show mobile nav only when connected (managed by JS) */
+  /* Nav desktop cachée complètement sur mobile */
+  nav { display: none !important; }
+
+  /* Mobile nav */
   .mobile-nav { display: none !important; }
   .mobile-nav.connected { display: flex !important; }
-  nav .nav-cta { display: none !important; }
-  #nav-login-btn { display: none !important; }
-  #user-menu-wrap { display: none !important; }
-  nav .nav-burger { display: none; }
-  nav .nav-links { display: none !important; }
 
-  /* Cacher les labels dans la nav mobile */
-  .mn-lbl { display: none; }
+  /* Onglets tous égaux — fix taille */
+  .mn-item {
+    flex: 1 1 0 !important;
+    max-width: none !important;
+    padding: 8px 0 !important;
+    gap: 0 !important;
+  }
+  .mn-ico { width: 24px !important; height: 24px !important; }
+  .mn-lbl { display: none !important; }
+  .mobile-nav { height: 56px !important; justify-content: space-evenly !important; }
 
-  /* Réduire encore les items sans label */
-  .mn-item { padding: 8px 4px; gap: 0; }
-  .mn-ico { width: 24px; height: 24px; }
-
-  /* Hauteur nav réduite sans labels */
-  .mobile-nav { height: 56px; }
-
-  /* Toutes les pages — même padding */
-  .page { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); min-height: 100vh; }
-  /* padding-top géré par la nav bottom uniquement */
+  /* Pages — annuler le padding-top de la nav desktop */
+  .page { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); min-height: 100vh; padding-top: 0 !important; }
   .agenda-page,
   .profile-page,
   .ranking-page { padding: 20px 4% !important; }
