@@ -2559,9 +2559,7 @@ function showPage(id) {
   // Si on revient sur home, re-appliquer l'état connecté/déconnecté
   if (id === 'home') {
     setTimeout(() => {
-      if (window._monProfil) {
-        afficherDashboard(window._monProfil);
-      }
+      afficherDashboard(window._monProfil || null);
     }, 160);
   }
 
@@ -2680,10 +2678,10 @@ function afficherDashboard(d) {
   if (!d) {
     // Non connecté — montrer la landing
     if (dash)          dash.style.display = 'none';
-    if (hero)          hero.style.display = '';
-    if (features)      features.style.display = '';
-    if (how)           how.style.display = '';
-    if (footer)        footer.style.display = '';
+    if (hero)          hero.style.removeProperty('display');
+    if (features)      features.style.removeProperty('display');
+    if (how)           how.style.removeProperty('display');
+    if (footer)        footer.style.removeProperty('display');
     if (mobileHomeNav) mobileHomeNav.style.display = 'block';
     return;
   }
