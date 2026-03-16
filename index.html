@@ -2556,6 +2556,15 @@ function showPage(id) {
 
   window.scrollTo(0, 0);
 
+  // Si on revient sur home, re-appliquer l'état connecté/déconnecté
+  if (id === 'home') {
+    setTimeout(() => {
+      if (window._monProfil) {
+        afficherDashboard(window._monProfil);
+      }
+    }, 160);
+  }
+
   // Sync mobile nav
   document.querySelectorAll('.mn-item').forEach(i => i.classList.remove('active'));
   const pageToNav = { home:0, network:1, agenda:2, messages:3, profile:4, ranking:5 };
@@ -2661,14 +2670,25 @@ function toggleGenre(el) {
 // DASHBOARD CONNECTÉ
 // ════════════════════════════════
 function afficherDashboard(d) {
-  const dash     = document.getElementById('home-dashboard');
-  const hero     = document.querySelector('#page-home .hero');
-  const features = document.querySelector('#page-home .features');
-  const how      = document.querySelector('#page-home .how');
-  const footer   = document.querySelector('footer');
+  const dash          = document.getElementById('home-dashboard');
+  const hero          = document.querySelector('#page-home .hero');
+  const features      = document.querySelector('#page-home .features');
+  const how           = document.querySelector('#page-home .how');
+  const footer        = document.querySelector('footer');
   const mobileHomeNav = document.querySelector('.mobile-home-nav');
 
-  // Cacher la landing, afficher le dashboard
+  if (!d) {
+    // Non connecté — montrer la landing
+    if (dash)          dash.style.display = 'none';
+    if (hero)          hero.style.display = '';
+    if (features)      features.style.display = '';
+    if (how)           how.style.display = '';
+    if (footer)        footer.style.display = '';
+    if (mobileHomeNav) mobileHomeNav.style.display = 'block';
+    return;
+  }
+
+  // Connecté — cacher la landing, afficher le dashboard
   if (hero)          hero.style.display = 'none';
   if (features)      features.style.display = 'none';
   if (how)           how.style.display = 'none';
@@ -5521,17 +5541,8 @@ function mettreAJourNav(user) {
     document.body.style.paddingTop = '';
     const mnBtn = document.getElementById('mn-profil-btn');
     if (mnBtn) mnBtn.style.display = 'none';
-    // Cacher le dashboard
-    const dash = document.getElementById('home-dashboard');
-    const hero = document.querySelector('#page-home .hero');
-    const features = document.querySelector('#page-home .features');
-    const how = document.querySelector('#page-home .how');
-    const footer = document.querySelector('footer');
-    if (dash) dash.style.display = 'none';
-    if (hero) hero.style.display = '';
-    if (features) features.style.display = '';
-    if (how) how.style.display = '';
-    if (footer) footer.style.display = '';
+    // Remettre la landing page
+    afficherDashboard(null);
 
     const mnProfilBtn = document.getElementById('mn-profil-btn');
     if (mnProfilBtn) mnProfilBtn.style.display = 'none';
