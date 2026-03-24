@@ -715,7 +715,15 @@ nav{
   margin-top:12px;padding:7px 16px;border-radius:20px;
   background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.2);
   font-size:12px;color:var(--green);font-weight:700;
+  cursor:pointer;transition:all 0.2s;
+  font-family:'DM Sans',sans-serif;
 }
+.ph-band:hover{background:rgba(0,245,155,0.14);border-color:rgba(0,245,155,0.35);}
+.ph-band.mode-prive{background:rgba(255,77,109,0.08);border-color:rgba(255,77,109,0.2);color:var(--red);}
+.ph-band.mode-prive:hover{background:rgba(255,77,109,0.14);}
+.ph-band.mode-public{background:rgba(0,245,155,0.08);border-color:rgba(0,245,155,0.2);color:var(--green);}
+.ph-band.mode-amis{background:rgba(255,217,61,0.08);border-color:rgba(255,217,61,0.2);color:var(--yellow);}
+.ph-band.mode-amis:hover{background:rgba(255,217,61,0.14);}
 .ph-led{
   width:8px;height:8px;border-radius:50%;
   background:var(--green);box-shadow:0 0 8px var(--green);
@@ -2296,10 +2304,11 @@ footer{
         <div class="ph-info">
           <div class="ph-name" id="ph-name-display">SOFIA M.</div>
           <div class="ph-handle" id="ph-handle-display">Paris 11e</div>
-          <div class="ph-band">
-            <div class="ph-led"></div>
-            Mode Amis
-          </div>
+          <button class="ph-band" id="ph-band-btn" onclick="cyclerModeBracelet()" title="Changer le mode">
+            <div class="ph-led" id="ph-led"></div>
+            <span id="ph-band-text">Mode Amis</span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px;opacity:0.5;"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
         </div>
         <button class="ph-edit" onclick="ouvrirEdition()" style="display:flex;align-items:center;gap:7px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -5340,17 +5349,7 @@ async function chargerProfil(uid) {
     }
 
     // ── Bracelet ──
-    const band = document.querySelector('.ph-band');
-    if (band) {
-      const modeTexte = d.modeBracelet === 'public' ? 'Mode Public'
-                      : d.modeBracelet === 'prive'  ? 'Mode Privé'
-                      : 'Mode Amis';
-      // Mettre à jour uniquement le texte, pas le point LED
-      const led = band.querySelector('.ph-led');
-      band.innerHTML = '';
-      if (led) band.appendChild(led);
-      band.appendChild(Object.assign(document.createElement('span'), { textContent: modeTexte }));
-    }
+    mettreAJourBandeBracelet(d.modeBracelet || 'amis');
 
     // ── Abonnements / Abonnés ──
     const abonnements = d.abonnements || [];
@@ -5418,6 +5417,35 @@ function chargerTogglePlateforme(id, value) {
   if (btn) btn.style.background = value ? 'var(--green)' : 'var(--border)';
   if (dot) dot.style.transform  = value ? 'translateX(20px)' : 'translateX(0)';
 }
+// ── Cycle mode bracelet ──
+window.cyclerModeBracelet = async function() {
+  if (!window._currentUid || !window._db) return;
+  const modes   = ['public', 'amis', 'prive'];
+  const actuel  = window._monProfil?.modeBracelet || 'amis';
+  const suivant = modes[(modes.indexOf(actuel) + 1) % modes.length];
+  mettreAJourBandeBracelet(suivant);
+  if (window._monProfil) window._monProfil.modeBracelet = suivant;
+  try {
+    const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    await setDoc(doc(window._db, 'danseurs', window._currentUid), { modeBracelet: suivant }, { merge: true });
+  } catch(e) { console.error('Erreur mode bracelet:', e); }
+}
+
+function mettreAJourBandeBracelet(mode) {
+  const btn  = document.getElementById('ph-band-btn');
+  const led  = document.getElementById('ph-led');
+  const text = document.getElementById('ph-band-text');
+  if (!btn) return;
+  const cfg = {
+    public: { texte:'Mode Public', classe:'mode-public', led:'var(--green)'  },
+    amis:   { texte:'Mode Amis',   classe:'mode-amis',   led:'var(--yellow)' },
+    prive:  { texte:'Mode Privé',  classe:'mode-prive',  led:'var(--red)'    },
+  }[mode] || { texte:'Mode Amis', classe:'mode-amis', led:'var(--yellow)' };
+  btn.className = 'ph-band ' + cfg.classe;
+  if (text) text.textContent = cfg.texte;
+  if (led)  { led.style.background = cfg.led; led.style.boxShadow = `0 0 8px ${cfg.led}`; }
+}
+
 let lienVisible = true;
 
 window.toggleVisibiliteLien = function() {
