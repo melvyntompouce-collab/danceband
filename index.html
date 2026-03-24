@@ -61,6 +61,7 @@ body::after{
   position:fixed;top:0;left:0;right:0;z-index:101;
   height:60px;
   padding-top:max(10px, env(safe-area-inset-top));
+  padding-bottom:16px;
   display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,rgba(0,245,155,0.1),rgba(155,93,229,0.05));
   border-bottom:1px solid var(--border);
@@ -85,6 +86,19 @@ body::after{
   background:var(--green);
   box-shadow:0 0 12px var(--green);
   animation:pulse-dot 2s ease infinite;
+}
+
+/* Cache la barre logo sur desktop */
+@media (min-width:768px) {
+  #logo-bar{
+    display:none !important;
+  }
+  body.logo-bar-visible nav{
+    top:0;
+  }
+  body.logo-bar-visible .page{
+    padding-top:calc(110px + max(20px, env(safe-area-inset-top))) !important;
+  }
 }
 
 /* ── NAV ── */
@@ -140,9 +154,9 @@ body.logo-bar-visible nav{
 .nav-burger span{width:24px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;}
 
 /* ── PAGES ── */
-.page{display:none;min-height:100vh;padding-top:calc(90px + max(20px, env(safe-area-inset-top)));position:relative;z-index:1;}
+.page{display:none;min-height:100vh;padding-top:calc(110px + max(20px, env(safe-area-inset-top)));position:relative;z-index:1;}
 .page.active{display:block;}
-body.logo-bar-visible .page{padding-top:calc(170px + max(20px, env(safe-area-inset-top)));}
+body.logo-bar-visible .page{padding-top:calc(200px + max(20px, env(safe-area-inset-top)));}
 
 /* ══════════════════════════════
    PAGE: ACCUEIL
@@ -321,7 +335,7 @@ body.logo-bar-visible .page{padding-top:calc(170px + max(20px, env(safe-area-ins
   min-height:calc(100vh - 70px);
   display:flex;align-items:center;justify-content:center;
   padding:40px 20px;
-  padding-top:calc(150px + max(30px, env(safe-area-inset-top)));
+  padding-top:calc(170px + max(30px, env(safe-area-inset-top)));
 }
 .auth-box{
   width:100%;max-width:480px;
