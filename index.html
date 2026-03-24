@@ -60,11 +60,13 @@ body::after{
 #logo-bar{
   position:fixed;top:0;left:0;right:0;z-index:101;
   height:60px;
+  padding-top:max(10px, env(safe-area-inset-top));
   display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,rgba(0,245,155,0.1),rgba(155,93,229,0.05));
   border-bottom:1px solid var(--border);
   backdrop-filter:blur(20px);
   transition:all 0.3s ease;
+  box-sizing:content-box;
 }
 #logo-bar.hidden{
   display:none;
@@ -89,15 +91,17 @@ body::after{
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   padding:0 5%;
+  padding-top:max(10px, env(safe-area-inset-top));
   height:70px;
   display:flex;align-items:center;justify-content:space-between;
   background:rgba(8,8,16,0.85);
   backdrop-filter:blur(20px);
+  box-sizing:content-box;
   border-bottom:1px solid var(--border);
   transition:all 0.3s ease;
 }
 body.logo-bar-visible nav{
-  top:60px;
+  top:calc(60px + max(10px, env(safe-area-inset-top)));
 }
 .logo{
   font-family:'Syne',sans-serif;
@@ -136,9 +140,9 @@ body.logo-bar-visible nav{
 .nav-burger span{width:24px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s;}
 
 /* ── PAGES ── */
-.page{display:none;min-height:100vh;padding-top:70px;position:relative;z-index:1;}
+.page{display:none;min-height:100vh;padding-top:calc(70px + max(10px, env(safe-area-inset-top)));position:relative;z-index:1;}
 .page.active{display:block;}
-body.logo-bar-visible .page{padding-top:130px;}
+body.logo-bar-visible .page{padding-top:calc(130px + max(10px, env(safe-area-inset-top)));}
 
 /* ══════════════════════════════
    PAGE: ACCUEIL
@@ -147,6 +151,7 @@ body.logo-bar-visible .page{padding-top:130px;}
   min-height:calc(100vh - 70px);
   display:flex;align-items:center;
   padding:0 5%;
+  padding-top:max(20px, env(safe-area-inset-top));
   position:relative;overflow:hidden;
 }
 .hero-grid{
@@ -316,7 +321,7 @@ body.logo-bar-visible .page{padding-top:130px;}
   min-height:calc(100vh - 70px);
   display:flex;align-items:center;justify-content:center;
   padding:40px 20px;
-  padding-top:100px;
+  padding-top:calc(100px + max(20px, env(safe-area-inset-top)));
 }
 .auth-box{
   width:100%;max-width:480px;
