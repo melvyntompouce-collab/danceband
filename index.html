@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HAKO">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#00f59b">
+<meta name="description" content="Le premier réseau social connecté pour les danseurs">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <title>HAKO — Le réseau des artistes</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=Big+Shoulders+Display:wght@900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -719,12 +725,11 @@ nav{
   font-family:'DM Sans',sans-serif;
 }
 .ph-band:hover{background:rgba(0,245,155,0.14);border-color:rgba(0,245,155,0.35);}
-.ph-band.mode-hors-ligne{background:rgba(255,77,109,0.08);border-color:rgba(255,77,109,0.2);color:var(--red);}
-.ph-band.mode-hors-ligne:hover{background:rgba(255,77,109,0.14);}
-.ph-band.mode-en-ligne{background:rgba(0,245,155,0.08);border-color:rgba(0,245,155,0.2);color:var(--green);}
-.ph-band.mode-en-ligne:hover{background:rgba(0,245,155,0.14);}
-.ph-band.mode-occupe{background:rgba(255,217,61,0.08);border-color:rgba(255,217,61,0.2);color:var(--yellow);}
-.ph-band.mode-occupe:hover{background:rgba(255,217,61,0.14);}
+.ph-band.mode-prive{background:rgba(255,77,109,0.08);border-color:rgba(255,77,109,0.2);color:var(--red);}
+.ph-band.mode-prive:hover{background:rgba(255,77,109,0.14);}
+.ph-band.mode-public{background:rgba(0,245,155,0.08);border-color:rgba(0,245,155,0.2);color:var(--green);}
+.ph-band.mode-amis{background:rgba(255,217,61,0.08);border-color:rgba(255,217,61,0.2);color:var(--yellow);}
+.ph-band.mode-amis:hover{background:rgba(255,217,61,0.14);}
 .ph-led{
   width:8px;height:8px;border-radius:50%;
   background:var(--green);box-shadow:0 0 8px var(--green);
@@ -2305,9 +2310,10 @@ footer{
         <div class="ph-info">
           <div class="ph-name" id="ph-name-display">SOFIA M.</div>
           <div class="ph-handle" id="ph-handle-display">Paris 11e</div>
-          <button class="ph-band" id="ph-band-btn" style="cursor: default;">
+          <button class="ph-band" id="ph-band-btn" onclick="cyclerModeBracelet()" title="Changer le mode">
             <div class="ph-led" id="ph-led"></div>
-            <span id="ph-band-text">En ligne</span>
+            <span id="ph-band-text">Mode Amis</span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:4px;opacity:0.5;"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
         </div>
         <button class="ph-edit" onclick="ouvrirEdition()" style="display:flex;align-items:center;gap:7px;">
@@ -5143,8 +5149,6 @@ window.sauvegarderIdentite = async function() {
   }
 }
 window.deconnecter = async function() {
-  if (window._activityCheckInterval) clearInterval(window._activityCheckInterval);
-  if (window._activitySaveInterval) clearInterval(window._activitySaveInterval);
   await signOut(auth);
   window.showPage('home');
   mettreAJourNav(null);
@@ -5351,8 +5355,7 @@ async function chargerProfil(uid) {
     }
 
     // ── Bracelet ──
-    if (d.dernierActivite) window._lastActivityTime = d.dernierActivite;
-    mettreAJourBandeBracelet();
+    mettreAJourBandeBracelet(d.modeBracelet || 'amis');
 
     // ── Abonnements / Abonnés ──
     const abonnements = d.abonnements || [];
@@ -5420,70 +5423,30 @@ function chargerTogglePlateforme(id, value) {
   if (btn) btn.style.background = value ? 'var(--green)' : 'var(--border)';
   if (dot) dot.style.transform  = value ? 'translateX(20px)' : 'translateX(0)';
 }
-// ── Suivi de l'activité ──
-window._lastActivityTime = Date.now();
-window._activityCheckInterval = null;
-
-function mettreAJourDerniereActivite() {
-  window._lastActivityTime = Date.now();
-}
-
-function initialiserSuiviActivite() {
-  if (window._activityCheckInterval) clearInterval(window._activityCheckInterval);
-  
-  // Détecteurs d'activité
-  ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'].forEach(evt => {
-    document.addEventListener(evt, mettreAJourDerniereActivite, { passive: true });
-  });
-  
-  // Mettre à jour le bracelet toutes les 10 secondes
-  window._activityCheckInterval = setInterval(() => {
-    mettreAJourBandeBracelet();
-  }, 10000);
-  
-  // Sauvegarder la dernière activité en Firestore toutes les 30 secondes
-  window._activitySaveInterval = setInterval(async () => {
-    if (!window._currentUid || !window._db) return;
-    try {
-      const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-      await setDoc(doc(window._db, 'danseurs', window._currentUid), { dernierActivite: window._lastActivityTime }, { merge: true });
-    } catch(e) { console.error('Erreur sauvegarde activité:', e); }
-  }, 30000);
-}
-
-function calculerStatutActivite() {
-  const maintenant = Date.now();
-  const inactiviteMs = maintenant - window._lastActivityTime;
-  const inactiviteMin = inactiviteMs / 60000;
-  
-  if (inactiviteMin < 1) return 'en-ligne';
-  if (inactiviteMin < 60) return 'occupe';
-  return 'hors-ligne';
-}
-
-// ── Cycle mode bracelet (enregistre l'activité) ──
+// ── Cycle mode bracelet ──
 window.cyclerModeBracelet = async function() {
   if (!window._currentUid || !window._db) return;
-  mettreAJourDerniereActivite();
+  const modes   = ['public', 'amis', 'prive'];
+  const actuel  = window._monProfil?.modeBracelet || 'amis';
+  const suivant = modes[(modes.indexOf(actuel) + 1) % modes.length];
+  mettreAJourBandeBracelet(suivant);
+  if (window._monProfil) window._monProfil.modeBracelet = suivant;
   try {
     const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await setDoc(doc(window._db, 'danseurs', window._currentUid), { dernierActivite: window._lastActivityTime }, { merge: true });
-  } catch(e) { console.error('Erreur mise à jour activité:', e); }
+    await setDoc(doc(window._db, 'danseurs', window._currentUid), { modeBracelet: suivant }, { merge: true });
+  } catch(e) { console.error('Erreur mode bracelet:', e); }
 }
 
-function mettreAJourBandeBracelet(mode = null) {
+function mettreAJourBandeBracelet(mode) {
   const btn  = document.getElementById('ph-band-btn');
   const led  = document.getElementById('ph-led');
   const text = document.getElementById('ph-band-text');
   if (!btn) return;
-  
-  const statut = calculerStatutActivite();
   const cfg = {
-    'en-ligne':  { texte:'En ligne',   classe:'mode-en-ligne',  led:'var(--green)'  },
-    'occupe':    { texte:'Occupé',    classe:'mode-occupe',    led:'var(--yellow)' },
-    'hors-ligne':{ texte:'Hors ligne', classe:'mode-hors-ligne', led:'var(--red)'    },
-  }[statut] || { texte:'En ligne', classe:'mode-en-ligne', led:'var(--green)' };
-  
+    public: { texte:'Mode Public', classe:'mode-public', led:'var(--green)'  },
+    amis:   { texte:'Mode Amis',   classe:'mode-amis',   led:'var(--yellow)' },
+    prive:  { texte:'Mode Privé',  classe:'mode-prive',  led:'var(--red)'    },
+  }[mode] || { texte:'Mode Amis', classe:'mode-amis', led:'var(--yellow)' };
   btn.className = 'ph-band ' + cfg.classe;
   if (text) text.textContent = cfg.texte;
   if (led)  { led.style.background = cfg.led; led.style.boxShadow = `0 0 8px ${cfg.led}`; }
@@ -5622,8 +5585,6 @@ function mettreAJourNav(user) {
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     console.log('✅ Connecté :', user.email);
-    window._lastActivityTime = Date.now();
-    initialiserSuiviActivite();
     try { await chargerProfil(user.uid); }   catch(e) { console.error('❌ chargerProfil:', e); }
     try { await chargerAbonnements(); }       catch(e) { console.error('❌ chargerAbonnements:', e); }
     try { await chargerFavoris(); }           catch(e) { console.error('❌ chargerFavoris:', e); }
@@ -5631,7 +5592,6 @@ onAuthStateChanged(auth, async (user) => {
     afficherDashboard(window._monProfil);
   } else {
     console.log('👤 Non connecté');
-    if (window._activityCheckInterval) clearInterval(window._activityCheckInterval);
     mettreAJourNav(null);
   }
 });
@@ -5759,5 +5719,14 @@ function sauvegarderConf(c,v) { _appellerQuandPret('sauvegarderConf', [c,v]); }
 </div>
 
 
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log('✅ Service Worker enregistré'))
+      .catch(e => console.log('❌ Service Worker:', e));
+  });
+}
+</script>
 </body>
 </html>
