@@ -333,14 +333,20 @@ body.logo-bar-visible .page{padding-top:130px;}
 .auth-tabs{
   display:flex;gap:0;margin-bottom:32px;
   background:var(--bg);border-radius:12px;padding:4px;
+  position:relative;z-index:10;
 }
 .auth-tab{
   flex:1;padding:10px;border-radius:9px;
   font-weight:700;font-size:14px;letter-spacing:0.5px;
   border:none;background:transparent;color:var(--muted2);
-  cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;
+  cursor:pointer;pointer-events:auto;transition:all 0.2s;font-family:'DM Sans',sans-serif;
+  position:relative;z-index:10;touch-action:auto;
+  user-select:none;-webkit-user-select:none;
 }
 .auth-tab.active{background:var(--card2);color:var(--text);}
+#tab-signup, #tab-login{
+  position:relative;z-index:5;width:100%;
+}
 .auth-title{
   font-family:'Syne',sans-serif;
   font-size:36px;letter-spacing:2px;margin-bottom:8px;
@@ -1480,8 +1486,8 @@ footer{
   <div class="auth-page">
     <div class="auth-box fade-in">
       <div class="auth-tabs">
-        <button class="auth-tab active" onclick="switchTab(this,'tab-signup')">Inscription</button>
-        <button class="auth-tab" onclick="switchTab(this,'tab-login')">Connexion</button>
+        <button type="button" class="auth-tab active" data-tab="tab-signup" onclick="switchTab(this, 'tab-signup'); return false;">Inscription</button>
+        <button type="button" class="auth-tab" data-tab="tab-login" onclick="switchTab(this, 'tab-login'); return false;">Connexion</button>
       </div>
 
       <!-- INSCRIPTION -->
@@ -2658,10 +2664,33 @@ function toggleMobileMenu() {
 
 // ── Auth tabs ──
 function switchTab(btn, tabId) {
-  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('tab-signup').style.display = tabId === 'tab-signup' ? 'block' : 'none';
-  document.getElementById('tab-login').style.display = tabId === 'tab-login' ? 'block' : 'none';
+  // Empêcher tout comportement par défaut
+  if (window.event) {
+    window.event.preventDefault();
+    window.event.stopPropagation();
+  }
+  
+  console.log('✅ Changement d\'onglet vers:', tabId);
+  
+  // Retirer l'active de tous les onglets
+  const allTabs = document.querySelectorAll('.auth-tab');
+  allTabs.forEach(t => t.classList.remove('active'));
+  
+  // Ajouter active au bouton cliqué
+  if (btn) btn.classList.add('active');
+  
+  // Afficher/cacher les sections
+  const signupSection = document.getElementById('tab-signup');
+  const loginSection = document.getElementById('tab-login');
+  
+  if (signupSection) {
+    signupSection.style.display = (tabId === 'tab-signup') ? 'block' : 'none';
+  }
+  if (loginSection) {
+    loginSection.style.display = (tabId === 'tab-login') ? 'block' : 'none';
+  }
+  
+  return false;
 }
 
 // ── Ouvrir / fermer sous-page édition ──
