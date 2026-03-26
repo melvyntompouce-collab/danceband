@@ -109,10 +109,10 @@ body::after{
 /* ── TOPBAR MINIMALISTE ── */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 16px;
+  padding-right: 16px;
   padding-top: env(safe-area-inset-top);
-  padding-bottom: 8px;
+  padding-bottom: 0;
   height: calc(44px + env(safe-area-inset-top));
   display: flex !important;
   align-items: flex-end;
@@ -122,45 +122,46 @@ nav {
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
 }
+nav > * { margin-bottom: 6px; }
 
 /* ── PAGES ── */
 .page.active{display:block;}
 .logo {
   font-family: 'Syne', sans-serif;
-  font-size: 22px;
+  font-size: 20px;
   letter-spacing: 3px;
   color: var(--green);
   text-decoration: none;
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 7px;
   font-weight: 800;
 }
 .logo-dot {
-  width: 7px; height: 7px; border-radius: 50%;
+  width: 6px; height: 6px; border-radius: 50%;
   background: var(--green);
   box-shadow: 0 0 8px var(--green);
   animation: pulse-dot 2s ease infinite;
 }
 @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
 
-/* Bouton hamburger */
+/* Bouton hamburger — même taille que connexion */
 .hamburger-btn {
-  width: 40px; height: 40px; border-radius: 12px;
+  width: 32px; height: 32px; border-radius: 8px;
   background: rgba(255,255,255,0.06);
   border: 1px solid var(--border);
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 5px;
+  align-items: center; justify-content: center; gap: 4px;
   cursor: pointer; transition: all 0.2s;
   flex-shrink: 0;
 }
 .hamburger-btn:hover { background: rgba(0,245,155,0.08); border-color: rgba(0,245,155,0.2); }
 .hamburger-btn span {
-  display: block; width: 18px; height: 1.5px;
+  display: block; width: 14px; height: 1.5px;
   background: var(--text); border-radius: 2px;
   transition: all 0.3s;
 }
-.hamburger-btn.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger-btn.open span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
 .hamburger-btn.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.hamburger-btn.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+.hamburger-btn.open span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
 
 /* ── DRAWER ── */
 .drawer-overlay {
@@ -250,7 +251,7 @@ nav {
 
 /* ── PAGES suite ── */
 /* ── PAGES ── */
-.page{display:none;min-height:100vh;padding-top:calc(44px + env(safe-area-inset-top));position:relative;z-index:1;}
+.page{display:none;min-height:100vh;padding-top:44px;position:relative;z-index:1;}
 .page.active{display:block;}
 body.logo-bar-visible .page{padding-top:calc(120px + max(20px, env(safe-area-inset-top)));}
 
@@ -1222,7 +1223,7 @@ footer{
 
 @media(max-width:768px) {
   /* Pages — padding-top adapté au mobile */
-  .page { padding-bottom: 20px; min-height: 100vh; padding-top: calc(44px + env(safe-area-inset-top)) !important; }
+  .page { padding-bottom: 20px; min-height: 100vh; padding-top: 44px !important; }
   body.logo-bar-visible .page { padding-top: calc(50px + max(20px, env(safe-area-inset-top))) !important; }
   .agenda-page,
   .profile-page,
@@ -1331,10 +1332,10 @@ footer{
     <div class="logo-dot"></div>
     HAKO
   </a>
-  <div style="display:flex;align-items:center;gap:8px;">
-    <!-- Bouton Se connecter (non connecté) — compact -->
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+    <!-- Bouton Se connecter — même taille que hamburger -->
     <a id="nav-login-btn" href="#" onclick="showPage('auth')"
-      style="padding:7px 12px;border-radius:8px;background:rgba(0,245,155,0.12);border:1px solid rgba(0,245,155,0.3);color:var(--green);font-weight:700;font-size:12px;text-decoration:none;font-family:'Syne',sans-serif;letter-spacing:0.3px;white-space:nowrap;">
+      style="height:32px;padding:0 12px;border-radius:8px;background:rgba(0,245,155,0.12);border:1px solid rgba(0,245,155,0.3);color:var(--green);font-weight:700;font-size:12px;text-decoration:none;font-family:'Syne',sans-serif;letter-spacing:0.3px;white-space:nowrap;display:flex;align-items:center;">
       Connexion
     </a>
     <!-- Hamburger -->
