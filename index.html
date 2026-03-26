@@ -89,20 +89,20 @@ body::after{
 
 /* Cache la barre logo sur desktop */
 @media (min-width:768px) {
+  #logo-bar{
+    display:none !important;
+  }
   nav{
-    top:calc(50px + max(10px, env(safe-area-inset-top)));
+    top:0;
   }
   body.logo-bar-visible nav{
     top:0;
   }
-  nav .logo {
-    display: none;
-  }
   .page{
-    padding-top:calc(95px + max(20px, env(safe-area-inset-top))) !important;
+    padding-top:70px !important;
   }
   body.logo-bar-visible .page{
-    padding-top:45px !important;
+    padding-top:70px !important;
   }
 }
 
@@ -1124,6 +1124,11 @@ footer{
   .steps::before { display: none; }
   .steps { flex-direction: column; gap: 32px; }
   footer { grid-template-columns: 1fr 1fr; }
+}
+
+/* Nav toujours visible sur desktop */
+@media(min-width:769px) {
+  nav { display: flex !important; }
 }
 
 /* mobile-nav supprimée — navigation via bouton flottant */
