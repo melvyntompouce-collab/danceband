@@ -1317,19 +1317,19 @@ footer{
 .fade-in{animation:fadeIn 0.5s ease both;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 </style>
-<script>
-// Détection PWA fiable (iOS + Android)
-if (
-  window.navigator.standalone === true ||
-  window.matchMedia('(display-mode: standalone)').matches ||
-  window.matchMedia('(display-mode: fullscreen)').matches
-) {
-  document.documentElement.classList.add('pwa');
-  document.body.classList.add('pwa');
-}
-</script>
 </head>
 <body>
+
+<script>
+// Détection PWA fiable iOS — exécuté après body
+const isPWA = window.navigator.standalone === true ||
+  window.matchMedia('(display-mode: standalone)').matches;
+console.log('PWA détectée:', isPWA, '| standalone:', window.navigator.standalone);
+if (isPWA) {
+  document.body.classList.add('pwa');
+  console.log('✅ Classe pwa ajoutée au body');
+}
+</script>
 
 <!-- ═══ TOPBAR ═══ -->
 <nav>
