@@ -636,13 +636,26 @@ body.pwa nav {
 }
 }
 .filter-chip {
-  padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;
-  border:1.5px solid var(--border);background:transparent;
-  color:var(--muted2);cursor:pointer;white-space:nowrap;
-  transition:all 0.15s;font-family:'DM Sans',sans-serif;
+  padding: 7px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--muted2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 0.3px;
 }
-.filter-chip.on{background:rgba(0,245,155,0.08);border-color:var(--green);color:var(--green);}
-.filter-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.filter-chip:hover { border-color: rgba(0,245,155,0.2); color: var(--text); }
+.filter-chip.on {
+  background: rgba(0,245,155,0.1);
+  border-color: var(--green);
+  color: var(--green);
+}
+.filter-row { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
 .search-input{
   width:100%;padding:9px 13px;border-radius:10px;
   background:var(--bg);border:1.5px solid var(--border);
@@ -1432,6 +1445,14 @@ if (isPWA) {
 
 <!-- ═══ PAGE: ACCUEIL ═══ -->
 <div class="page active" id="page-home">
+
+  <!-- Halos d'arrière-plan subtils -->
+  <div style="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;">
+    <div style="position:absolute;top:-20%;left:-10%;width:60vw;height:60vw;max-width:500px;max-height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,245,155,0.07) 0%,transparent 70%);filter:blur(40px);"></div>
+    <div style="position:absolute;bottom:10%;right:-15%;width:55vw;height:55vw;max-width:450px;max-height:450px;border-radius:50%;background:radial-gradient(circle,rgba(155,93,229,0.08) 0%,transparent 70%);filter:blur(50px);"></div>
+    <div style="position:absolute;top:40%;left:30%;width:40vw;height:40vw;max-width:350px;max-height:350px;border-radius:50%;background:radial-gradient(circle,rgba(0,245,155,0.04) 0%,transparent 70%);filter:blur(60px);"></div>
+  </div>
+
   <section class="hero">
     <div class="hero-grid"></div>
     <div class="hero-content fade-in">
@@ -1885,8 +1906,8 @@ if (isPWA) {
         <input class="search-input" type="text" id="search-input" placeholder="🔍 Rechercher un danseur..." oninput="filtrerDanseurs()">
         <div class="filter-row" id="filter-row">
           <button class="filter-chip on" onclick="setFiltre('tous',this)">Tous</button>
-          <button class="filter-chip" onclick="setFiltre('public',this)">🟢 Public</button>
-          <button class="filter-chip" onclick="setFiltre('disponible',this)">✅ Disponibles</button>
+          <button class="filter-chip" onclick="setFiltre('public',this)">Public</button>
+          <button class="filter-chip" onclick="setFiltre('disponible',this)">Disponibles</button>
         </div>
       </div>
       <div class="dancer-list" id="dancer-list">
