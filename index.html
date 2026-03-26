@@ -109,17 +109,24 @@ body::after{
 /* ── TOPBAR MINIMALISTE ── */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  padding: 0 20px;
+  padding-left: 20px;
+  padding-right: 20px;
   padding-top: env(safe-area-inset-top);
-  height: calc(60px + env(safe-area-inset-top));
+  padding-bottom: 0;
+  height: calc(56px + env(safe-area-inset-top));
   display: flex !important;
   align-items: flex-end;
   justify-content: space-between;
   padding-bottom: 10px;
+  box-sizing: border-box;
   background: rgba(8,8,16,0.92);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
 }
+
+/* ── PAGES ── */
+.page{display:none;min-height:100vh;padding-top:calc(56px + env(safe-area-inset-top));position:relative;z-index:1;}
+.page.active{display:block;}
 .logo {
   font-family: 'Syne', sans-serif;
   font-size: 22px;
@@ -231,7 +238,7 @@ nav {
 .back-btn {
   display: none;
   position: fixed;
-  top: calc(env(safe-area-inset-top) + 10px);
+  top: calc(env(safe-area-inset-top) + 8px);
   left: 12px; z-index: 99;
   width: 40px; height: 40px; border-radius: 12px;
   background: rgba(8,8,16,0.9);
@@ -243,9 +250,7 @@ nav {
 .back-btn:hover { border-color: var(--green); color: var(--green); }
 .back-btn.visible { display: flex; }
 
-/* ── PAGES ── */
-.page{display:none;min-height:100vh;padding-top:calc(60px + env(safe-area-inset-top));position:relative;z-index:1;}
-.page.active{display:block;}
+/* ── PAGES suite ── */
 body.logo-bar-visible .page{padding-top:calc(120px + max(20px, env(safe-area-inset-top)));}
 
 /* ══════════════════════════════
@@ -1221,7 +1226,7 @@ footer{
 
 @media(max-width:768px) {
   /* Pages — padding-top adapté au mobile */
-  .page { padding-bottom: 20px; min-height: 100vh; padding-top: calc(60px + env(safe-area-inset-top)) !important; }
+  .page { padding-bottom: 20px; min-height: 100vh; padding-top: calc(56px + env(safe-area-inset-top)) !important; }
   body.logo-bar-visible .page { padding-top: calc(50px + max(20px, env(safe-area-inset-top))) !important; }
   .agenda-page,
   .profile-page,
