@@ -1756,69 +1756,103 @@ footer{
 
 <!-- ═══ PAGE: DASHBOARD (connecté) ═══ -->
 <div class="page" id="page-dashboard">
-  <div style="padding:24px 5%;max-width:900px;margin:0 auto;">
+  <div style="padding:16px 5% 100px;max-width:900px;margin:0 auto;">
 
-    <!-- Salutation + Photo -->
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+    <!-- Salutation + Photo + Dispo -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
       <div style="position:relative;flex-shrink:0;cursor:pointer;" onclick="showPage('profile')">
-        <div id="dash-avatar" style="width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;position:relative;box-shadow:0 4px 20px rgba(0,245,155,0.2);">
+        <div id="dash-avatar" style="width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;position:relative;box-shadow:0 4px 20px rgba(0,245,155,0.2);">
           <span id="dash-avatar-emoji">💃</span>
-          <img id="dash-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:20px;">
+          <img id="dash-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:18px;">
         </div>
-        <div style="position:absolute;bottom:-3px;right:-3px;width:18px;height:18px;border-radius:50%;background:var(--green);border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;">
-          <div style="width:7px;height:7px;border-radius:50%;background:#080810;box-shadow:0 0 4px var(--green);animation:blink 2s ease infinite;"></div>
+        <div style="position:absolute;bottom:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:var(--green);border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#080810;box-shadow:0 0 4px var(--green);animation:blink 2s ease infinite;"></div>
         </div>
       </div>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:12px;color:var(--muted2);margin-bottom:2px;" id="dash-heure">Bonjour</div>
-        <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-0.5px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="dash-nom">—</div>
-        <div style="font-size:12px;color:var(--muted2);margin-top:4px;" id="dash-sous-titre">Prêt à danser ?</div>
+        <div style="font-size:11px;color:var(--muted2);margin-bottom:1px;" id="dash-heure">Bonjour</div>
+        <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-0.5px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="dash-nom">—</div>
+        <div style="font-size:11px;color:var(--muted2);margin-top:3px;" id="dash-sous-titre">Prêt à danser ?</div>
+      </div>
+      <!-- Toggle disponibilité -->
+      <div style="flex-shrink:0;text-align:center;">
+        <button id="dash-dispo-btn" onclick="toggleDispoDashboard()"
+          style="display:flex;flex-direction:column;align-items:center;gap:4px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.25);border-radius:14px;padding:10px 12px;cursor:pointer;transition:all 0.2s;">
+          <div id="dash-dispo-dot" style="width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);"></div>
+          <div id="dash-dispo-label" style="font-size:9px;font-weight:800;font-family:'Syne',sans-serif;color:var(--green);letter-spacing:0.5px;">DISPO</div>
+        </button>
       </div>
     </div>
 
     <!-- Stats -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;">
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--green);" id="dash-xp">0</div>
-        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">XP</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);" id="dash-xp">0</div>
+        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;">XP</div>
       </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--purple);" id="dash-niveau">1/7</div>
-        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Niveau</div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--purple);" id="dash-niveau">1/7</div>
+        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;">Niveau</div>
       </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--yellow);" id="dash-echanges">0</div>
-        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Échanges</div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--yellow);" id="dash-echanges">0</div>
+        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;">Échanges</div>
       </div>
     </div>
 
     <!-- 4 cards navigation -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;">
-      <button onclick="showPage('network')" style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px 16px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="font-size:24px;margin-bottom:10px;">🌐</div>
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Réseau</div>
-        <div style="font-size:11px;color:var(--muted2);margin-top:4px;">Trouve des danseurs</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;">
+      <button onclick="showPage('network')" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 14px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:20px;margin-bottom:8px;">🌐</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Réseau</div>
+        <div style="font-size:10px;color:var(--muted2);margin-top:3px;">Trouve des danseurs</div>
       </button>
-      <button onclick="showPage('agenda')" style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px 16px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(77,159,255,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="font-size:24px;margin-bottom:10px;">📅</div>
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Agenda</div>
-        <div style="font-size:11px;color:var(--muted2);margin-top:4px;">Soirées & cours</div>
+      <button onclick="showPage('agenda')" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 14px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(77,159,255,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:20px;margin-bottom:8px;">📅</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Agenda</div>
+        <div style="font-size:10px;color:var(--muted2);margin-top:3px;">Soirées & cours</div>
       </button>
-      <button onclick="showPage('messages')" style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px 16px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(155,93,229,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="font-size:24px;margin-bottom:10px;">💬</div>
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Messages</div>
-        <div style="font-size:11px;color:var(--muted2);margin-top:4px;" id="dash-msg-label">Tes conversations</div>
+      <button onclick="showPage('messages')" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 14px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(155,93,229,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:20px;margin-bottom:8px;">💬</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Messages</div>
+        <div style="font-size:10px;color:var(--muted2);margin-top:3px;" id="dash-msg-label">Tes conversations</div>
       </button>
-      <button onclick="showPage('profile')" style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px 16px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(255,217,61,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
-        <div style="font-size:24px;margin-bottom:10px;">🏆</div>
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Classement</div>
-        <div style="font-size:11px;color:var(--muted2);margin-top:4px;" id="dash-rank-label">Ton rang</div>
+      <button onclick="showPage('ranking')" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 14px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(255,217,61,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="font-size:20px;margin-bottom:8px;">🏆</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Classement</div>
+        <div style="font-size:10px;color:var(--muted2);margin-top:3px;" id="dash-rank-label">Ton rang</div>
       </button>
     </div>
 
-    <!-- Événements favoris -->
-    <div id="dash-favoris-section" style="display:none;">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:1px;color:var(--muted2);text-transform:uppercase;margin-bottom:12px;">♥ Mes favoris</div>
+    <!-- Activité récente -->
+    <div id="dash-activite-section" style="display:none;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:12px;letter-spacing:1px;color:var(--muted2);text-transform:uppercase;">🔔 Activité récente</div>
+      </div>
+      <div id="dash-activite-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+
+    <!-- Prochains événements -->
+    <div id="dash-events-section" style="display:none;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:12px;letter-spacing:1px;color:var(--muted2);text-transform:uppercase;">📅 Prochains événements</div>
+        <button onclick="showPage('agenda')" style="background:none;border:none;color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">Voir tout →</button>
+      </div>
+      <div id="dash-events-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+
+    <!-- Danseurs compatibles -->
+    <div id="dash-compat-section" style="display:none;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:12px;letter-spacing:1px;color:var(--muted2);text-transform:uppercase;">⚡ Compatibles près de toi</div>
+        <button onclick="showPage('network')" style="background:none;border:none;color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">Voir tout →</button>
+      </div>
+      <div id="dash-compat-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+
+    <!-- Favoris -->
+    <div id="dash-favoris-section" style="display:none;margin-bottom:20px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:12px;letter-spacing:1px;color:var(--muted2);text-transform:uppercase;margin-bottom:10px;">♥ Mes favoris</div>
       <div id="dash-favoris-list" style="display:flex;flex-direction:column;gap:8px;"></div>
     </div>
 
@@ -3023,6 +3057,9 @@ function afficherDashboard(d) {
     if (dashEmoji) dashEmoji.style.display = 'block';
   }
 
+  // Disponibilité
+  mettreAJourDispo(d.disponible);
+
   // Forcer la désactivation de toutes les pages puis activer dashboard
   document.querySelectorAll('.page').forEach(p => {
     p.classList.remove('active');
@@ -3033,7 +3070,182 @@ function afficherDashboard(d) {
   const dash = document.getElementById('page-dashboard');
   if (dash) dash.classList.add('active');
 
+  // Charger les sections enrichies
+  afficherActiviteDashboard();
+  afficherEventsDashboard();
+  afficherCompatiblesDashboard();
   afficherFavorisDashboard();
+}
+
+// ── Toggle disponibilité depuis le dashboard ──
+window.toggleDispoDashboard = async function() {
+  if (!window._currentUid || !window._db) return;
+  const btn = document.getElementById('dash-dispo-btn');
+  const dot = document.getElementById('dash-dispo-dot');
+  const lbl = document.getElementById('dash-dispo-label');
+  const estDispo = window._monProfil?.disponible !== false;
+  const nouvelleDispo = !estDispo;
+
+  if (nouvelleDispo) {
+    btn.style.background = 'rgba(0,245,155,0.08)';
+    btn.style.borderColor = 'rgba(0,245,155,0.25)';
+    dot.style.background = 'var(--green)';
+    dot.style.boxShadow = '0 0 8px var(--green)';
+    lbl.style.color = 'var(--green)';
+    lbl.textContent = 'DISPO';
+  } else {
+    btn.style.background = 'rgba(255,255,255,0.04)';
+    btn.style.borderColor = 'var(--border)';
+    dot.style.background = 'var(--muted)';
+    dot.style.boxShadow = 'none';
+    lbl.style.color = 'var(--muted)';
+    lbl.textContent = 'INDISPO';
+  }
+  if (window._monProfil) window._monProfil.disponible = nouvelleDispo;
+
+  try {
+    const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    await setDoc(doc(window._db, 'danseurs', window._currentUid), { disponible: nouvelleDispo }, { merge: true });
+  } catch(e) { console.error(e); }
+}
+
+function mettreAJourDispo(disponible) {
+  const btn = document.getElementById('dash-dispo-btn');
+  const dot = document.getElementById('dash-dispo-dot');
+  const lbl = document.getElementById('dash-dispo-label');
+  if (!btn) return;
+  if (disponible !== false) {
+    btn.style.background = 'rgba(0,245,155,0.08)';
+    btn.style.borderColor = 'rgba(0,245,155,0.25)';
+    dot.style.background = 'var(--green)';
+    dot.style.boxShadow = '0 0 8px var(--green)';
+    lbl.style.color = 'var(--green)';
+    lbl.textContent = 'DISPO';
+  } else {
+    btn.style.background = 'rgba(255,255,255,0.04)';
+    btn.style.borderColor = 'var(--border)';
+    dot.style.background = 'var(--muted)';
+    dot.style.boxShadow = 'none';
+    lbl.style.color = 'var(--muted)';
+    lbl.textContent = 'INDISPO';
+  }
+}
+
+// ── Activité récente ──
+async function afficherActiviteDashboard() {
+  const section = document.getElementById('dash-activite-section');
+  const list    = document.getElementById('dash-activite-list');
+  if (!section || !list || !window._monProfil) return;
+
+  const notifs = (window._monProfil.notifications || [])
+    .slice(-5).reverse();
+
+  if (notifs.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+
+  list.innerHTML = notifs.map(n => {
+    const ico  = n.type === 'nouveau_abonne' ? '👤' : n.type === 'nouveau_message' ? '💬' : '🔔';
+    const txt  = n.type === 'nouveau_abonne' ? 'Quelqu\'un te suit maintenant'
+               : n.type === 'nouveau_message' ? 'Tu as reçu un nouveau message'
+               : 'Nouvelle notification';
+    const date = n.date ? new Date(n.date).toLocaleDateString('fr-FR', { day:'numeric', month:'short' }) : '';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+      <div style="width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">${ico}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:600;">${txt}</div>
+        <div style="font-size:11px;color:var(--muted2);margin-top:2px;">${date}</div>
+      </div>
+      ${!n.lu ? '<div style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── Prochains événements ──
+async function afficherEventsDashboard() {
+  const section = document.getElementById('dash-events-section');
+  const list    = document.getElementById('dash-events-list');
+  if (!section || !list || !window._db) return;
+
+  try {
+    if (tousLesEvents.length === 0) {
+      const { collection, getDocs, query, orderBy } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+      const snap = await getDocs(query(collection(window._db, 'evenements'), orderBy('date','asc')));
+      snap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const events = tousLesEvents
+      .filter(e => e.date >= today)
+      .slice(0, 3);
+
+    if (events.length === 0) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+
+    const TYPE_CFG = {
+      soiree:   { emoji:'🎉', color:'var(--purple)' },
+      cours:    { emoji:'📚', color:'var(--blue)'   },
+      battle:   { emoji:'🏆', color:'var(--yellow)' },
+      workshop: { emoji:'🎓', color:'var(--green)'  },
+    };
+
+    list.innerHTML = events.map(ev => {
+      const cfg  = TYPE_CFG[ev.type] || TYPE_CFG.soiree;
+      const date = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'numeric', month:'short' }) : '';
+      const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + '€';
+      return `<div onclick="showPage('agenda');setTimeout(()=>ouvrirEvent('${ev.id}'),300)"
+        style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:border-color 0.2s;"
+        onmouseover="this.style.borderColor='rgba(0,245,155,0.2)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">${cfg.emoji}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ev.titre}</div>
+          <div style="font-size:11px;color:var(--muted2);margin-top:2px;">${date}${ev.ville ? ' · ' + ev.ville : ''}</div>
+        </div>
+        <div style="font-size:12px;font-weight:800;color:${cfg.color};flex-shrink:0;">${prix}</div>
+      </div>`;
+    }).join('');
+  } catch(e) { section.style.display = 'none'; }
+}
+
+// ── Danseurs compatibles ──
+async function afficherCompatiblesDashboard() {
+  const section = document.getElementById('dash-compat-section');
+  const list    = document.getElementById('dash-compat-list');
+  if (!section || !list || !window._monProfil || !window._db) return;
+
+  try {
+    if (tousLesDanseurs.length === 0) {
+      const { collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+      const snap = await getDocs(query(collection(window._db, 'danseurs'), where('visibilite','in',['public','amis'])));
+      snap.forEach(d => tousLesDanseurs.push({ ...d.data(), uid: d.id }));
+    }
+
+    const compatibles = tousLesDanseurs
+      .filter(d => d.uid !== window._currentUid)
+      .map(d => ({ ...d, score: calculerCompatibilite(window._monProfil, d) }))
+      .filter(d => d.score >= 25)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+
+    if (compatibles.length === 0) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+
+    list.innerHTML = compatibles.map(d => {
+      const nom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
+      const c   = couleurCompatibilite(d.score);
+      return `<div onclick="ouvrirProfilArtiste('${d.uid}')"
+        style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:border-color 0.2s;"
+        onmouseover="this.style.borderColor='${c}44'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden;position:relative;flex-shrink:0;">
+          ${d.photo ? `<img src="${d.photo}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:12px;">` : '💃'}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${nom}</div>
+          <div style="font-size:11px;color:var(--muted2);margin-top:2px;">📍 ${d.zone || ''}</div>
+        </div>
+        <div style="padding:3px 8px;border-radius:8px;background:${c}18;border:1px solid ${c}44;font-size:11px;font-weight:800;color:${c};flex-shrink:0;">⚡ ${d.score}%</div>
+      </div>`;
+    }).join('');
+  } catch(e) { section.style.display = 'none'; }
 }
 
 async function afficherFavorisDashboard() {
