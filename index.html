@@ -112,12 +112,11 @@ nav {
   padding-left: 20px;
   padding-right: 20px;
   padding-top: env(safe-area-inset-top);
-  padding-bottom: 0;
-  height: calc(56px + env(safe-area-inset-top));
+  padding-bottom: 10px;
+  height: calc(50px + env(safe-area-inset-top));
   display: flex !important;
   align-items: flex-end;
   justify-content: space-between;
-  padding-bottom: 10px;
   box-sizing: border-box;
   background: rgba(8,8,16,0.92);
   backdrop-filter: blur(20px);
@@ -238,7 +237,7 @@ nav {
 .back-btn {
   display: none;
   position: fixed;
-  top: calc(env(safe-area-inset-top) + 8px);
+  top: calc(env(safe-area-inset-top) + 6px);
   left: 12px; z-index: 99;
   width: 40px; height: 40px; border-radius: 12px;
   background: rgba(8,8,16,0.9);
@@ -251,6 +250,9 @@ nav {
 .back-btn.visible { display: flex; }
 
 /* ── PAGES suite ── */
+/* ── PAGES ── */
+.page{display:none;min-height:100vh;padding-top:calc(50px + env(safe-area-inset-top));position:relative;z-index:1;}
+.page.active{display:block;}
 body.logo-bar-visible .page{padding-top:calc(120px + max(20px, env(safe-area-inset-top)));}
 
 /* ══════════════════════════════
@@ -283,7 +285,7 @@ body.logo-bar-visible .page{padding-top:calc(120px + max(20px, env(safe-area-ins
     linear-gradient(90deg,rgba(0,245,155,0.03) 1px,transparent 1px);
   background-size:60px 60px;
 }
-.hero-content{max-width:700px;position:relative;z-index:1;padding-top:60px;}
+.hero-content{max-width:700px;position:relative;z-index:1;padding-top:16px;}
 .hero-badge{
   display:inline-flex;align-items:center;gap:8px;
   padding:8px 16px;border-radius:20px;
@@ -1226,7 +1228,7 @@ footer{
 
 @media(max-width:768px) {
   /* Pages — padding-top adapté au mobile */
-  .page { padding-bottom: 20px; min-height: 100vh; padding-top: calc(56px + env(safe-area-inset-top)) !important; }
+  .page { padding-bottom: 20px; min-height: 100vh; padding-top: calc(50px + env(safe-area-inset-top)) !important; }
   body.logo-bar-visible .page { padding-top: calc(50px + max(20px, env(safe-area-inset-top))) !important; }
   .agenda-page,
   .profile-page,
