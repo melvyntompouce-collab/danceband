@@ -1714,7 +1714,27 @@ if (isPWA) {
 
   <!-- Navigation -->
   <div class="drawer-nav">
-    <div class="drawer-section-title">Navigation</div>
+
+    <!-- Section compte (connecté) — EN HAUT -->
+    <div id="drawer-section-compte" style="display:none;">
+      <div class="drawer-section-title">Mon compte</div>
+      <button class="drawer-item" onclick="showPage('profile');closeDrawer();" id="di-profile">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Mon profil
+      </button>
+      <button class="drawer-item" onclick="showPage('profile');ouvrirEdition();closeDrawer();">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Modifier le profil
+      </button>
+      <button class="drawer-item" id="di-notifs" onclick="showPage('notifs');closeDrawer();" style="display:none;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Notifications
+        <span id="drawer-notif-badge" style="display:none;margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:800;padding:1px 6px;border-radius:20px;font-family:'Syne',sans-serif;"></span>
+      </button>
+    </div>
+
+    <!-- Navigation -->
+    <div class="drawer-section-title" style="margin-top:8px;">Navigation</div>
     <button class="drawer-item" onclick="goHome();closeDrawer();" id="di-home">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       Accueil
@@ -1735,11 +1755,6 @@ if (isPWA) {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
       Classement
     </button>
-    <button class="drawer-item" id="di-notifs" onclick="showPage('notifs');closeDrawer();" style="display:none;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      Notifications
-      <span id="drawer-notif-badge" style="display:none;margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:800;padding:1px 6px;border-radius:20px;font-family:'Syne',sans-serif;"></span>
-    </button>
 
     <!-- Section légal -->
     <div class="drawer-section-title" style="margin-top:8px;">Légal</div>
@@ -1756,18 +1771,6 @@ if (isPWA) {
       Mentions légales
     </button>
 
-    <!-- Section compte (connecté) -->
-    <div id="drawer-section-compte" style="display:none;">
-      <div class="drawer-section-title" style="margin-top:8px;">Mon compte</div>
-      <button class="drawer-item" onclick="showPage('profile');closeDrawer();" id="di-profile">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Mon profil
-      </button>
-      <button class="drawer-item" onclick="showPage('profile');ouvrirEdition();closeDrawer();">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Modifier le profil
-      </button>
-    </div>
   </div>
 
   <!-- Footer -->
