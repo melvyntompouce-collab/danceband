@@ -1367,6 +1367,200 @@ footer{
 /* ── ANIMATIONS ── */
 .fade-in{animation:fadeIn 0.5s ease both;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+/* ══════════════════════════════
+   PAGE: CONFIDENTIALITÉ
+══════════════════════════════ */
+#page-privacy {
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+.privacy-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.privacy-header {
+  padding: 40px 0 36px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.privacy-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green);
+  background: rgba(0,245,155,0.07);
+  border: 1px solid rgba(0,245,155,0.2);
+  border-radius: 20px;
+  padding: 4px 12px;
+  margin-bottom: 18px;
+}
+.privacy-title {
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-weight: 900;
+  font-size: clamp(36px, 7vw, 56px);
+  line-height: 1;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  margin: 0 0 14px;
+}
+.privacy-intro {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--muted2);
+  margin: 0;
+  max-width: 540px;
+}
+.privacy-section {
+  display: flex;
+  gap: 20px;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+}
+.privacy-section:last-child { border-bottom: none; }
+.privacy-section-number {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--green);
+  opacity: 0.45;
+  padding-top: 3px;
+  width: 24px;
+  font-family: 'Syne', sans-serif;
+}
+.privacy-section-content { flex: 1; }
+.privacy-section-content h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0 0 10px;
+  letter-spacing: 0.02em;
+}
+.privacy-section-content p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted2);
+  margin: 0 0 10px;
+}
+.privacy-section-content p:last-child { margin-bottom: 0; }
+.privacy-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.privacy-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.privacy-bullet {
+  flex-shrink: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-top: 7px;
+  opacity: 0.6;
+}
+.privacy-list li div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.privacy-list li strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.privacy-list li span {
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--muted2);
+}
+.privacy-note {
+  font-size: 12px !important;
+  color: var(--muted) !important;
+  font-style: italic;
+  border-left: 2px solid rgba(0,245,155,0.2);
+  padding-left: 10px;
+  margin-top: 14px !important;
+}
+.privacy-rights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin: 14px 0 16px;
+}
+.privacy-right {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  transition: border-color 0.2s;
+}
+.privacy-right:hover { border-color: rgba(0,245,155,0.2); }
+.privacy-right-icon {
+  font-size: 14px;
+  color: var(--green);
+  opacity: 0.55;
+  margin-bottom: 2px;
+}
+.privacy-right strong {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+}
+.privacy-right span {
+  font-size: 11px;
+  color: var(--muted2);
+  line-height: 1.5;
+}
+.privacy-link {
+  color: var(--green);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0,245,155,0.25);
+  transition: border-color 0.2s;
+}
+.privacy-link:hover { border-color: var(--green); }
+.privacy-footer-nav {
+  padding: 28px 0 0;
+}
+.privacy-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted2);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.privacy-back-btn:hover {
+  border-color: rgba(0,245,155,0.3);
+  color: var(--text);
+  background: rgba(0,245,155,0.04);
+}
+@media (min-width: 900px) {
+  .privacy-header { padding: 56px 0 44px; }
+  .privacy-rights-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
 </style>
 </head>
 <body>
@@ -1447,6 +1641,17 @@ if (isPWA) {
     <button class="drawer-item" onclick="showPage('ranking');closeDrawer();" id="di-ranking">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
       Classement
+    </button>
+
+    <!-- Section légal -->
+    <div class="drawer-section-title" style="margin-top:8px;">Légal</div>
+    <button class="drawer-item" onclick="showPage('privacy');closeDrawer();" id="di-privacy">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Politique de confidentialité
+    </button>
+    <button class="drawer-item" onclick="showPage('cgu');closeDrawer();" id="di-cgu">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Conditions générales d'utilisation
     </button>
 
     <!-- Section compte (connecté) -->
@@ -1696,9 +1901,9 @@ if (isPWA) {
     <div>
       <div class="footer-title">Légal</div>
       <div class="footer-links">
-        <a class="footer-link" href="#">Confidentialité</a>
-        <a class="footer-link" href="#">CGU</a>
-        <a class="footer-link" href="#">RGPD</a>
+        <a class="footer-link" href="#" onclick="showPage('privacy')">Confidentialité</a>
+        <a class="footer-link" href="#" onclick="showPage('cgu')">CGU</a>
+        <a class="footer-link" href="#" onclick="showPage('privacy')">RGPD</a>
       </div>
     </div>
   </footer>
@@ -1812,6 +2017,496 @@ if (isPWA) {
       </div>
 
     </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE: CONFIDENTIALITÉ ═══ -->
+<div class="page" id="page-privacy">
+  <div class="privacy-container">
+
+    <div class="privacy-header">
+      <div class="privacy-tag">RGPD · Dernière mise à jour : mars 2025</div>
+      <h1 class="privacy-title">Politique de<br>confidentialité</h1>
+      <p class="privacy-intro">
+        Chez HAKO, la protection de tes données personnelles est une priorité.
+        Cette page t'explique clairement quelles données nous collectons,
+        pourquoi, et comment tu peux les contrôler.
+      </p>
+    </div>
+
+    <div class="privacy-body">
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">01</div>
+        <div class="privacy-section-content">
+          <h2>Qui est responsable de tes données ?</h2>
+          <p>
+            Le responsable du traitement est <strong>HAKO</strong>, réseau social
+            dédié aux artistes et danseurs. Pour toute question relative à tes
+            données personnelles, tu peux nous contacter à l'adresse :
+            <a href="mailto:hakoagency@gmail.com" class="privacy-link">hakoagency@gmail.com</a>
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">02</div>
+        <div class="privacy-section-content">
+          <h2>Quelles données collectons-nous ?</h2>
+          <p>Nous collectons uniquement les données nécessaires au fonctionnement de HAKO :</p>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Adresse email</strong>
+                <span>Utilisée pour créer et sécuriser ton compte, et t'envoyer des notifications liées à l'application.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Profil artiste</strong>
+                <span>Nom d'artiste, disciplines pratiquées, disponibilités, et toute information que tu choisis de partager sur ton profil public ou privé.</span>
+              </div>
+            </li>
+          </ul>
+          <p class="privacy-note">
+            Nous ne collectons pas de données de localisation précise, de numéro de téléphone,
+            ni aucune donnée sensible au sens du RGPD.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">03</div>
+        <div class="privacy-section-content">
+          <h2>Pourquoi utilisons-nous ces données ?</h2>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Gestion de ton compte</strong>
+                <span>Créer, authentifier et maintenir ton compte HAKO.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Fonctionnalités de la plateforme</strong>
+                <span>Afficher ton profil, te mettre en relation avec d'autres artistes, gérer tes disponibilités.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Amélioration du service</strong>
+                <span>Analyser l'usage général de l'application pour en améliorer le fonctionnement (données agrégées et anonymisées).</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">04</div>
+        <div class="privacy-section-content">
+          <h2>Base légale des traitements</h2>
+          <p>Les traitements de tes données reposent sur les bases légales suivantes, conformément au RGPD (Règlement UE 2016/679) :</p>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Exécution du contrat</strong>
+                <span>Pour la création et la gestion de ton compte, ainsi que l'accès aux fonctionnalités de HAKO.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Intérêt légitime</strong>
+                <span>Pour l'amélioration du service, sur la base de données anonymisées.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">05</div>
+        <div class="privacy-section-content">
+          <h2>Partage de tes données</h2>
+          <p>Tes données ne sont jamais vendues à des tiers. Elles peuvent être transmises uniquement aux prestataires techniques nécessaires au fonctionnement de HAKO :</p>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Firebase (Google)</strong>
+                <span>Hébergement de la base de données, authentification et stockage. Données hébergées dans l'UE.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Vercel</strong>
+                <span>Hébergement de l'application web.</span>
+              </div>
+            </li>
+          </ul>
+          <p class="privacy-note">
+            Ces prestataires agissent en tant que sous-traitants et sont soumis à des obligations contractuelles strictes de confidentialité.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">06</div>
+        <div class="privacy-section-content">
+          <h2>Durée de conservation</h2>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Données de compte</strong>
+                <span>Conservées tant que ton compte est actif. En cas de suppression du compte, tes données sont effacées dans un délai de 30 jours.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Données de profil</strong>
+                <span>Supprimées immédiatement à la clôture du compte, sur simple demande.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">07</div>
+        <div class="privacy-section-content">
+          <h2>Tes droits</h2>
+          <p>Conformément au RGPD, tu disposes des droits suivants sur tes données personnelles :</p>
+          <div class="privacy-rights-grid">
+            <div class="privacy-right">
+              <span class="privacy-right-icon">◎</span>
+              <strong>Accès</strong>
+              <span>Obtenir une copie de tes données</span>
+            </div>
+            <div class="privacy-right">
+              <span class="privacy-right-icon">◈</span>
+              <strong>Rectification</strong>
+              <span>Corriger des données inexactes</span>
+            </div>
+            <div class="privacy-right">
+              <span class="privacy-right-icon">◉</span>
+              <strong>Effacement</strong>
+              <span>Demander la suppression de tes données</span>
+            </div>
+            <div class="privacy-right">
+              <span class="privacy-right-icon">◐</span>
+              <strong>Opposition</strong>
+              <span>T'opposer à certains traitements</span>
+            </div>
+            <div class="privacy-right">
+              <span class="privacy-right-icon">◑</span>
+              <strong>Portabilité</strong>
+              <span>Recevoir tes données dans un format lisible</span>
+            </div>
+            <div class="privacy-right">
+              <span class="privacy-right-icon">◒</span>
+              <strong>Limitation</strong>
+              <span>Restreindre l'utilisation de tes données</span>
+            </div>
+          </div>
+          <p>
+            Pour exercer ces droits, contacte-nous à
+            <a href="mailto:hakoagency@gmail.com" class="privacy-link">hakoagency@gmail.com</a>.
+            Tu as également le droit d'introduire une réclamation auprès de la
+            <a href="https://www.cnil.fr" target="_blank" class="privacy-link">CNIL</a>.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">08</div>
+        <div class="privacy-section-content">
+          <h2>Cookies et traceurs</h2>
+          <p>
+            HAKO n'utilise pas de cookies publicitaires ni de traceurs tiers à des fins
+            de ciblage commercial. Des cookies techniques strictement nécessaires
+            au fonctionnement de l'application (session, authentification) peuvent
+            être déposés. Ils ne nécessitent pas de consentement préalable.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">09</div>
+        <div class="privacy-section-content">
+          <h2>Modifications de cette politique</h2>
+          <p>
+            Cette politique peut être mise à jour pour refléter l'évolution du
+            service ou des obligations légales. En cas de modification substantielle,
+            tu seras informé par email ou via une notification dans l'application.
+            La date de dernière mise à jour figure toujours en haut de cette page.
+          </p>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="privacy-footer-nav">
+      <button class="privacy-back-btn" onclick="goBack()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Retour
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ PAGE: CGU ═══ -->
+<div class="page" id="page-cgu">
+  <div class="privacy-container">
+
+    <div class="privacy-header">
+      <div class="privacy-tag">Légal · Dernière mise à jour : mars 2025</div>
+      <h1 class="privacy-title">Conditions générales<br>d'utilisation</h1>
+      <p class="privacy-intro">
+        En utilisant HAKO, tu acceptes les présentes conditions. Elles définissent
+        les règles du réseau et les droits et obligations de chacun. Prends le temps
+        de les lire.
+      </p>
+    </div>
+
+    <div class="privacy-body">
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">01</div>
+        <div class="privacy-section-content">
+          <h2>Présentation du service</h2>
+          <p>
+            HAKO est un réseau social destiné aux artistes et danseurs, accessible
+            via l'application web disponible à l'adresse du site. Il permet de créer
+            un profil artiste, de rejoindre une communauté, de découvrir des événements
+            et de se connecter avec d'autres membres.
+          </p>
+          <p>
+            L'éditeur du service est HAKO. Pour tout contact :
+            <a href="mailto:hakoagency@gmail.com" class="privacy-link">hakoagency@gmail.com</a>
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">02</div>
+        <div class="privacy-section-content">
+          <h2>Acceptation des conditions</h2>
+          <p>
+            L'accès et l'utilisation de HAKO impliquent l'acceptation pleine et entière
+            des présentes CGU. Si tu n'acceptes pas ces conditions, tu ne dois pas utiliser
+            le service.
+          </p>
+          <p>
+            HAKO se réserve le droit de modifier les présentes CGU à tout moment.
+            Les modifications prennent effet dès leur publication. En continuant à
+            utiliser le service après modification, tu acceptes les nouvelles conditions.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">03</div>
+        <div class="privacy-section-content">
+          <h2>Création de compte</h2>
+          <p>Pour accéder aux fonctionnalités de HAKO, tu dois créer un compte en fournissant :</p>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Une adresse email valide</strong>
+                <span>Elle sera utilisée pour l'authentification et les communications liées au service.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Un mot de passe sécurisé</strong>
+                <span>Tu es responsable de la confidentialité de ton mot de passe. HAKO ne pourra être tenu responsable en cas d'accès non autorisé résultant d'une négligence de ta part.</span>
+              </div>
+            </li>
+          </ul>
+          <p>
+            Tu t'engages à fournir des informations exactes et à les maintenir à jour.
+            Un seul compte par personne est autorisé.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">04</div>
+        <div class="privacy-section-content">
+          <h2>Règles de la communauté</h2>
+          <p>En tant que membre de HAKO, tu t'engages à :</p>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Respecter les autres membres</strong>
+                <span>Tout comportement harcelant, discriminatoire, menaçant ou irrespectueux est strictement interdit.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Ne publier que du contenu dont tu détiens les droits</strong>
+                <span>Tu ne dois pas publier de contenu protégé par des droits d'auteur sans autorisation.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Ne pas usurper l'identité d'un autre artiste</strong>
+                <span>Ton profil doit te représenter toi, et non une autre personne.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Ne pas utiliser le service à des fins commerciales non autorisées</strong>
+                <span>La prospection commerciale, le spam et la publicité non sollicitée sont interdits.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Ne pas tenter de compromettre la sécurité du service</strong>
+                <span>Toute tentative de piratage, d'injection de code malveillant ou de perturbation du service est interdite et passible de poursuites.</span>
+              </div>
+            </li>
+          </ul>
+          <p class="privacy-note">
+            HAKO se réserve le droit de suspendre ou supprimer tout compte qui ne respecterait
+            pas ces règles, sans préavis ni remboursement.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">05</div>
+        <div class="privacy-section-content">
+          <h2>Contenu publié par les utilisateurs</h2>
+          <p>
+            Tu restes propriétaire des contenus que tu publies sur HAKO (photos de profil,
+            informations artistiques, etc.). En les publiant, tu accordes à HAKO une licence
+            non exclusive, mondiale et gratuite pour les afficher dans le cadre du
+            fonctionnement du service.
+          </p>
+          <p>
+            Tu garantis que les contenus que tu publies ne violent aucun droit de tiers
+            (droits d'auteur, droits à l'image, marques) et ne contiennent aucun
+            contenu illicite.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">06</div>
+        <div class="privacy-section-content">
+          <h2>Disponibilité du service</h2>
+          <p>
+            HAKO s'efforce d'assurer la disponibilité du service 24h/24 et 7j/7.
+            Cependant, des interruptions peuvent survenir pour maintenance, mise à jour
+            ou en cas d'incident technique. HAKO ne saurait être tenu responsable
+            des conséquences d'une indisponibilité temporaire.
+          </p>
+          <p>
+            Le service est fourni "tel quel". HAKO ne garantit pas que le service
+            sera exempt de bugs ou d'erreurs.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">07</div>
+        <div class="privacy-section-content">
+          <h2>Propriété intellectuelle</h2>
+          <p>
+            L'ensemble des éléments constituant HAKO (logo, design, code, textes,
+            architecture du service) est la propriété exclusive de HAKO et est protégé
+            par les lois applicables en matière de propriété intellectuelle.
+          </p>
+          <p>
+            Toute reproduction, représentation, modification ou exploitation non autorisée
+            de ces éléments est strictement interdite.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">08</div>
+        <div class="privacy-section-content">
+          <h2>Suspension et suppression de compte</h2>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Par l'utilisateur</strong>
+                <span>Tu peux supprimer ton compte à tout moment en nous contactant à <a href="mailto:hakoagency@gmail.com" class="privacy-link">hakoagency@gmail.com</a>. Tes données seront effacées dans un délai de 30 jours.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Par HAKO</strong>
+                <span>HAKO peut suspendre ou supprimer un compte en cas de violation des présentes CGU, sans préavis. Une notification par email sera adressée dans la mesure du possible.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">09</div>
+        <div class="privacy-section-content">
+          <h2>Limitation de responsabilité</h2>
+          <p>
+            HAKO ne saurait être tenu responsable des dommages directs ou indirects
+            résultant de l'utilisation ou de l'impossibilité d'utiliser le service,
+            ni des contenus publiés par les utilisateurs.
+          </p>
+          <p>
+            Les interactions entre membres se font sous leur entière responsabilité.
+            HAKO n'intervient pas dans les relations entre utilisateurs et n'est
+            pas partie aux échanges organisés via la plateforme.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">10</div>
+        <div class="privacy-section-content">
+          <h2>Droit applicable</h2>
+          <p>
+            Les présentes CGU sont soumises au droit français. En cas de litige,
+            et à défaut de résolution amiable, les tribunaux français seront seuls compétents.
+          </p>
+          <p>
+            Pour toute réclamation ou question, contacte-nous à
+            <a href="mailto:hakoagency@gmail.com" class="privacy-link">hakoagency@gmail.com</a>.
+          </p>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="privacy-footer-nav">
+      <button class="privacy-back-btn" onclick="goBack()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Retour
+      </button>
+    </div>
+
   </div>
 </div>
 
