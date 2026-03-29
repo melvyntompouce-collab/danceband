@@ -8039,8 +8039,9 @@ onAuthStateChanged(auth, async (user) => {
     try { await chargerProfil(user.uid); }   catch(e) { console.error('❌ chargerProfil:', e); }
     try { await chargerAbonnements(); }       catch(e) { console.error('❌ chargerAbonnements:', e); }
     try { await chargerFavoris(); }           catch(e) { console.error('❌ chargerFavoris:', e); }
-    // Dashboard affiché APRÈS que tout soit chargé
     afficherDashboard(window._monProfil);
+    // Lever le blur KIMA si la page est déjà ouverte
+    brctLeverBlur();
   } else {
     console.log('👤 Non connecté');
     afficherBarreLogoDeconnecte(true);
@@ -8226,23 +8227,26 @@ async function brctChargerCountWaitlist() {
   } catch(e) {}
 }
 
+function brctLeverBlur() {
+  const wrap    = document.getElementById('brct-blur-wrap');
+  if (!wrap) return;
+  const blurred = document.getElementById('brct-blurred-content');
+  const overlay = wrap.querySelector('[style*="position:absolute"]');
+  if (blurred) {
+    blurred.style.filter          = 'none';
+    blurred.style.pointerEvents   = '';
+    blurred.style.maskImage        = 'none';
+    blurred.style.webkitMaskImage  = 'none';
+  }
+  if (overlay) overlay.style.display = 'none';
+}
+
 function initPageBracelet() {
   brctSetMode(window._monProfil?.modeBracelet || 'public');
   brctChargerCountWaitlist();
   const input = document.getElementById('brct-waitlist-email');
   if (input && window._monProfil?.email) input.value = window._monProfil.email;
-
-  // Si connecté → lever le blur
-  const wrap = document.getElementById('brct-blur-wrap');
-  if (wrap) {
-    if (window._currentUid) {
-      // Connecté : contenu visible, pas d'overlay
-      const blurred = document.getElementById('brct-blurred-content');
-      const overlay = wrap.querySelector('[style*="position:absolute"]');
-      if (blurred) { blurred.style.filter = 'none'; blurred.style.pointerEvents = ''; blurred.style.maskImage = 'none'; blurred.style.webkitMaskImage = 'none'; }
-      if (overlay) overlay.style.display = 'none';
-    }
-  }
+  if (window._currentUid) brctLeverBlur();
 }
 
 window.brctUnlock = function() {
