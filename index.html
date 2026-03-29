@@ -435,7 +435,6 @@ body.pwa nav {
   display:flex;align-items:center;justify-content:center;
   padding:40px 20px;
 }
-}
 .auth-box{
   width:100%;max-width:480px;
   background:var(--card);border:1px solid var(--border);
@@ -1363,6 +1362,26 @@ footer{
   /* Réseau */
   .network-layout { max-width:1400px !important; }
 }
+
+/* ── Hover utilitaires (remplace onmouseover inline) ── */
+.hover-green:hover { border-color: rgba(0,245,155,0.3) !important; }
+.hover-blue:hover   { border-color: rgba(77,159,255,0.3) !important; }
+.hover-purple:hover { border-color: rgba(155,93,229,0.3) !important; }
+.hover-yellow:hover { border-color: rgba(255,217,61,0.3) !important; }
+.hover-red-text:hover { border-color: rgba(255,77,109,0.4) !important; color: var(--red) !important; }
+.hover-text:hover { border-color: rgba(255,255,255,0.2) !important; color: var(--text) !important; }
+.dash-nav-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  color: var(--text);
+}
+.dash-nav-card:hover { border-color: rgba(0,245,155,0.25); }
+.dash-nav-card:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
 
 /* ── ANIMATIONS ── */
 .fade-in{animation:fadeIn 0.5s ease both;}
@@ -3435,7 +3454,7 @@ if (isPWA) {
   <!-- Waitlist -->
   <div class="brct-section">
     <div class="brct-waitlist">
-      <div style="font-size:32px;margin-bottom:12px;">⌚</div>
+      <div style="font-size:32px;margin-bottom:12px;">🔗</div>
       <div class="brct-waitlist-title">Rejoins la liste d'attente</div>
       <div class="brct-waitlist-sub">Le KIMA est en développement. Sois parmi les premiers à le recevoir à sa sortie. Aucun paiement requis.</div>
       <div id="brct-waitlist-ok" style="display:none;padding:12px 20px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.3);border-radius:12px;font-size:13px;color:var(--green);font-weight:700;max-width:400px;margin:0 auto;">
@@ -3519,22 +3538,22 @@ if (isPWA) {
 
     <!-- 4 cards navigation -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;">
-      <button onclick="showPage('network')" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 14px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+      <button onclick="showPage('network')" class="dash-nav-card">
         <div style="font-size:20px;margin-bottom:8px;">🌐</div>
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Réseau</div>
         <div style="font-size:10px;color:var(--muted2);margin-top:3px;">Trouve des danseurs</div>
       </button>
-      <button onclick="showPage('agenda')" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 14px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(77,159,255,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+      <button onclick="showPage('agenda')" class="dash-nav-card">
         <div style="font-size:20px;margin-bottom:8px;">📅</div>
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Agenda</div>
         <div style="font-size:10px;color:var(--muted2);margin-top:3px;">Soirées & cours</div>
       </button>
-      <button onclick="showPage('messages')" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 14px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(155,93,229,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+      <button onclick="showPage('messages')" class="dash-nav-card">
         <div style="font-size:20px;margin-bottom:8px;">💬</div>
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Messages</div>
         <div style="font-size:10px;color:var(--muted2);margin-top:3px;" id="dash-msg-label">Tes conversations</div>
       </button>
-      <button onclick="showPage('ranking')" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 14px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(255,217,61,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+      <button onclick="showPage('ranking')" class="dash-nav-card">
         <div style="font-size:20px;margin-bottom:8px;">🏆</div>
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Classement</div>
         <div style="font-size:10px;color:var(--muted2);margin-top:3px;" id="dash-rank-label">Ton rang</div>
@@ -3582,6 +3601,17 @@ if (isPWA) {
         </div>
       </div>
 
+    </div>
+
+    <!-- État vide — nouvel utilisateur (affiché si aucune section enrichie n'est visible) -->
+    <div id="dash-empty-state" style="display:none;text-align:center;padding:40px 20px;background:var(--card);border:1px solid var(--border);border-radius:20px;margin-top:4px;">
+      <div style="font-size:40px;margin-bottom:14px;">✨</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:8px;">Bienvenue sur HAKO</div>
+      <div style="font-size:13px;color:var(--muted2);line-height:1.7;max-width:300px;margin:0 auto 20px;">Complète ton profil et explore le réseau pour rencontrer des danseurs près de chez toi.</div>
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:280px;margin:0 auto;">
+        <button onclick="showPage('profile')" style="padding:12px 20px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;border:none;cursor:pointer;">Compléter mon profil →</button>
+        <button onclick="showPage('network')" style="padding:12px 20px;border-radius:12px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">Explorer le réseau</button>
+      </div>
     </div>
 
   </div>
@@ -4298,8 +4328,6 @@ if (isPWA) {
             <button class="style-tag" onclick="toggleStyle(this)">Classique</button>
             <button class="style-tag" onclick="toggleStyle(this)">Electro</button>
             <button class="style-tag" onclick="toggleStyle(this)">Voguing</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Modern Jazz</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Street Jazz</button>
             <button class="style-tag" onclick="toggleStyle(this)">Bharata Natyam</button>
             <button class="style-tag" onclick="toggleStyle(this)">Claquettes</button>
             <button class="style-tag" onclick="toggleStyle(this)">Tango</button>
@@ -4929,6 +4957,17 @@ function afficherDashboard(d) {
   afficherEventsDashboard();
   afficherCompatiblesDashboard();
   afficherFavorisDashboard();
+
+  // Afficher l'état vide si aucune section enrichie n'est visible après chargement
+  setTimeout(() => {
+    const sections = ['dash-activite-section','dash-events-section','dash-compat-section','dash-favoris-section'];
+    const auMoinsUneVisible = sections.some(id => {
+      const el = document.getElementById(id);
+      return el && el.style.display !== 'none';
+    });
+    const emptyState = document.getElementById('dash-empty-state');
+    if (emptyState) emptyState.style.display = auMoinsUneVisible ? 'none' : 'block';
+  }, 1500);
 }
 
 // ── Toggle disponibilité depuis le dashboard ──
@@ -5086,6 +5125,23 @@ window.clicNotif = async function(index) {
 
 window.marquerToutLu = async function() {
   if (!window._monProfil || !window._db || !window._currentUid) return;
+  const nonLues = (window._monProfil.notifications || []).filter(n => !n.lu);
+  if (nonLues.length === 0) {
+    // Feedback visuel : rien à faire
+    const btn = document.querySelector('[onclick="marquerToutLu()"]');
+    if (btn) {
+      const original = btn.textContent;
+      btn.textContent = '✓ Tout est lu';
+      btn.style.color = 'var(--green)';
+      btn.style.borderColor = 'rgba(0,245,155,0.3)';
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.style.color = '';
+        btn.style.borderColor = '';
+      }, 2000);
+    }
+    return;
+  }
   const allNotifs = (window._monProfil.notifications || []).map(n => ({ ...n, lu: true }));
   window._monProfil.notifications = allNotifs;
   mettreAJourBadgeNotif(allNotifs);
@@ -5417,10 +5473,12 @@ document.querySelectorAll('.agenda-filter').forEach(f => {
   });
 });
 
-// ── Filter chips ──
+// ── Filter chips — scoped par conteneur parent ──
 document.querySelectorAll('.filter-chip').forEach(c => {
   c.addEventListener('click', function() {
-    document.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('on'));
+    const container = this.closest('[id^="page-"], .network-list-header, [style*="max-width:680px"]');
+    const scope = container || document;
+    scope.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('on'));
     this.classList.add('on');
   });
 });
@@ -8210,6 +8268,7 @@ window.brctRejoindreWaitlist = async function brctRejoindreWaitlist() {
     });
     document.getElementById('brct-waitlist-form-wrap').style.display = 'none';
     document.getElementById('brct-waitlist-ok').style.display = 'block';
+    localStorage.setItem('hako_waitlist_joined', '1');
     brctChargerCountWaitlist();
   } catch(e) {
     console.error('Erreur waitlist:', e);
@@ -8247,6 +8306,14 @@ function initPageBracelet() {
   const input = document.getElementById('brct-waitlist-email');
   if (input && window._monProfil?.email) input.value = window._monProfil.email;
   if (window._currentUid) brctLeverBlur();
+
+  // Persistance état waitlist via localStorage
+  if (localStorage.getItem('hako_waitlist_joined') === '1') {
+    const formWrap = document.getElementById('brct-waitlist-form-wrap');
+    const okDiv    = document.getElementById('brct-waitlist-ok');
+    if (formWrap) formWrap.style.display = 'none';
+    if (okDiv)    okDiv.style.display    = 'block';
+  }
 }
 
 window.brctUnlock = function() {
