@@ -3304,7 +3304,7 @@ if (isPWA) {
       </div>
       <div class="brct-spec">
         <div class="brct-spec-ico">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.23h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h2"/><path d="M17 12h2"/><path d="M9 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z" fill="none"/><path d="M3 8c0 0 0-4 9-4s9 4 9 4"/><path d="M3 16c0 0 0 4 9 4s9-4 9-4"/></svg>
         </div>
         <div class="brct-spec-label">Retour haptique</div>
         <div class="brct-spec-val">Vibreur intégré</div>
@@ -7955,7 +7955,7 @@ const BRCT_MODES = {
 
 let brctModeActuel = 'public';
 
-function brctSetMode(mode) {
+window.brctSetMode = function brctSetMode(mode) {
   brctModeActuel = mode;
   const cfg = BRCT_MODES[mode];
   cfg.leds.forEach((color, i) => {
@@ -7981,28 +7981,52 @@ function brctSetMode(mode) {
 }
 
 let brctGesteEnCours = false;
-function brctAnimerGeste() {
+window.brctAnimerGeste = function brctAnimerGeste() {
   if (brctGesteEnCours) return;
   brctGesteEnCours = true;
-  const wL = document.getElementById('brct-w-left');
-  const wR = document.getElementById('brct-w-right');
+  const wL    = document.getElementById('brct-w-left');
+  const wR    = document.getElementById('brct-w-right');
   const flash = document.getElementById('brct-flash');
   const label = document.getElementById('brct-geste-label');
+  const leds  = document.querySelectorAll('#brct-geste-zone .w-led');
   if (!wL || !wR) return;
+
+  // Reset
   wL.classList.remove('contact'); wR.classList.remove('contact');
   flash.classList.remove('visible');
-  if (label) label.textContent = 'Approche...';
-  setTimeout(() => { wL.classList.add('contact'); wR.classList.add('contact'); }, 400);
-  setTimeout(() => { flash.classList.add('visible'); if (label) label.textContent = '✓ Profil échangé !'; }, 900);
+  if (label) { label.textContent = 'Approche...'; label.style.color = 'var(--muted2)'; }
+
+  // Phase 1 — approche
+  setTimeout(() => {
+    wL.classList.add('contact');
+    wR.classList.add('contact');
+  }, 500);
+
+  // Phase 2 — contact + flash + pulse LEDs
+  setTimeout(() => {
+    flash.classList.add('visible');
+    if (label) { label.textContent = '✓ Profil échangé !'; label.style.color = 'var(--green)'; }
+    // Pulse LEDs
+    leds.forEach(led => {
+      led.style.transform = 'scale(1.6)';
+      led.style.transition = 'transform 0.15s ease';
+    });
+    setTimeout(() => {
+      leds.forEach(led => { led.style.transform = 'scale(1)'; });
+    }, 200);
+  }, 1000);
+
+  // Phase 3 — écartement + reset
   setTimeout(() => {
     flash.classList.remove('visible');
-    wL.classList.remove('contact'); wR.classList.remove('contact');
-    if (label) label.textContent = '';
+    wL.classList.remove('contact');
+    wR.classList.remove('contact');
+    if (label) { label.textContent = ''; }
     brctGesteEnCours = false;
-  }, 2200);
+  }, 2400);
 }
 
-async function brctRejoindreWaitlist() {
+window.brctRejoindreWaitlist = async function brctRejoindreWaitlist() {
   const input = document.getElementById('brct-waitlist-email');
   const errDiv = document.getElementById('brct-waitlist-error');
   const email = input?.value.trim();
