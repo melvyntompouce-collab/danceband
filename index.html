@@ -1649,194 +1649,6 @@ footer{
   box-shadow: 0 0 6px var(--green);
 }
 
-
-/* ══════════════════════════════
-   ONBOARDING OVERLAY
-══════════════════════════════ */
-#onboarding-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 500;
-  background: rgba(8,8,16,0.96);
-  backdrop-filter: blur(20px);
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-#onboarding-overlay.open { display: flex; }
-
-.onb-box {
-  width: 100%;
-  max-width: 440px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 28px;
-  padding: 36px 32px 32px;
-  position: relative;
-  overflow: hidden;
-}
-.onb-box::before {
-  content: '';
-  position: absolute;
-  top: -60px; right: -60px;
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(0,245,155,0.08) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-/* Progress bar */
-.onb-progress {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 32px;
-}
-.onb-step-dot {
-  flex: 1;
-  height: 3px;
-  border-radius: 2px;
-  background: var(--border);
-  transition: background 0.3s ease;
-}
-.onb-step-dot.done { background: var(--green); }
-.onb-step-dot.active { background: var(--green); opacity: 0.5; }
-
-.onb-emoji { font-size: 40px; margin-bottom: 16px; display: block; }
-.onb-title {
-  font-family: 'Big Shoulders Display', sans-serif;
-  font-weight: 900;
-  font-size: 32px;
-  letter-spacing: -0.5px;
-  line-height: 1.05;
-  margin-bottom: 10px;
-}
-.onb-sub {
-  font-size: 14px;
-  color: var(--muted2);
-  line-height: 1.7;
-  margin-bottom: 28px;
-}
-
-.onb-btn {
-  width: 100%;
-  padding: 15px;
-  border-radius: 14px;
-  background: var(--green);
-  color: #080810;
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 15px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 0.3px;
-}
-.onb-btn:hover { background: #00d485; transform: translateY(-1px); }
-
-.onb-btn-secondary {
-  width: 100%;
-  padding: 13px;
-  border-radius: 14px;
-  background: transparent;
-  color: var(--muted2);
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 10px;
-}
-.onb-btn-secondary:hover { border-color: var(--muted2); color: var(--text); }
-
-/* Step 2 — photo upload */
-.onb-avatar-zone {
-  width: 100px; height: 100px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, var(--green), var(--purple));
-  margin: 0 auto 24px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 36px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.2s;
-  border: 2px solid transparent;
-}
-.onb-avatar-zone:hover { transform: scale(1.04); border-color: var(--green); }
-.onb-avatar-zone img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 22px; }
-.onb-avatar-hint {
-  font-size: 12px;
-  color: var(--muted2);
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-/* Step 3 — dispo toggle */
-.onb-dispo-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-.onb-dispo-toggle:hover { border-color: rgba(0,245,155,0.3); }
-.onb-toggle-track {
-  width: 44px; height: 24px;
-  border-radius: 12px;
-  background: var(--green);
-  position: relative;
-  transition: background 0.2s;
-  flex-shrink: 0;
-}
-.onb-toggle-track.off { background: var(--border); }
-.onb-toggle-thumb {
-  position: absolute;
-  top: 3px; left: 3px;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  background: #fff;
-  transition: transform 0.2s;
-}
-.onb-toggle-track:not(.off) .onb-toggle-thumb { transform: translateX(20px); }
-
-/* Step 4 — features grid */
-.onb-features {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 24px;
-}
-.onb-feature {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px 12px;
-  text-align: center;
-}
-.onb-feature-ico { font-size: 22px; margin-bottom: 6px; }
-.onb-feature-label { font-size: 11px; font-weight: 700; color: var(--muted2); font-family: 'Syne', sans-serif; line-height: 1.4; }
-
-/* ── Bracelet option onboarding ── */
-.onb-bracelet-opt {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1.5px solid var(--border);
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.18s;
-}
-.onb-bracelet-opt:hover { background: rgba(255,255,255,0.03); }
-
 </style>
 </head>
 <body>
@@ -2842,7 +2654,7 @@ if (isPWA) {
               <span class="privacy-bullet"></span>
               <div>
                 <strong>Contact</strong>
-                <span><a href="mailto:hakoagency@gmail.com" class="privacy-link">hakoagency@gmail.com</a></span>
+                <span><a href="/cdn-cgi/l/email-protection#fe969f95919f999b909d87be99939f9792d09d9193" class="privacy-link"><span class="__cf_email__" data-cfemail="e58d848e8a8482808b869ca58288848c89cb868a88">[email&#160;protected]</span></a></span>
               </div>
             </li>
           </ul>
@@ -2911,7 +2723,7 @@ if (isPWA) {
             de tes données.
           </p>
           <p>
-            Pour exercer ces droits : <a href="mailto:hakoagency@gmail.com" class="privacy-link">hakoagency@gmail.com</a>
+            Pour exercer ces droits : <a href="/cdn-cgi/l/email-protection#0a626b61656b6d6f6469734a6d676b636624696567" class="privacy-link"><span class="__cf_email__" data-cfemail="462e272d2927212328253f06212b272f2a6825292b">[email&#160;protected]</span></a>
           </p>
           <p>
             Tu peux également introduire une réclamation auprès de la
@@ -2963,7 +2775,7 @@ if (isPWA) {
           </p>
           <p>
             Pour tout contact ou réclamation :
-            <a href="mailto:hakoagency@gmail.com" class="privacy-link">hakoagency@gmail.com</a>
+            <a href="/cdn-cgi/l/email-protection#d7bfb6bcb8b6b0b2b9b4ae97b0bab6bebbf9b4b8ba" class="privacy-link"><span class="__cf_email__" data-cfemail="d9b1b8b2b6b8bebcb7baa099beb4b8b0b5f7bab6b4">[email&#160;protected]</span></a>
           </p>
         </div>
       </section>
@@ -3378,32 +3190,46 @@ if (isPWA) {
       </div>
 
       <!-- Input zone -->
-      <div style="padding:10px 12px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg);">
+      <div style="padding:10px 12px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg);padding-bottom:max(10px, env(safe-area-inset-bottom));">
 
-        <!-- Waveform enregistrement (caché par défaut) -->
+        <!-- Waveform enregistrement -->
         <div id="waveform-zone" style="display:none;align-items:center;gap:12px;padding:8px 4px;margin-bottom:8px;">
-          <div style="font-size:12px;color:var(--red);font-weight:700;font-family:'Syne',sans-serif;white-space:nowrap;">🔴 <span id="waveform-timer">0:00</span></div>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1s ease infinite;"></div>
+            <span id="waveform-timer" style="font-size:12px;color:var(--red);font-weight:700;font-family:'Syne',sans-serif;">0:00</span>
+          </div>
           <canvas id="waveform-canvas" style="flex:1;height:40px;border-radius:8px;background:rgba(255,77,109,0.06);"></canvas>
-          <button onclick="annulerEnregistrement()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);cursor:pointer;font-size:14px;flex-shrink:0;">✕</button>
+          <button onclick="annulerEnregistrement()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
 
         <!-- Barre input normale -->
         <div id="input-zone" style="display:flex;gap:8px;align-items:flex-end;">
+
           <!-- Bouton photo -->
-          <button onclick="document.getElementById('msg-photo-input').click()" style="width:40px;height:40px;border-radius:50%;background:var(--card2);border:1px solid var(--border);color:var(--muted2);cursor:pointer;font-size:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">🖼️</button>
+          <button id="btn-photo-msg" onclick="document.getElementById('msg-photo-input').click()" title="Envoyer une photo" style="width:40px;height:40px;border-radius:50%;background:var(--card2);border:1px solid var(--border);color:var(--muted2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </button>
           <input type="file" id="msg-photo-input" accept="image/*" style="display:none" onchange="envoyerPhoto(this)">
 
           <!-- Input texte -->
-          <input id="msg-input" type="text" placeholder="Message..." style="flex:1;padding:10px 16px;border-radius:22px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;min-width:0;" onkeydown="if(event.key==='Enter')envoyerMessage()">
+          <input id="msg-input" type="text" placeholder="Message..." style="flex:1;padding:10px 16px;border-radius:22px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;min-width:0;transition:border-color 0.2s;" onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')envoyerMessage()">
 
           <!-- Bouton vocal -->
           <button id="btn-vocal"
             onmousedown="demarrerEnregistrement()" ontouchstart="event.preventDefault();demarrerEnregistrement()"
             onmouseup="arreterEnregistrement()"   ontouchend="event.preventDefault();arreterEnregistrement()"
-            style="width:40px;height:40px;border-radius:50%;background:var(--card2);border:1px solid var(--border);color:var(--muted2);cursor:pointer;font-size:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;user-select:none;-webkit-user-select:none;">🎤</button>
+            title="Message vocal (maintenir appuyé)"
+            style="width:40px;height:40px;border-radius:50%;background:var(--card2);border:1px solid var(--border);color:var(--muted2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;user-select:none;-webkit-user-select:none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
 
           <!-- Bouton envoyer -->
-          <button onclick="envoyerMessage()" style="width:40px;height:40px;border-radius:50%;background:var(--green);border:none;cursor:pointer;font-size:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">↑</button>
+          <button onclick="envoyerMessage()" title="Envoyer" style="width:40px;height:40px;border-radius:50%;background:var(--green);border:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#080810" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+
         </div>
       </div>
     </div>
@@ -4096,7 +3922,7 @@ if (isPWA) {
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── Navigation avec animations ──
 let pageHistory = [];
 let currentPage = 'home';
@@ -4154,7 +3980,8 @@ function showPage(id) {
   window.scrollTo(0, 0);
 
   // Actions spécifiques par page
-  if (id === 'notifs') setTimeout(afficherPageNotifs, 160);
+  if (id === 'notifs')   setTimeout(afficherPageNotifs, 160);
+  if (id === 'messages') setTimeout(chargerMessages, 160);
 
   // Sync mobile nav
   document.querySelectorAll('.mn-item').forEach(i => i.classList.remove('active'));
@@ -6161,8 +5988,9 @@ window.envoyerPhoto = async function(input) {
   const file = input.files[0];
   if (file.size > 5 * 1024 * 1024) { alert('⚠️ Photo trop lourde (max 5MB)'); return; }
 
-  const btnPhoto = document.querySelector('[onclick*="msg-photo-input"]');
-  if (btnPhoto) btnPhoto.textContent = '⏳';
+  const btnPhoto = document.getElementById('btn-photo-msg');
+  const svgPhoto = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
+  if (btnPhoto) btnPhoto.style.opacity = '0.4';
 
   try {
     // Upload sur Firebase Storage
@@ -6177,10 +6005,10 @@ window.envoyerPhoto = async function(input) {
     const photoUrl = await getDownloadURL(storageRef);
 
     await _envoyerDansConv({ type: 'photo', photoUrl, texte: '📷 Photo', repondA: null });
-    if (btnPhoto) btnPhoto.textContent = '🖼️';
+    if (btnPhoto) btnPhoto.style.opacity = '1';
   } catch(e) {
     console.error('Erreur photo:', e);
-    if (btnPhoto) btnPhoto.textContent = '🖼️';
+    if (btnPhoto) btnPhoto.style.opacity = '1';
   }
   input.value = '';
 }
@@ -6327,7 +6155,7 @@ window.arreterEnregistrement = async function() {
 
       await uploadBytes(storageRef, audioBlob);
       const audioUrl = await getDownloadURL(storageRef);
-      await _envoyerDansConv({ type: 'audio', audioUrl, texte: '🎤 Message vocal', repondA: null });
+      await _envoyerDansConv({ type: 'audio', audioUrl, texte: 'Message vocal', repondA: null });
 
       mediaRecorder.stream.getTracks().forEach(t => t.stop());
     } catch(e) {
@@ -6963,8 +6791,8 @@ window.inscrire = async function() {
 
     setTimeout(() => {
       chargerProfil(uid);
-      lancerOnboarding(nomAffiche);
-    }, 1000);
+      window.showPage('profile');
+    }, 1500);
 
   } catch(e) {
     btn.textContent = 'Créer mon profil →';
@@ -7547,308 +7375,6 @@ document.dispatchEvent(new Event('firebase-ready'));
     if (el) el.textContent = '—';
   }
 })();
-
-// ════════════════════════════════
-// ONBOARDING
-// ════════════════════════════════
-let _onbDispo = true;
-let _onbBracelet = 'public';
-
-function lancerOnboarding(nomAffiche) {
-  // Prénom dans le titre
-  const prenomEl = document.getElementById('onb-prenom');
-  if (prenomEl) prenomEl.textContent = nomAffiche ? nomAffiche.split(' ')[0] : 'sur HAKO';
-  // Initiale dans avatar
-  const emoji = document.getElementById('onb-avatar-emoji');
-  if (emoji) emoji.textContent = (nomAffiche?.[0] || '?').toUpperCase();
-  // Hover sur zone avatar
-  const zone = document.getElementById('onb-avatar-zone');
-  const ov   = document.getElementById('onb-avatar-overlay');
-  if (zone && ov) {
-    zone.addEventListener('mouseenter', () => ov.style.opacity = '1');
-    zone.addEventListener('mouseleave', () => ov.style.opacity = '0');
-  }
-  document.getElementById('onboarding-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  _onbDispo = true;
-  _onbBracelet = 'public';
-  onbGoStep(1);
-}
-
-function onbGoStep(n) {
-  const content = document.getElementById('onb-content');
-  // Fade out
-  if (content) { content.style.opacity = '0'; content.style.transform = 'translateY(8px)'; }
-  setTimeout(() => {
-    [1,2,3,4].forEach(i => {
-      const s = document.getElementById('onb-step-' + i);
-      if (s) s.style.display = i === n ? 'block' : 'none';
-      const d = document.getElementById('onb-dot-' + i);
-      if (d) {
-        d.classList.remove('done','active');
-        if (i < n) d.classList.add('done');
-        else if (i === n) d.classList.add('active');
-      }
-    });
-    // Fade in
-    if (content) {
-      content.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
-      content.style.opacity = '1';
-      content.style.transform = 'translateY(0)';
-      setTimeout(() => { content.style.transition = ''; }, 250);
-    }
-  }, 180);
-}
-
-function onbNext(n) { onbGoStep(n); }
-
-function onbPreviewPhoto(input) {
-  const errDiv = document.getElementById('onb-photo-error');
-  const hint   = document.getElementById('onb-photo-hint');
-  if (!input.files || !input.files[0]) return;
-  const file = input.files[0];
-  if (file.size > 2 * 1024 * 1024) {
-    if (errDiv) { errDiv.textContent = '⚠️ Photo trop lourde — max 2MB'; errDiv.style.display = 'block'; }
-    return;
-  }
-  if (errDiv) errDiv.style.display = 'none';
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = document.getElementById('onb-avatar-img');
-    const em  = document.getElementById('onb-avatar-emoji');
-    if (img) { img.src = e.target.result; img.style.display = 'block'; }
-    if (em)  em.style.display = 'none';
-    if (hint) hint.innerHTML = '✅ Photo sélectionnée<br><span style="font-size:11px;opacity:0.6;">Clique pour en choisir une autre</span>';
-    window._onbPhotoBase64 = e.target.result;
-    // Sync profil principal
-    window._photoBase64 = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-async function onbSauvegarderPhoto() {
-  const btn    = document.getElementById('onb-photo-btn');
-  const errDiv = document.getElementById('onb-photo-error');
-  if (!window._onbPhotoBase64) { onbNext(3); return; }
-  if (btn) { btn.textContent = '⏳ Upload en cours...'; btn.disabled = true; }
-  try {
-    const { getStorage, ref, uploadString, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
-    const storage    = getStorage();
-    const storageRef = ref(storage, 'photos/' + window._currentUid);
-    await uploadString(storageRef, window._onbPhotoBase64, 'data_url');
-    const url = await getDownloadURL(storageRef);
-    const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await updateDoc(doc(window._db, 'danseurs', window._currentUid), { photo: url });
-    if (window._monProfil) window._monProfil.photo = url;
-  } catch(e) {
-    console.error('Erreur upload photo:', e);
-    if (errDiv) { errDiv.textContent = '❌ Erreur upload — on continue quand même'; errDiv.style.display = 'block'; }
-    await new Promise(r => setTimeout(r, 1200));
-  }
-  if (btn) { btn.textContent = 'Continuer →'; btn.disabled = false; }
-  onbNext(3);
-}
-
-function onbToggleDispo() {
-  _onbDispo = !_onbDispo;
-  const track = document.getElementById('onb-toggle-track');
-  const label = document.getElementById('onb-dispo-label');
-  const sub   = document.getElementById('onb-dispo-sub');
-  if (track) track.classList.toggle('off', !_onbDispo);
-  if (label) label.textContent = _onbDispo ? 'Disponible pour danser' : 'Indisponible';
-  if (sub)   sub.textContent   = _onbDispo ? 'Les artistes te voient actif' : 'Masqué dans le réseau';
-}
-
-function onbSetBracelet(mode) {
-  _onbBracelet = mode;
-  ['public','amis','prive'].forEach(m => {
-    const el    = document.getElementById('onb-br-' + m);
-    const check = el?.querySelector('.onb-br-check');
-    const colors = { public: 'rgba(0,245,155,0.06)', amis: 'rgba(255,217,61,0.06)', prive: 'rgba(255,77,109,0.06)' };
-    const borders = { public: 'rgba(0,245,155,0.4)', amis: 'rgba(255,217,61,0.4)', prive: 'rgba(255,77,109,0.4)' };
-    if (el) {
-      el.style.background   = m === mode ? colors[m]   : 'transparent';
-      el.style.borderColor  = m === mode ? borders[m]  : 'var(--border)';
-    }
-    if (check) check.style.display = m === mode ? 'block' : 'none';
-  });
-}
-
-async function onbSauvegarderPrefs() {
-  if (window._currentUid && window._db) {
-    try {
-      const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-      await updateDoc(doc(window._db, 'danseurs', window._currentUid), {
-        disponible:   _onbDispo,
-        modeBracelet: _onbBracelet
-      });
-      if (window._monProfil) {
-        window._monProfil.disponible   = _onbDispo;
-        window._monProfil.modeBracelet = _onbBracelet;
-      }
-    } catch(e) { console.error('Erreur prefs onboarding:', e); }
-  }
-  onbNext(4);
-}
-
-function terminerOnboarding(destination) {
-  document.getElementById('onboarding-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-  const dest = destination || 'dashboard';
-  showPage(dest);
-  if (window._monProfil) afficherDashboard(window._monProfil);
-}
-
 </script>
 
-<!-- Wrapper pour les boutons HTML — appelle les fonctions window quand Firebase est prêt -->
-<script>
-function _appellerQuandPret(fn, args) {
-  if (window._firebaseReady && window[fn]) {
-    window[fn](...args);
-  } else {
-    document.addEventListener('firebase-ready', () => {
-      if (window[fn]) window[fn](...args);
-    }, { once: true });
-  }
-}
-
-// Wrappers globaux accessibles depuis onclick=
-function inscrire()           { _appellerQuandPret('inscrire', []); }
-function connecter()          { _appellerQuandPret('connecter', []); }
-function motDePasseOublie()   { _appellerQuan
-<!-- ═══ ONBOARDING OVERLAY ═══ -->
-<div id="onboarding-overlay">
-  <div class="onb-box" id="onb-box">
-
-    <!-- Progress -->
-    <div class="onb-progress">
-      <div class="onb-step-dot active" id="onb-dot-1"></div>
-      <div class="onb-step-dot" id="onb-dot-2"></div>
-      <div class="onb-step-dot" id="onb-dot-3"></div>
-      <div class="onb-step-dot" id="onb-dot-4"></div>
-    </div>
-
-    <!-- Conteneur animé -->
-    <div id="onb-content" style="transition:opacity 0.2s ease,transform 0.2s ease;">
-
-      <!-- Étape 1 : Bienvenue -->
-      <div id="onb-step-1">
-        <span class="onb-emoji">👋</span>
-        <div class="onb-title">Bienvenue<br><span id="onb-prenom" style="color:var(--green);">sur HAKO</span> !</div>
-        <p class="onb-sub">Ton profil est créé. On va te guider en 3 étapes pour bien démarrer sur le réseau des artistes.</p>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;">
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);border-radius:10px;border:1px solid var(--border);">
-            <span style="font-size:16px;">📸</span>
-            <span style="font-size:12px;color:var(--muted2);">Ajoute ta photo de profil</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);border-radius:10px;border:1px solid var(--border);">
-            <span style="font-size:16px;">🟢</span>
-            <span style="font-size:12px;color:var(--muted2);">Configure ta disponibilité</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);border-radius:10px;border:1px solid var(--border);">
-            <span style="font-size:16px;">⌚</span>
-            <span style="font-size:12px;color:var(--muted2);">Choisis ton mode bracelet</span>
-          </div>
-        </div>
-        <button class="onb-btn" onclick="onbNext(2)" style="margin-top:16px;">C'est parti →</button>
-      </div>
-
-      <!-- Étape 2 : Photo -->
-      <div id="onb-step-2" style="display:none;">
-        <div style="text-align:center;">
-          <div class="onb-avatar-zone" id="onb-avatar-zone" onclick="document.getElementById('onb-photo-input').click()">
-            <span id="onb-avatar-emoji" style="font-size:36px;font-family:'Syne',sans-serif;font-weight:800;">?</span>
-            <img id="onb-avatar-img" style="display:none;">
-            <div id="onb-avatar-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,0.4);border-radius:22px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;">
-              <span style="font-size:22px;">📷</span>
-            </div>
-          </div>
-          <div class="onb-avatar-hint" id="onb-photo-hint">Appuie pour ajouter une photo<br><span style="font-size:11px;opacity:0.6;">JPG ou PNG · max 2MB · optionnel</span></div>
-          <div id="onb-photo-error" style="display:none;font-size:12px;color:var(--red);margin-top:6px;font-weight:600;"></div>
-        </div>
-        <input type="file" id="onb-photo-input" accept="image/*" style="display:none;" onchange="onbPreviewPhoto(this)">
-        <div class="onb-title" style="font-size:26px;margin-top:8px;">Ta photo<br>de profil</div>
-        <p class="onb-sub">Ajoute une photo pour que les autres artistes te reconnaissent. Tu pourras la changer à tout moment.</p>
-        <button class="onb-btn" id="onb-photo-btn" onclick="onbSauvegarderPhoto()">Continuer →</button>
-        <button class="onb-btn-secondary" onclick="onbNext(3)">Passer cette étape</button>
-      </div>
-
-      <!-- Étape 3 : Disponibilité + mode bracelet -->
-      <div id="onb-step-3" style="display:none;">
-        <span class="onb-emoji">⚙️</span>
-        <div class="onb-title">Tes<br>préférences</div>
-        <p class="onb-sub">Configure ta disponibilité et le mode de ton bracelet HAKO.</p>
-
-        <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Disponibilité</div>
-        <div class="onb-dispo-toggle" onclick="onbToggleDispo()" id="onb-dispo-row" style="margin-bottom:16px;">
-          <div>
-            <div style="font-size:13px;font-weight:700;" id="onb-dispo-label">Disponible pour danser</div>
-            <div style="font-size:11px;color:var(--muted2);margin-top:2px;" id="onb-dispo-sub">Les artistes te voient actif</div>
-          </div>
-          <div class="onb-toggle-track" id="onb-toggle-track">
-            <div class="onb-toggle-thumb"></div>
-          </div>
-        </div>
-
-        <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Mode bracelet</div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
-          <div class="onb-bracelet-opt" id="onb-br-public" onclick="onbSetBracelet('public')" style="border-color:rgba(0,245,155,0.4);background:rgba(0,245,155,0.06);">
-            <div style="width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex-shrink:0;"></div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--green);">Public</div>
-              <div style="font-size:11px;color:var(--muted2);margin-top:1px;">Tout le monde peut voir ton profil via le bracelet</div>
-            </div>
-            <div class="onb-br-check" style="margin-left:auto;font-size:16px;color:var(--green);">✓</div>
-          </div>
-          <div class="onb-bracelet-opt" id="onb-br-amis" onclick="onbSetBracelet('amis')">
-            <div style="width:10px;height:10px;border-radius:50%;background:var(--yellow);box-shadow:0 0 8px var(--yellow);flex-shrink:0;"></div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--yellow);">Amis uniquement</div>
-              <div style="font-size:11px;color:var(--muted2);margin-top:1px;">Seuls tes abonnés voient le profil complet</div>
-            </div>
-            <div class="onb-br-check" style="margin-left:auto;font-size:16px;color:var(--yellow);display:none;">✓</div>
-          </div>
-          <div class="onb-bracelet-opt" id="onb-br-prive" onclick="onbSetBracelet('prive')">
-            <div style="width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);flex-shrink:0;"></div>
-            <div>
-              <div style="font-size:13px;font-weight:700;color:var(--red);">Privé</div>
-              <div style="font-size:11px;color:var(--muted2);margin-top:1px;">Profil masqué, échanges sur invitation</div>
-            </div>
-            <div class="onb-br-check" style="margin-left:auto;font-size:16px;color:var(--red);display:none;">✓</div>
-          </div>
-        </div>
-
-        <button class="onb-btn" onclick="onbSauvegarderPrefs()">Continuer →</button>
-      </div>
-
-      <!-- Étape 4 : Prêt -->
-      <div id="onb-step-4" style="display:none;">
-        <span class="onb-emoji">🚀</span>
-        <div class="onb-title">Tout est<br>prêt !</div>
-        <p class="onb-sub">Ton profil est configuré. Par où veux-tu commencer ?</p>
-        <div class="onb-features">
-          <div class="onb-feature" onclick="terminerOnboarding('network')" style="cursor:pointer;" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div class="onb-feature-ico">🌐</div>
-            <div class="onb-feature-label">Explorer<br>le réseau</div>
-          </div>
-          <div class="onb-feature" onclick="terminerOnboarding('agenda')" style="cursor:pointer;" onmouseover="this.style.borderColor='rgba(77,159,255,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div class="onb-feature-ico">📅</div>
-            <div class="onb-feature-label">Voir<br>l'agenda</div>
-          </div>
-          <div class="onb-feature" onclick="terminerOnboarding('profile')" style="cursor:pointer;" onmouseover="this.style.borderColor='rgba(155,93,229,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div class="onb-feature-ico">👤</div>
-            <div class="onb-feature-label">Mon<br>profil</div>
-          </div>
-          <div class="onb-feature" onclick="terminerOnboarding('dashboard')" style="cursor:pointer;" onmouseover="this.style.borderColor='rgba(255,217,61,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div class="onb-feature-ico">🏠</div>
-            <div class="onb-feature-label">Dashboard</div>
-          </div>
-        </div>
-        <button class="onb-btn" onclick="terminerOnboarding('dashboard')">Accéder à HAKO →</button>
-      </div>
-
-    </div><!-- /onb-content -->
-  </div>
-</div>
-
+<!-- Wrapper pour les boutons HTML — appelle les fonctions window quand
