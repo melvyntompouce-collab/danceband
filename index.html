@@ -2270,6 +2270,10 @@ if (isPWA) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Se déconnecter
       </button>
+      <button class="drawer-item" onclick="window.supprimerCompte();" style="color:var(--muted);font-size:12px;padding:10px 20px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        Supprimer mon compte
+      </button>
     </div>
   </div>
 </div>
@@ -6101,11 +6105,19 @@ window.sauvegarderEvent = async function() {
   };
 
   try {
-    const { doc, setDoc, addDoc, collection } = await import(
+    const { doc, getDoc, setDoc, addDoc, collection } = await import(
       'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
     );
 
     if (eventEnEdition) {
+      const snap = await getDoc(doc(window._db, 'evenements', eventEnEdition));
+      if (!snap.exists() || snap.data().organisateurUid !== window._currentUid) {
+        errDiv.textContent = '⛔ Action non autorisée.';
+        errDiv.style.display = 'block';
+        btn.textContent = 'Enregistrer →';
+        btn.disabled = false;
+        return;
+      }
       await setDoc(doc(window._db, 'evenements', eventEnEdition), data, { merge: true });
     } else {
       data.inscrits = 0;
@@ -6124,11 +6136,17 @@ window.sauvegarderEvent = async function() {
 }
 
 window.supprimerEvent = async function(id) {
+  if (!window._currentUid) return;
   if (!confirm('Supprimer cet événement définitivement ?')) return;
   try {
-    const { doc, deleteDoc } = await import(
+    const { doc, getDoc, deleteDoc } = await import(
       'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
     );
+    const snap = await getDoc(doc(window._db, 'evenements', id));
+    if (!snap.exists() || snap.data().organisateurUid !== window._currentUid) {
+      alert('⛔ Action non autorisée.');
+      return;
+    }
     await deleteDoc(doc(window._db, 'evenements', id));
     await chargerMesEvents();
   } catch(e) { console.error(e); }
@@ -7475,7 +7493,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebas
 import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, where }
   from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  onAuthStateChanged, signOut, sendPasswordResetEmail }
+  onAuthStateChanged, signOut, sendPasswordResetEmail, deleteUser }
   from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
 // ── VOS CLÉS FIREBASE ──
@@ -7694,6 +7712,59 @@ window.deconnecter = async function() {
   await signOut(auth);
   window.showPage('home');
   mettreAJourNav(null);
+}
+
+// ════════════════════════════════
+// SUPPRESSION DE COMPTE (RGPD)
+// ════════════════════════════════
+window.supprimerCompte = async function() {
+  if (!window._currentUid) return;
+
+  const etape1 = confirm('⚠️ Supprimer définitivement ton compte HAKO ?\n\nToutes tes données (profil, messages, événements) seront effacées immédiatement. Cette action est irréversible.');
+  if (!etape1) return;
+  const etape2 = confirm('Dernière confirmation — cette action ne peut pas être annulée.\n\nSupprimer le compte ?');
+  if (!etape2) return;
+
+  try {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const { doc: docRef, deleteDoc, collection: col, getDocs: gds, query: q, where: wh } =
+      await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+
+    // 1. Supprimer le document Firestore du profil
+    await deleteDoc(docRef(window._db, 'danseurs', window._currentUid));
+
+    // 2. Supprimer les événements créés par cet utilisateur
+    try {
+      const evSnap = await gds(q(col(window._db, 'evenements'), wh('organisateurUid', '==', window._currentUid)));
+      await Promise.all(evSnap.docs.map(d => deleteDoc(d.ref)));
+    } catch(e) { /* non bloquant */ }
+
+    // 3. Supprimer le compte Firebase Auth (en dernier)
+    await deleteUser(user);
+
+    // 4. Réinitialiser l'état local
+    window._currentUid = null;
+    window._monProfil  = null;
+    window._photoFile  = null;
+
+    closeDrawer();
+    window.showPage('home');
+    mettreAJourNav(null);
+    alert('✅ Ton compte a été supprimé. À bientôt.');
+
+  } catch(e) {
+    if (e.code === 'auth/requires-recent-login') {
+      alert('⚠️ Pour des raisons de sécurité, reconnecte-toi avant de supprimer ton compte.');
+      await signOut(auth);
+      window.showPage('auth');
+      mettreAJourNav(null);
+    } else {
+      console.error('Erreur suppression compte:', e);
+      alert('❌ Une erreur est survenue. Réessaie ou contacte le support.');
+    }
+  }
 }
 
 // ════════════════════════════════
