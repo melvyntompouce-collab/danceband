@@ -130,7 +130,7 @@ nav {
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
 }
-nav > * { margin-bottom: 14px; }
+nav > * { margin-bottom: 0; }
 
 /* ── PAGES ── */
 .page.active{display:block;}
@@ -255,7 +255,10 @@ body.pwa .page:not(#page-auth) {
 }
 body.pwa nav {
   height: calc(65px + env(safe-area-inset-top));
+  align-items: flex-end;
+  padding-bottom: 8px;
 }
+body.pwa nav > * { margin-bottom: 0; }
 
 /* ══════════════════════════════
    PAGE: ACCUEIL
