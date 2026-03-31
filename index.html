@@ -119,18 +119,18 @@ nav {
   overflow: visible;
   padding-left: 16px;
   padding-right: 16px;
-  padding-top: calc(env(safe-area-inset-top) + 8px);
+  padding-top: env(safe-area-inset-top);
   padding-bottom: 0;
   height: calc(65px + env(safe-area-inset-top));
   display: flex !important;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   box-sizing: border-box;
   background: rgba(8,8,16,0.92);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
 }
-nav > * { margin-bottom: 0; }
+nav > * { margin-bottom: 10px; }
 
 /* ── PAGES ── */
 .page.active{display:block;}
