@@ -435,6 +435,7 @@ body.pwa nav {
   display:flex;align-items:center;justify-content:center;
   padding:40px 20px;
 }
+}
 .auth-box{
   width:100%;max-width:480px;
   background:var(--card);border:1px solid var(--border);
@@ -1363,26 +1364,6 @@ footer{
   .network-layout { max-width:1400px !important; }
 }
 
-/* ── Hover utilitaires (remplace onmouseover inline) ── */
-.hover-green:hover { border-color: rgba(0,245,155,0.3) !important; }
-.hover-blue:hover   { border-color: rgba(77,159,255,0.3) !important; }
-.hover-purple:hover { border-color: rgba(155,93,229,0.3) !important; }
-.hover-yellow:hover { border-color: rgba(255,217,61,0.3) !important; }
-.hover-red-text:hover { border-color: rgba(255,77,109,0.4) !important; color: var(--red) !important; }
-.hover-text:hover { border-color: rgba(255,255,255,0.2) !important; color: var(--text) !important; }
-.dash-nav-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 16px 14px;
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.2s;
-  color: var(--text);
-}
-.dash-nav-card:hover { border-color: rgba(0,245,155,0.25); }
-.dash-nav-card:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
-
 /* ── ANIMATIONS ── */
 .fade-in{animation:fadeIn 0.5s ease both;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
@@ -2269,10 +2250,6 @@ if (isPWA) {
       <button class="drawer-item" onclick="window.deconnecter();closeDrawer();" style="color:var(--red);">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Se déconnecter
-      </button>
-      <button class="drawer-item" onclick="window.supprimerCompte();" style="color:var(--muted);font-size:12px;padding:10px 20px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        Supprimer mon compte
       </button>
     </div>
   </div>
@@ -3458,7 +3435,7 @@ if (isPWA) {
   <!-- Waitlist -->
   <div class="brct-section">
     <div class="brct-waitlist">
-      <div style="font-size:32px;margin-bottom:12px;">🔗</div>
+      <div style="font-size:32px;margin-bottom:12px;">⌚</div>
       <div class="brct-waitlist-title">Rejoins la liste d'attente</div>
       <div class="brct-waitlist-sub">Le KIMA est en développement. Sois parmi les premiers à le recevoir à sa sortie. Aucun paiement requis.</div>
       <div id="brct-waitlist-ok" style="display:none;padding:12px 20px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.3);border-radius:12px;font-size:13px;color:var(--green);font-weight:700;max-width:400px;margin:0 auto;">
@@ -3542,22 +3519,22 @@ if (isPWA) {
 
     <!-- 4 cards navigation -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;">
-      <button onclick="showPage('network')" class="dash-nav-card">
+      <button onclick="showPage('network')" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 14px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
         <div style="font-size:20px;margin-bottom:8px;">🌐</div>
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Réseau</div>
         <div style="font-size:10px;color:var(--muted2);margin-top:3px;">Trouve des danseurs</div>
       </button>
-      <button onclick="showPage('agenda')" class="dash-nav-card">
+      <button onclick="showPage('agenda')" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 14px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(77,159,255,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
         <div style="font-size:20px;margin-bottom:8px;">📅</div>
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Agenda</div>
         <div style="font-size:10px;color:var(--muted2);margin-top:3px;">Soirées & cours</div>
       </button>
-      <button onclick="showPage('messages')" class="dash-nav-card">
+      <button onclick="showPage('messages')" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 14px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(155,93,229,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
         <div style="font-size:20px;margin-bottom:8px;">💬</div>
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Messages</div>
         <div style="font-size:10px;color:var(--muted2);margin-top:3px;" id="dash-msg-label">Tes conversations</div>
       </button>
-      <button onclick="showPage('ranking')" class="dash-nav-card">
+      <button onclick="showPage('ranking')" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 14px;text-align:left;cursor:pointer;transition:border-color 0.2s;color:var(--text);" onmouseover="this.style.borderColor='rgba(255,217,61,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
         <div style="font-size:20px;margin-bottom:8px;">🏆</div>
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Classement</div>
         <div style="font-size:10px;color:var(--muted2);margin-top:3px;" id="dash-rank-label">Ton rang</div>
@@ -3605,17 +3582,6 @@ if (isPWA) {
         </div>
       </div>
 
-    </div>
-
-    <!-- État vide — nouvel utilisateur (affiché si aucune section enrichie n'est visible) -->
-    <div id="dash-empty-state" style="display:none;text-align:center;padding:40px 20px;background:var(--card);border:1px solid var(--border);border-radius:20px;margin-top:4px;">
-      <div style="font-size:40px;margin-bottom:14px;">✨</div>
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:8px;">Bienvenue sur HAKO</div>
-      <div style="font-size:13px;color:var(--muted2);line-height:1.7;max-width:300px;margin:0 auto 20px;">Complète ton profil et explore le réseau pour rencontrer des danseurs près de chez toi.</div>
-      <div style="display:flex;flex-direction:column;gap:10px;max-width:280px;margin:0 auto;">
-        <button onclick="showPage('profile')" style="padding:12px 20px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;border:none;cursor:pointer;">Compléter mon profil →</button>
-        <button onclick="showPage('network')" style="padding:12px 20px;border-radius:12px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">Explorer le réseau</button>
-      </div>
     </div>
 
   </div>
@@ -3788,7 +3754,7 @@ if (isPWA) {
 
 <!-- ═══ PROFIL ARTISTE (overlay) ═══ -->
 <div id="artiste-overlay" style="display:none;position:fixed;inset:0;z-index:250;background:var(--bg);overflow-y:auto;padding-top:70px;">
-  <div style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(60px + max(20px, env(safe-area-inset-top)));"><div style="max-width:600px;margin:0 auto;padding:24px 20px 120px;">
+  <div style="max-width:600px;margin:0 auto;padding:24px 20px 100px;">
 
     <!-- Header -->
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
@@ -4116,8 +4082,8 @@ if (isPWA) {
   <div class="profile-page">
 
     <!-- ── SOUS-PAGE: ÉDITION PROFIL ── -->
-    <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);">
-      <div style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(60px + max(20px, env(safe-area-inset-top)));"><div style="max-width:600px;margin:0 auto;padding:24px 20px 120px;">
+    <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;padding-top:calc(100px + max(20px, env(safe-area-inset-top)));">
+      <div style="max-width:600px;margin:0 auto;padding:24px 20px 100px;">
 
         <!-- Header sous-page -->
         <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
@@ -4332,6 +4298,8 @@ if (isPWA) {
             <button class="style-tag" onclick="toggleStyle(this)">Classique</button>
             <button class="style-tag" onclick="toggleStyle(this)">Electro</button>
             <button class="style-tag" onclick="toggleStyle(this)">Voguing</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Modern Jazz</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Street Jazz</button>
             <button class="style-tag" onclick="toggleStyle(this)">Bharata Natyam</button>
             <button class="style-tag" onclick="toggleStyle(this)">Claquettes</button>
             <button class="style-tag" onclick="toggleStyle(this)">Tango</button>
@@ -4576,7 +4544,6 @@ if (isPWA) {
       </div>
 
     </div>
-  </div>
   </div>
 </div>
 
@@ -4844,10 +4811,8 @@ function switchTab(btn, tabId) {
 
 // ── Ouvrir / fermer sous-page édition ──
 function ouvrirEdition() {
-  const page = document.getElementById('edit-profile-page');
-  page.style.display = 'block';
-  const inner = page.querySelector('[style*="overflow-y:auto"]');
-  if (inner) inner.scrollTop = 0;
+  document.getElementById('edit-profile-page').style.display = 'block';
+  window.scrollTo(0,0);
 }
 function fermerEdition() {
   document.getElementById('edit-profile-page').style.display = 'none';
@@ -4964,17 +4929,6 @@ function afficherDashboard(d) {
   afficherEventsDashboard();
   afficherCompatiblesDashboard();
   afficherFavorisDashboard();
-
-  // Afficher l'état vide si aucune section enrichie n'est visible après chargement
-  setTimeout(() => {
-    const sections = ['dash-activite-section','dash-events-section','dash-compat-section','dash-favoris-section'];
-    const auMoinsUneVisible = sections.some(id => {
-      const el = document.getElementById(id);
-      return el && el.style.display !== 'none';
-    });
-    const emptyState = document.getElementById('dash-empty-state');
-    if (emptyState) emptyState.style.display = auMoinsUneVisible ? 'none' : 'block';
-  }, 1500);
 }
 
 // ── Toggle disponibilité depuis le dashboard ──
@@ -5132,23 +5086,6 @@ window.clicNotif = async function(index) {
 
 window.marquerToutLu = async function() {
   if (!window._monProfil || !window._db || !window._currentUid) return;
-  const nonLues = (window._monProfil.notifications || []).filter(n => !n.lu);
-  if (nonLues.length === 0) {
-    // Feedback visuel : rien à faire
-    const btn = document.querySelector('[onclick="marquerToutLu()"]');
-    if (btn) {
-      const original = btn.textContent;
-      btn.textContent = '✓ Tout est lu';
-      btn.style.color = 'var(--green)';
-      btn.style.borderColor = 'rgba(0,245,155,0.3)';
-      setTimeout(() => {
-        btn.textContent = original;
-        btn.style.color = '';
-        btn.style.borderColor = '';
-      }, 2000);
-    }
-    return;
-  }
   const allNotifs = (window._monProfil.notifications || []).map(n => ({ ...n, lu: true }));
   window._monProfil.notifications = allNotifs;
   mettreAJourBadgeNotif(allNotifs);
@@ -5480,12 +5417,10 @@ document.querySelectorAll('.agenda-filter').forEach(f => {
   });
 });
 
-// ── Filter chips — scoped par conteneur parent ──
+// ── Filter chips ──
 document.querySelectorAll('.filter-chip').forEach(c => {
   c.addEventListener('click', function() {
-    const container = this.closest('[id^="page-"], .network-list-header, [style*="max-width:680px"]');
-    const scope = container || document;
-    scope.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('on'));
+    document.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('on'));
     this.classList.add('on');
   });
 });
@@ -6108,19 +6043,11 @@ window.sauvegarderEvent = async function() {
   };
 
   try {
-    const { doc, getDoc, setDoc, addDoc, collection } = await import(
+    const { doc, setDoc, addDoc, collection } = await import(
       'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
     );
 
     if (eventEnEdition) {
-      const snap = await getDoc(doc(window._db, 'evenements', eventEnEdition));
-      if (!snap.exists() || snap.data().organisateurUid !== window._currentUid) {
-        errDiv.textContent = '⛔ Action non autorisée.';
-        errDiv.style.display = 'block';
-        btn.textContent = 'Enregistrer →';
-        btn.disabled = false;
-        return;
-      }
       await setDoc(doc(window._db, 'evenements', eventEnEdition), data, { merge: true });
     } else {
       data.inscrits = 0;
@@ -6139,17 +6066,11 @@ window.sauvegarderEvent = async function() {
 }
 
 window.supprimerEvent = async function(id) {
-  if (!window._currentUid) return;
   if (!confirm('Supprimer cet événement définitivement ?')) return;
   try {
-    const { doc, getDoc, deleteDoc } = await import(
+    const { doc, deleteDoc } = await import(
       'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
     );
-    const snap = await getDoc(doc(window._db, 'evenements', id));
-    if (!snap.exists() || snap.data().organisateurUid !== window._currentUid) {
-      alert('⛔ Action non autorisée.');
-      return;
-    }
     await deleteDoc(doc(window._db, 'evenements', id));
     await chargerMesEvents();
   } catch(e) { console.error(e); }
@@ -7496,7 +7417,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebas
 import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, where }
   from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  onAuthStateChanged, signOut, sendPasswordResetEmail, deleteUser }
+  onAuthStateChanged, signOut, sendPasswordResetEmail }
   from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
 // ── VOS CLÉS FIREBASE ──
@@ -7715,59 +7636,6 @@ window.deconnecter = async function() {
   await signOut(auth);
   window.showPage('home');
   mettreAJourNav(null);
-}
-
-// ════════════════════════════════
-// SUPPRESSION DE COMPTE (RGPD)
-// ════════════════════════════════
-window.supprimerCompte = async function() {
-  if (!window._currentUid) return;
-
-  const etape1 = confirm('⚠️ Supprimer définitivement ton compte HAKO ?\n\nToutes tes données (profil, messages, événements) seront effacées immédiatement. Cette action est irréversible.');
-  if (!etape1) return;
-  const etape2 = confirm('Dernière confirmation — cette action ne peut pas être annulée.\n\nSupprimer le compte ?');
-  if (!etape2) return;
-
-  try {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const { doc: docRef, deleteDoc, collection: col, getDocs: gds, query: q, where: wh } =
-      await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-
-    // 1. Supprimer le document Firestore du profil
-    await deleteDoc(docRef(window._db, 'danseurs', window._currentUid));
-
-    // 2. Supprimer les événements créés par cet utilisateur
-    try {
-      const evSnap = await gds(q(col(window._db, 'evenements'), wh('organisateurUid', '==', window._currentUid)));
-      await Promise.all(evSnap.docs.map(d => deleteDoc(d.ref)));
-    } catch(e) { /* non bloquant */ }
-
-    // 3. Supprimer le compte Firebase Auth (en dernier)
-    await deleteUser(user);
-
-    // 4. Réinitialiser l'état local
-    window._currentUid = null;
-    window._monProfil  = null;
-    window._photoFile  = null;
-
-    closeDrawer();
-    window.showPage('home');
-    mettreAJourNav(null);
-    alert('✅ Ton compte a été supprimé. À bientôt.');
-
-  } catch(e) {
-    if (e.code === 'auth/requires-recent-login') {
-      alert('⚠️ Pour des raisons de sécurité, reconnecte-toi avant de supprimer ton compte.');
-      await signOut(auth);
-      window.showPage('auth');
-      mettreAJourNav(null);
-    } else {
-      console.error('Erreur suppression compte:', e);
-      alert('❌ Une erreur est survenue. Réessaie ou contacte le support.');
-    }
-  }
 }
 
 // ════════════════════════════════
@@ -8171,9 +8039,8 @@ onAuthStateChanged(auth, async (user) => {
     try { await chargerProfil(user.uid); }   catch(e) { console.error('❌ chargerProfil:', e); }
     try { await chargerAbonnements(); }       catch(e) { console.error('❌ chargerAbonnements:', e); }
     try { await chargerFavoris(); }           catch(e) { console.error('❌ chargerFavoris:', e); }
+    // Dashboard affiché APRÈS que tout soit chargé
     afficherDashboard(window._monProfil);
-    // Lever le blur KIMA si la page est déjà ouverte
-    brctLeverBlur();
   } else {
     console.log('👤 Non connecté');
     afficherBarreLogoDeconnecte(true);
@@ -8342,7 +8209,6 @@ window.brctRejoindreWaitlist = async function brctRejoindreWaitlist() {
     });
     document.getElementById('brct-waitlist-form-wrap').style.display = 'none';
     document.getElementById('brct-waitlist-ok').style.display = 'block';
-    localStorage.setItem('hako_waitlist_joined', '1');
     brctChargerCountWaitlist();
   } catch(e) {
     console.error('Erreur waitlist:', e);
@@ -8360,33 +8226,22 @@ async function brctChargerCountWaitlist() {
   } catch(e) {}
 }
 
-function brctLeverBlur() {
-  const wrap    = document.getElementById('brct-blur-wrap');
-  if (!wrap) return;
-  const blurred = document.getElementById('brct-blurred-content');
-  const overlay = wrap.querySelector('[style*="position:absolute"]');
-  if (blurred) {
-    blurred.style.filter          = 'none';
-    blurred.style.pointerEvents   = '';
-    blurred.style.maskImage        = 'none';
-    blurred.style.webkitMaskImage  = 'none';
-  }
-  if (overlay) overlay.style.display = 'none';
-}
-
 function initPageBracelet() {
   brctSetMode(window._monProfil?.modeBracelet || 'public');
   brctChargerCountWaitlist();
   const input = document.getElementById('brct-waitlist-email');
   if (input && window._monProfil?.email) input.value = window._monProfil.email;
-  if (window._currentUid) brctLeverBlur();
 
-  // Persistance état waitlist via localStorage
-  if (localStorage.getItem('hako_waitlist_joined') === '1') {
-    const formWrap = document.getElementById('brct-waitlist-form-wrap');
-    const okDiv    = document.getElementById('brct-waitlist-ok');
-    if (formWrap) formWrap.style.display = 'none';
-    if (okDiv)    okDiv.style.display    = 'block';
+  // Si connecté → lever le blur
+  const wrap = document.getElementById('brct-blur-wrap');
+  if (wrap) {
+    if (window._currentUid) {
+      // Connecté : contenu visible, pas d'overlay
+      const blurred = document.getElementById('brct-blurred-content');
+      const overlay = wrap.querySelector('[style*="position:absolute"]');
+      if (blurred) { blurred.style.filter = 'none'; blurred.style.pointerEvents = ''; blurred.style.maskImage = 'none'; blurred.style.webkitMaskImage = 'none'; }
+      if (overlay) overlay.style.display = 'none';
+    }
   }
 }
 
