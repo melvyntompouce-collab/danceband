@@ -2270,6 +2270,14 @@ if (isPWA) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         Modifier le profil
       </button>
+      <button class="drawer-item" id="di-organisateur" style="display:none;color:var(--blue);" onclick="ouvrirOrganisateur();closeDrawer();">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Organisateur
+      </button>
+      <button class="drawer-item" id="di-admin" style="display:none;color:var(--red);" onclick="ouvrirOrganisateur();closeDrawer();">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+        Admin
+      </button>
       <button class="drawer-item" id="di-notifs" onclick="showPage('notifs');closeDrawer();" style="display:none;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         Notifications
@@ -2302,18 +2310,6 @@ if (isPWA) {
     <button class="drawer-item" onclick="closeDrawer();setTimeout(()=>showPage('bracelet'),150);" id="di-bracelet">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="5"/><circle cx="7" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="17" cy="12" r="1.5" fill="currentColor"/></svg>
       KIMA
-    </button>
-
-    <!-- Onglet Organisateur (visible si role === 'organisateur') -->
-    <button class="drawer-item" id="di-organisateur" style="display:none;color:var(--blue);" onclick="ouvrirOrganisateur();closeDrawer();">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      Organisateur
-    </button>
-
-    <!-- Onglet Admin (visible si role === 'admin') -->
-    <button class="drawer-item" id="di-admin" style="display:none;color:var(--red);" onclick="ouvrirOrganisateur();closeDrawer();">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
-      Admin
     </button>
 
     <!-- Section légal -->
@@ -6403,7 +6399,10 @@ async function chargerDashboardAdmin() {
             <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ev.titre || 'Sans titre'}</div>
             <div style="font-size:11px;color:var(--muted);margin-top:2px;">${ev.ville || ''} · ${ev.date || ''} · ${ev.inscrits || 0} inscrits</div>
           </div>
-          <button onclick="adminSupprimerEvent('${ev.id}')" style="padding:6px 12px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap;">Supprimer</button>
+          <div style="display:flex;gap:6px;">
+            <button onclick="adminModifierEvent('${ev.id}')" style="padding:6px 12px;border-radius:8px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap;">Modifier</button>
+            <button onclick="adminSupprimerEvent('${ev.id}')" style="padding:6px 12px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap;">Supprimer</button>
+          </div>
         </div>
       `).join('');
     }
@@ -6427,6 +6426,15 @@ async function chargerDashboardAdmin() {
     }
 
   } catch(e) { console.error('Admin dashboard:', e); }
+}
+
+window.adminModifierEvent = async function(id) {
+  // Basculer vers le formulaire de modification (réutilise modifierEvent)
+  document.getElementById('admin-dashboard').style.display = 'none';
+  document.getElementById('orga-form').style.display = 'block';
+  await window.modifierEvent(id);
+  // Patch : au retour du formulaire, revenir au dashboard admin
+  window._adminEditMode = true;
 }
 
 window.adminSupprimerEvent = async function(id) {
@@ -6597,7 +6605,11 @@ window.ouvrirFormEvent = function() {
 
 window.fermerFormEvent = function() {
   document.getElementById('orga-form').style.display = 'none';
-  if (document.getElementById('orga-dashboard').style.display === 'none') {
+  if (window._adminEditMode) {
+    window._adminEditMode = false;
+    document.getElementById('admin-dashboard').style.display = 'block';
+    chargerDashboardAdmin();
+  } else if (document.getElementById('orga-dashboard').style.display === 'none') {
     document.getElementById('orga-dashboard').style.display = 'block';
   }
   eventEnEdition = null;
@@ -6716,7 +6728,7 @@ window.sauvegarderEvent = async function() {
     }
 
     fermerFormEvent();
-    await chargerMesEvents();
+    if (!window._adminEditMode) await chargerMesEvents();
   } catch(e) {
     errDiv.textContent = '❌ Erreur : ' + e.message;
     errDiv.style.display = 'block';
