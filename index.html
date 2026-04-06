@@ -5836,10 +5836,8 @@ function ouvrirEvent(id) {
     const logoBar = document.getElementById('logo-bar');
     let topOffset = nav ? nav.getBoundingClientRect().bottom : 44;
     if (logoBar && logoBar.offsetParent !== null) topOffset = logoBar.getBoundingClientRect().bottom + nav.offsetHeight;
-    modalScroll.style.paddingTop = (topOffset + 16) + 'px';
     modalScroll.scrollTop = 0;
   }
-  document.body.style.overflow = 'hidden';
 }
 
 window.highlightDateOpt = function() {
@@ -5852,7 +5850,6 @@ window.highlightDateOpt = function() {
 
 function fermerModal() {
   document.getElementById('event-modal').style.display = 'none';
-  document.body.style.overflow = '';
   if (window._modalMap) { window._modalMap.remove(); window._modalMap = null; }
   const mapWrap = document.getElementById('modal-map-wrap');
   if (mapWrap) { mapWrap.style.display = 'none'; mapWrap.innerHTML = ''; }
