@@ -4758,6 +4758,7 @@ function showPage(id, isBack = false) {
   if (id === 'notifs')    setTimeout(afficherPageNotifs, DURATION);
   if (id === 'messages')  setTimeout(chargerMessages,   DURATION);
   if (id === 'bracelet')  setTimeout(initPageBracelet,  DURATION);
+  if (id === 'agenda')    setTimeout(() => { if (tousLesEvents.length === 0) chargerAgenda(); else afficherEvents(); }, DURATION);
 
   // Sync mobile nav
   document.querySelectorAll('.mn-item').forEach(i => i.classList.remove('active'));
@@ -5903,13 +5904,7 @@ window.sInscrire = async function() {
   }
 }
 
-// Charger agenda quand on clique sur l'onglet
-document.addEventListener('click', function(e) {
-  const btn = e.target.closest('[onclick]');
-  if (btn && btn.getAttribute('onclick')?.includes("'agenda'")) {
-    setTimeout(chargerAgenda, 200);
-  }
-});
+
 
 // Seuils XP par niveau
 const NIVEAUX_XP = [0, 500, 1500, 3000, 5000, 8000, 12000];
