@@ -3773,7 +3773,8 @@ if (isPWA) {
     </div>
 
     <!-- MODAL DÉTAIL EVENT -->
-    <div id="event-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);overflow-y:auto;padding:20px;">
+    <div id="event-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);" onclick="if(event.target===this)fermerModal()">
+      <div style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 20px 100px;">
       <div style="max-width:500px;margin:60px auto;background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;">
         <div id="modal-banner" style="height:140px;position:relative;display:flex;align-items:flex-end;padding:16px;">
           <div id="modal-banner-bg" style="position:absolute;inset:0;"></div>
@@ -3798,6 +3799,7 @@ if (isPWA) {
             </button>
           </div>
         </div>
+      </div>
       </div>
     </div>
 
@@ -5648,7 +5650,7 @@ function _renderEventCard(ev, passe) {
         <div class="ec-title">${ev.titre || 'Événement'}</div>
         <div class="ec-meta">
           <div class="ec-mi">${dateLine}</div>
-          <div class="ec-mi">${ev.geopoint ? `<a href="https://maps.google.com/?q=${ev.geopoint.latitude},${ev.geopoint.longitude}" target="_blank" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none;">📍 ${ev.ville || ''} ${ev.lieu ? '· ' + ev.lieu : ''} <span style="font-size:10px;color:var(--green);font-weight:700;">↗</span></a>` : `📍 ${ev.ville || ''} ${ev.lieu ? '· ' + ev.lieu : ''}`}</div>
+          <div class="ec-mi">📍 ${ev.ville || ''} ${ev.lieu ? '· ' + ev.lieu : ''}${ev.adresse ? ' · ' + ev.adresse : ''}${ev.geopoint ? ` <a href="https://maps.google.com/?q=${ev.geopoint.latitude},${ev.geopoint.longitude}" target="_blank" onclick="event.stopPropagation()" style="display:inline-block;margin-left:6px;padding:1px 8px;border-radius:6px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-size:10px;font-weight:700;font-family:'Syne',sans-serif;text-decoration:none;">S'y rendre ↗</a>` : ''}</div>
           ${ev.styles ? `<div class="ec-mi">💃 ${ev.styles}</div>` : ''}
           ${ev.niveau ? `<div class="ec-mi">⭐ ${ev.niveau}</div>` : ''}
         </div>
@@ -5753,7 +5755,7 @@ function ouvrirEvent(id) {
   document.getElementById('modal-meta').innerHTML = `
     <div class="ec-mi">${dateLine}</div>
     ${selectorHTML}
-    <div class="ec-mi">📍 ${ev.ville || ''} ${ev.lieu ? '· ' + ev.lieu : ''}</div>
+    <div class="ec-mi">📍 ${ev.ville || ''} ${ev.lieu ? '· ' + ev.lieu : ''}${ev.adresse ? '<br><span style="font-size:12px;color:var(--muted);padding-left:20px;">' + ev.adresse + '</span>' : ''}</div>
     ${ev.styles ? `<div class="ec-mi">💃 ${ev.styles}</div>` : ''}
     ${ev.niveau ? `<div class="ec-mi">⭐ ${ev.niveau}</div>` : ''}
     ${ev.organisateur ? `<div class="ec-mi">👤 Organisé par ${ev.organisateur}</div>` : ''}
