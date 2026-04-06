@@ -5577,6 +5577,14 @@ async function chargerAgenda() {
   }
 }
 
+function _toDate(val) {
+  if (!val) return null;
+  if (val instanceof Date) return val;
+  if (typeof val === 'object' && val.seconds) return new Date(val.seconds * 1000);
+  const d = new Date(val);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 function _getDatePrincipale(ev) {
   if (ev.dates && ev.dates.length > 0) return ev.dates[0];
   return ev.date || null;
@@ -5586,13 +5594,17 @@ function _estPasse(ev) {
   const maintenant = new Date();
   maintenant.setHours(0, 0, 0, 0);
   if (ev.dates && ev.dates.length > 0) {
-    return ev.dates.every(d => new Date(d) < maintenant);
+    const valides = ev.dates.map(_toDate).filter(Boolean);
+    if (valides.length === 0) return false;
+    return valides.every(d => d < maintenant);
   }
-  return !ev.date || new Date(ev.date) < maintenant;
+  const d = _toDate(ev.date);
+  return !d || d < maintenant;
 }
 
-function _formatDate(str) {
-  return str ? new Date(str).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' }) : '';
+function _formatDate(val) {
+  const d = _toDate(val);
+  return d ? d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' }) : '';
 }
 
 function _renderEventCard(ev, passe) {
@@ -5608,7 +5620,7 @@ function _renderEventCard(ev, passe) {
 
   let dateLine = '';
   if (ev.dates && ev.dates.length > 1) {
-    const sorted = [...ev.dates].sort();
+    const sorted = [...ev.dates].map(_toDate).filter(Boolean).sort((a,b)=>a-b);
     dateLine = `📅 ${_formatDate(sorted[0])} & ${_formatDate(sorted[sorted.length - 1])}${ev.heure ? ' · ' + ev.heure : ''}`;
   } else {
     const d = _getDatePrincipale(ev);
@@ -5703,7 +5715,7 @@ function ouvrirEvent(id) {
 
   // Gestion multi-dates
   const multiDates = ev.dates && ev.dates.length > 1;
-  const sortedDates = multiDates ? [...ev.dates].sort() : null;
+  const sortedDates = multiDates ? [...ev.dates].map(_toDate).filter(Boolean).sort((a,b)=>a-b) : null;
   let dateLine = '';
   if (multiDates) {
     dateLine = `📅 Choisissez votre date${ev.heure ? ' · ' + ev.heure : ''}`;
@@ -5725,8 +5737,8 @@ function ouvrirEvent(id) {
     <div id="modal-date-selector" style="display:flex;flex-direction:column;gap:8px;margin:4px 0 8px;">
       ${sortedDates.map((d, i) => `
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border-radius:10px;border:1px solid var(--border);transition:all 0.2s;" id="modal-date-opt-${i}">
-          <input type="radio" name="modal-date-choice" value="${d}" ${i === 0 ? 'checked' : ''} onchange="highlightDateOpt()" style="accent-color:var(--green);width:16px;height:16px;">
-          <span style="font-size:13px;color:var(--text);">${new Date(d).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}</span>
+          <input type="radio" name="modal-date-choice" value="${d.toISOString()}" ${i === 0 ? 'checked' : ''} onchange="highlightDateOpt()" style="accent-color:var(--green);width:16px;height:16px;">
+          <span style="font-size:13px;color:var(--text);">${_formatDate(d)}</span>
         </label>
       `).join('')}
     </div>
