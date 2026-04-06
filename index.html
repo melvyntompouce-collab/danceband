@@ -3773,8 +3773,8 @@ if (isPWA) {
     </div>
 
     <!-- MODAL DÉTAIL EVENT -->
-    <div id="event-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);" onclick="if(event.target===this)fermerModal()">
-      <div id="event-modal-scroll" style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(44px + env(safe-area-inset-top) + 20px) 20px 40px;">
+    <div id="event-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);">
+      <div id="event-modal-scroll" style="position:absolute;top:calc(44px + env(safe-area-inset-top));left:0;right:0;bottom:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 80px;">
       <div style="max-width:500px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;">
         <div id="modal-banner" style="height:140px;position:relative;display:flex;align-items:flex-end;padding:16px;">
           <div id="modal-banner-bg" style="position:absolute;inset:0;"></div>
@@ -5831,7 +5831,14 @@ function ouvrirEvent(id) {
 
   document.getElementById('event-modal').style.display = 'block';
   const modalScroll = document.getElementById('event-modal-scroll');
-  if (modalScroll) modalScroll.scrollTop = 0;
+  if (modalScroll) {
+    const nav = document.querySelector('nav');
+    const logoBar = document.getElementById('logo-bar');
+    let topOffset = nav ? nav.getBoundingClientRect().bottom : 44;
+    if (logoBar && logoBar.offsetParent !== null) topOffset = logoBar.getBoundingClientRect().bottom + nav.offsetHeight;
+    modalScroll.style.paddingTop = (topOffset + 16) + 'px';
+    modalScroll.scrollTop = 0;
+  }
   document.body.style.overflow = 'hidden';
 }
 
