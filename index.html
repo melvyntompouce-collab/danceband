@@ -1039,9 +1039,58 @@ body.pwa #agenda-passes-toggle {
 .rk-sub{font-size:14px;color:var(--muted2);margin-top:4px;}
 .xp-wrap{margin-top:20px;}
 .xp-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted2);margin-bottom:8px;}
-.xp-bar-bg{background:rgba(255,255,255,0.05);border-radius:8px;height:10px;overflow:hidden;}
+.xp-bar-bg{background:rgba(255,255,255,0.05);border-radius:8px;height:10px;overflow:hidden;cursor:pointer;transition:opacity 0.2s;}
+.xp-bar-bg:hover{opacity:0.8;}
+.xp-wrap-clickable{cursor:pointer;}
+.xp-wrap-clickable .xp-label span{transition:color 0.2s;}
+.xp-wrap-clickable:hover .xp-label span{color:var(--green);}
 .xp-bar{height:100%;background:linear-gradient(90deg,var(--purple),var(--green));border-radius:8px;width:72%;animation:xp-grow 1.5s ease;}
 @keyframes xp-grow{from{width:0}}
+
+/* ── Toast XP ── */
+#xp-toast{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--card);border:1px solid var(--green);border-radius:16px;
+  padding:12px 20px;display:flex;align-items:center;gap:12px;
+  font-family:'Syne',sans-serif;z-index:9999;
+  opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s;
+  box-shadow:0 8px 32px rgba(0,245,155,0.15);min-width:200px;
+}
+#xp-toast.visible{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+.xp-toast-ico{font-size:22px;flex-shrink:0;}
+.xp-toast-txt{display:flex;flex-direction:column;gap:2px;}
+.xp-toast-amount{font-weight:800;font-size:15px;color:var(--green);}
+.xp-toast-reason{font-size:11px;color:var(--muted2);font-family:'DM Sans',sans-serif;}
+
+/* ── Modal historique XP ── */
+#xp-history-modal{
+  position:fixed;inset:0;z-index:10000;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+#xp-history-modal.visible{opacity:1;pointer-events:auto;}
+#xp-history-panel{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:24px 24px 0 0;width:100%;max-width:480px;
+  padding:24px 20px 32px;max-height:70vh;overflow-y:auto;
+  transform:translateY(40px);transition:transform 0.35s cubic-bezier(.22,1,.36,1);
+}
+#xp-history-modal.visible #xp-history-panel{transform:translateY(0);}
+.xp-hist-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.xp-hist-title{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);}
+.xp-hist-close{background:none;border:none;color:var(--muted2);font-size:22px;cursor:pointer;padding:0;line-height:1;}
+.xp-hist-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.xp-hist-item:last-child{border-bottom:none;}
+.xp-hist-ico{width:36px;height:36px;border-radius:10px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.xp-hist-info{flex:1;}
+.xp-hist-reason{font-size:13px;font-weight:600;color:var(--text);font-family:'Syne',sans-serif;}
+.xp-hist-date{font-size:11px;color:var(--muted2);margin-top:2px;}
+.xp-hist-amount{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--green);}
+.xp-hist-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
+.xp-hist-total{background:rgba(0,245,155,0.05);border:1px solid rgba(0,245,155,0.15);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.xp-hist-total-label{font-size:12px;color:var(--muted2);font-family:'DM Sans',sans-serif;}
+.xp-hist-total-val{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--green);}
 
 .badges-section{margin-bottom:32px;}
 .badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;}
@@ -3801,12 +3850,14 @@ if (isPWA) {
               <div id="modal-price" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;"></div>
               <div id="modal-inscrits" style="font-size:12px;color:var(--muted);margin-top:2px;"></div>
             </div>
+            <div style="display:flex;align-items:center;gap:8px;">
             <button id="modal-btn" onclick="sInscrire()" style="padding:14px 28px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">
               Réserver
             </button>
             <button id="modal-fav-btn" onclick="toggleFavoriModal()" style="padding:14px;border-radius:14px;background:var(--card2);border:1px solid var(--border);color:var(--muted2);font-size:18px;cursor:pointer;transition:all 0.2s;">
               ♡
             </button>
+            </div>
           </div>
         </div>
       </div>
@@ -4622,7 +4673,7 @@ if (isPWA) {
       <div class="rk-info">
         <div class="rk-name" id="rk-name">—</div>
         <div class="rk-sub" id="rk-sub">Connecte-toi pour voir ton classement</div>
-        <div class="xp-wrap">
+        <div class="xp-wrap xp-wrap-clickable" onclick="ouvrirHistoriqueXP()" title="Voir l'historique XP">
           <div class="xp-label">
             <span id="rk-xp-current">0 XP</span>
             <span id="rk-xp-next">1 000 XP → Niveau 2</span>
@@ -4630,6 +4681,7 @@ if (isPWA) {
           <div class="xp-bar-bg">
             <div class="xp-bar" id="rk-xp-bar" style="width:0%"></div>
           </div>
+          <div style="font-size:10px;color:var(--muted);margin-top:6px;text-align:center;letter-spacing:0.5px;">Appuie pour voir l'historique →</div>
         </div>
       </div>
     </div>
@@ -5095,6 +5147,7 @@ function getNotifConfig(n) {
     nouveau_message: { ico:'💬', txt:"Tu as reçu un nouveau message",    bg:'rgba(155,93,229,0.08)' },
     favori:          { ico:'♥',  txt:"Quelqu'un t'a ajouté en favori",  bg:'rgba(255,77,109,0.08)' },
     badge:           { ico:'🏆', txt:"Tu as débloqué un nouveau badge", bg:'rgba(255,217,61,0.08)' },
+    xp:              { ico:'⭐', txt: n.texte || 'Tu as gagné des XP',  bg:'rgba(0,245,155,0.08)' },
   };
   return map[n.type] || { ico:'🔔', txt: n.texte || 'Nouvelle notification', bg:'rgba(255,255,255,0.05)' };
 }
@@ -5820,6 +5873,8 @@ function ouvrirEvent(id) {
     btn.style.color = 'var(--muted)';
     btn.style.border = '1px solid var(--border)';
     btn.style.cursor = 'not-allowed';
+    btn.style.padding = '10px 16px';
+    btn.style.fontSize = '12px';
     btn.onclick = null;
   } else {
     btn.textContent = ev.type === 'cours' ? "S'inscrire" : 'Réserver';
@@ -5891,9 +5946,9 @@ window.sInscrire = async function() {
 
     // Ajouter XP au danseur (+20 XP pour inscription event)
     await updateDoc(doc(window._db, 'danseurs', window._currentUid), {
-      xp: increment(20),
       evenements: increment(1)
     });
+    await window.gainXP(20, 'inscription_event');
 
     btn.textContent = '✅ Inscrit !';
     btn.style.background = 'var(--card2)';
@@ -8600,6 +8655,149 @@ window.brctUnlock = function() {
   }, 200);
 };
 
+// ════════════════════════════════════════════════════════
+// SYSTÈME XP — TOAST + HISTORIQUE
+// ════════════════════════════════════════════════════════
+
+// Icônes par type d'action
+const XP_ACTIONS = {
+  'inscription_event':  { ico: '🎟️', label: 'Inscription à un événement' },
+  'echange':            { ico: '🤝', label: 'Échange validé' },
+  'profil_complet':     { ico: '✅', label: 'Profil complété' },
+  'connexion':          { ico: '🔥', label: 'Connexion du jour' },
+  'first_style':        { ico: '💃', label: 'Premier style ajouté' },
+  'invitation':         { ico: '📨', label: 'Invitation acceptée' },
+  'default':            { ico: '⭐', label: 'Gain XP' },
+};
+
+function xpActionCfg(type) {
+  return XP_ACTIONS[type] || XP_ACTIONS['default'];
+}
+
+// Toast XP
+let _toastTimer = null;
+window.afficherToastXP = function(montant, type) {
+  const cfg = xpActionCfg(type);
+  const toast = document.getElementById('xp-toast');
+  if (!toast) return;
+  document.getElementById('xp-toast-amount').textContent = '+' + montant + ' XP';
+  document.getElementById('xp-toast-reason').textContent = cfg.label;
+  document.getElementById('xp-toast-ico').textContent    = cfg.ico;
+  toast.classList.add('visible');
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => toast.classList.remove('visible'), 3500);
+};
+
+// Ouvrir modal historique XP
+window.ouvrirHistoriqueXP = function() {
+  const modal = document.getElementById('xp-history-modal');
+  if (!modal) return;
+  _remplirHistoriqueXP();
+  modal.classList.add('visible');
+};
+
+window.fermerHistoriqueXP = function() {
+  const modal = document.getElementById('xp-history-modal');
+  if (modal) modal.classList.remove('visible');
+};
+
+function _remplirHistoriqueXP() {
+  const list  = document.getElementById('xp-hist-list');
+  const total = document.getElementById('xp-hist-total-val');
+  if (!list) return;
+
+  const xpLog = (window._monProfil?.xpLog || []).slice().reverse().slice(0, 30);
+  const xpTotal = window._monProfil?.xp || 0;
+
+  if (total) total.textContent = xpTotal.toLocaleString('fr') + ' XP';
+
+  if (xpLog.length === 0) {
+    list.innerHTML = '<div class="xp-hist-empty">🌱<br><br>Aucun gain XP encore.<br>Inscris-toi à un événement !</div>';
+    return;
+  }
+
+  list.innerHTML = xpLog.map(entry => {
+    const cfg = xpActionCfg(entry.type || 'default');
+    const dateStr = entry.date ? _formatXpDate(entry.date) : '';
+    return `<div class="xp-hist-item">
+      <div class="xp-hist-ico">${cfg.ico}</div>
+      <div class="xp-hist-info">
+        <div class="xp-hist-reason">${entry.label || cfg.label}</div>
+        ${dateStr ? `<div class="xp-hist-date">${dateStr}</div>` : ''}
+      </div>
+      <div class="xp-hist-amount">+${entry.montant} XP</div>
+    </div>`;
+  }).join('');
+}
+
+function _formatXpDate(iso) {
+  try {
+    const d = new Date(iso);
+    const now = new Date();
+    const diff = Math.floor((now - d) / 1000);
+    if (diff < 60)   return 'À l\'instant';
+    if (diff < 3600) return `Il y a ${Math.floor(diff/60)} min`;
+    if (diff < 86400) return `Il y a ${Math.floor(diff/3600)} h`;
+    return d.toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
+  } catch(e) { return ''; }
+}
+
+// Fonction centralisée de gain XP — remplace les increment(xp) directs
+window.gainXP = async function(montant, type, labelOverride) {
+  if (!window._currentUid || !window._db) return;
+  try {
+    const { doc, updateDoc, increment, arrayUnion } = await import(
+      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
+    );
+    const cfg   = xpActionCfg(type);
+    const label = labelOverride || cfg.label;
+    const now   = new Date().toISOString();
+    const entry = { montant, type, label, date: now };
+    const notif = { type: 'xp', texte: '+' + montant + ' XP · ' + label, date: now, lu: false };
+    await updateDoc(doc(window._db, 'danseurs', window._currentUid), {
+      xp:            increment(montant),
+      xpLog:         arrayUnion(entry),
+      notifications: arrayUnion(notif)
+    });
+    // Mettre à jour le profil local
+    if (window._monProfil) {
+      window._monProfil.xp = (window._monProfil.xp || 0) + montant;
+      if (!window._monProfil.xpLog) window._monProfil.xpLog = [];
+      window._monProfil.xpLog.push(entry);
+      if (!window._monProfil.notifications) window._monProfil.notifications = [];
+      window._monProfil.notifications.push(notif);
+      mettreAJourBadgeNotif(window._monProfil.notifications);
+    }
+    afficherToastXP(montant, type);
+  } catch(e) {
+    console.error('Erreur gainXP:', e);
+  }
+};
+
 </script>
+
+<!-- Toast XP -->
+<div id="xp-toast">
+  <div class="xp-toast-ico" id="xp-toast-ico">⭐</div>
+  <div class="xp-toast-txt">
+    <span class="xp-toast-amount" id="xp-toast-amount">+20 XP</span>
+    <span class="xp-toast-reason" id="xp-toast-reason">Gain XP</span>
+  </div>
+</div>
+
+<!-- Modal historique XP -->
+<div id="xp-history-modal" onclick="if(event.target===this)fermerHistoriqueXP()">
+  <div id="xp-history-panel">
+    <div class="xp-hist-header">
+      <div class="xp-hist-title">Historique XP</div>
+      <button class="xp-hist-close" onclick="fermerHistoriqueXP()">✕</button>
+    </div>
+    <div class="xp-hist-total">
+      <span class="xp-hist-total-label">Total accumulé</span>
+      <span class="xp-hist-total-val" id="xp-hist-total-val">0 XP</span>
+    </div>
+    <div id="xp-hist-list"></div>
+  </div>
+</div>
 
 <!-- Wrapper pour les boutons HTML — appelle les fonctions window quand
