@@ -5577,17 +5577,43 @@ async function chargerAgenda() {
   }
 }
 
+function _getDatePrincipale(ev) {
+  if (ev.dates && ev.dates.length > 0) return ev.dates[0];
+  return ev.date || null;
+}
+
+function _estPasse(ev) {
+  const maintenant = new Date();
+  maintenant.setHours(0, 0, 0, 0);
+  if (ev.dates && ev.dates.length > 0) {
+    return ev.dates.every(d => new Date(d) < maintenant);
+  }
+  return !ev.date || new Date(ev.date) < maintenant;
+}
+
+function _formatDate(str) {
+  return str ? new Date(str).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' }) : '';
+}
+
 function _renderEventCard(ev, passe) {
   const cfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.soiree;
   const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + '€';
   const couleurPrix = ev.prix === 0 ? 'var(--green)' : cfg.couleur;
   const btnClass = ev.prix === 0 ? 'ec-btn-green' : ev.type === 'cours' ? 'ec-btn-blue' : ev.type === 'battle' ? 'ec-btn-yellow' : 'ec-btn-green';
-  const btnLabel = ev.type === 'cours' ? "S'inscrire" : '🎟️ Réserver';
+  const btnLabel = ev.type === 'cours' ? "S'inscrire" : '🎫️ Réserver';
   const inscrits = ev.inscrits || 0;
-  const date = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' }) : '';
   const estFavori = mesFavoris.has(ev.id);
   const opacityStyle = passe ? 'opacity:0.5;filter:grayscale(0.4);' : '';
   const passeTag = passe ? `<span style="position:absolute;top:10px;left:10px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700;font-family:'Syne',sans-serif;color:var(--muted2);letter-spacing:1px;text-transform:uppercase;backdrop-filter:blur(4px);">Terminé</span>` : '';
+
+  let dateLine = '';
+  if (ev.dates && ev.dates.length > 1) {
+    const sorted = [...ev.dates].sort();
+    dateLine = `📅 ${_formatDate(sorted[0])} & ${_formatDate(sorted[sorted.length - 1])}${ev.heure ? ' · ' + ev.heure : ''}`;
+  } else {
+    const d = _getDatePrincipale(ev);
+    dateLine = `📅 ${_formatDate(d)}${ev.heure ? ' · ' + ev.heure : ''}`;
+  }
 
   return `
     <div class="event-card" onclick="ouvrirEvent('${ev.id}')" style="${opacityStyle}">
@@ -5603,7 +5629,7 @@ function _renderEventCard(ev, passe) {
       <div class="ec-body">
         <div class="ec-title">${ev.titre || 'Événement'}</div>
         <div class="ec-meta">
-          <div class="ec-mi">📅 ${date}${ev.heure ? ' · ' + ev.heure : ''}</div>
+          <div class="ec-mi">${dateLine}</div>
           <div class="ec-mi">📍 ${ev.ville || ''} ${ev.lieu ? '· ' + ev.lieu : ''}</div>
           ${ev.styles ? `<div class="ec-mi">💃 ${ev.styles}</div>` : ''}
           ${ev.niveau ? `<div class="ec-mi">⭐ ${ev.niveau}</div>` : ''}
@@ -5637,8 +5663,8 @@ function afficherEvents() {
     ? tousLesEvents
     : tousLesEvents.filter(e => e.type === agendaFiltre);
 
-  const aVenir = source.filter(e => e.date && new Date(e.date) >= maintenant);
-  const passes = source.filter(e => !e.date || new Date(e.date) < maintenant).reverse();
+  const aVenir = source.filter(e => !_estPasse(e));
+  const passes = source.filter(e => _estPasse(e)).reverse();
 
   if (aVenir.length === 0) {
     grid.innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted);">Aucun événement à venir dans cette catégorie</div>';
@@ -5674,7 +5700,17 @@ function ouvrirEvent(id) {
 
   const cfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.soiree;
   const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + '€';
-  const date = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : '';
+
+  // Gestion multi-dates
+  const multiDates = ev.dates && ev.dates.length > 1;
+  const sortedDates = multiDates ? [...ev.dates].sort() : null;
+  let dateLine = '';
+  if (multiDates) {
+    dateLine = `📅 Choisissez votre date${ev.heure ? ' · ' + ev.heure : ''}`;
+  } else {
+    const d = _getDatePrincipale(ev);
+    dateLine = `📅 ${d ? new Date(d).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : ''}${ev.heure ? ' · ' + ev.heure : ''}`;
+  }
 
   document.getElementById('modal-banner-bg').style.background = cfg.bg;
   document.getElementById('modal-type').textContent = cfg.label;
@@ -5683,13 +5719,29 @@ function ouvrirEvent(id) {
   document.getElementById('modal-price').style.color = cfg.couleur;
   document.getElementById('modal-inscrits').textContent = (ev.inscrits || 0) + ' personnes inscrites';
   document.getElementById('modal-desc').textContent = ev.description || 'Aucune description disponible.';
+
+  // Sélecteur de date si multi-dates
+  const selectorHTML = multiDates ? `
+    <div id="modal-date-selector" style="display:flex;flex-direction:column;gap:8px;margin:4px 0 8px;">
+      ${sortedDates.map((d, i) => `
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border-radius:10px;border:1px solid var(--border);transition:all 0.2s;" id="modal-date-opt-${i}">
+          <input type="radio" name="modal-date-choice" value="${d}" ${i === 0 ? 'checked' : ''} onchange="highlightDateOpt()" style="accent-color:var(--green);width:16px;height:16px;">
+          <span style="font-size:13px;color:var(--text);">${new Date(d).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}</span>
+        </label>
+      `).join('')}
+    </div>
+  ` : '';
+
   document.getElementById('modal-meta').innerHTML = `
-    <div class="ec-mi">📅 ${date}${ev.heure ? ' · ' + ev.heure : ''}</div>
+    <div class="ec-mi">${dateLine}</div>
+    ${selectorHTML}
     <div class="ec-mi">📍 ${ev.ville || ''} ${ev.lieu ? '· ' + ev.lieu : ''}</div>
     ${ev.styles ? `<div class="ec-mi">💃 ${ev.styles}</div>` : ''}
     ${ev.niveau ? `<div class="ec-mi">⭐ ${ev.niveau}</div>` : ''}
     ${ev.organisateur ? `<div class="ec-mi">👤 Organisé par ${ev.organisateur}</div>` : ''}
   `;
+
+  if (multiDates) highlightDateOpt();
 
   const btn = document.getElementById('modal-btn');
   btn.textContent = ev.type === 'cours' ? "✅ S'inscrire" : '🎟️ Réserver';
@@ -5705,6 +5757,14 @@ function ouvrirEvent(id) {
   document.getElementById('event-modal').style.display = 'block';
   document.body.style.overflow = 'hidden';
 }
+
+window.highlightDateOpt = function() {
+  document.querySelectorAll('[id^="modal-date-opt-"]').forEach(el => {
+    const radio = el.querySelector('input[type="radio"]');
+    el.style.borderColor = radio && radio.checked ? 'var(--green)' : 'var(--border)';
+    el.style.background = radio && radio.checked ? 'rgba(0,245,155,0.06)' : 'transparent';
+  });
+};
 
 function fermerModal() {
   document.getElementById('event-modal').style.display = 'none';
