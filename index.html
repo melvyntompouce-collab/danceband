@@ -5742,7 +5742,7 @@ function ouvrirEvent(id) {
     <div id="modal-date-selector" style="display:flex;flex-direction:column;gap:8px;margin:4px 0 8px;">
       ${sortedDates.map((d, i) => `
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border-radius:10px;border:1px solid var(--border);transition:all 0.2s;" id="modal-date-opt-${i}">
-          <input type="radio" name="modal-date-choice" value="${d.toISOString()}" ${i === 0 ? 'checked' : ''} onchange="highlightDateOpt()" style="accent-color:var(--green);width:16px;height:16px;">
+          <input type="checkbox" name="modal-date-choice" value="${d.toISOString()}" checked onchange="highlightDateOpt()" style="accent-color:var(--green);width:16px;height:16px;cursor:pointer;">
           <span style="font-size:13px;color:var(--text);">${_formatDate(d)}</span>
         </label>
       `).join('')}
@@ -5777,9 +5777,9 @@ function ouvrirEvent(id) {
 
 window.highlightDateOpt = function() {
   document.querySelectorAll('[id^="modal-date-opt-"]').forEach(el => {
-    const radio = el.querySelector('input[type="radio"]');
-    el.style.borderColor = radio && radio.checked ? 'var(--green)' : 'var(--border)';
-    el.style.background = radio && radio.checked ? 'rgba(0,245,155,0.06)' : 'transparent';
+    const cb = el.querySelector('input[type="checkbox"]');
+    el.style.borderColor = cb && cb.checked ? 'var(--green)' : 'var(--border)';
+    el.style.background = cb && cb.checked ? 'rgba(0,245,155,0.06)' : 'transparent';
   });
 };
 
