@@ -2304,6 +2304,18 @@ if (isPWA) {
       KIMA
     </button>
 
+    <!-- Onglet Organisateur (visible si role === 'organisateur') -->
+    <button class="drawer-item" id="di-organisateur" style="display:none;color:var(--blue);" onclick="ouvrirOrganisateur();closeDrawer();">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Organisateur
+    </button>
+
+    <!-- Onglet Admin (visible si role === 'admin') -->
+    <button class="drawer-item" id="di-admin" style="display:none;color:var(--red);" onclick="ouvrirOrganisateur();closeDrawer();">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+      Admin
+    </button>
+
     <!-- Section légal -->
     <div class="drawer-section-title" style="margin-top:8px;">Légal</div>
     <button class="drawer-item" onclick="showPage('privacy');closeDrawer();" id="di-privacy">
@@ -6335,6 +6347,13 @@ window.validerCodeInvitation = async function() {
     });
 
     window._monRole = role;
+
+    // Mettre à jour les onglets du drawer immédiatement
+    const diOrga  = document.getElementById('di-organisateur');
+    const diAdmin = document.getElementById('di-admin');
+    if (diOrga)  diOrga.style.display  = role === 'organisateur' ? 'flex' : 'none';
+    if (diAdmin) diAdmin.style.display = role === 'admin'         ? 'flex' : 'none';
+
     msg.textContent = role === 'admin' ? '✅ Accès admin activé !' : '✅ Accès organisateur activé !';
     msg.style.color = 'var(--green)';
     msg.style.display = 'block';
@@ -8712,6 +8731,12 @@ function mettreAJourNav(user) {
         orgaBtn.style.color = 'var(--blue)';
       }
     }
+
+    // Onglets conditionnels dans le drawer
+    const diOrga  = document.getElementById('di-organisateur');
+    const diAdmin = document.getElementById('di-admin');
+    if (diOrga)  diOrga.style.display  = window._monRole === 'organisateur' ? 'flex' : 'none';
+    if (diAdmin) diAdmin.style.display = window._monRole === 'admin'         ? 'flex' : 'none';
 
   } else {
     // Non connecté
