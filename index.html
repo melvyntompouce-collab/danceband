@@ -6428,6 +6428,7 @@ async function chargerDashboardAdmin() {
 
 window.adminModifierEvent = async function(id) {
   window._adminEditMode = true;
+  eventEnEdition = null;
   document.getElementById('admin-dashboard').style.display = 'none';
   await window.modifierEvent(id);
   document.getElementById('orga-form').style.display = 'block';
@@ -6726,6 +6727,13 @@ window.sauvegarderEvent = async function() {
 
     fermerFormEvent();
     if (!window._adminEditMode) await chargerMesEvents();
+    else {
+      // En mode admin : rester sur le dashboard admin après sauvegarde
+      window._adminEditMode = false;
+      document.getElementById('orga-form').style.display = 'none';
+      document.getElementById('admin-dashboard').style.display = 'block';
+      await chargerDashboardAdmin();
+    }
   } catch(e) {
     errDiv.textContent = '❌ Erreur : ' + e.message;
     errDiv.style.display = 'block';
