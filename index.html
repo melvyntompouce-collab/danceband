@@ -4102,6 +4102,7 @@ if (isPWA) {
       </div>
 
       <!-- Tous les événements -->
+      <button onclick="ouvrirFormEvent()" style="width:100%;padding:14px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;margin-bottom:16px;">＋ Créer un événement</button>
       <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Tous les événements</div>
       <div id="admin-events-list" style="margin-bottom:24px;display:flex;flex-direction:column;gap:8px;">
         <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
@@ -6428,6 +6429,7 @@ async function chargerDashboardAdmin() {
 
 window.adminModifierEvent = async function(id) {
   window._adminEditMode = true;
+  window._formRetour = 'admin';
   eventEnEdition = null;
   document.getElementById('admin-dashboard').style.display = 'none';
   await window.modifierEvent(id);
@@ -6596,18 +6598,23 @@ window.ouvrirFormEvent = function() {
   document.getElementById('ev-photo-label').style.display = 'flex';
   document.getElementById('ev-photo-label-text').textContent = 'Choisir une image JPG ou PNG';
   window._evPhotoUrl = null;
+  // Mémoriser d'où on vient
+  window._formRetour = document.getElementById('admin-dashboard').style.display === 'block' ? 'admin' : 'orga';
   document.getElementById('orga-form').style.display = 'block';
   document.getElementById('orga-dashboard').style.display = 'none';
+  document.getElementById('admin-dashboard').style.display = 'none';
   document.getElementById('orga-form').scrollIntoView({ behavior: 'smooth' });
 }
 
 window.fermerFormEvent = function() {
   document.getElementById('orga-form').style.display = 'none';
-  if (window._adminEditMode) {
-    window._adminEditMode = false;
+  const retour = window._formRetour || 'orga';
+  window._formRetour = null;
+  window._adminEditMode = false;
+  if (retour === 'admin') {
     document.getElementById('admin-dashboard').style.display = 'block';
     chargerDashboardAdmin();
-  } else if (document.getElementById('orga-dashboard').style.display === 'none') {
+  } else {
     document.getElementById('orga-dashboard').style.display = 'block';
   }
   eventEnEdition = null;
@@ -6725,14 +6732,18 @@ window.sauvegarderEvent = async function() {
       await addDoc(collection(window._db, 'evenements'), data);
     }
 
-    fermerFormEvent();
-    if (!window._adminEditMode) await chargerMesEvents();
-    else {
-      window._adminEditMode = false;
-      tousLesEvents = [];
-      document.getElementById('orga-form').style.display = 'none';
+    const retour = window._formRetour || 'orga';
+    window._formRetour = null;
+    window._adminEditMode = false;
+    tousLesEvents = [];
+    document.getElementById('orga-form').style.display = 'none';
+    eventEnEdition = null;
+    if (retour === 'admin') {
       document.getElementById('admin-dashboard').style.display = 'block';
       await chargerDashboardAdmin();
+    } else {
+      document.getElementById('orga-dashboard').style.display = 'block';
+      await chargerMesEvents();
     }
   } catch(e) {
     errDiv.textContent = '❌ Erreur : ' + e.message;
