@@ -1703,6 +1703,16 @@ footer{
 }
 #nav-notif-badge.visible { display: flex; }
 
+/* ── Vibe chips ── */
+.vibe-chip {
+  padding:6px 12px;border-radius:20px;border:1.5px solid var(--border);background:transparent;
+  color:var(--muted2);font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;
+  transition:all 0.15s;white-space:nowrap;
+}
+.vibe-chip.on {
+  border-color:var(--green);background:rgba(0,245,155,0.1);color:var(--green);
+}
+
 /* ── Notif card ── */
 .notif-card {
   display: flex;
@@ -4204,6 +4214,24 @@ if (isPWA) {
           <input id="ev-styles" class="form-input" type="text" placeholder="Ex: Kizomba, Semba, Tarraxo" style="background:var(--bg2)">
         </div>
         <div class="form-group" style="margin:0">
+          <label class="form-label">Vibe musicale <span style="color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;" id="ev-vibe-chips">
+            <button type="button" class="vibe-chip" data-vibe="Afro" onclick="toggleVibeChip(this)">🌍 Afro</button>
+            <button type="button" class="vibe-chip" data-vibe="Afrobeats" onclick="toggleVibeChip(this)">🥁 Afrobeats</button>
+            <button type="button" class="vibe-chip" data-vibe="Amapiano" onclick="toggleVibeChip(this)">🎹 Amapiano</button>
+            <button type="button" class="vibe-chip" data-vibe="R&B" onclick="toggleVibeChip(this)">🎵 R&B</button>
+            <button type="button" class="vibe-chip" data-vibe="Hip-Hop" onclick="toggleVibeChip(this)">🎤 Hip-Hop</button>
+            <button type="button" class="vibe-chip" data-vibe="Rap" onclick="toggleVibeChip(this)">🎙️ Rap</button>
+            <button type="button" class="vibe-chip" data-vibe="Dancehall" onclick="toggleVibeChip(this)">🌴 Dancehall</button>
+            <button type="button" class="vibe-chip" data-vibe="Reggaeton" onclick="toggleVibeChip(this)">🔥 Reggaeton</button>
+            <button type="button" class="vibe-chip" data-vibe="House" onclick="toggleVibeChip(this)">🎧 House</button>
+            <button type="button" class="vibe-chip" data-vibe="Techno" onclick="toggleVibeChip(this)">⚡ Techno</button>
+            <button type="button" class="vibe-chip" data-vibe="UK Garage" onclick="toggleVibeChip(this)">🔊 UK Garage</button>
+            <button type="button" class="vibe-chip" data-vibe="Kuduro" onclick="toggleVibeChip(this)">🇦🇴 Kuduro</button>
+            <button type="button" class="vibe-chip" data-vibe="Latino" onclick="toggleVibeChip(this)">💃 Latino</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin:0">
           <label class="form-label">Niveau</label>
           <select id="ev-niveau" class="form-select">
             <option>Tous niveaux</option>
@@ -5837,6 +5865,7 @@ function _renderEventCard(ev, passe) {
           <div class="ec-mi">${dateLine}</div>
           <div class="ec-mi">📍 ${ev.ville || ''} ${ev.lieu ? '· ' + ev.lieu : ''}${ev.adresse ? ' · ' + ev.adresse : ''}${ev.geopoint ? ` <a href="https://maps.google.com/?q=${ev.geopoint.latitude},${ev.geopoint.longitude}" target="_blank" onclick="event.stopPropagation()" style="display:inline-block;margin-left:6px;padding:1px 8px;border-radius:6px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-size:10px;font-weight:700;font-family:'Syne',sans-serif;text-decoration:none;">S'y rendre ↗</a>` : ''}</div>
           ${ev.styles ? `<div class="ec-mi">💃 ${ev.styles}</div>` : ''}
+          ${ev.vibe ? `<div class="ec-mi">🎵 ${ev.vibe}</div>` : ''}
           ${ev.niveau ? `<div class="ec-mi">⭐ ${ev.niveau}</div>` : ''}
         </div>
       </div>
@@ -5956,6 +5985,7 @@ function ouvrirEvent(id) {
     ${selectorHTML}
     <div class="ec-mi">📍 ${ev.ville || ''} ${ev.lieu ? '· ' + ev.lieu : ''}${ev.adresse ? '<br><span style="font-size:12px;color:var(--muted);padding-left:20px;">' + ev.adresse + '</span>' : ''}</div>
     ${ev.styles ? `<div class="ec-mi">💃 ${ev.styles}</div>` : ''}
+    ${ev.vibe ? `<div class="ec-mi">🎵 ${ev.vibe}</div>` : ''}
     ${ev.niveau ? `<div class="ec-mi">⭐ ${ev.niveau}</div>` : ''}
     ${ev.organisateur ? `<div class="ec-mi">👤 Organisé par ${ev.organisateur}</div>` : ''}
   `;
@@ -6629,6 +6659,24 @@ window.supprimerPhotoEvent = function() {
   window._evPhotoUrl = null;
 }
 
+// ── Vibe musicale ──
+window.toggleVibeChip = function(btn) {
+  btn.classList.toggle('on');
+};
+
+function setVibeChips(vibes) {
+  const chips = document.querySelectorAll('#ev-vibe-chips .vibe-chip');
+  const list = (vibes || '').split(',').map(v => v.trim().toLowerCase()).filter(Boolean);
+  chips.forEach(c => {
+    c.classList.toggle('on', list.includes(c.dataset.vibe.toLowerCase()));
+  });
+}
+
+function getVibeSelectionnes() {
+  return [...document.querySelectorAll('#ev-vibe-chips .vibe-chip.on')]
+    .map(c => c.dataset.vibe).join(', ');
+}
+
 window.ouvrirFormEvent = function() {
   eventEnEdition = null;
   document.getElementById('orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
@@ -6644,6 +6692,7 @@ window.ouvrirFormEvent = function() {
   document.getElementById('ev-photo-label').style.display = 'flex';
   document.getElementById('ev-photo-label-text').textContent = 'Choisir une image JPG ou PNG';
   window._evPhotoUrl = null;
+  setVibeChips('');
   // Mémoriser d'où on vient
   window._formRetour = document.getElementById('admin-dashboard').style.display === 'block' ? 'admin' : 'orga';
   document.getElementById('orga-form').style.display = 'block';
@@ -6685,6 +6734,7 @@ window.modifierEvent = async function(id) {
     document.getElementById('ev-lieu').value   = ev.lieu    || '';
     document.getElementById('ev-styles').value = ev.styles  || '';
     document.getElementById('ev-niveau').value = ev.niveau  || 'Tous niveaux';
+    setVibeChips(ev.vibe || '');
     document.getElementById('ev-desc').value   = ev.description || '';
 
     // Photo de couverture
@@ -6750,6 +6800,7 @@ window.sauvegarderEvent = async function() {
     prix:          parseFloat(document.getElementById('ev-prix').value) || 0,
     lieu:          document.getElementById('ev-lieu').value,
     styles:        document.getElementById('ev-styles').value,
+    vibe:          getVibeSelectionnes(),
     niveau:        document.getElementById('ev-niveau').value,
     description:   document.getElementById('ev-desc').value,
     photoUrl:      photoUrl || null,
