@@ -9115,7 +9115,14 @@ function brctLeverBlur() {
 }
 
 function initPageBracelet() {
-  brctSetMode(window._monProfil?.modeBracelet || 'public');
+  const mode = window._monProfil?.modeBracelet || 'public';
+  brctSetMode(mode);
+  // Affichage immédiat du texte sans attendre la transition
+  const desc = document.getElementById('brct-mode-desc');
+  if (desc && BRCT_MODES[mode]) {
+    desc.textContent = BRCT_MODES[mode].desc;
+    desc.style.opacity = '1';
+  }
   brctChargerCountWaitlist();
   const input = document.getElementById('brct-waitlist-email');
   if (input && window._monProfil?.email) input.value = window._monProfil.email;
