@@ -3391,10 +3391,10 @@ if (isPWA) {
     <!-- Bracelet animé -->
     <div class="brct-visual">
       <div class="brct-body">
-        <div class="brct-led green" id="brct-led-online"></div>
-        <div class="brct-led communaute" id="brct-led-1"></div>
+        <div class="brct-led blue" id="brct-led-1"></div>
         <div class="brct-led communaute" id="brct-led-2"></div>
-        <div class="brct-led communaute" id="brct-led-3"></div>
+        <div class="brct-led amis" id="brct-led-3"></div>
+        <div class="brct-led red" id="brct-led-4"></div>
         <!-- Séparateur + LED batterie -->
         <div style="display:flex;align-items:center;gap:5px;margin-left:6px;padding-left:8px;border-left:1px solid rgba(255,255,255,0.08);">
           <svg width="7" height="10" viewBox="0 0 7 10" fill="none" style="opacity:0.45;flex-shrink:0;">
@@ -8958,22 +8958,22 @@ document.dispatchEvent(new Event('firebase-ready'));
 
 const BRCT_MODES = {
   public: {
-    leds: ['blue','blue','blue'],
+    leds: ['blue','blue','blue','blue'],
     desc: 'Tout le monde peut voir ton profil complet en approchant son bracelet du tien. Idéal pour les soirées et events.',
     btnClass: 'active-public'
   },
   communaute: {
-    leds: ['communaute','communaute','communaute'],
+    leds: ['off','communaute','communaute','communaute'],
     desc: 'Visible uniquement par les membres de la communauté HAKO. Ton profil complet est accessible aux autres artistes connectés.',
     btnClass: 'active-communaute'
   },
   amis: {
-    leds: ['amis','amis','off'],
+    leds: ['off','off','amis','amis'],
     desc: 'Seuls tes abonnés mutuels ont accès à ton profil complet. Les autres voient uniquement ton nom et ta discipline.',
     btnClass: 'active-amis'
   },
   prive: {
-    leds: ['red','off','off'],
+    leds: ['off','off','off','red'],
     desc: "Ton profil est masqué. Les échanges ne s'activent que si tu acceptes manuellement la connexion dans l'app.",
     btnClass: 'active-prive'
   }
@@ -9014,7 +9014,7 @@ window.brctAnimerGeste = function brctAnimerGeste() {
   const wR    = document.getElementById('brct-w-right');
   const flash = document.getElementById('brct-flash');
   const label = document.getElementById('brct-geste-label');
-  const leds  = document.querySelectorAll('#brct-led-1, #brct-led-2, #brct-led-3');
+  const leds  = document.querySelectorAll('#brct-led-1, #brct-led-2, #brct-led-3, #brct-led-4');
   if (!wL || !wR) return;
 
   // Reset — bracelets éloignés
