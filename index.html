@@ -656,18 +656,18 @@ body.pwa #agenda-passes-toggle {
 }
 }
 .filter-chip {
-  -webkit-appearance: none !important;
-  appearance: none !important;
+  -webkit-appearance: none;
+  appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   height: 32px;
   padding: 0 14px;
-  border-radius: 6px !important;
+  border-radius: 8px;
   font-size: 12px;
   font-weight: 700;
-  border: 1.5px solid var(--border) !important;
-  background: var(--bg2) !important;
+  border: 1.5px solid var(--border);
+  background: var(--bg2);
   color: var(--muted2);
   cursor: pointer;
   white-space: nowrap;
@@ -3768,10 +3768,7 @@ if (isPWA) {
     </div>
 
     <div style="display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;">
-      <button class="filter-chip on" onclick="setNotifFiltre('tous',this)">Toutes</button>
-      <button class="filter-chip" onclick="setNotifFiltre('nouveau_abonne',this)">Abonnements</button>
-      <button class="filter-chip" onclick="setNotifFiltre('nouveau_message',this)">Messages</button>
-      <button class="filter-chip" onclick="setNotifFiltre('non_lu',this)">Non lues</button>
+
     </div>
 
     <div id="notifs-list" style="display:flex;flex-direction:column;gap:8px;">
@@ -3805,10 +3802,9 @@ if (isPWA) {
         <input class="search-input" type="text" id="search-input" placeholder="🔍 Nom, style, ville..." oninput="filtrerDanseurs()">
 
         <div class="filter-row" id="filter-row" style="margin-bottom:6px;">
-          <button class="filter-chip on" onclick="setFiltre('tous',this)">Tous</button>
-          <button class="filter-chip" onclick="setFiltre('disponible',this)">Disponibles</button>
-          <button class="filter-chip" onclick="setFiltre('compatible',this)">⚡ Compatibles</button>
-          <button class="filter-chip" onclick="setFiltre('public',this)">Public</button>
+          <button class="style-fchip on" onclick="setFiltre('tous',this)">Tous</button>
+          <button class="style-fchip" onclick="setFiltre('enligne',this)"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00f59b;box-shadow:0 0 6px #00f59b;margin-right:5px;flex-shrink:0;"></span>En ligne</button>
+          <button class="style-fchip" onclick="setFiltre('compatible',this)">⚡ Compatible</button>
         </div>
 
         <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;">
@@ -3827,7 +3823,6 @@ if (isPWA) {
         <div style="margin-bottom:4px;">
           <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;">Style de danse</div>
           <div style="display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;" id="style-filter-row">
-            <button class="style-fchip on" onclick="setStyleFiltre('',this)">Tous</button>
             <button class="style-fchip" onclick="setStyleFiltre('Salsa',this)">Salsa</button>
             <button class="style-fchip" onclick="setStyleFiltre('Kizomba',this)">Kizomba</button>
             <button class="style-fchip" onclick="setStyleFiltre('Hip-Hop',this)">Hip-Hop</button>
@@ -8163,27 +8158,48 @@ function focusDanseur(uid) {
   }
 }
 
-function setFiltre(type, btn) {
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('on'));
-  btn.classList.add('on');
-  filtreActif = type;
+
+
+let filtresStyleActifs = new Set();
+let filtresEtatActifs = new Set();
+
+function setStyleFiltre(style, btn) {
+  if (filtresStyleActifs.has(style)) {
+    filtresStyleActifs.delete(style);
+    btn.classList.remove('on');
+  } else {
+    filtresStyleActifs.add(style);
+    btn.classList.add('on');
+  }
   filtrerDanseurs();
 }
 
-let filtreStyleActif = '';
-
-function setStyleFiltre(style, btn) {
-  document.querySelectorAll('.style-fchip').forEach(c => c.classList.remove('on'));
-  btn.classList.add('on');
-  filtreStyleActif = style;
+function setFiltre(type, btn) {
+  if (type === 'tous') {
+    filtresEtatActifs.clear();
+    document.querySelectorAll('#filter-row .style-fchip').forEach(c => c.classList.remove('on'));
+    btn.classList.add('on');
+  } else {
+    document.querySelectorAll('#filter-row .style-fchip[onclick*="tous"]').forEach(c => c.classList.remove('on'));
+    if (filtresEtatActifs.has(type)) {
+      filtresEtatActifs.delete(type);
+      btn.classList.remove('on');
+    } else {
+      filtresEtatActifs.add(type);
+      btn.classList.add('on');
+    }
+    if (filtresEtatActifs.size === 0) {
+      document.querySelectorAll('#filter-row .style-fchip[onclick*="tous"]').forEach(c => c.classList.add('on'));
+    }
+  }
   filtrerDanseurs();
 }
 
 function resetFiltres() {
-  filtreActif = 'tous';
-  filtreStyleActif = '';
-  document.querySelectorAll('.filter-chip').forEach((c,i) => c.classList.toggle('on', i===0));
-  document.querySelectorAll('.style-fchip').forEach((c,i) => c.classList.toggle('on', i===0));
+  filtresEtatActifs.clear();
+  filtresStyleActifs.clear();
+  document.querySelectorAll('#filter-row .style-fchip').forEach((c,i) => c.classList.toggle('on', i===0));
+  document.querySelectorAll('#style-filter-row .style-fchip').forEach(c => c.classList.remove('on'));
   const zi = document.getElementById('filtre-zone');
   if (zi) zi.value = '';
   const si = document.getElementById('search-input');
@@ -8196,18 +8212,22 @@ function filtrerDanseurs() {
   const zone   = document.getElementById('filtre-zone')?.value || '';
   let filtrés  = tousLesDanseurs;
 
-  if (filtreActif === 'public')     filtrés = filtrés.filter(d => d.visibilite === 'public');
-  if (filtreActif === 'disponible') filtrés = filtrés.filter(d => d.disponible);
-  if (filtreActif === 'compatible') {
-    filtrés = filtrés
-      .filter(d => d.uid !== window._currentUid)
-      .map(d => ({ ...d, _score: calculerCompatibilite(d) }))
-      .filter(d => d._score >= 25)
-      .sort((a,b) => b._score - a._score);
+  if (filtresEtatActifs.size > 0) {
+    let temp = [];
+    if (filtresEtatActifs.has('enligne'))    temp = [...new Set([...temp, ...filtrés.filter(d => d.disponible)])];
+    if (filtresEtatActifs.has('compatible')) {
+      const compatibles = filtrés
+        .filter(d => d.uid !== window._currentUid)
+        .map(d => ({ ...d, _score: calculerCompatibilite(d) }))
+        .filter(d => d._score >= 25)
+        .sort((a,b) => b._score - a._score);
+      temp = [...new Set([...temp, ...compatibles])];
+    }
+    filtrés = temp;
   }
 
   if (zone)            filtrés = filtrés.filter(d => (d.zone || '').toLowerCase() === zone.toLowerCase());
-  if (filtreStyleActif) filtrés = filtrés.filter(d => normaliserStyles(d.styles).some(s => s.toLowerCase() === filtreStyleActif.toLowerCase()));
+  if (filtresStyleActifs.size > 0) filtrés = filtrés.filter(d => normaliserStyles(d.styles).some(s => filtresStyleActifs.has(s)));
 
   if (search) {
     filtrés = filtrés.filter(d => {
@@ -8227,7 +8247,7 @@ function filtrerDanseurs() {
   afficherListeDanseurs(filtrés);
 
   const count = filtrés.length;
-  const label = filtreActif === 'compatible'
+  const label = filtresEtatActifs.has('compatible') && filtresEtatActifs.size === 1
     ? count + ' compatible' + (count > 1 ? 's' : '')
     : count + ' artiste' + (count > 1 ? 's' : '');
   document.getElementById('map-count').textContent = label;
