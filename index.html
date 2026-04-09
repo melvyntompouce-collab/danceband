@@ -5302,10 +5302,9 @@ function mettreAJourBadgeNotif(notifs) {
       badge.style.display = 'flex';
       badge.style.alignItems = 'center';
       badge.style.justifyContent = 'center';
-      badge.style.paddingBottom = '1px';
       badge.style.background = 'var(--green)';
       badge.style.color = '#080810';
-      badge.textContent = nonLues > 9 ? '9+' : nonLues;
+      badge.innerHTML = `<span style="display:block;transform:translateY(-1px);line-height:1;">${nonLues > 9 ? '9+' : nonLues}</span>`;
     } else {
       badge.style.display = 'none';
     }
