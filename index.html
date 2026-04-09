@@ -245,16 +245,12 @@ nav > * { margin-bottom: 6px; }
 /* ── PAGES suite ── */
 /* ── PAGES ── */
 .page{display:none;min-height:100vh;padding-top:44px;position:relative;z-index:1;}
-#page-ranking{padding-top:8px !important;}
 .page.active{display:block;}
 body.logo-bar-visible .page{padding-top:calc(120px + max(20px, env(safe-area-inset-top)));}
 
 /* ── PWA STANDALONE ── */
-body.pwa .page:not(#page-auth):not(#page-ranking) {
+body.pwa .page:not(#page-auth) {
   padding-top: calc(42px + env(safe-area-inset-top)) !important;
-}
-body.pwa #page-ranking {
-  padding-top: calc(42px + env(safe-area-inset-top) + 8px) !important;
 }
 body.pwa nav {
   height: calc(42px + env(safe-area-inset-top));
@@ -4813,11 +4809,11 @@ if (isPWA) {
 </div>
 
 <!-- ═══ PAGE: CLASSEMENT ═══ -->
-<div class="page" id="page-ranking" style="padding-top:8px;">
+<div class="page" id="page-ranking">
   <div class="ranking-page">
 
     <!-- HERO MON CLASSEMENT -->
-    <div style="padding:8px 20px 0;display:flex;align-items:center;gap:14px;">
+    <div style="padding:0 20px 0;margin-top:-34px;display:flex;align-items:center;gap:14px;">
       <button onclick="goBack()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button>
     </div>
     <div class="rk-hero fade-in" id="rk-hero">
