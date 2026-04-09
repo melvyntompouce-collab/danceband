@@ -2717,6 +2717,7 @@ if (isPWA) {
   <div class="privacy-container">
 
     <div class="privacy-header">
+      <div style="margin-bottom:16px;"><button onclick="goBack()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button></div>
       <div class="privacy-tag">RGPD · Dernière mise à jour : mars 2025</div>
       <h1 class="privacy-title">Politique de<br>confidentialité</h1>
       <p class="privacy-intro">
@@ -2962,6 +2963,7 @@ if (isPWA) {
   <div class="privacy-container">
 
     <div class="privacy-header">
+      <div style="margin-bottom:16px;"><button onclick="goBack()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button></div>
       <div class="privacy-tag">Légal · Dernière mise à jour : mars 2025</div>
       <h1 class="privacy-title">Conditions générales<br>d'utilisation</h1>
       <p class="privacy-intro">
@@ -3207,6 +3209,7 @@ if (isPWA) {
   <div class="privacy-container">
 
     <div class="privacy-header">
+      <div style="margin-bottom:16px;"><button onclick="goBack()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button></div>
       <div class="privacy-tag">Légal · Dernière mise à jour : mars 2025</div>
       <h1 class="privacy-title">Mentions<br>légales</h1>
       <p class="privacy-intro">
@@ -3384,6 +3387,9 @@ if (isPWA) {
 
   <!-- Hero -->
   <div class="brct-hero">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+      <button onclick="goBack()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button>
+    </div>
     <div class="brct-tag">Bientôt disponible</div>
     <h1 class="brct-title">KIMA</h1>
     <p class="brct-sub">Le bracelet connecté qui transforme chaque rencontre en connexion. Un geste suffit.</p>
@@ -3608,6 +3614,8 @@ if (isPWA) {
 
     <!-- Salutation + Photo + Dispo -->
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+      <button onclick="goBack()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button>
+
       <div style="position:relative;flex-shrink:0;cursor:pointer;" onclick="showPage('profile')">
         <div id="dash-avatar" style="width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;position:relative;box-shadow:0 4px 20px rgba(0,245,155,0.2);">
           <span id="dash-avatar-emoji">💃</span>
@@ -3735,9 +3743,12 @@ if (isPWA) {
   <div style="max-width:680px;margin:0 auto;padding:0 16px 100px;">
 
     <div style="padding:28px 0 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-      <div>
-        <div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin-bottom:6px;">ACTIVITÉ</div>
-        <h1 style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:36px;letter-spacing:-0.5px;line-height:1;">Notifications</h1>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button onclick="goBack()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button>
+        <div>
+          <div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted2);margin-bottom:6px;">ACTIVITÉ</div>
+          <h1 style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:36px;letter-spacing:-0.5px;line-height:1;">Notifications</h1>
+        </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button onclick="marquerToutLu()" style="background:none;border:1px solid var(--border);color:var(--muted2);font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)';this.style.color='var(--text)';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)';">
@@ -3764,6 +3775,7 @@ if (isPWA) {
 </div>
 
 <div class="page" id="page-network">
+  <div style="position:absolute;top:calc(16px + max(0px,env(safe-area-inset-top)));left:16px;z-index:500;"><button onclick="goBack()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button></div>
   <div class="network-layout">
 
     <!-- CARTE -->
@@ -3846,9 +3858,12 @@ if (isPWA) {
 
     <!-- HEADER -->
     <div class="agenda-header">
-      <div>
-        <div class="section-tag">Événements & workshops</div>
-        <h1 style="font-family:'Syne',sans-serif;font-size:48px;letter-spacing:2px;font-weight:800;">AGENDA</h1>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button onclick="goBack()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button>
+        <div>
+          <div class="section-tag">Événements & workshops</div>
+          <h1 style="font-family:'Syne',sans-serif;font-size:48px;letter-spacing:2px;font-weight:800;">AGENDA</h1>
+        </div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
         <div class="agenda-filters" id="agenda-filters">
@@ -3985,9 +4000,12 @@ if (isPWA) {
 
     <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
-      <div>
-        <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Messagerie</div>
-        <h1 style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:42px;letter-spacing:-1px;line-height:1;">MESSAGES</h1>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button onclick="goBack()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Messagerie</div>
+          <h1 style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:42px;letter-spacing:-1px;line-height:1;">MESSAGES</h1>
+        </div>
       </div>
     </div>
 
@@ -4791,6 +4809,9 @@ if (isPWA) {
   <div class="ranking-page">
 
     <!-- HERO MON CLASSEMENT -->
+    <div style="padding:20px 20px 0;display:flex;align-items:center;gap:14px;">
+      <button onclick="goBack()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button>
+    </div>
     <div class="rk-hero fade-in" id="rk-hero">
       <div class="rk-pos-wrap">
         <div class="rk-pos" id="rk-pos">—</div>
@@ -4994,28 +5015,7 @@ function closeDrawer() {
   document.body.style.overflow = '';
 }
 
-// ── Swipe retour (PWA) ──
-(function() {
-  let startX = 0, startY = 0, swiping = false;
-  const EDGE = 30; // zone de déclenchement depuis le bord gauche (px)
-  const MIN_DIST = 80; // distance minimale du swipe
-
-  document.addEventListener('touchstart', e => {
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    swiping = startX <= EDGE; // uniquement depuis le bord gauche
-  }, { passive: true });
-
-  document.addEventListener('touchend', e => {
-    if (!swiping) return;
-    const dx = e.changedTouches[0].clientX - startX;
-    const dy = Math.abs(e.changedTouches[0].clientY - startY);
-    if (dx > MIN_DIST && dy < 80) {
-      goBack();
-    }
-    swiping = false;
-  }, { passive: true });
-})();
+// ── Swipe retour (PWA) supprimé ──
 function setActive(el) {} // conservé pour compatibilité
 
 function goHome() {
