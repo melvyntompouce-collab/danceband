@@ -2254,7 +2254,7 @@ if (isPWA) {
       Connexion
     </a>
     <!-- Cloche notifs (connecté uniquement) -->
-    <div id="nav-notif-btn" style="display:none;position:relative;width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);display:none;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;flex-shrink:0;" onclick="showPage('notifs')" title="Notifications">
+    <div id="nav-notif-btn" style="display:none;position:relative;width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;flex-shrink:0;" onclick="showPage('notifs')" title="Notifications">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       <div id="nav-notif-badge" style="display:none;position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:var(--red);border:2px solid var(--bg);font-size:9px;font-weight:800;color:#fff;display:none;align-items:center;justify-content:center;font-family:'Syne',sans-serif;"></div>
     </div>
@@ -2311,11 +2311,7 @@ if (isPWA) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
         Admin
       </button>
-      <button class="drawer-item" id="di-notifs" onclick="showPage('notifs');closeDrawer();" style="display:none;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        Notifications
-        <span id="drawer-notif-badge" style="display:none;margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:800;padding:1px 6px;border-radius:20px;font-family:'Syne',sans-serif;"></span>
-      </button>
+
     </div>
 
     <!-- Navigation -->
@@ -5300,12 +5296,17 @@ function mettreAJourBadgeNotif(notifs) {
   const nonLues = (notifs || []).filter(n => !n.lu).length;
   const btn     = document.getElementById('nav-notif-btn');
   const badge   = document.getElementById('nav-notif-badge');
-  const diBtn   = document.getElementById('di-notifs');
-  const diBadge = document.getElementById('drawer-notif-badge');
-  if (btn)   { btn.classList.add('visible'); }
-  if (badge) { if (nonLues > 0) { badge.classList.add('visible'); badge.textContent = nonLues > 9 ? '9+' : nonLues; } else badge.classList.remove('visible'); }
-  if (diBtn)   diBtn.style.display = 'flex';
-  if (diBadge) { if (nonLues > 0) { diBadge.style.display = 'inline-block'; diBadge.textContent = nonLues > 9 ? '9+' : nonLues; } else diBadge.style.display = 'none'; }
+  if (btn)   { btn.style.display = 'flex'; }
+  if (badge) {
+    if (nonLues > 0) {
+      badge.style.display = 'flex';
+      badge.style.background = 'var(--green)';
+      badge.style.color = '#080810';
+      badge.textContent = nonLues > 9 ? '9+' : nonLues;
+    } else {
+      badge.style.display = 'none';
+    }
+  }
 }
 
 let notifFiltreActif = 'tous';
@@ -5339,7 +5340,7 @@ function afficherPageNotifs() {
         <div style="font-size:11px;color:var(--muted2);">${date}</div>
       </div>
       <div style="position:relative;">
-        ${!n.lu ? '<div class="notif-dot" style="margin-right:6px;"></div>' : ''}
+        ${!n.lu ? '<div class="notif-dot" style="position:absolute;left:-10px;top:50%;transform:translateY(-50%);"></div>' : ''}
         <button onclick="event.stopPropagation();toggleNotifMenu(this,${realIdx},${n.lu})" style="background:none;border:none;color:var(--muted2);font-size:18px;cursor:pointer;padding:4px 6px;border-radius:6px;line-height:1;display:flex;flex-direction:column;align-items:center;gap:2px;" title="Options">
           <span style="display:block;width:3px;height:3px;border-radius:50%;background:currentColor;"></span>
           <span style="display:block;width:3px;height:3px;border-radius:50%;background:currentColor;"></span>
