@@ -66,7 +66,7 @@ body::after{
 #logo-bar{
   position:fixed;top:0;left:0;right:0;z-index:101;
   height:50px;
-  padding-top:max(10px, env(safe-area-inset-top));
+  padding-top:0;
   display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,rgba(0,245,155,0.1),rgba(155,93,229,0.05));
   border-bottom:1px solid var(--border);
@@ -4342,7 +4342,7 @@ if (isPWA) {
   <div class="profile-page">
 
     <!-- ── SOUS-PAGE: ÉDITION PROFIL ── -->
-    <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:max(10px, env(safe-area-inset-top));">
+    <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:0;">
       <div style="max-width:600px;margin:0 auto;padding:calc(50px + max(10px, env(safe-area-inset-top)) + 5px) 20px 100px;">
 
         <!-- Header sous-page -->
