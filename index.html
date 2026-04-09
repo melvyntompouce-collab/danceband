@@ -543,6 +543,7 @@ body.pwa #agenda-passes-toggle {
   flex-direction:column;
   min-height:calc(100vh - 70px);
   padding:20px;
+  padding-top:60px;
   gap:16px;
   max-width:1100px;
   margin:0 auto;
@@ -1758,7 +1759,7 @@ footer{
 /* Hero bracelet */
 .brct-hero {
   position: relative;
-  padding: 48px 20px 56px;
+  padding: 43px 20px 56px;
   text-align: center;
   overflow: hidden;
 }
@@ -3627,7 +3628,7 @@ if (isPWA) {
       </div>
       <div style="flex:1;min-width:0;">
         <div style="font-size:11px;color:var(--muted2);margin-bottom:1px;" id="dash-heure">Bonjour</div>
-        <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-0.5px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="dash-nom">—</div>
+        <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-0.5px;line-height:1.1;" id="dash-nom">—</div>
         <div style="font-size:11px;color:var(--muted2);margin-top:3px;" id="dash-sous-titre">Prêt à danser ?</div>
       </div>
       <!-- Toggle disponibilité -->
@@ -3862,7 +3863,7 @@ if (isPWA) {
         <button onclick="goBack()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button>
         <div>
           <div class="section-tag">Événements & workshops</div>
-          <h1 style="font-family:'Syne',sans-serif;font-size:48px;letter-spacing:2px;font-weight:800;">AGENDA</h1>
+          <h1 style="font-family:'Syne',sans-serif;font-size:38px;letter-spacing:2px;font-weight:800;">AGENDA</h1>
         </div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
@@ -4341,7 +4342,7 @@ if (isPWA) {
   <div class="profile-page">
 
     <!-- ── SOUS-PAGE: ÉDITION PROFIL ── -->
-    <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(100px + max(20px, env(safe-area-inset-top)));">
+    <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:calc(90px + max(20px, env(safe-area-inset-top)));">
       <div style="max-width:600px;margin:0 auto;padding:24px 20px 100px;">
 
         <!-- Header sous-page -->
@@ -4613,6 +4614,9 @@ if (isPWA) {
     </div>
 
     <!-- ── PROFIL PRINCIPAL ── -->
+    <div style="padding:16px 0 0;">
+      <button onclick="goBack()" style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button>
+    </div>
     <div class="profile-hero fade-in">
       <div class="ph-top">
         <div class="ph-avatar" id="ph-avatar" style="cursor:pointer;position:relative;overflow:hidden;" onclick="ouvrirEdition()" title="Modifier le profil">
