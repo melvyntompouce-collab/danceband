@@ -249,6 +249,9 @@ nav > * { margin-bottom: 6px; }
 body.logo-bar-visible .page{padding-top:calc(120px + max(20px, env(safe-area-inset-top)));}
 
 /* ── PWA STANDALONE ── */
+body.pwa .hero {
+  padding-top: 8px;
+}
 body.pwa .page:not(#page-auth) {
   padding-top: calc(42px + env(safe-area-inset-top)) !important;
 }
@@ -272,12 +275,12 @@ body.pwa #agenda-passes-toggle {
 .hero{
   min-height:calc(100vh - 44px);
   display:flex;align-items:flex-start;
-  padding:8px 5% 80px;
+  padding:16px 5% 80px;
   position:relative;overflow:hidden;
 }
 @media (max-width:768px) {
   .hero{
-    padding-top:8px;
+    padding-top:16px;
     align-items: flex-start;
   }
   .hero-content {
