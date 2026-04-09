@@ -245,12 +245,16 @@ nav > * { margin-bottom: 6px; }
 /* ── PAGES suite ── */
 /* ── PAGES ── */
 .page{display:none;min-height:100vh;padding-top:44px;position:relative;z-index:1;}
+#page-ranking{padding-top:8px !important;}
 .page.active{display:block;}
 body.logo-bar-visible .page{padding-top:calc(120px + max(20px, env(safe-area-inset-top)));}
 
 /* ── PWA STANDALONE ── */
-body.pwa .page:not(#page-auth) {
+body.pwa .page:not(#page-auth):not(#page-ranking) {
   padding-top: calc(42px + env(safe-area-inset-top)) !important;
+}
+body.pwa #page-ranking {
+  padding-top: 8px !important;
 }
 body.pwa nav {
   height: calc(42px + env(safe-area-inset-top));
