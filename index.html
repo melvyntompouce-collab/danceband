@@ -3767,8 +3767,11 @@ if (isPWA) {
       </div>
     </div>
 
-    <div style="display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;">
-
+    <div style="display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;" id="notif-filter-row">
+      <button class="style-fchip on" onclick="setNotifFiltre('tous',this)">Toutes</button>
+      <button class="style-fchip" onclick="setNotifFiltre('nouveau_abonne',this)">Abonnements</button>
+      <button class="style-fchip" onclick="setNotifFiltre('nouveau_message',this)">Messages</button>
+      <button class="style-fchip" onclick="setNotifFiltre('non_lu',this)">Non lues</button>
     </div>
 
     <div id="notifs-list" style="display:flex;flex-direction:column;gap:8px;">
@@ -5308,7 +5311,7 @@ function mettreAJourBadgeNotif(notifs) {
 let notifFiltreActif = 'tous';
 
 window.setNotifFiltre = function(type, btn) {
-  document.querySelectorAll('#page-notifs .filter-chip').forEach(c => c.classList.remove('on'));
+  document.querySelectorAll('#notif-filter-row .style-fchip').forEach(c => c.classList.remove('on'));
   btn.classList.add('on');
   notifFiltreActif = type;
   afficherPageNotifs();
