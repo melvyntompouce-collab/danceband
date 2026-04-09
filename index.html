@@ -527,7 +527,7 @@ body.pwa #agenda-passes-toggle {
   cursor:pointer;transition:all 0.2s;
   font-family:'DM Sans',sans-serif;margin-top:8px;
 }
-.form-submit:hover{background:#00d485;transform:translateY(-1px);}
+.form-submit:hover{background:#00d485;transform:translateY(-0.5px);}
 .auth-divider{
   text-align:center;font-size:13px;color:var(--muted);
   margin:20px 0;position:relative;
@@ -882,7 +882,7 @@ body.pwa #agenda-passes-toggle {
 .ec-btn-green{background:var(--green);color:#080810;}
 .ec-btn-blue{background:rgba(77,159,255,0.1);color:var(--blue);border:1px solid var(--blue);}
 .ec-btn-yellow{background:var(--yellow);color:#080810;}
-.ec-btn:hover{transform:translateY(-1px);}
+.ec-btn:hover{transform:translateY(-0.5px);}
 
 /* ══════════════════════════════
    PAGE: PROFIL
@@ -5304,7 +5304,7 @@ function mettreAJourBadgeNotif(notifs) {
       badge.style.justifyContent = 'center';
       badge.style.background = 'var(--green)';
       badge.style.color = '#080810';
-      badge.innerHTML = `<span style="display:block;transform:translateY(-1px);line-height:1;">${nonLues > 9 ? '9+' : nonLues}</span>`;
+      badge.innerHTML = `<span style="display:block;transform:translateY(-0.5px);line-height:1;">${nonLues > 9 ? '9+' : nonLues}</span>`;
     } else {
       badge.style.display = 'none';
     }
