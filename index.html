@@ -4025,7 +4025,7 @@ if (isPWA) {
     </div>
 
     <!-- Fenêtre de conversation -->
-    <div id="msg-conversation" style="display:none;position:fixed;inset:0;z-index:300;background:var(--bg);padding-top:70px;display:none;flex-direction:column;">
+    <div id="msg-conversation" style="display:none;position:fixed;inset:0;z-index:300;background:var(--bg);padding-top:max(70px, calc(50px + env(safe-area-inset-top)));display:none;flex-direction:column;">
 
       <!-- Header conversation -->
       <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;">
