@@ -1071,6 +1071,57 @@ body.pwa #agenda-passes-toggle {
 .xp-toast-reason{font-size:11px;color:var(--muted2);font-family:'DM Sans',sans-serif;}
 
 /* ── Modal historique XP ── */
+/* ── MODALE PAIRING KIMA ── */
+#kima-pair-modal{
+  position:fixed;inset:0;z-index:10000;
+  background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+#kima-pair-modal.visible{opacity:1;pointer-events:auto;}
+#kima-pair-panel{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:24px 24px 0 0;width:100%;max-width:480px;
+  padding:28px 24px 40px;
+  transform:translateY(60px);transition:transform 0.35s cubic-bezier(.22,1,.36,1);
+}
+#kima-pair-modal.visible #kima-pair-panel{transform:translateY(0);}
+.kima-pair-icon{
+  width:72px;height:72px;border-radius:20px;
+  background:rgba(0,245,155,0.08);border:1.5px solid rgba(0,245,155,0.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:34px;margin:0 auto 20px;
+}
+.kima-pair-title{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:22px;
+  color:var(--text);text-align:center;margin-bottom:8px;
+}
+.kima-pair-sub{
+  font-size:13px;color:var(--muted);text-align:center;
+  font-family:'DM Sans',sans-serif;margin-bottom:8px;line-height:1.5;
+}
+.kima-pair-id{
+  font-family:'Syne',sans-serif;font-size:12px;color:var(--green);
+  text-align:center;margin-bottom:28px;letter-spacing:1px;
+}
+.kima-pair-btn{
+  width:100%;padding:16px;border-radius:14px;
+  background:var(--green);color:#080810;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:16px;
+  border:none;cursor:pointer;margin-bottom:12px;
+}
+.kima-pair-cancel{
+  width:100%;padding:13px;border-radius:14px;
+  background:transparent;border:1px solid var(--border);
+  color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;
+}
+.kima-pair-login-msg{
+  background:rgba(0,245,155,0.06);border:1px solid rgba(0,245,155,0.2);
+  border-radius:12px;padding:14px 16px;
+  font-size:13px;color:var(--muted);font-family:'DM Sans',sans-serif;
+  text-align:center;margin-bottom:20px;line-height:1.5;
+}
+
 #xp-history-modal{
   position:fixed;inset:0;z-index:10000;
   background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);
@@ -9030,6 +9081,109 @@ function afficherBarreLogoDeconnecte(visible) {
   }
 }
 
+// ════════════════════════════════
+// PAIRING KIMA (NFC)
+// ════════════════════════════════
+let _kimaIdEnAttente = null;
+
+function ouvrirModalePairing(kimaId, estConnecte) {
+  _kimaIdEnAttente = kimaId;
+  const modal   = document.getElementById('kima-pair-modal');
+  const label   = document.getElementById('kima-pair-id-label');
+  const sub     = document.getElementById('kima-pair-sub');
+  const loginMsg= document.getElementById('kima-pair-login-msg');
+  const btn     = document.getElementById('kima-pair-confirm-btn');
+  if (label)    label.textContent = kimaId;
+  if (estConnecte) {
+    if (sub)      sub.textContent = 'Associer ce bracelet à ton profil HAKO ?';
+    if (loginMsg) loginMsg.style.display = 'none';
+    if (btn)      btn.style.display = 'block';
+  } else {
+    if (sub)      sub.textContent = 'Tu dois être connecté pour associer un bracelet.';
+    if (loginMsg) loginMsg.style.display = 'block';
+    if (btn)      btn.style.display = 'none';
+  }
+  if (modal) modal.classList.add('visible');
+}
+
+window.fermerModalePairing = function() {
+  const modal = document.getElementById('kima-pair-modal');
+  if (modal) modal.classList.remove('visible');
+  // Nettoyer le paramètre URL sans recharger
+  const url = new URL(window.location.href);
+  url.searchParams.delete('pair');
+  window.history.replaceState({}, '', url.toString());
+};
+
+window.confirmerPairing = async function() {
+  if (!_kimaIdEnAttente || !window._currentUid || !window._db) return;
+  const btn = document.getElementById('kima-pair-confirm-btn');
+  if (btn) { btn.textContent = 'Association...'; btn.disabled = true; }
+
+  try {
+    const { doc, setDoc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const kimaId = _kimaIdEnAttente;
+    const uid    = window._currentUid;
+    const now    = new Date().toISOString();
+
+    // Vérifier si ce Kima est déjà associé à quelqu'un
+    const kimaSnap = await getDoc(doc(window._db, 'kimas', kimaId));
+    if (kimaSnap.exists() && kimaSnap.data().ownerId && kimaSnap.data().ownerId !== uid) {
+      if (btn) { btn.textContent = 'Associer à mon profil →'; btn.disabled = false; }
+      alert('⚠️ Ce bracelet est déjà associé à un autre compte.');
+      return;
+    }
+
+    // Créer ou mettre à jour le doc kima
+    await setDoc(doc(window._db, 'kimas', kimaId), {
+      kimaId,
+      ownerId:          uid,
+      pairedAt:         now,
+      pairedDevice:     navigator.userAgent.substring(0, 80),
+      status:           'active',
+      firmwareVersion:  '0.1.0',
+      hardwareRevision: 'proto_v1',
+      lastSeenAt:       now,
+      lastSyncAt:       null,
+      batteryLevel:     null,
+      ledColor:         '#00f59b',
+      vibrationEnabled: true,
+      contacts:         []
+    });
+
+    // Mettre à jour le profil utilisateur
+    await setDoc(doc(window._db, 'danseurs', uid), {
+      kimaId,
+      kimaStatus: 'active'
+    }, { merge: true });
+
+    // Mettre à jour le profil local
+    if (window._monProfil) {
+      window._monProfil.kimaId     = kimaId;
+      window._monProfil.kimaStatus = 'active';
+    }
+
+    window.fermerModalePairing();
+    // Petit feedback visuel
+    setTimeout(() => {
+      alert('✅ Kima ' + kimaId + ' associé à ton profil !');
+    }, 200);
+
+  } catch(e) {
+    console.error('Erreur pairing Kima:', e);
+    if (btn) { btn.textContent = 'Associer à mon profil →'; btn.disabled = false; }
+    alert('❌ Erreur lors de l\'association. Réessaie.');
+  }
+};
+
+function detecterPairageKima(estConnecte) {
+  const params = new URLSearchParams(window.location.search);
+  const kimaId = params.get('pair');
+  if (kimaId) {
+    setTimeout(() => ouvrirModalePairing(kimaId, estConnecte), 800);
+  }
+}
+
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     console.log('✅ Connecté :', user.email);
@@ -9041,10 +9195,14 @@ onAuthStateChanged(auth, async (user) => {
     mettreAJourNav(window._monProfil || user);
     // Lever le blur KIMA si la page est déjà ouverte
     brctLeverBlur();
+    // Détection pairing NFC
+    detecterPairageKima(true);
   } else {
     console.log('👤 Non connecté');
     afficherBarreLogoDeconnecte(true);
     mettreAJourNav(null);
+    // Détecter pairing même déconnecté (pour inviter à se connecter)
+    detecterPairageKima(false);
   }
 });
 
@@ -9396,6 +9554,21 @@ window.gainXP = async function(montant, type, labelOverride) {
 };
 
 </script>
+
+<!-- Modale pairing Kima -->
+<div id="kima-pair-modal">
+  <div id="kima-pair-panel">
+    <div class="kima-pair-icon">🔗</div>
+    <div class="kima-pair-title">Associer ce Kima</div>
+    <div class="kima-pair-sub" id="kima-pair-sub">Associer ce bracelet à ton profil HAKO ?</div>
+    <div class="kima-pair-id" id="kima-pair-id-label"></div>
+    <div class="kima-pair-login-msg" id="kima-pair-login-msg" style="display:none">
+      Connecte-toi d'abord à ton compte HAKO pour associer ce bracelet.
+    </div>
+    <button class="kima-pair-btn" id="kima-pair-confirm-btn" onclick="confirmerPairing()">Associer à mon profil →</button>
+    <button class="kima-pair-cancel" onclick="fermerModalePairing()">Annuler</button>
+  </div>
+</div>
 
 <!-- Toast XP -->
 <div id="xp-toast">
