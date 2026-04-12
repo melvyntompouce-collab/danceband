@@ -3759,6 +3759,41 @@ if (isPWA) {
       </div>
     </div>
 
+    <!-- Carte Kima (si bracelet associé) -->
+    <div id="dash-kima-card" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:20px;cursor:pointer;" onclick="showPage('bracelet')">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--text);">KIMA</div>
+        <div style="display:flex;align-items:center;gap:5px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#00F59B;box-shadow:0 0 5px #00F59B;"></div>
+          <span style="font-size:11px;color:#00F59B;font-weight:600;">Actif</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <!-- LEDs mini -->
+        <div style="display:flex;gap:5px;align-items:center;" id="dash-kima-leds">
+          <div style="width:8px;height:8px;border-radius:50%;background:#4F9FFF;box-shadow:0 0 5px #4F9FFF;"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:#7B4FFF;box-shadow:0 0 5px #7B4FFF;"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:#FFAA00;box-shadow:0 0 5px #FFAA00;"></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:#FF4F4F;box-shadow:0 0 5px #FF4F4F;"></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+          <!-- Batterie -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="flex:1;height:4px;background:var(--bg2);border-radius:2px;overflow:hidden;">
+              <div id="dash-battery-bar" style="height:100%;width:0%;background:#00F59B;border-radius:2px;transition:width 0.5s;"></div>
+            </div>
+            <span style="font-size:10px;color:var(--muted2);min-width:24px;" id="dash-battery-pct">—</span>
+          </div>
+          <!-- Mode -->
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div id="dash-kima-mode-dot" style="width:6px;height:6px;border-radius:50%;background:#4F9FFF;box-shadow:0 0 4px #4F9FFF;flex-shrink:0;"></div>
+            <span style="font-size:11px;color:var(--muted2);" id="dash-kima-mode-label">Public</span>
+          </div>
+        </div>
+        <div style="font-size:16px;color:var(--muted2);">›</div>
+      </div>
+    </div>
+
     <!-- 4 cards navigation -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;">
       <button onclick="showPage('network')" class="dash-nav-card">
@@ -9243,6 +9278,8 @@ onAuthStateChanged(auth, async (user) => {
     mettreAJourNav(window._monProfil || user);
     // Lever le blur KIMA si la page est déjà ouverte
     brctLeverBlur();
+    // Carte Kima dashboard
+    dashAfficherKimaCard();
     // Détection pairing NFC
     detecterPairageKima(true);
   } else {
@@ -9351,6 +9388,8 @@ window.brctSetMode = function brctSetMode(mode, immediat) {
   const modeLabel = document.getElementById('brct-mode-label-display');
   if (modeDot) { modeDot.style.background = modeColors[mode]; modeDot.style.boxShadow = '0 0 5px ' + modeColors[mode]; }
   if (modeLabel) modeLabel.textContent = modeLabels[mode] || 'Public';
+  // Mettre à jour la carte Kima du dashboard
+  dashAfficherKimaCard();
 }
 
 let brctGesteEnCours = false;
@@ -9482,6 +9521,52 @@ function initPageBracelet() {
 
   // Afficher section Mon Kima si bracelet associé
   brctAfficherMonKima();
+}
+
+function dashAfficherKimaCard() {
+  const card = document.getElementById('dash-kima-card');
+  if (!card) return;
+  const profil = window._monProfil;
+  if (!profil?.kimaId) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+
+  // Batterie
+  const bar = document.getElementById('dash-battery-bar');
+  const pct = document.getElementById('dash-battery-pct');
+  const bat = profil.kimaBatterie ?? null;
+  if (bat !== null) {
+    if (bar) { bar.style.width = bat + '%'; bar.style.background = bat < 20 ? '#FF4F4F' : bat < 50 ? '#FFAA00' : '#00F59B'; }
+    if (pct) pct.textContent = bat + '%';
+  }
+
+  // Mode + LEDs
+  const mode = profil.modeBracelet || 'public';
+  const modeColors = { public: '#4F9FFF', communaute: '#7B4FFF', amis: '#FFAA00', prive: '#FF4F4F' };
+  const modeLabels = { public: 'Public', communaute: 'Communauté', amis: 'Amis', prive: 'Privé' };
+  const ledConfigs = {
+    public:     ['#4F9FFF','#7B4FFF','#FFAA00','#FF4F4F'],
+    communaute: ['#7B4FFF','#7B4FFF','#7B4FFF','transparent'],
+    amis:       ['#FFAA00','#FFAA00','transparent','transparent'],
+    prive:      ['#FF4F4F','transparent','transparent','transparent']
+  };
+  const dot = document.getElementById('dash-kima-mode-dot');
+  const label = document.getElementById('dash-kima-mode-label');
+  if (dot) { dot.style.background = modeColors[mode]; dot.style.boxShadow = '0 0 4px ' + modeColors[mode]; }
+  if (label) label.textContent = modeLabels[mode] || 'Public';
+  const ledsContainer = document.getElementById('dash-kima-leds');
+  if (ledsContainer) {
+    const leds = ledsContainer.querySelectorAll('div');
+    const colors = ledConfigs[mode] || ledConfigs.public;
+    leds.forEach((led, i) => {
+      if (colors[i] === 'transparent') {
+        led.style.background = 'var(--bg2)';
+        led.style.boxShadow = 'none';
+      } else {
+        led.style.background = colors[i];
+        led.style.boxShadow = '0 0 5px ' + colors[i];
+      }
+    });
+  }
 }
 
 async function brctAfficherMonKima() {
