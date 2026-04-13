@@ -4379,7 +4379,7 @@ if (isPWA) {
 </div>
 
 <!-- ═══ ESPACE ORGANISATEUR (overlay) ═══ -->
-<div id="organisateur-overlay" style="display:none;position:fixed;inset:0;z-index:10001;background:var(--bg);overflow-y:auto;padding-top:calc(70px + env(safe-area-inset-top));">
+<div id="organisateur-overlay" style="display:none;position:fixed;inset:0;z-index:9990;background:var(--bg);overflow-y:auto;padding-top:calc(70px + env(safe-area-inset-top));">
   <div style="max-width:700px;margin:0 auto;padding:24px 20px 100px;">
 
     <!-- Header -->
@@ -6748,6 +6748,8 @@ let eventEnEdition = null;
 
 window.ouvrirOrganisateur = async function() {
   document.getElementById('organisateur-overlay').style.display = 'block';
+  const bn = document.getElementById('bottom-nav');
+  if (bn) bn.style.display = 'none';
   window.scrollTo(0, 0);
   await chargerDashboardOrga();
 }
@@ -6755,6 +6757,8 @@ window.ouvrirOrganisateur = async function() {
 window.fermerOrganisateur = function() {
   document.getElementById('organisateur-overlay').style.display = 'none';
   fermerFormEvent();
+  const bn = document.getElementById('bottom-nav');
+  if (bn && window.innerWidth <= 768) bn.style.display = 'flex';
 }
 
 async function chargerDashboardOrga() {
