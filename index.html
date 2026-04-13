@@ -5423,17 +5423,48 @@ function afficherPageNotifs() {
 window.clicNotif = async function(index) {
   if (!window._monProfil || !window._db || !window._currentUid) return;
   const allNotifs = window._monProfil.notifications || [];
-  if (!allNotifs[index] || allNotifs[index].lu) return;
-  allNotifs[index].lu = true;
-  window._monProfil.notifications = allNotifs;
-  mettreAJourBadgeNotif(allNotifs);
-  afficherPageNotifs();
-  try {
-    const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
-  } catch(e) { console.error('Erreur marquage lu:', e); }
+  if (!allNotifs[index]) return;
   const n = allNotifs[index];
-  if (n.type === 'nouveau_message') showPage('messages');
+
+  // Marquer comme lu si pas encore fait
+  if (!n.lu) {
+    allNotifs[index].lu = true;
+    window._monProfil.notifications = allNotifs;
+    mettreAJourBadgeNotif(allNotifs);
+    afficherPageNotifs();
+    try {
+      const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+      await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
+    } catch(e) { console.error('Erreur marquage lu:', e); }
+  }
+
+  // Navigation selon le type
+  if (n.type === 'nouveau_message') {
+    showPage('messages');
+    if (n.de) {
+      try {
+        const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+        const snap = await getDoc(doc(window._db, 'danseurs', n.de));
+        const data = snap.exists() ? snap.data() : {};
+        const nom = data.nom || 'Utilisateur';
+        const photo = data.photo || '';
+        setTimeout(() => ouvrirConversation(n.de, nom, photo), 300);
+      } catch(e) { console.error('Erreur ouverture conv:', e); }
+    }
+  } else if (n.type === 'nouveau_abonne' || n.type === 'favori') {
+    if (n.de) setTimeout(() => ouvrirProfilArtiste(n.de), 100);
+    else showPage('network');
+  } else if (n.type === 'badge' || n.type === 'xp') {
+    showPage('ranking');
+  } else if (n.type === 'broadcast') {
+    // Notif admin : aller sur agenda si ça parle d'événement, sinon accueil
+    const texte = (n.texte || '').toLowerCase();
+    if (texte.includes('event') || texte.includes('agenda') || texte.includes('session') || texte.includes('atelier') || texte.includes('battle') || texte.includes('stage')) {
+      showPage('agenda');
+    } else {
+      showPage('home');
+    }
+  }
 };
 
 window.toggleNotifMenu = function(btn, index, estLu) {
