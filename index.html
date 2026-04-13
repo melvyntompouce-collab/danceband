@@ -2433,7 +2433,7 @@ if (isPWA) {
 </div>
 
 <!-- ═══ PAGE: ACCUEIL ═══ -->
-<div class="page active" id="page-home">
+<div class="page" id="page-home">
 
   <!-- Halos d'arrière-plan subtils -->
   <div style="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;">
@@ -9306,16 +9306,21 @@ onAuthStateChanged(auth, async (user) => {
     try { await chargerFavoris(); }           catch(e) { console.error('❌ chargerFavoris:', e); }
     afficherDashboard(window._monProfil);
     mettreAJourNav(window._monProfil || user);
-    // Lever le blur KIMA si la page est déjà ouverte
     brctLeverBlur();
-    // Détection pairing NFC
     detecterPairageKima(true);
   } else {
     console.log('👤 Non connecté');
     afficherBarreLogoDeconnecte(true);
     mettreAJourNav(null);
-    // Détecter pairing même déconnecté (pour inviter à se connecter)
     detecterPairageKima(false);
+    // Pas connecté : afficher page home
+    window.showPage('home');
+  }
+  // Masquer le splash dans tous les cas
+  const loader = document.getElementById('app-loader');
+  if (loader) {
+    loader.classList.add('hidden');
+    setTimeout(() => loader.remove(), 350);
   }
 });
 
