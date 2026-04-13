@@ -2310,6 +2310,7 @@ body.pwa .page { padding-bottom: calc(60px + max(4px, env(safe-area-inset-bottom
 /* Afficher quand connecté */
 @media(max-width:768px) { body #bottom-nav { display: flex !important; } }
 body.pwa #bottom-nav { display: flex !important; height: 87px; }
+body.hide-bottomnav #bottom-nav { display: none !important; }
 body.pwa #bottom-nav .mn-item { padding-top: 24px; }
 body.pwa #bottom-nav .mn-item.mn-center { padding-top: 16px; }
 #bottom-nav .mn-item {
@@ -6748,8 +6749,7 @@ let eventEnEdition = null;
 
 window.ouvrirOrganisateur = async function() {
   document.getElementById('organisateur-overlay').style.display = 'block';
-  const bn = document.getElementById('bottom-nav');
-  if (bn) bn.style.display = 'none';
+  document.body.classList.add('hide-bottomnav');
   window.scrollTo(0, 0);
   await chargerDashboardOrga();
 }
@@ -6757,8 +6757,7 @@ window.ouvrirOrganisateur = async function() {
 window.fermerOrganisateur = function() {
   document.getElementById('organisateur-overlay').style.display = 'none';
   fermerFormEvent();
-  const bn = document.getElementById('bottom-nav');
-  if (bn && window.innerWidth <= 768) bn.style.display = 'flex';
+  document.body.classList.remove('hide-bottomnav');
 }
 
 async function chargerDashboardOrga() {
