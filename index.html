@@ -2317,7 +2317,9 @@ body #bottom-nav { display: flex !important; }
   transition: color 0.15s, transform 0.15s;
   flex: 1; min-width: 0;
   -webkit-tap-highlight-color: transparent;
+  padding-top: 14px;
 }
+#bottom-nav .mn-item.mn-center { padding-top: 6px; }
 #bottom-nav .mn-item.active { color: var(--green); }
 #bottom-nav .mn-item:active { transform: scale(0.9); }
 #bottom-nav .mn-ico { width: 22px; height: 22px; flex-shrink: 0; }
@@ -2331,8 +2333,8 @@ body #bottom-nav { display: flex !important; }
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 4px 18px rgba(0,245,155,0.35);
   transition: transform 0.15s, box-shadow 0.15s;
-  margin-top: -16px;
-  margin-bottom: 2px;
+  margin-top: 16px;
+  margin-bottom: 0;
 }
 .mn-center-ico svg { stroke: #080810; }
 .mn-center:active .mn-center-ico { transform: scale(0.92); }
@@ -2359,7 +2361,7 @@ if (isPWA) {
 </script>
 
 <!-- ═══ TOPBAR ═══ -->
-<nav>
+<nav id="main-nav">
   <a class="logo" href="#" onclick="goHome()">
     <div class="logo-dot"></div>
     hako
