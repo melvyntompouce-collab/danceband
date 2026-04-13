@@ -9785,23 +9785,9 @@ window.brctRejoindreWaitlist = async function brctRejoindreWaitlist() {
   }
   const btn = document.querySelector('.brct-waitlist-btn');
   if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
-
-  // Attendre que Firebase soit prêt
-  let retries = 0;
-  while (!window._db && retries < 20) {
-    await new Promise(r => setTimeout(r, 300));
-    retries++;
-  }
-  if (!window._db) {
-    if (errDiv) { errDiv.textContent = '⚠️ Connexion en cours, réessaie dans quelques secondes.'; errDiv.style.display = 'block'; }
-    if (btn) { btn.textContent = 'Rejoindre →'; btn.disabled = false; }
-    return;
-  }
-
   try {
     const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const key = email.toLowerCase().replace(/[^a-z0-9]/g, '_');
-    await setDoc(doc(window._db, 'bracelet_waitlist', key), {
+    await setDoc(doc(window._db, 'bracelet_waitlist', email.replace('@','_at_')), {
       email, date: new Date().toISOString(), uid: window._currentUid || null
     });
     document.getElementById('brct-waitlist-form-wrap').style.display = 'none';
@@ -9817,11 +9803,17 @@ window.brctRejoindreWaitlist = async function brctRejoindreWaitlist() {
 
 async function brctChargerCountWaitlist() {
   try {
+    let retries = 0;
+    while (!window._db && retries < 20) {
+      await new Promise(r => setTimeout(r, 300));
+      retries++;
+    }
+    if (!window._db) return;
     const { collection, getCountFromServer } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
     const snap = await getCountFromServer(collection(window._db, 'bracelet_waitlist'));
     const el = document.getElementById('brct-waitlist-count');
     if (el) el.textContent = snap.data().count;
-  } catch(e) {}
+  } catch(e) { console.warn('Compteur waitlist:', e); }
 }
 
 function brctLeverBlur() {
