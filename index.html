@@ -2350,6 +2350,62 @@ body.has-bottomnav #hamburger-btn { display: none !important; }
 body.has-bottomnav #nav-login-btn { display: none !important; }
 </style>
 
+
+/* ── MENU PROFIL NAV ── */
+#nav-profile-btn {
+  display: none;
+  position: relative;
+  flex-shrink: 0;
+}
+#nav-profile-avatar {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: rgba(0,245,155,0.12);
+  border: 1.5px solid rgba(0,245,155,0.3);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 13px;
+  color: var(--green);
+  position: relative; overflow: hidden;
+  transition: border-color 0.2s;
+  flex-shrink: 0;
+}
+#nav-profile-avatar:hover { border-color: var(--green); }
+#nav-profile-avatar img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; border-radius: 8px; display: none;
+}
+#nav-profile-menu {
+  display: none;
+  position: absolute; top: calc(100% + 8px); right: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 8px;
+  min-width: 200px;
+  z-index: 10000;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+#nav-profile-menu.open { display: block; }
+/* Avatar profil uniquement sur PWA */
+@media(min-width:769px) { #nav-profile-btn { display: none !important; } }
+.npm-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px;
+  background: none; border: none;
+  color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; width: 100%; text-align: left;
+  transition: background 0.15s;
+  text-decoration: none;
+}
+.npm-item:hover { background: rgba(255,255,255,0.05); }
+.npm-item.danger { color: var(--red); }
+.npm-item.muted { color: var(--muted2); font-size: 12px; }
+.npm-separator {
+  height: 1px; background: var(--border);
+  margin: 6px 0;
+}
+
 </head>
 <body>
 <!-- SPLASH LOADER -->
@@ -2403,6 +2459,52 @@ if (isPWA) {
     <div id="nav-notif-btn" style="display:none;position:relative;width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;flex-shrink:0;" onclick="showPage('notifs')" title="Notifications">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       <div id="nav-notif-badge" style="display:none;position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 4px 2px;box-sizing:border-box;border-radius:9px;background:var(--green);border:2px solid var(--bg);font-size:10px;font-weight:800;color:#080810;font-family:'Syne',sans-serif;"></div>
+    </div>
+    <!-- Avatar profil (connecté) -->
+    <div id="nav-profile-btn">
+      <div id="nav-profile-avatar" onclick="toggleNavProfileMenu()" title="Mon profil">
+        <span id="nav-profile-initiale">?</span>
+        <img id="nav-profile-photo" alt="photo">
+      </div>
+      <div id="nav-profile-menu">
+        <!-- Header nom -->
+        <div style="padding:8px 12px 6px;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:var(--muted2);letter-spacing:1px;text-transform:uppercase;" id="nav-profile-menu-nom">Mon profil</div>
+        <div class="npm-separator"></div>
+        <!-- Navigation profil -->
+        <button class="npm-item" onclick="closeNavProfileMenu();showPage('profile')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Voir mon profil
+        </button>
+        <button class="npm-item" onclick="closeNavProfileMenu();showPage('profile');ouvrirEdition()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Modifier le profil
+        </button>
+        <div class="npm-separator"></div>
+        <!-- Paramètres / Légal -->
+        <div style="padding:4px 12px 2px;font-family:'Syne',sans-serif;font-weight:800;font-size:10px;color:var(--muted2);letter-spacing:1px;text-transform:uppercase;">Paramètres</div>
+        <button class="npm-item" onclick="closeNavProfileMenu();showPage('privacy')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Confidentialité
+        </button>
+        <button class="npm-item" onclick="closeNavProfileMenu();showPage('cgu')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          CGU
+        </button>
+        <button class="npm-item" onclick="closeNavProfileMenu();showPage('mentions')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Mentions légales
+        </button>
+        <div class="npm-separator"></div>
+        <!-- Compte -->
+        <button class="npm-item danger" onclick="closeNavProfileMenu();window.deconnecter()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Se déconnecter
+        </button>
+        <button class="npm-item muted" onclick="closeNavProfileMenu();window.supprimerCompte()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          Supprimer le compte
+        </button>
+      </div>
     </div>
     <!-- Hamburger -->
     <div class="hamburger-btn" id="hamburger-btn" onclick="toggleDrawer()">
@@ -9254,6 +9356,21 @@ function mettreAJourNav(user) {
       if (initEl) initEl.textContent = (nomCourt[0] || '?').toUpperCase();
     }
 
+    // Avatar nav profil — PWA uniquement
+    const navProfileBtn = document.getElementById('nav-profile-btn');
+    if (navProfileBtn && document.body.classList.contains('pwa')) navProfileBtn.style.display = 'block';
+    const navMenuNom = document.getElementById('nav-profile-menu-nom');
+    if (navMenuNom) navMenuNom.textContent = nomCourt;
+    const navInitiale = document.getElementById('nav-profile-initiale');
+    const navPhoto = document.getElementById('nav-profile-photo');
+    if (user.photo && navPhoto) {
+      navPhoto.src = user.photo; navPhoto.style.display = 'block';
+      if (navInitiale) navInitiale.style.display = 'none';
+    } else {
+      if (navPhoto) navPhoto.style.display = 'none';
+      if (navInitiale) { navInitiale.style.display = 'block'; navInitiale.textContent = (nomCourt[0] || '?').toUpperCase(); }
+    }
+
     const orgaBtn = document.getElementById('orga-btn');
     if (orgaBtn) {
       orgaBtn.style.display = 'inline-flex';
@@ -9282,6 +9399,9 @@ function mettreAJourNav(user) {
     const homeLbl = document.getElementById('nav-home-label');
     if (homeLbl) homeLbl.textContent = 'Accueil';
     document.body.classList.remove('has-bottomnav');
+    // Cacher avatar nav
+    const navPB = document.getElementById('nav-profile-btn');
+    if (navPB) navPB.style.display = 'none';
 
     // Drawer — header déconnecté
     document.getElementById('drawer-header-connected').style.display   = 'none';
@@ -9455,6 +9575,30 @@ console.log('✅ Firebase Auth chargé !');
 // Signaler que Firebase est prêt
 window._firebaseReady = true;
 document.dispatchEvent(new Event('firebase-ready'));
+
+
+// ── Menu profil nav ──
+window.toggleNavProfileMenu = function() {
+  const menu = document.getElementById('nav-profile-menu');
+  if (!menu) return;
+  const isOpen = menu.classList.contains('open');
+  if (isOpen) {
+    menu.classList.remove('open');
+  } else {
+    menu.classList.add('open');
+    setTimeout(() => {
+      document.addEventListener('click', function closeMenu(e) {
+        if (!document.getElementById('nav-profile-btn')?.contains(e.target)) {
+          menu.classList.remove('open');
+          document.removeEventListener('click', closeMenu);
+        }
+      });
+    }, 0);
+  }
+};
+window.closeNavProfileMenu = function() {
+  document.getElementById('nav-profile-menu')?.classList.remove('open');
+};
 
 // Charger le vrai nombre d'artistes pour la page d'accueil
 (async () => {
