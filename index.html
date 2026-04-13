@@ -6386,6 +6386,7 @@ function setRkTab(tab, btn) {
 
 async function chargerClassement() {
   if (!window._db) { setTimeout(chargerClassement, 500); return; }
+  if (!window._currentUid) { setTimeout(chargerClassement, 400); return; }
   const list = document.getElementById('rk-list');
   if (list) list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">⏳ Chargement...</div>';
 
@@ -6412,16 +6413,32 @@ async function chargerClassement() {
 
     // Trouver position du user courant
     let monPosition = null;
-    if (currentUid) {
-      monPosition = danseurs.findIndex(d => d.uid === currentUid) + 1;
+    let moiData = null;
 
-      // Mettre à jour le hero
-      const moi = danseurs.find(d => d.uid === currentUid);
-      if (moi) mettreAJourHeroClassement(moi, monPosition, danseurs.length);
+    if (currentUid) {
+      const idxDansListe = danseurs.findIndex(d => d.uid === currentUid);
+      if (idxDansListe >= 0) {
+        monPosition = idxDansListe + 1;
+        moiData = danseurs[idxDansListe];
+      } else {
+        // User pas dans le top 20 : fetch son profil directement
+        try {
+          const { doc: docFn, getDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+          const snap2 = await getDoc(docFn(window._db, 'danseurs', currentUid));
+          if (snap2.exists()) {
+            moiData = { uid: currentUid, ...snap2.data() };
+            const myXp = moiData.xp || 0;
+            const qAll = query(collection(window._db,'danseurs'), where('xp','>',myXp));
+            const snapPos = await getDocs(qAll);
+            monPosition = snapPos.size + 1;
+          }
+        } catch(e2) { console.warn('Pos user hors top20:', e2); }
+      }
+      if (moiData) mettreAJourHeroClassement(moiData, monPosition, danseurs.length);
     }
 
     afficherListeClassement(danseurs, currentUid);
-    afficherBadges(currentUid ? calculerBadges(danseurs.find(d => d.uid === currentUid) || {}) : []);
+    afficherBadges(currentUid ? calculerBadges(moiData || {}) : []);
 
   } catch(e) {
     console.error('Erreur classement:', e);
