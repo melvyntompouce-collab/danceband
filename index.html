@@ -2289,6 +2289,59 @@ body.pwa .page { padding-bottom: calc(60px + max(4px, env(safe-area-inset-bottom
 }
 
 </style>
+
+<style id="bottom-nav-css">
+/* ── BOTTOM NAV ── */
+#bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 62px;
+  background: rgba(8,8,16,0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,0.07);
+  z-index: 9998;
+  padding: 0 8px;
+  padding-bottom: env(safe-area-inset-bottom);
+  align-items: center;
+  justify-content: space-around;
+}
+body.has-bottomnav #bottom-nav { display: flex !important; }
+#bottom-nav .mn-item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  cursor: pointer; padding: 6px 4px; border-radius: 10px;
+  border: none; background: transparent; color: var(--muted);
+  transition: color 0.15s, transform 0.15s;
+  flex: 1; min-width: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+#bottom-nav .mn-item.active { color: var(--green); }
+#bottom-nav .mn-item:active { transform: scale(0.9); }
+#bottom-nav .mn-ico { width: 22px; height: 22px; flex-shrink: 0; }
+#bottom-nav .mn-lbl { font-size: 9px; font-weight: 800; font-family: 'Syne', sans-serif; letter-spacing: 0.3px; text-transform: uppercase; white-space: nowrap; }
+/* Bouton central */
+.mn-center { position: relative; }
+.mn-center-ico {
+  width: 48px; height: 48px;
+  background: var(--green, #00F59B);
+  border-radius: 15px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 18px rgba(0,245,155,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+  margin-top: -16px;
+  margin-bottom: 2px;
+}
+.mn-center-ico svg { stroke: #080810; }
+.mn-center:active .mn-center-ico { transform: scale(0.92); }
+.mn-center.active .mn-center-ico { box-shadow: 0 4px 24px rgba(0,245,155,0.55); }
+.mn-center .mn-lbl { color: var(--green); }
+/* Quand bottom nav visible : padding bas des pages + cacher hamburger */
+body.has-bottomnav .page { padding-bottom: calc(72px + env(safe-area-inset-bottom)) !important; }
+body.has-bottomnav #hamburger-btn { display: none !important; }
+body.has-bottomnav #nav-login-btn { display: none !important; }
+</style>
+
 </head>
 <body>
 
@@ -2326,6 +2379,7 @@ if (isPWA) {
     </div>
   </div>
 </nav>
+
 
 <!-- bouton retour supprimé -->
 
@@ -9146,9 +9200,7 @@ function mettreAJourNav(user) {
     const nomCourt = user.nomAffiche || user.pseudo || user.nom || 'Mon profil';
     const homeLbl = document.getElementById('nav-home-label');
     if (homeLbl) homeLbl.textContent = 'Dashboard';
-    // Afficher la bottom nav
-    const bnav = document.getElementById('bottom-nav');
-    if (bnav) bnav.style.display = 'flex';
+    document.body.classList.add('has-bottomnav');
     const nomEl = document.getElementById('drawer-nom');
     if (nomEl) nomEl.textContent = nomCourt;
 
@@ -9190,9 +9242,7 @@ function mettreAJourNav(user) {
     if (loginBtn) loginBtn.style.display = 'inline-flex';
     const homeLbl = document.getElementById('nav-home-label');
     if (homeLbl) homeLbl.textContent = 'Accueil';
-    // Masquer la bottom nav
-    const bnav = document.getElementById('bottom-nav');
-    if (bnav) bnav.style.display = 'none';
+    document.body.classList.remove('has-bottomnav');
 
     // Drawer — header déconnecté
     document.getElementById('drawer-header-connected').style.display   = 'none';
