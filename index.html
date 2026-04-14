@@ -4831,6 +4831,10 @@ if (isPWA) {
           <label class="form-label">Description</label>
           <textarea id="ev-desc" class="form-input" rows="3" placeholder="Décrivez votre événement..." style="background:var(--bg2);resize:vertical;min-height:80px;"></textarea>
         </div>
+        <div class="form-group">
+          <label class="form-label">Lien de réservation</label>
+          <input id="ev-lien-resa" class="form-input" type="url" placeholder="https://shotgun.live/..." style="background:var(--bg2);">
+        </div>
 
         <div id="orga-form-err" style="display:none;background:rgba(255,77,109,0.1);border:1px solid var(--red);border-radius:10px;padding:12px;font-size:13px;color:var(--red);"></div>
 
@@ -6502,6 +6506,11 @@ function _renderEventCard(ev, passe) {
   const couleurPrix = ev.prix === 0 ? 'var(--green)' : cfg.couleur;
   const btnClass = ev.prix === 0 ? 'ec-btn-green' : ev.type === 'battle' ? 'ec-btn-yellow' : 'ec-btn-green';
   const btnLabel = 'Réserver';
+  const btnHtml = !passe
+    ? ev.lienResa
+      ? `<a href="${ev.lienResa}" target="_blank" rel="noopener" class="ec-btn ${btnClass}" onclick="event.stopPropagation()" style="text-decoration:none;">${btnLabel} ↗</a>`
+      : `<button class="ec-btn ${btnClass}" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')">${btnLabel}</button>`
+    : '';
   const inscrits = ev.inscrits || 0;
   const estFavori = mesFavoris.has(ev.id);
   const opacityStyle = passe ? 'opacity:0.5;filter:grayscale(0.4);' : '';
@@ -6544,7 +6553,7 @@ function _renderEventCard(ev, passe) {
         </div>
         <div class="ec-price-wrap">
           <span class="ec-price" style="color:${couleurPrix}">${prix}</span>
-          ${!passe ? `<button class="ec-btn ${btnClass}" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')">${btnLabel}</button>` : ''}
+          ${btnHtml}
         </div>
       </div>
     </div>
@@ -6563,8 +6572,8 @@ function afficherEvents() {
   maintenant.setHours(0, 0, 0, 0);
 
   let source = agendaFiltre === 'tous'
-    ? tousLesEvents
-    : tousLesEvents.filter(e => e.type === agendaFiltre);
+    ? tousLesEvents.filter(e => e.type !== 'workshop')
+    : tousLesEvents.filter(e => e.type === agendaFiltre && e.type !== 'workshop');
 
   const aVenir = source.filter(e => !_estPasse(e));
   const passes = source.filter(e => _estPasse(e)).reverse();
@@ -7045,9 +7054,10 @@ let _sallesFiltreActif = 'tous';
 async function chargerSalles() {
   if (!window._db) { setTimeout(chargerSalles, 500); return; }
 
-  // Afficher bouton admin si admin
-  const addBtn = document.getElementById('salle-add-btn');
-  if (addBtn && window._isAdmin) addBtn.style.display = 'flex';
+  // Afficher boutons admin/orga
+  const isAdminOrOrga = window._monRole === 'admin' || window._monRole === 'organisateur';
+  const adminOrgaBtns = document.getElementById('admin-orga-btns');
+  if (adminOrgaBtns && isAdminOrOrga) adminOrgaBtns.style.display = 'flex';
 
   // Charger les workshops depuis tousLesEvents (déjà en mémoire ou Firestore)
   afficherWorkshopsPage();
@@ -7604,7 +7614,7 @@ window.ouvrirFormEvent = function() {
   eventEnEdition = null;
   document.getElementById('orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
   document.getElementById('ev-submit-btn').textContent = 'Publier l\'événement →';
-  ['ev-titre','ev-heure','ev-lieu','ev-styles','ev-desc'].forEach(id => {
+  ['ev-titre','ev-heure','ev-lieu','ev-styles','ev-desc','ev-lien-resa'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -7657,6 +7667,7 @@ window.modifierEvent = async function(id) {
     document.getElementById('ev-lieu').value   = ev.lieu    || '';
     document.getElementById('ev-styles').value = ev.styles  || '';
     document.getElementById('ev-niveau').value = ev.niveau  || 'Tous niveaux';
+    document.getElementById('ev-lien-resa').value = ev.lienResa || '';
     setVibeChips(ev.vibe || '');
     document.getElementById('ev-desc').value   = ev.description || '';
 
@@ -7726,6 +7737,7 @@ window.sauvegarderEvent = async function() {
     vibe:          getVibeSelectionnes(),
     niveau:        document.getElementById('ev-niveau').value,
     description:   document.getElementById('ev-desc').value,
+    lienResa:      document.getElementById('ev-lien-resa').value.trim() || null,
     photoUrl:      photoUrl || null,
     organisateurUid: window._currentUid,
     updatedAt:     new Date().toISOString(),
@@ -7777,7 +7789,7 @@ window.sauvegarderEvent = async function() {
       setTimeout(() => { errDiv.style.display = 'none'; errDiv.style.color = ''; }, 3000);
       btn.textContent = 'Publier l\'événement →';
       document.getElementById('orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
-      ['ev-titre','ev-heure','ev-lieu','ev-styles','ev-desc'].forEach(id => {
+      ['ev-titre','ev-heure','ev-lieu','ev-styles','ev-desc','ev-lien-resa'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
       });
       document.getElementById('ev-prix').value = '0';
@@ -10789,11 +10801,17 @@ window.gainXP = async function(montant, type, labelOverride) {
       <span class="salles-header-title">WORKSHOPS & STUDIOS</span>
     </div>
 
-    <!-- Admin : bouton ajout -->
-    <button class="salle-add-btn" id="salle-add-btn" onclick="ouvrirModalSalle()" style="display:none;">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Ajouter une salle
-    </button>
+    <!-- Admin/Orga : boutons ajout -->
+    <div id="admin-orga-btns" style="display:none;flex-direction:column;gap:8px;margin-bottom:4px;">
+      <button class="salle-add-btn" id="salle-add-btn" onclick="ouvrirModalSalle()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Ajouter un studio
+      </button>
+      <button class="salle-add-btn" id="workshop-add-btn" onclick="ouvrirModalWorkshop()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Ajouter un workshop
+      </button>
+    </div>
 
     <!-- Filtres -->
     <div class="salles-filters" id="salles-filters">
