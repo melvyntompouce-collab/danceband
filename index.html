@@ -622,7 +622,6 @@ body.pwa #agenda-passes-toggle {
 }
 /* Mobile : carte en haut, liste scrollable en dessous */
 @media(max-width:768px){
-  /* Page réseau fixe — pas de scroll body */
   #page-network {
     position:fixed !important;
     top:0 !important; left:0 !important; right:0 !important; bottom:0 !important;
@@ -633,40 +632,23 @@ body.pwa #agenda-passes-toggle {
   .network-layout {
     position:absolute;
     top:0; left:0; right:0; bottom:0;
-    padding:0 12px;
-    padding-top:calc(50px + env(safe-area-inset-top) + 52px);
-    padding-bottom:calc(62px + env(safe-area-inset-bottom) + 5px);
-    gap:8px;
+    padding:12px;
+    padding-top:calc(50px + env(safe-area-inset-top) + 50px);
+    padding-bottom:calc(62px + env(safe-area-inset-bottom) + 64px);
+    gap:0;
     flex-direction:column;
     overflow:hidden;
     min-height:0;
     box-sizing:border-box;
   }
   .network-map-wrap {
-    order:1;
-    height:200px;
-    min-height:200px;
-    flex-shrink:0;
+    flex:1;
+    min-height:0;
     border-radius:14px;
     border:2px solid var(--green);
     box-shadow:0 0 24px rgba(0,245,155,0.12);
   }
-  .network-list-wrap {
-    order:2;
-    flex:1;
-    min-height:0;
-    border-radius:16px;
-    border:1px solid var(--border);
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-  }
-  .dancer-list {
-    flex:1;
-    min-height:0;
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
-  }
+  #network-list-desktop { display:none !important; }
 }
 body.pwa #page-network {
   position:fixed !important;
@@ -676,8 +658,10 @@ body.pwa #page-network {
   padding:0 !important;
 }
 body.pwa .network-layout {
-  padding-top:calc(50px + env(safe-area-inset-top) + 52px);
-  padding-bottom:calc(87px + env(safe-area-inset-bottom) + 5px);
+  padding-bottom:calc(87px + env(safe-area-inset-bottom) + 64px);
+}
+body.pwa #network-mobile-bar {
+  bottom:calc(87px + env(safe-area-inset-bottom) + 8px);
 }
 
 
@@ -4161,8 +4145,8 @@ if (isPWA) {
       <button onclick="closeMapFullscreen()" id="btn-map-fs-close" style="position:fixed;top:calc(44px + env(safe-area-inset-top) + 15px);right:16px;z-index:10002;width:38px;height:38px;border-radius:10px;background:rgba(8,8,16,0.92);backdrop-filter:blur(12px);border:1.5px solid rgba(0,245,155,0.4);color:var(--green);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;box-shadow:0 4px 16px rgba(0,0,0,0.4);">✕</button>
     </div>
 
-    <!-- LISTE (desktop) -->
-    <div class="network-list-wrap">
+    <!-- LISTE (desktop uniquement) -->
+    <div class="network-list-wrap" id="network-list-desktop">
       <div class="network-list-header">
         <input class="search-input" type="text" id="search-input" placeholder="🔍 Nom, style, ville..." oninput="filtrerDanseurs()">
         <div class="filter-row" id="filter-row" style="margin-bottom:6px;">
@@ -4174,13 +4158,12 @@ if (isPWA) {
           <input id="filtre-zone" type="text" list="villes-datalist" placeholder="📍 Filtrer par ville..." oninput="filtrerDanseurs()" autocomplete="off" style="flex:1;padding:7px 12px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);color:var(--muted2);font-size:12px;font-family:'Syne',sans-serif;font-weight:700;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
           <button onclick="resetFiltres()" style="height:34px;padding:0 12px;border-radius:8px;background:none;border:1.5px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;white-space:nowrap;transition:all 0.2s;flex-shrink:0;" onmouseover="this.style.borderColor='rgba(255,77,109,0.4)';this.style.color='var(--red)';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)';">✕ Reset</button>
         </div>
-        <!-- Dropdown styles -->
         <div style="position:relative;margin-bottom:4px;">
           <button onclick="toggleStyleDropdown()" id="style-dropdown-btn" style="width:100%;padding:8px 12px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);color:var(--muted2);font-size:12px;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.2s;">
             <span id="style-dropdown-label">💃 Style de danse</span>
             <svg id="style-dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <div id="style-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:50;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;display:none;flex-wrap:wrap;gap:5px;max-height:160px;overflow-y:auto;scrollbar-width:none;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+          <div id="style-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:50;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;flex-wrap:wrap;gap:5px;max-height:160px;overflow-y:auto;scrollbar-width:none;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
             <div id="style-filter-row" style="display:contents;">
               <button class="style-fchip" onclick="setStyleFiltre('Salsa',this);majStyleLabel()">Salsa</button>
               <button class="style-fchip" onclick="setStyleFiltre('Kizomba',this);majStyleLabel()">Kizomba</button>
@@ -4209,6 +4192,74 @@ if (isPWA) {
     </div>
 
   </div>
+</div>
+
+<!-- DRAWER MOBILE RÉSEAU (hors page) -->
+<div id="network-mobile-drawer" style="display:none;">
+
+  <!-- Overlay sombre -->
+  <div id="network-drawer-overlay" onclick="fermerDrawerReseau()" style="position:fixed;inset:0;z-index:800;background:rgba(0,0,0,0.5);"></div>
+
+  <!-- Drawer -->
+  <div id="network-drawer-panel" style="position:fixed;left:0;right:0;bottom:0;z-index:801;background:var(--bg);border-radius:24px 24px 0 0;border-top:1px solid var(--border);transform:translateY(100%);transition:transform 0.32s cubic-bezier(0.32,0.72,0,1);max-height:85vh;display:flex;flex-direction:column;">
+
+    <!-- Handle + barre de recherche -->
+    <div style="padding:10px 16px 0;flex-shrink:0;">
+      <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);margin:0 auto 12px;"></div>
+      <div style="display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:0 12px;height:42px;margin-bottom:12px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--muted2);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input-mobile" placeholder="Nom, style, ville..." oninput="syncSearchMobile(this.value)" autocomplete="off" style="flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;">
+        <button onclick="syncSearchMobile('');document.getElementById('search-input-mobile').value=''" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0;display:flex;align-items:center;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtres -->
+    <div style="padding:0 16px 8px;flex-shrink:0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;" id="filter-row-mobile">
+        <button class="style-fchip on" onclick="setFiltre('tous',this);syncFiltresMobile()">Tous</button>
+        <button class="style-fchip" onclick="setFiltre('enligne',this);syncFiltresMobile()"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00f59b;box-shadow:0 0 6px #00f59b;margin-right:5px;"></span>En ligne</button>
+        <button class="style-fchip" onclick="setFiltre('compatible',this);syncFiltresMobile()">⚡ Compatible</button>
+      </div>
+      <input id="filtre-zone-mobile" type="text" list="villes-datalist" placeholder="📍 Ville..." oninput="syncVilleMobile(this.value)" autocomplete="off" style="width:100%;box-sizing:border-box;padding:7px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:8px;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
+      <div style="display:flex;gap:5px;flex-wrap:wrap;max-height:80px;overflow-y:auto;scrollbar-width:none;" id="style-filter-row-mobile">
+        <button class="style-fchip" onclick="setStyleFiltre('Salsa',this);filtrerDanseurs()">Salsa</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Kizomba',this);filtrerDanseurs()">Kizomba</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Hip-Hop',this);filtrerDanseurs()">Hip-Hop</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Bachata',this);filtrerDanseurs()">Bachata</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Breakdance',this);filtrerDanseurs()">Breakdance</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Afro',this);filtrerDanseurs()">Afro</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Zouk',this);filtrerDanseurs()">Zouk</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Dancehall',this);filtrerDanseurs()">Dancehall</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Popping',this);filtrerDanseurs()">Popping</button>
+        <button class="style-fchip" onclick="setStyleFiltre('House',this);filtrerDanseurs()">House</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Litefeet',this);filtrerDanseurs()">Litefeet</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Krump',this);filtrerDanseurs()">Krump</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Voguing',this);filtrerDanseurs()">Voguing</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Locking',this);filtrerDanseurs()">Locking</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Heels',this);filtrerDanseurs()">Heels</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Classique',this);filtrerDanseurs()">Classique</button>
+        <button class="style-fchip" onclick="setStyleFiltre('Tango',this);filtrerDanseurs()">Tango</button>
+      </div>
+    </div>
+
+    <!-- Liste artistes -->
+    <div id="dancer-list-mobile" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 12px 16px;">
+      <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
+    </div>
+  </div>
+</div>
+
+<!-- BARRE COMPACTE MOBILE (fixe au-dessus de la nav) -->
+<div id="network-mobile-bar" style="display:none;position:fixed;left:12px;right:12px;z-index:500;bottom:calc(62px + env(safe-area-inset-bottom) + 8px);">
+  <button onclick="ouvrirDrawerReseau()" style="width:100%;height:48px;border-radius:16px;background:rgba(8,8,16,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,0.12);display:flex;align-items:center;gap:10px;padding:0 16px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.4);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--muted2);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <span id="network-bar-label" style="flex:1;text-align:left;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--muted2);">Rechercher un artiste...</span>
+    <div id="network-bar-dot" style="display:none;width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+  </button>
+</div>  </div>
 </div>
 
 
@@ -8768,6 +8819,84 @@ function setFiltre(type, btn) {
 
 
 
+// ── Drawer mobile réseau ──
+function ouvrirDrawerReseau() {
+  const drawer = document.getElementById('network-mobile-drawer');
+  const panel = document.getElementById('network-drawer-panel');
+  if (!drawer || !panel) return;
+  drawer.style.display = 'block';
+  requestAnimationFrame(() => { panel.style.transform = 'translateY(0)'; });
+  // Sync liste
+  syncDancerListMobile();
+}
+window.ouvrirDrawerReseau = ouvrirDrawerReseau;
+
+function fermerDrawerReseau() {
+  const panel = document.getElementById('network-drawer-panel');
+  if (!panel) return;
+  panel.style.transform = 'translateY(100%)';
+  setTimeout(() => {
+    const drawer = document.getElementById('network-mobile-drawer');
+    if (drawer) drawer.style.display = 'none';
+  }, 350);
+}
+window.fermerDrawerReseau = fermerDrawerReseau;
+
+function syncSearchMobile(val) {
+  const si = document.getElementById('search-input');
+  if (si) si.value = val;
+  filtrerDanseurs();
+  syncDancerListMobile();
+  majBarreReseau();
+}
+window.syncSearchMobile = syncSearchMobile;
+
+function syncVilleMobile(val) {
+  const fz = document.getElementById('filtre-zone');
+  if (fz) fz.value = val;
+  filtrerDanseurs();
+  syncDancerListMobile();
+  majBarreReseau();
+}
+window.syncVilleMobile = syncVilleMobile;
+
+function syncFiltresMobile() {
+  filtrerDanseurs();
+  syncDancerListMobile();
+  majBarreReseau();
+}
+window.syncFiltresMobile = syncFiltresMobile;
+
+function syncDancerListMobile() {
+  const src = document.getElementById('dancer-list');
+  const dst = document.getElementById('dancer-list-mobile');
+  if (src && dst) dst.innerHTML = src.innerHTML;
+  // Rendre les cartes cliquables dans le drawer
+  if (dst) dst.querySelectorAll('.dancer-card').forEach(c => {
+    c.style.cursor = 'pointer';
+  });
+}
+window.syncDancerListMobile = syncDancerListMobile;
+
+function majBarreReseau() {
+  const dot = document.getElementById('network-bar-dot');
+  const label = document.getElementById('network-bar-label');
+  const search = document.getElementById('search-input-mobile')?.value || '';
+  const ville = document.getElementById('filtre-zone-mobile')?.value || '';
+  const actif = filtresEtatActifs.size > 0 || filtresStyleActifs.size > 0 || search || ville;
+  if (dot) dot.style.display = actif ? 'block' : 'none';
+  if (label) label.textContent = actif ? 'Filtres actifs — voir résultats' : 'Rechercher un artiste...';
+}
+window.majBarreReseau = majBarreReseau;
+
+// Afficher barre + drawer selon la page
+const _origMajSearchbar = window.majSearchbarReseau;
+window.majSearchbarReseau = function(pageId) {
+  if (_origMajSearchbar) _origMajSearchbar(pageId);
+  const bar = document.getElementById('network-mobile-bar');
+  if (bar) bar.style.display = (pageId === 'network' && window.innerWidth <= 768) ? 'block' : 'none';
+};
+
 // ── Style dropdown réseau ──
 function toggleStyleDropdown() {
   const menu = document.getElementById('style-dropdown-menu');
@@ -8858,6 +8987,8 @@ function filtrerDanseurs() {
     ? count + ' compatible' + (count > 1 ? 's' : '')
     : count + ' artiste' + (count > 1 ? 's' : '');
   document.getElementById('map-count').textContent = label;
+  // Sync drawer mobile
+  if (window.syncDancerListMobile) syncDancerListMobile();
 }
 
 
