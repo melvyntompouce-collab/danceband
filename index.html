@@ -620,26 +620,27 @@ body.pwa #agenda-passes-toggle {
     height:calc(100vh - 118px);
   }
 }
-/* Mobile : carte en haut, liste scrollable en dessous */
+/* Mobile : carte en haut */
 @media(max-width:768px){
   #page-network {
-    position:fixed !important;
-    top:0 !important; left:0 !important; right:0 !important; bottom:0 !important;
     overflow:hidden !important;
-    min-height:0 !important;
     padding:0 !important;
+    min-height:100vh;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
   }
   .network-layout {
-    position:absolute;
-    top:0; left:0; right:0; bottom:0;
+    flex:1;
+    min-height:0;
     padding:12px;
     padding-top:calc(44px + env(safe-area-inset-top) + 12px);
     padding-bottom:calc(62px + env(safe-area-inset-bottom) + 64px);
     gap:0;
     flex-direction:column;
     overflow:hidden;
-    min-height:0;
     box-sizing:border-box;
+    display:flex;
   }
   .network-map-wrap {
     flex:1;
@@ -651,11 +652,10 @@ body.pwa #agenda-passes-toggle {
   #network-list-desktop { display:none !important; }
 }
 body.pwa #page-network {
-  position:fixed !important;
-  top:0 !important; left:0 !important; right:0 !important; bottom:0 !important;
   overflow:hidden !important;
-  min-height:0 !important;
   padding:0 !important;
+  min-height:100vh;
+  height:100vh;
 }
 body.pwa .network-layout {
   padding-top:calc(42px + env(safe-area-inset-top) + 10px);
