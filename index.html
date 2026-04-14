@@ -9832,6 +9832,16 @@ document.addEventListener('click', function(e) {
     setTimeout(chargerCarte, 200);
   }
 });
+
+// Exposer les fonctions nécessaires au module Firebase
+window.normaliserStyles    = normaliserStyles;
+window.afficherDashboard   = afficherDashboard;
+window.chargerAbonnements  = chargerAbonnements;
+window.chargerFavoris      = chargerFavoris;
+window.mettreAJourNav      = mettreAJourNav;
+window.brctLeverBlur       = typeof brctLeverBlur !== 'undefined' ? brctLeverBlur : function(){};
+window.detecterPairageKima = typeof detecterPairageKima !== 'undefined' ? detecterPairageKima : function(){};
+window.afficherBarreLogoDeconnecte = typeof afficherBarreLogoDeconnecte !== 'undefined' ? afficherBarreLogoDeconnecte : function(){};
 </script>
 
 <!-- ═══ FIREBASE AUTH ═══ -->
@@ -10191,7 +10201,7 @@ async function chargerProfil(uid) {
 
     // ── Valeurs réelles dans la section confidentialité ──
     const nomPrivAffiche = d.nomAffiche || d.nom || d.pseudo || '—';
-    const stylesNormStr = normaliserStyles(d.styles).join(', ') || 'Non renseigné';
+    const stylesNormStr = window.normaliserStyles(d.styles).join(', ') || 'Non renseigné';
 
     const privNom      = document.getElementById('priv-val-nom');
     const privStyles   = document.getElementById('priv-val-styles');
@@ -10298,13 +10308,13 @@ async function chargerProfil(uid) {
     }
 
     // ── Genres musicaux ──
-    const genresNorm = normaliserStyles(d.genres);
+    const genresNorm = window.normaliserStyles(d.genres);
     document.querySelectorAll('#edit-genres-grid .style-tag').forEach(tag => {
       tag.classList.toggle('selected', genresNorm.includes(tag.textContent.trim()));
     });
 
     // ── Styles de danse ──
-    const stylesNorm = normaliserStyles(d.styles);
+    const stylesNorm = window.normaliserStyles(d.styles);
     if (stylesNorm.length > 0) {
       document.querySelectorAll('#styles-grid .style-tag').forEach(tag => {
         tag.classList.toggle('selected', stylesNorm.includes(tag.textContent.trim()));
@@ -10689,13 +10699,13 @@ function detecterPairageKima(estConnecte) {
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     console.log('✅ Connecté :', user.email);
-    afficherBarreLogoDeconnecte(false);
+    if (window.afficherBarreLogoDeconnecte) window.afficherBarreLogoDeconnecte(false);
     try { await chargerProfil(user.uid); }   catch(e) { console.error('❌ chargerProfil:', e); }
-    try { await chargerAbonnements(); }       catch(e) { console.error('❌ chargerAbonnements:', e); }
-    try { await chargerFavoris(); }           catch(e) { console.error('❌ chargerFavoris:', e); }
-    afficherDashboard(window._monProfil);
-    mettreAJourNav(window._monProfil || user);
-    brctLeverBlur();
+    try { await window.chargerAbonnements(); }       catch(e) { console.error('❌ chargerAbonnements:', e); }
+    try { await window.chargerFavoris(); }           catch(e) { console.error('❌ chargerFavoris:', e); }
+    if (window.afficherDashboard) window.afficherDashboard(window._monProfil);
+    if (window.mettreAJourNav) window.mettreAJourNav(window._monProfil || user);
+    if (window.brctLeverBlur) window.brctLeverBlur();
     detecterPairageKima(true);
   } else {
     console.log('👤 Non connecté');
