@@ -5332,6 +5332,10 @@ function showPage(id, isBack = false) {
   }
   currentPage = id;
 
+  // Barre mobile réseau
+  const _bar = document.getElementById('network-mobile-bar');
+  if (_bar) _bar.style.display = (id === 'network' && window.innerWidth <= 768) ? 'block' : 'none';
+
   // Pages à ne pas persister (auth, modales, etc.)
   const _noSave = ['home','auth','privacy','cgu','mentions'];
   if (!_noSave.includes(id)) localStorage.setItem('hako_last_page', id);
