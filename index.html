@@ -5637,32 +5637,19 @@ function goHome() {
   else showPage('home');
 }
 function switchTab(btn, tabId) {
-  // Empêcher tout comportement par défaut
   if (window.event) {
     window.event.preventDefault();
     window.event.stopPropagation();
   }
-  
-  console.log('✅ Changement d\'onglet vers:', tabId);
-  
-  // Retirer l'active de tous les onglets
-  const allTabs = document.querySelectorAll('.auth-tab');
-  allTabs.forEach(t => t.classList.remove('on'));
-  
-  // Ajouter active au bouton cliqué
-  if (btn) btn.classList.add('on');
-  
-  // Afficher/cacher les sections
+
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
   const signupSection = document.getElementById('tab-signup');
-  const loginSection = document.getElementById('tab-login');
-  
-  if (signupSection) {
-    signupSection.style.display = (tabId === 'tab-signup') ? 'block' : 'none';
-  }
-  if (loginSection) {
-    loginSection.style.display = (tabId === 'tab-login') ? 'block' : 'none';
-  }
-  
+  const loginSection  = document.getElementById('tab-login');
+  if (signupSection) signupSection.style.display = (tabId === 'tab-signup') ? 'block' : 'none';
+  if (loginSection)  loginSection.style.display  = (tabId === 'tab-login')  ? 'block' : 'none';
+
   return false;
 }
 
