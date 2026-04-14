@@ -4671,7 +4671,20 @@ if (isPWA) {
       <!-- Notification broadcast -->
       <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;">
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">📣 Notification globale</div>
-        <input id="admin-notif-input" type="text" placeholder="Message à envoyer à tous les utilisateurs..." style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;margin-bottom:10px;box-sizing:border-box;">
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px;">
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">Titre *</label>
+            <input id="admin-notif-titre" type="text" placeholder="Ex: Mise à jour HAKO 🎉" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">Extrait (affiché dans la notif) *</label>
+            <input id="admin-notif-extrait" type="text" placeholder="Ex: Découvrez les nouvelles fonctionnalités..." style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">Message complet</label>
+            <textarea id="admin-notif-input" placeholder="Écrivez votre message complet ici..." rows="5" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;resize:vertical;min-height:100px;"></textarea>
+          </div>
+        </div>
         <button onclick="envoyerNotifGlobale()" style="width:100%;padding:12px;border-radius:10px;background:var(--red);color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;border:none;cursor:pointer;">Envoyer à tous →</button>
         <div id="admin-notif-msg" style="display:none;margin-top:8px;font-size:12px;color:var(--green);font-weight:700;"></div>
       </div>
@@ -5736,7 +5749,9 @@ function getNotifConfig(n) {
     badge:           { ico:'🏆', txt:"Tu as débloqué un nouveau badge", bg:'rgba(255,217,61,0.08)' },
     xp:              { ico:'⭐', txt: n.texte || 'Tu as gagné des XP',  bg:'rgba(0,245,155,0.08)' },
   };
-  return map[n.type] || { ico:'🔔', txt: n.texte || 'Nouvelle notification', bg:'rgba(255,255,255,0.05)' };
+  if (n.type === 'broadcast') return { ico:'📣', txt: n.titre || '📣 Message de HAKO', bg:'rgba(0,245,155,0.05)' };
+  if (n.type === 'rappel_event') return { ico:'📅', txt: n.titre || 'Rappel événement', bg:'rgba(77,159,255,0.08)' };
+  return map[n.type] || { ico:'🔔', txt: n.texte || n.message || 'Nouvelle notification', bg:'rgba(255,255,255,0.05)' };
 }
 
 function mettreAJourBadgeNotif(notifs) {
@@ -5782,10 +5797,13 @@ function afficherPageNotifs() {
     const cfg  = getNotifConfig(n);
     const date = n.date ? new Date(n.date).toLocaleDateString('fr-FR', { day:'numeric', month:'long', hour:'2-digit', minute:'2-digit' }) : '';
     const realIdx = allNotifs.length - 1 - allNotifs.slice().reverse().findIndex(x => x === n || (x.date === n.date && x.type === n.type));
+    const isBroadcast = n.type === 'broadcast' || n.type === 'rappel_event';
     return `<div class="notif-card ${n.lu ? '' : 'non-lu'}" onclick="clicNotif(${realIdx})">
       <div class="notif-icon" style="background:${cfg.bg};">${cfg.ico}</div>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;font-weight:${n.lu ? '500' : '700'};color:var(--text);margin-bottom:3px;">${cfg.txt}</div>
+        <div style="font-size:13px;font-weight:${n.lu ? '500' : '700'};color:var(--text);margin-bottom:3px;">${isBroadcast ? (n.titre || 'Message HAKO') : cfg.txt}</div>
+        ${isBroadcast && (n.extrait || n.texte) ? `<div style="font-size:12px;color:var(--muted2);margin-bottom:4px;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${n.extrait || n.texte}</div>` : ''}
+        ${isBroadcast ? `<div style="font-size:11px;color:var(--green);font-weight:700;margin-bottom:2px;">Lire le message →</div>` : ''}
         <div style="font-size:11px;color:var(--muted2);">${date}</div>
       </div>
       <div style="position:relative;">
@@ -5803,6 +5821,28 @@ function afficherPageNotifs() {
     </div>`;
   }).join('');
 }
+
+
+// ── Modale message HAKO ──
+window.ouvrirMessageHako = function(n) {
+  const modal = document.getElementById('modal-hako-msg');
+  if (!modal) return;
+  document.getElementById('hako-msg-titre').textContent = n.titre || 'Message de HAKO';
+  document.getElementById('hako-msg-texte').textContent = n.texte || n.message || '';
+  const date = n.date ? new Date(n.date).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' }) : '';
+  document.getElementById('hako-msg-date').textContent = date;
+  modal.style.display = 'flex';
+};
+
+window.fermerMessageHako = function() {
+  const modal = document.getElementById('modal-hako-msg');
+  if (modal) modal.style.display = 'none';
+};
+
+// Fermer en cliquant sur le fond
+document.getElementById('modal-hako-msg')?.addEventListener('click', function(e) {
+  if (e.target === this) fermerMessageHako();
+});
 
 window.clicNotif = async function(index) {
   if (!window._monProfil || !window._db || !window._currentUid) return;
@@ -5841,13 +5881,7 @@ window.clicNotif = async function(index) {
   } else if (n.type === 'badge' || n.type === 'xp') {
     showPage('ranking');
   } else if (n.type === 'broadcast') {
-    // Notif admin : aller sur agenda si ça parle d'événement, sinon accueil
-    const texte = (n.texte || '').toLowerCase();
-    if (texte.includes('event') || texte.includes('agenda') || texte.includes('session') || texte.includes('atelier') || texte.includes('battle') || texte.includes('stage')) {
-      showPage('agenda');
-    } else {
-      showPage('home');
-    }
+    ouvrirMessageHako(n);
   }
 };
 
@@ -7435,9 +7469,17 @@ window.adminSupprimerCompte = async function(uid) {
 }
 
 window.envoyerNotifGlobale = async function() {
-  const msg   = document.getElementById('admin-notif-input').value.trim();
-  const retour = document.getElementById('admin-notif-msg');
-  if (!msg) return;
+  const titre   = document.getElementById('admin-notif-titre')?.value.trim();
+  const extrait = document.getElementById('admin-notif-extrait')?.value.trim();
+  const msg     = document.getElementById('admin-notif-input').value.trim();
+  const retour  = document.getElementById('admin-notif-msg');
+
+  if (!titre || !extrait) {
+    retour.textContent = '⚠️ Le titre et l'extrait sont obligatoires.';
+    retour.style.color = 'var(--red)';
+    retour.style.display = 'block';
+    return;
+  }
   retour.style.display = 'none';
 
   try {
@@ -7449,7 +7491,9 @@ window.envoyerNotifGlobale = async function() {
     const notif = {
       id:      Date.now().toString(),
       type:    'broadcast',
-      message: msg,
+      titre:   titre,
+      extrait: extrait,
+      texte:   msg || extrait,
       date:    new Date().toISOString(),
       lu:      false
     };
@@ -7461,8 +7505,11 @@ window.envoyerNotifGlobale = async function() {
     );
     await Promise.all(promises);
 
-    document.getElementById('admin-notif-input').value = '';
+    document.getElementById('admin-notif-titre').value   = '';
+    document.getElementById('admin-notif-extrait').value = '';
+    document.getElementById('admin-notif-input').value   = '';
     retour.textContent = '✅ Notification envoyée à ' + snap.docs.length + ' utilisateurs.';
+    retour.style.color = 'var(--green)';
     retour.style.display = 'block';
   } catch(e) {
     retour.textContent = '❌ Erreur : ' + e.message;
@@ -11160,6 +11207,26 @@ window.gainXP = async function(montant, type, labelOverride) {
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- MODALE MESSAGE HAKO (broadcast) -->
+<div id="modal-hako-msg" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);align-items:flex-end;justify-content:center;">
+  <div style="background:var(--card2);border-radius:24px 24px 0 0;width:100%;max-width:600px;max-height:88vh;overflow-y:auto;padding:24px 20px 40px;border:1px solid var(--border);border-bottom:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.2);display:flex;align-items:center;justify-content:center;font-size:18px;">📣</div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Message de HAKO</div>
+          <div id="hako-msg-date" style="font-size:11px;color:var(--muted);margin-top:1px;"></div>
+        </div>
+      </div>
+      <button onclick="fermerMessageHako()" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="hako-msg-titre" style="font-family:'Syne',sans-serif;font-weight:900;font-size:22px;letter-spacing:-0.5px;line-height:1.2;margin-bottom:16px;"></div>
+    <div id="hako-msg-texte" style="font-size:14px;color:var(--muted2);line-height:1.7;white-space:pre-line;"></div>
   </div>
 </div>
 
