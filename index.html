@@ -510,7 +510,8 @@ body.pwa #agenda-passes-toggle {
   outline:none;cursor:pointer;
 }
 .form-select option{background:var(--bg2);}
-.styles-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+.styles-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;overflow:hidden;max-height:80px;transition:max-height 0.3s ease;}
+.styles-grid.expanded{max-height:1000px;}
 .style-tag{
   padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;
   border:1.5px solid var(--border);background:transparent;
@@ -2935,6 +2936,7 @@ if (isPWA) {
             <button class="style-tag" onclick="toggleStyle(this)">Pole Dance</button>
             <button class="style-tag" onclick="toggleStyle(this)">Capoeira</button>
           </div>
+          <button onclick="toggleStylesGrid('styles-grid', this)" style="margin-top:8px;background:none;border:none;color:var(--green);font-size:11px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;padding:0;letter-spacing:0.5px;">+ Voir tous les styles</button>
         </div>
         <div class="form-group">
           <label class="form-label">Ta ville</label>
@@ -4814,6 +4816,7 @@ if (isPWA) {
             <button class="style-tag" onclick="toggleStyle(this)">Pole Dance</button>
             <button class="style-tag" onclick="toggleStyle(this)">Capoeira</button>
           </div>
+          <button onclick="toggleStylesGrid('edit-styles-grid', this)" style="margin-top:8px;background:none;border:none;color:var(--green);font-size:11px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;padding:0;letter-spacing:0.5px;">+ Voir tous les styles</button>
         </div>
 
         <!-- GENRES MUSICAUX -->
@@ -5383,6 +5386,13 @@ setTimeout(() => {
 // ── Style tags ──
 function toggleStyle(el) {
   el.classList.toggle('selected');
+}
+
+function toggleStylesGrid(gridId, btn) {
+  const grid = document.getElementById(gridId);
+  if (!grid) return;
+  const expanded = grid.classList.toggle('expanded');
+  btn.textContent = expanded ? '− Réduire' : '+ Voir tous les styles';
 }
 
 function toggleGenre(el) {
@@ -8153,6 +8163,7 @@ function normaliserStyles(styles) {
   return [];
 }
 const VILLES_COORDS = {
+  // France
   'Angoulême':  [45.6497, 0.1561],
   'Paris':      [48.8566, 2.3522],
   'Lyon':       [45.7640, 4.8357],
@@ -8165,6 +8176,32 @@ const VILLES_COORDS = {
   'Lille':      [50.6292, 3.0573],
   'Grenoble':   [45.1885, 5.7245],
   'Orléans':    [47.9029, 1.9039],
+  'Montpellier':[43.6108, 3.8767],
+  'Rennes':     [48.1173, -1.6778],
+  'Reims':      [49.2583, 4.0317],
+  'Toulon':     [43.1242, 5.9280],
+  'Dijon':      [47.3220, 5.0415],
+  'Angers':     [47.4784, -0.5632],
+  'Nîmes':      [43.8367, 4.3601],
+  'Clermont-Ferrand': [45.7772, 3.0870],
+  // Belgique
+  'Bruxelles':  [50.8503, 4.3517],
+  'Anvers':     [51.2194, 4.4025],
+  'Gand':       [51.0543, 3.7174],
+  'Liège':      [50.6292, 5.5797],
+  'Bruges':     [51.2093, 3.2247],
+  'Charleroi':  [50.4108, 4.4446],
+  'Namur':      [50.4669, 4.8675],
+  'Louvain':    [50.8798, 4.7005],
+  // Suisse
+  'Genève':     [46.2044, 6.1432],
+  'Zurich':     [47.3769, 8.5417],
+  'Bâle':       [47.5596, 7.5886],
+  'Berne':      [46.9480, 7.4474],
+  'Lausanne':   [46.5197, 6.6323],
+  'Fribourg':   [46.8065, 7.1620],
+  'Neuchâtel':  [46.9900, 6.9293],
+  'Sion':       [46.2330, 7.3598],
 };
 
 function initCarte() {
@@ -8192,14 +8229,23 @@ function initCarte() {
 // Cache geocodage pour éviter requêtes répétées
 const _geocodeCache = {};
 
+// Normaliser une ville : "   bruxelles  " → "Bruxelles", "new york" → "New York"
+function normaliserVille(ville) {
+  if (!ville) return '';
+  return ville.trim()
+    .toLowerCase()
+    .replace(/(?:^|\s|-)\S/g, c => c.toUpperCase());
+}
+
 async function coordsVille(zone) {
   if (!zone) return [46.8, 2.3];
+  const zoneNorm = normaliserVille(zone);
   // Cherche d'abord dans le dict statique
   for (const [ville, coords] of Object.entries(VILLES_COORDS)) {
-    if (zone.includes(ville)) return coords;
+    if (zoneNorm.includes(ville)) return coords;
   }
   // Fallback : Nominatim (OpenStreetMap)
-  const key = zone.trim().toLowerCase();
+  const key = zoneNorm.toLowerCase();
   if (_geocodeCache[key]) return _geocodeCache[key];
   try {
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(zone)}&format=json&limit=1&countrycodes=fr,be,ch`;
@@ -8290,8 +8336,10 @@ async function chargerCarte() {
       const d = docSnap.data();
       const uid = docSnap.id;
       tousLesDanseurs.push({ ...d, uid });
-      ajouterMarqueur(d, uid);
     });
+
+    // Ajouter les marqueurs en parallèle (await pour villes inconnues via Nominatim)
+    await Promise.all(tousLesDanseurs.map(d => ajouterMarqueur(d, d.uid)));
 
     afficherListeDanseurs(tousLesDanseurs);
     document.getElementById('map-count').textContent = tousLesDanseurs.length + ' artistes';
@@ -8773,7 +8821,7 @@ window.inscrire = async function() {
   const pseudo   = document.getElementById('signup-pseudo').value.trim();
   const email    = document.getElementById('signup-email').value.trim();
   const password = document.getElementById('signup-password').value;
-  const zone     = (document.getElementById('signup-zone').value || '').trim();
+  const zone     = normaliserVille(document.getElementById('signup-zone').value || '');
   const errDiv   = document.getElementById('signup-error');
   const okDiv    = document.getElementById('signup-success');
   const btn      = document.getElementById('signup-btn');
@@ -8900,7 +8948,7 @@ window.sauvegarderIdentite = async function() {
   const nom   = document.getElementById('profil-nom')?.value.trim()       || '';
   const blase = document.getElementById('profil-blase')?.value.trim()     || '';
   const tel   = document.getElementById('profil-tel')?.value.trim()       || '';
-  const ville = document.getElementById('profil-ville')?.value.trim()     || '';
+  const ville = normaliserVille(document.getElementById('profil-ville')?.value || '');
   const instagram    = document.getElementById('profil-instagram')?.value.trim().replace('@','') || '';
   const tiktok       = document.getElementById('profil-tiktok')?.value.trim().replace('@','')    || '';
   const lien         = document.getElementById('profil-lien')?.value.trim()       || '';
