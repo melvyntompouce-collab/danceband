@@ -132,7 +132,7 @@ body::after{
 
 /* ── PAGES ── */
 .page.active{display:block;}
-#page-network.active { overflow: hidden; padding: 0 !important; }
+
 .logo {
   font-family: 'Drowner', sans-serif;
   font-size: 31px;
@@ -545,86 +545,87 @@ body.pwa #agenda-passes-toggle {
    PAGE: RÉSEAU (CARTE)
 ══════════════════════════════ */
 /* ── Réseau plein écran ── */
-/* ── Réseau plein écran ── */
-#page-network {
-  padding:0 !important;
-  margin:0 !important;
-  min-height:0 !important;
-  position:fixed !important;
-  inset:0 !important;
-  z-index:2 !important;
-  overflow:hidden !important;
-}
-.network-layout { width:100%; height:100%; position:relative; }
-.network-map-wrap { position:absolute; inset:0; }
-.network-map-wrap #leaflet-map { width:100%; height:100%; }
-.dancer-list { display:none; }
-
-/* Barre recherche fixe */
-#network-searchbar {
-  position:fixed; left:16px; right:16px; z-index:500;
-  bottom:calc(62px + 12px + env(safe-area-inset-bottom));
-  display:none;
-  align-items:center; gap:10px;
-}
-body.pwa #network-searchbar {
-  bottom:calc(87px + 12px + env(safe-area-inset-bottom));
-}
-#network-searchbar .ns-input-wrap {
-  flex:1; display:flex; align-items:center;
-  background:rgba(8,8,16,0.92);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  border:1.5px solid rgba(255,255,255,0.1);
-  border-radius:16px;
-  padding:0 14px;
-  height:48px;
-  gap:8px;
-}
-#network-searchbar input {
-  flex:1; background:none; border:none; outline:none;
-  color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px;
-  padding:0;
-}
-#network-searchbar input::placeholder { color:var(--muted2); }
-#network-filter-btn {
-  width:48px; height:48px; border-radius:16px; flex-shrink:0;
-  background:rgba(8,8,16,0.92);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-  border:1.5px solid rgba(255,255,255,0.1);
-  color:var(--text); cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  transition:border-color 0.2s;
-  position:relative;
-}
-#network-filter-btn.active { border-color:var(--green); color:var(--green); }
-
-/* Menu filtres déroulant */
-#network-filter-menu {
-  position:fixed; right:16px; z-index:600;
-  bottom:calc(62px + 12px + 48px + 10px + env(safe-area-inset-bottom));
-  width:280px;
-  background:rgba(12,12,24,0.97);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:20px;
-  padding:16px;
-  display:none;
+/* ── Réseau ── */
+.network-layout{
+  display:flex;
   flex-direction:column;
-  gap:14px;
-  box-shadow:0 8px 40px rgba(0,0,0,0.6);
+  min-height:calc(100vh - 70px);
+  padding:20px;
+  padding-top:80px;
+  gap:16px;
+  max-width:1100px;
+  margin:0 auto;
 }
-body.pwa #network-filter-menu {
-  bottom:calc(87px + 12px + 48px + 10px + env(safe-area-inset-bottom));
+.network-list-wrap {
+  order:1;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  max-height:420px;
 }
-#network-filter-menu.open { display:flex; }
-.nfm-label {
-  font-family:'Syne',sans-serif; font-weight:800;
-  font-size:10px; letter-spacing:1.5px; text-transform:uppercase;
-  color:var(--muted); margin-bottom:6px;
+.network-list-header {
+  padding:14px 16px 10px;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:10;
 }
+.network-list-title {
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:13px;letter-spacing:1px;
+  color:var(--muted2);text-transform:uppercase;
+  margin-bottom:10px;
+}
+.dancer-list {
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;
+  flex:1;
+  padding:8px 12px;
+}
+.network-map-wrap {
+  order:2;
+  position:relative;
+  height:260px;
+  flex-shrink:0;
+  border-radius:20px;
+  overflow:hidden;
+  border:2px solid var(--green);
+  box-shadow:0 0 24px rgba(0,245,155,0.12);
+}
+.network-map-wrap #leaflet-map {
+  width:100%;height:100%;border-radius:18px;
+}
+/* Desktop : liste à gauche, carte à droite */
+@media(min-width:769px){
+  .network-layout {
+    flex-direction:row;
+    align-items:flex-start;
+    min-height:calc(100vh - 70px);
+    padding:24px;
+    gap:20px;
+  }
+  .network-list-wrap {
+    order:1;
+    width:340px;
+    flex-shrink:0;
+    max-height:calc(100vh - 118px);
+  }
+  .network-map-wrap {
+    order:2;
+    flex:1;
+    height:calc(100vh - 118px);
+  }
+}
+/* Mobile : barre recherche fixe + menu filtre */
+@media(max-width:768px){
+  .network-list-wrap { display:none; }
+  .network-map-wrap { height:calc(100vh - 70px); border-radius:0; border:none; }
+}
+
+
 
 /* Badge compteur */
 .map-badge {
@@ -4076,111 +4077,78 @@ if (isPWA) {
 </div>
 
 <div class="page" id="page-network">
+  <div style="position:absolute;top:calc(50px + max(0px,env(safe-area-inset-top)));left:16px;z-index:500;display:flex;align-items:center;gap:12px;"><div><div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Communauté</div><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;line-height:1;">RÉSEAU</span></div></div>
   <div class="network-layout">
 
-    <!-- CARTE PLEIN ÉCRAN -->
+    <!-- CARTE -->
     <div class="network-map-wrap">
       <div id="leaflet-map" style="width:100%;height:100%;"></div>
-      <!-- Badge compteur -->
-      <div class="map-badge" style="position:fixed;top:calc(16px + env(safe-area-inset-top));left:16px;z-index:500;">
+      <div class="map-badge">
         <div class="dot"></div>
         <span id="map-count">0 artistes</span>
       </div>
-      <!-- Contrôles carte -->
-      <div class="map-controls" style="position:fixed;right:16px;top:calc(16px + env(safe-area-inset-top));z-index:500;">
+      <div class="map-controls">
         <div class="map-ctrl-btn" onclick="carte && carte.zoomIn()">＋</div>
         <div class="map-ctrl-btn" onclick="carte && carte.zoomOut()">－</div>
         <div class="map-ctrl-btn" id="btn-locate" onclick="centrerSurMoi()" title="Ma position">📍</div>
+        <div class="map-ctrl-btn" onclick="openMapFullscreen()" title="Plein écran" id="btn-map-fs">⛶</div>
       </div>
     </div>
 
-    <!-- Dancer list cachée (nécessaire pour la logique JS) -->
-    <div class="dancer-list" id="dancer-list" style="display:none;"></div>
-    <!-- filter-row caché pour compatibilité JS -->
-    <div id="filter-row" style="display:none;">
-      <button class="style-fchip on" onclick="setFiltre('tous',this)">Tous</button>
-      <button class="style-fchip" onclick="setFiltre('enligne',this)">En ligne</button>
-      <button class="style-fchip" onclick="setFiltre('compatible',this)">⚡ Compatible</button>
+    <!-- MAP FULLSCREEN OVERLAY -->
+    <div id="map-fullscreen-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:#080810;">
+      <div id="map-fullscreen-inner" style="width:100%;height:100%;"></div>
+      <div class="map-badge" style="position:fixed;top:16px;left:16px;z-index:10002;">
+        <div class="dot"></div>
+        <span id="map-fs-count">0 artistes</span>
+      </div>
+      <button onclick="closeMapFullscreen()" id="btn-map-fs-close" style="position:fixed;top:calc(16px + env(safe-area-inset-top));right:16px;z-index:10002;width:42px;height:42px;border-radius:12px;background:rgba(8,8,16,0.92);backdrop-filter:blur(12px);border:1.5px solid rgba(0,245,155,0.4);color:var(--green);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;box-shadow:0 4px 16px rgba(0,0,0,0.4);">✕</button>
     </div>
-    <div id="style-filter-row" style="display:none;">
-      <button class="style-fchip" onclick="setStyleFiltre('Salsa',this)">Salsa</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Kizomba',this)">Kizomba</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Hip-Hop',this)">Hip-Hop</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Bachata',this)">Bachata</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Breakdance',this)">Breakdance</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Afro',this)">Afro</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Zouk',this)">Zouk</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Dancehall',this)">Dancehall</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Popping',this)">Popping</button>
-      <button class="style-fchip" onclick="setStyleFiltre('House',this)">House</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Litefeet',this)">Litefeet</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Krump',this)">Krump</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Voguing',this)">Voguing</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Locking',this)">Locking</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Heels',this)">Heels</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Classique',this)">Classique</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Tango',this)">Tango</button>
+
+    <!-- LISTE (desktop) -->
+    <div class="network-list-wrap">
+      <div class="network-list-header">
+        <input class="search-input" type="text" id="search-input" placeholder="🔍 Nom, style, ville..." oninput="filtrerDanseurs()">
+        <div class="filter-row" id="filter-row" style="margin-bottom:6px;">
+          <button class="style-fchip on" onclick="setFiltre('tous',this)">Tous</button>
+          <button class="style-fchip" onclick="setFiltre('enligne',this)"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00f59b;box-shadow:0 0 6px #00f59b;margin-right:5px;flex-shrink:0;"></span>En ligne</button>
+          <button class="style-fchip" onclick="setFiltre('compatible',this)">⚡ Compatible</button>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;">
+          <input id="filtre-zone" type="text" list="villes-datalist" placeholder="📍 Filtrer par ville..." oninput="filtrerDanseurs()" autocomplete="off" style="flex:1;padding:7px 12px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);color:var(--muted2);font-size:12px;font-family:'Syne',sans-serif;font-weight:700;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
+          <button onclick="resetFiltres()" style="height:34px;padding:0 12px;border-radius:8px;background:none;border:1.5px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;white-space:nowrap;transition:all 0.2s;flex-shrink:0;" onmouseover="this.style.borderColor='rgba(255,77,109,0.4)';this.style.color='var(--red)';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)';">✕ Reset</button>
+        </div>
+        <div style="margin-bottom:4px;">
+          <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;">Style de danse</div>
+          <div style="display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;" id="style-filter-row">
+            <button class="style-fchip" onclick="setStyleFiltre('Salsa',this)">Salsa</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Kizomba',this)">Kizomba</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Hip-Hop',this)">Hip-Hop</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Bachata',this)">Bachata</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Breakdance',this)">Breakdance</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Afro',this)">Afro</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Zouk',this)">Zouk</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Dancehall',this)">Dancehall</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Popping',this)">Popping</button>
+            <button class="style-fchip" onclick="setStyleFiltre('House',this)">House</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Litefeet',this)">Litefeet</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Krump',this)">Krump</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Voguing',this)">Voguing</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Locking',this)">Locking</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Heels',this)">Heels</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Classique',this)">Classique</button>
+            <button class="style-fchip" onclick="setStyleFiltre('Tango',this)">Tango</button>
+          </div>
+        </div>
+      </div>
+      <div class="dancer-list" id="dancer-list">
+        <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">⏳ Chargement des danseurs...</div>
+      </div>
     </div>
 
   </div>
 </div>
 
-<!-- BARRE RECHERCHE RÉSEAU (hors page, position:fixed) -->
-<div id="network-searchbar">
-  <div class="ns-input-wrap">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted2);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" id="search-input" placeholder="Nom, style, ville..." oninput="filtrerDanseurs()" autocomplete="off">
-    <button onclick="document.getElementById('search-input').value='';filtrerDanseurs()" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0;display:flex;align-items:center;">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
-  <button id="network-filter-btn" onclick="toggleNetworkFilterMenu()" title="Filtres">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-    <div id="network-filter-dot" style="display:none;position:absolute;top:8px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--green);border:1.5px solid var(--bg);"></div>
-  </button>
-</div>
-
-<!-- MENU FILTRES RÉSEAU -->
-<div id="network-filter-menu">
-  <div>
-    <div class="nfm-label">Statut</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <button class="style-fchip on" onclick="setFiltre('tous',this);majFilterDot()">Tous</button>
-      <button class="style-fchip" onclick="setFiltre('enligne',this);majFilterDot()"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00f59b;box-shadow:0 0 6px #00f59b;margin-right:5px;"></span>En ligne</button>
-      <button class="style-fchip" onclick="setFiltre('compatible',this);majFilterDot()">⚡ Compatible</button>
-    </div>
-  </div>
-  <div>
-    <div class="nfm-label">Ville</div>
-    <input id="filtre-zone" type="text" list="villes-datalist" placeholder="📍 Toutes les villes" oninput="filtrerDanseurs();majFilterDot()" autocomplete="off" style="width:100%;box-sizing:border-box;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
-  </div>
-  <div>
-    <div class="nfm-label">Style de danse</div>
-    <div style="display:flex;gap:5px;flex-wrap:wrap;max-height:120px;overflow-y:auto;scrollbar-width:none;" id="style-filter-row-menu">
-      <button class="style-fchip" onclick="setStyleFiltre('Salsa',this);majFilterDot()">Salsa</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Kizomba',this);majFilterDot()">Kizomba</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Hip-Hop',this);majFilterDot()">Hip-Hop</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Bachata',this);majFilterDot()">Bachata</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Breakdance',this);majFilterDot()">Breakdance</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Afro',this);majFilterDot()">Afro</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Zouk',this);majFilterDot()">Zouk</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Dancehall',this);majFilterDot()">Dancehall</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Popping',this);majFilterDot()">Popping</button>
-      <button class="style-fchip" onclick="setStyleFiltre('House',this);majFilterDot()">House</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Litefeet',this);majFilterDot()">Litefeet</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Krump',this);majFilterDot()">Krump</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Voguing',this);majFilterDot()">Voguing</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Locking',this);majFilterDot()">Locking</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Heels',this);majFilterDot()">Heels</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Classique',this);majFilterDot()">Classique</button>
-      <button class="style-fchip" onclick="setStyleFiltre('Tango',this);majFilterDot()">Tango</button>
-    </div>
-  </div>
-  <div style="display:flex;justify-content:space-between;align-items:center;padding-top:4px;border-top:1px solid rgba(255,255,255,0.07);">
-    <button onclick="resetFiltres();majFilterDot()" style="background:none;border:none;color:var(--muted2);font-size:12px;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;padding:0;">✕ Réinitialiser</button>
-    <button onclick="toggleNetworkFilterMenu()" style="padding:7px 16px;border-radius:10px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;border:none;cursor:pointer;">Appliquer</button>
-  </div>
-</div>
 
 <!-- ═══ PAGE: AGENDA ═══ -->
 <div class="page" id="page-agenda">
@@ -5250,11 +5218,7 @@ function showPage(id, isBack = false) {
     if (pageHistory.length > 15) pageHistory.shift();
   }
   currentPage = id;
-  if (window.majSearchbarReseau) majSearchbarReseau(id);
-  if (id === 'network') {
-    setTimeout(() => { if (window.carte) window.carte.invalidateSize(); }, 100);
-    setTimeout(() => { if (window.carte) window.carte.invalidateSize(); }, 400);
-  }
+
   // Pages à ne pas persister (auth, modales, etc.)
   const _noSave = ['home','auth','privacy','cgu','mentions'];
   if (!_noSave.includes(id)) localStorage.setItem('hako_last_page', id);
@@ -8743,48 +8707,7 @@ function setFiltre(type, btn) {
   filtrerDanseurs();
 }
 
-// ── Réseau : barre recherche + menu filtres ──
-function toggleNetworkFilterMenu() {
-  const menu = document.getElementById('network-filter-menu');
-  const btn  = document.getElementById('network-filter-btn');
-  if (!menu) return;
-  const open = menu.classList.toggle('open');
-  if (btn) btn.classList.toggle('active', open);
-}
-window.toggleNetworkFilterMenu = toggleNetworkFilterMenu;
 
-function majFilterDot() {
-  const dot = document.getElementById('network-filter-dot');
-  if (!dot) return;
-  const actif = filtresEtatActifs.size > 0 || filtresStyleActifs.size > 0 ||
-    (document.getElementById('filtre-zone')?.value || '').trim() !== '';
-  dot.style.display = actif ? 'block' : 'none';
-}
-window.majFilterDot = majFilterDot;
-
-// Afficher/cacher la barre de recherche selon la page active
-function majSearchbarReseau(pageId) {
-  const bar = document.getElementById('network-searchbar');
-  if (!bar) return;
-  bar.style.display = (pageId === 'network') ? 'flex' : 'none';
-  if (pageId !== 'network') {
-    const menu = document.getElementById('network-filter-menu');
-    if (menu) menu.classList.remove('open');
-  }
-}
-window.majSearchbarReseau = majSearchbarReseau;
-
-// Fermer menu filtre si clic hors
-document.addEventListener('click', function(e) {
-  const menu = document.getElementById('network-filter-menu');
-  const btn  = document.getElementById('network-filter-btn');
-  const bar  = document.getElementById('network-searchbar');
-  if (!menu || !menu.classList.contains('open')) return;
-  if (!menu.contains(e.target) && !btn?.contains(e.target)) {
-    menu.classList.remove('open');
-    btn?.classList.remove('active');
-  }
-});
 
 function resetFiltres() {
   filtresEtatActifs.clear();
