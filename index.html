@@ -7030,7 +7030,7 @@ async function chargerSalles() {
   grid.innerHTML = '<div class="salles-empty"><div class="salles-empty-ico">⏳</div><div>Chargement...</div></div>';
 
   try {
-    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
     const snap = await getDocs(collection(window._db, 'salles'));
     _sallesCache = [];
     snap.forEach(d => _sallesCache.push({ id: d.id, ...d.data() }));
@@ -7177,7 +7177,7 @@ window.sauvegarderSalle = async function() {
     updatedAt: Date.now()
   };
   try {
-    const { collection, doc, setDoc, addDoc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const { collection, doc, setDoc, addDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
     const editId = document.getElementById('salle-edit-id').value;
     if (editId) {
       await setDoc(doc(window._db, 'salles', editId), data, { merge: true });
@@ -7197,7 +7197,7 @@ window.supprimerSalle = async function(id) {
   if (!window._isAdmin) return;
   if (!confirm('Supprimer cette salle ?')) return;
   try {
-    const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
     await deleteDoc(doc(window._db, 'salles', id));
     chargerSalles();
   } catch(e) {
@@ -10759,7 +10759,7 @@ window.gainXP = async function(montant, type, labelOverride) {
   <div class="salles-page">
     <div class="salles-header">
       <div class="salles-header-sub">Espaces & studios</div>
-      <span class="salles-header-title">SALLES À LOUER</span>
+      <span class="salles-header-title">SALLES & STUDIOS</span>
     </div>
 
     <!-- Admin : bouton ajout -->
@@ -10870,6 +10870,5 @@ window.gainXP = async function(montant, type, labelOverride) {
   </button>
   <button class="mn-item" id="bn-salles" onclick="showPage('salles')" aria-label="Salles">
     <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    <span class="mn-lbl">Salles</span>
   </button>
 </nav>
