@@ -132,6 +132,7 @@ body::after{
 
 /* ── PAGES ── */
 .page.active{display:block;}
+
 .logo {
   font-family: 'Drowner', sans-serif;
   font-size: 31px;
@@ -245,6 +246,7 @@ body::after{
 /* ── PAGES suite ── */
 /* ── PAGES ── */
 .page{display:none;min-height:100vh;padding-top:44px;position:relative;z-index:1;}
+#page-network{min-height:0;padding-top:0;}
 .page.active{display:block;}
 body.logo-bar-visible .page{padding-top:calc(120px + max(20px, env(safe-area-inset-top)));}
 
@@ -253,7 +255,7 @@ body.pwa #page-agenda .agenda-header h1 { margin-top: -6px; }
 body.pwa .hero {
   padding-top: 8px;
 }
-body.pwa .page:not(#page-auth) {
+body.pwa .page:not(#page-auth):not(#page-network) {
   padding-top: calc(42px + env(safe-area-inset-top)) !important;
 }
 body.pwa #main-nav {
@@ -543,6 +545,8 @@ body.pwa #agenda-passes-toggle {
 /* ══════════════════════════════
    PAGE: RÉSEAU (CARTE)
 ══════════════════════════════ */
+/* ── Réseau plein écran ── */
+/* ── Réseau ── */
 .network-layout{
   display:flex;
   flex-direction:column;
@@ -553,8 +557,6 @@ body.pwa #agenda-passes-toggle {
   max-width:1100px;
   margin:0 auto;
 }
-
-/* ── Liste en haut sur mobile ── */
 .network-list-wrap {
   order:1;
   background:var(--card);
@@ -566,7 +568,7 @@ body.pwa #agenda-passes-toggle {
   max-height:420px;
 }
 .network-list-header {
-  padding:14px 16px 10px;
+  padding:10px 12px 8px;
   background:var(--card);
   border-bottom:1px solid var(--border);
   position:sticky;top:0;z-index:10;
@@ -584,8 +586,6 @@ body.pwa #agenda-passes-toggle {
   flex:1;
   padding:8px 12px;
 }
-
-/* ── Carte encadrée ── */
 .network-map-wrap {
   order:2;
   position:relative;
@@ -599,6 +599,72 @@ body.pwa #agenda-passes-toggle {
 .network-map-wrap #leaflet-map {
   width:100%;height:100%;border-radius:18px;
 }
+/* Desktop : liste à gauche, carte à droite */
+@media(min-width:769px){
+  .network-layout {
+    flex-direction:row;
+    align-items:flex-start;
+    min-height:calc(100vh - 70px);
+    padding:24px;
+    gap:20px;
+  }
+  .network-list-wrap {
+    order:1;
+    width:340px;
+    flex-shrink:0;
+    max-height:calc(100vh - 118px);
+  }
+  .network-map-wrap {
+    order:2;
+    flex:1;
+    height:calc(100vh - 118px);
+  }
+}
+/* Mobile : carte en haut, liste scrollable en dessous */
+@media(max-width:768px){
+  #page-network {
+    position:fixed !important;
+    top:0 !important; left:0 !important; right:0 !important; bottom:0 !important;
+    overflow:hidden !important;
+    min-height:0 !important;
+    padding:0 !important;
+  }
+  .network-layout {
+    position:absolute;
+    top:0; left:0; right:0; bottom:0;
+    padding:12px;
+    padding-top:calc(50px + env(safe-area-inset-top) + 50px);
+    padding-bottom:calc(62px + env(safe-area-inset-bottom) + 64px);
+    gap:0;
+    flex-direction:column;
+    overflow:hidden;
+    min-height:0;
+    box-sizing:border-box;
+  }
+  .network-map-wrap {
+    flex:1;
+    min-height:0;
+    border-radius:14px;
+    border:2px solid var(--green);
+    box-shadow:0 0 24px rgba(0,245,155,0.12);
+  }
+  #network-list-desktop { display:none !important; }
+}
+body.pwa #page-network {
+  position:fixed !important;
+  top:0 !important; left:0 !important; right:0 !important; bottom:0 !important;
+  overflow:hidden !important;
+  min-height:0 !important;
+  padding:0 !important;
+}
+body.pwa .network-layout {
+  padding-bottom:calc(87px + env(safe-area-inset-bottom) + 64px);
+}
+body.pwa #network-mobile-bar {
+  bottom:calc(87px + env(safe-area-inset-bottom) + 8px);
+}
+
+
 
 /* Badge compteur */
 .map-badge {
@@ -1290,16 +1356,19 @@ footer{
 .leaflet-popup-tip { background: var(--card) !important; }
 .leaflet-popup-close-button { color: var(--muted) !important; }
 .hako-marker {
-  width: 44px; height: 44px; border-radius: 14px;
+  width: 42px; height: 42px; border-radius: 14px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 20px; border: 2px solid;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  font-size: 0; border: 3px solid;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
   transition: transform 0.2s;
   cursor: pointer;
+  overflow: hidden;
+  background: #181828;
+  position: relative;
 }
-.hako-marker:hover { transform: scale(1.15); }
-.hako-marker.public  { background: #0d2b1e; border-color: #00f59b; }
-.hako-marker.amis    { background: #2b250d; border-color: #ffd93d; }
+.hako-marker:hover { transform: scale(1.1); }
+.hako-marker img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 0; }
+.hako-marker .hako-marker-fallback { font-size: 18px; line-height: 42px; display: block; text-align: center; width: 100%; position: relative; z-index: 1; }
 .popup-name { font-family:'Syne',sans-serif; font-weight:800; font-size:15px; margin-bottom:6px; }
 .popup-styles { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px; }
 .popup-tag { font-size:10px; padding:3px 8px; border-radius:6px; background:rgba(255,255,255,0.06); color:#8a8aa2; }
@@ -1329,10 +1398,10 @@ footer{
 @media(max-width:768px) {
   .mobile-nav { display: flex !important; }
   body.pwa .mobile-nav { display: flex !important; }
-  .page { padding-bottom: calc(60px + max(4px, env(safe-area-inset-bottom))) !important; }
+  .page:not(#page-network) { padding-bottom: calc(60px + max(4px, env(safe-area-inset-bottom))) !important; }
 }
 body.pwa .mobile-nav { display: flex !important; }
-body.pwa .page { padding-bottom: calc(60px + max(4px, env(safe-area-inset-bottom))) !important; }
+body.pwa .page:not(#page-network) { padding-bottom: calc(60px + max(4px, env(safe-area-inset-bottom))) !important; }
 .mn-item {
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   cursor: pointer; padding: 6px 4px; border-radius: 10px;
@@ -1371,7 +1440,7 @@ body.pwa .page { padding-bottom: calc(60px + max(4px, env(safe-area-inset-bottom
 
 @media(max-width:768px) {
   /* Pages — padding-top adapté au mobile */
-  .page { padding-bottom: 20px; min-height: 100vh; padding-top: 44px !important; }
+  .page:not(#page-network) { padding-bottom: 20px; min-height: 100vh; padding-top: 44px !important; }
   body.logo-bar-visible .page { padding-top: calc(50px + max(20px, env(safe-area-inset-top))) !important; }
   .agenda-page,
   .profile-page,
@@ -2312,8 +2381,16 @@ body.pwa .page { padding-bottom: calc(60px + max(4px, env(safe-area-inset-bottom
 @media(max-width:768px) { body #bottom-nav { display: flex !important; } }
 body.pwa #bottom-nav { display: flex !important; height: 87px; }
 body.hide-bottomnav #bottom-nav { display: none !important; }
-body.pwa #bottom-nav .mn-item { padding-top: 24px; }
+body.pwa /* Conversation : bottom ajusté pour la bottom nav */
+@media(max-width:768px) {
+  body.has-bottomnav #msg-conversation { bottom: 62px !important; }
+}
+body.pwa #msg-conversation { bottom: 87px !important; }
+#msg-input-bar { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+
+#bottom-nav .mn-item { padding-top: 24px; }
 body.pwa #bottom-nav .mn-item.mn-center { padding-top: 16px; }
+
 #bottom-nav .mn-item {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
   cursor: pointer; padding: 6px 4px; border-radius: 10px;
@@ -2345,7 +2422,7 @@ body.pwa #bottom-nav .mn-item.mn-center { padding-top: 16px; }
 .mn-center.active .mn-center-ico { box-shadow: 0 4px 24px rgba(0,245,155,0.55); }
 .mn-center .mn-lbl { color: var(--green); }
 /* Quand bottom nav visible : padding bas des pages + cacher hamburger */
-body.has-bottomnav .page { padding-bottom: calc(72px + env(safe-area-inset-bottom)) !important; }
+body.has-bottomnav .page:not(#page-network) { padding-bottom: calc(72px + env(safe-area-inset-bottom)) !important; }
 body.has-bottomnav #hamburger-btn { display: none !important; }
 @media(min-width:769px) { body.has-bottomnav #hamburger-btn { display: flex !important; } }
 body.has-bottomnav #nav-login-btn { display: none !important; }
@@ -4065,60 +4142,133 @@ if (isPWA) {
         <div class="dot"></div>
         <span id="map-fs-count">0 artistes</span>
       </div>
-      <button onclick="closeMapFullscreen()" id="btn-map-fs-close" style="position:fixed;top:calc(56px + env(safe-area-inset-top));right:16px;z-index:10002;width:38px;height:38px;border-radius:10px;background:rgba(8,8,16,0.88);backdrop-filter:blur(8px);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">✕</button>
+      <button onclick="closeMapFullscreen()" id="btn-map-fs-close" style="position:fixed;top:calc(44px + env(safe-area-inset-top) + 15px);right:16px;z-index:10002;width:38px;height:38px;border-radius:10px;background:rgba(8,8,16,0.92);backdrop-filter:blur(12px);border:1.5px solid rgba(0,245,155,0.4);color:var(--green);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;box-shadow:0 4px 16px rgba(0,0,0,0.4);">✕</button>
     </div>
 
-    <!-- LISTE -->
-    <div class="network-list-wrap">
+    <!-- LISTE (desktop uniquement) -->
+    <div class="network-list-wrap" id="network-list-desktop">
       <div class="network-list-header">
         <input class="search-input" type="text" id="search-input" placeholder="🔍 Nom, style, ville..." oninput="filtrerDanseurs()">
-
         <div class="filter-row" id="filter-row" style="margin-bottom:6px;">
           <button class="style-fchip on" onclick="setFiltre('tous',this)">Tous</button>
           <button class="style-fchip" onclick="setFiltre('enligne',this)"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00f59b;box-shadow:0 0 6px #00f59b;margin-right:5px;flex-shrink:0;"></span>En ligne</button>
           <button class="style-fchip" onclick="setFiltre('compatible',this)">⚡ Compatible</button>
         </div>
-
         <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;">
           <input id="filtre-zone" type="text" list="villes-datalist" placeholder="📍 Filtrer par ville..." oninput="filtrerDanseurs()" autocomplete="off" style="flex:1;padding:7px 12px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);color:var(--muted2);font-size:12px;font-family:'Syne',sans-serif;font-weight:700;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
-          <button onclick="resetFiltres()" style="height:34px;padding:0 12px;border-radius:8px;background:none;border:1.5px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;white-space:nowrap;transition:all 0.2s;flex-shrink:0;" onmouseover="this.style.borderColor='rgba(255,77,109,0.4)';this.style.color='var(--red)';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)';">
-            ✕ Reset
-          </button>
+          <button onclick="resetFiltres()" style="height:34px;padding:0 12px;border-radius:8px;background:none;border:1.5px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;white-space:nowrap;transition:all 0.2s;flex-shrink:0;" onmouseover="this.style.borderColor='rgba(255,77,109,0.4)';this.style.color='var(--red)';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)';">✕ Reset</button>
         </div>
-
-        <div style="margin-bottom:4px;">
-          <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:5px;">Style de danse</div>
-          <div style="display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;" id="style-filter-row">
-            <button class="style-fchip" onclick="setStyleFiltre('Salsa',this)">Salsa</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Kizomba',this)">Kizomba</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Hip-Hop',this)">Hip-Hop</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Bachata',this)">Bachata</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Breakdance',this)">Breakdance</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Afro',this)">Afro</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Zouk',this)">Zouk</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Dancehall',this)">Dancehall</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Popping',this)">Popping</button>
-            <button class="style-fchip" onclick="setStyleFiltre('House',this)">House</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Litefeet',this)">Litefeet</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Krump',this)">Krump</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Voguing',this)">Voguing</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Locking',this)">Locking</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Heels',this)">Heels</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Classique',this)">Classique</button>
-            <button class="style-fchip" onclick="setStyleFiltre('Tango',this)">Tango</button>
+        <div style="position:relative;margin-bottom:4px;">
+          <button onclick="toggleStyleDropdown()" id="style-dropdown-btn" style="width:100%;padding:8px 12px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);color:var(--muted2);font-size:12px;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.2s;">
+            <span id="style-dropdown-label">💃 Style de danse</span>
+            <svg id="style-dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div id="style-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:50;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;flex-wrap:wrap;gap:5px;max-height:160px;overflow-y:auto;scrollbar-width:none;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+            <div id="style-filter-row" style="display:contents;">
+              <button class="style-fchip" onclick="setStyleFiltre('Salsa',this);majStyleLabel()">Salsa</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Kizomba',this);majStyleLabel()">Kizomba</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Hip-Hop',this);majStyleLabel()">Hip-Hop</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Bachata',this);majStyleLabel()">Bachata</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Breakdance',this);majStyleLabel()">Breakdance</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Afro',this);majStyleLabel()">Afro</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Zouk',this);majStyleLabel()">Zouk</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Dancehall',this);majStyleLabel()">Dancehall</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Popping',this);majStyleLabel()">Popping</button>
+              <button class="style-fchip" onclick="setStyleFiltre('House',this);majStyleLabel()">House</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Litefeet',this);majStyleLabel()">Litefeet</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Krump',this);majStyleLabel()">Krump</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Voguing',this);majStyleLabel()">Voguing</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Locking',this);majStyleLabel()">Locking</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Heels',this);majStyleLabel()">Heels</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Classique',this);majStyleLabel()">Classique</button>
+              <button class="style-fchip" onclick="setStyleFiltre('Tango',this);majStyleLabel()">Tango</button>
+            </div>
           </div>
         </div>
-
       </div>
       <div class="dancer-list" id="dancer-list">
-        <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">
-          ⏳ Chargement des danseurs...
-        </div>
+        <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">⏳ Chargement des danseurs...</div>
       </div>
     </div>
 
   </div>
 </div>
+
+<!-- DRAWER MOBILE RÉSEAU (hors page) -->
+<div id="network-mobile-drawer" style="display:none;">
+
+  <!-- Overlay sombre -->
+  <div id="network-drawer-overlay" onclick="fermerDrawerReseau()" style="position:fixed;inset:0;z-index:800;background:rgba(0,0,0,0.5);"></div>
+
+  <!-- Drawer -->
+  <div id="network-drawer-panel" style="position:fixed;left:0;right:0;bottom:0;z-index:801;background:var(--bg);border-radius:24px 24px 0 0;border-top:1px solid var(--border);transform:translateY(100%);transition:transform 0.32s cubic-bezier(0.32,0.72,0,1);max-height:calc(85vh - 15px);display:flex;flex-direction:column;">
+
+    <!-- Handle + barre de recherche -->
+    <div style="padding:10px 16px 0;flex-shrink:0;">
+      <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);margin:0 auto 12px;"></div>
+      <div style="display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:0 12px;height:42px;margin-bottom:12px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--muted2);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input-mobile" placeholder="Nom, style, ville..." oninput="syncSearchMobile(this.value)" autocomplete="off" style="flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;">
+        <button onclick="syncSearchMobile('');document.getElementById('search-input-mobile').value=''" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0;display:flex;align-items:center;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtres -->
+    <div style="padding:0 16px 8px;flex-shrink:0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;" id="filter-row-mobile">
+        <button class="style-fchip on" onclick="setFiltre('tous',this);syncFiltresMobile()">Tous</button>
+        <button class="style-fchip" onclick="setFiltre('enligne',this);syncFiltresMobile()"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00f59b;box-shadow:0 0 6px #00f59b;margin-right:5px;"></span>En ligne</button>
+        <button class="style-fchip" onclick="setFiltre('compatible',this);syncFiltresMobile()">⚡ Compatible</button>
+      </div>
+      <input id="filtre-zone-mobile" type="text" list="villes-datalist" placeholder="📍 Ville..." oninput="syncVilleMobile(this.value)" autocomplete="off" style="width:100%;box-sizing:border-box;padding:7px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:8px;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
+      <!-- Dropdown styles mobile -->
+      <div style="position:relative;" id="style-filter-row-mobile">
+        <button onclick="toggleStyleDropdownMobile()" id="style-dropdown-btn-mobile" style="width:100%;padding:7px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--muted2);font-size:13px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.2s;">
+          <span id="style-dropdown-label-mobile">💃 Style de danse</span>
+          <svg id="style-dropdown-arrow-mobile" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div id="style-dropdown-menu-mobile" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;z-index:50;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;flex-wrap:wrap;gap:5px;max-height:180px;overflow-y:auto;scrollbar-width:none;box-shadow:0 -8px 24px rgba(0,0,0,0.4);">
+          <button class="style-fchip" onclick="setStyleFiltre('Salsa',this);filtrerDanseurs();majStyleLabelMobile()">Salsa</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Kizomba',this);filtrerDanseurs();majStyleLabelMobile()">Kizomba</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Hip-Hop',this);filtrerDanseurs();majStyleLabelMobile()">Hip-Hop</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Bachata',this);filtrerDanseurs();majStyleLabelMobile()">Bachata</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Breakdance',this);filtrerDanseurs();majStyleLabelMobile()">Breakdance</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Afro',this);filtrerDanseurs();majStyleLabelMobile()">Afro</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Zouk',this);filtrerDanseurs();majStyleLabelMobile()">Zouk</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Dancehall',this);filtrerDanseurs();majStyleLabelMobile()">Dancehall</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Popping',this);filtrerDanseurs();majStyleLabelMobile()">Popping</button>
+          <button class="style-fchip" onclick="setStyleFiltre('House',this);filtrerDanseurs();majStyleLabelMobile()">House</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Litefeet',this);filtrerDanseurs();majStyleLabelMobile()">Litefeet</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Krump',this);filtrerDanseurs();majStyleLabelMobile()">Krump</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Voguing',this);filtrerDanseurs();majStyleLabelMobile()">Voguing</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Locking',this);filtrerDanseurs();majStyleLabelMobile()">Locking</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Heels',this);filtrerDanseurs();majStyleLabelMobile()">Heels</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Classique',this);filtrerDanseurs();majStyleLabelMobile()">Classique</button>
+          <button class="style-fchip" onclick="setStyleFiltre('Tango',this);filtrerDanseurs();majStyleLabelMobile()">Tango</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liste artistes -->
+    <div id="dancer-list-mobile" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 12px 16px;">
+      <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
+    </div>
+  </div>
+</div>
+
+<!-- BARRE COMPACTE MOBILE (fixe au-dessus de la nav) -->
+<div id="network-mobile-bar" style="display:none;position:fixed;left:12px;right:12px;z-index:500;bottom:calc(62px + env(safe-area-inset-bottom) + 8px);">
+  <button onclick="ouvrirDrawerReseau()" style="width:100%;height:48px;border-radius:16px;background:rgba(8,8,16,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,0.12);display:flex;align-items:center;gap:10px;padding:0 16px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.4);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--muted2);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <span id="network-bar-label" style="flex:1;text-align:left;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--muted2);">Rechercher un artiste...</span>
+    <div id="network-bar-dot" style="display:none;width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+  </button>
+</div>  </div>
+</div>
+
 
 <!-- ═══ PAGE: AGENDA ═══ -->
 <div class="page" id="page-agenda">
@@ -4292,7 +4442,7 @@ if (isPWA) {
     </div>
 
     <!-- Fenêtre de conversation -->
-    <div id="msg-conversation" style="display:none;position:fixed;inset:0;z-index:300;background:var(--bg);padding-top:max(70px, calc(50px + env(safe-area-inset-top)));display:none;flex-direction:column;">
+    <div id="msg-conversation" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:var(--bg);padding-top:max(70px, calc(50px + env(safe-area-inset-top)));display:none;flex-direction:column;">
 
       <!-- Header conversation -->
       <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;">
@@ -4317,7 +4467,7 @@ if (isPWA) {
       </div>
 
       <!-- Input zone -->
-      <div style="padding:10px 12px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg);padding-bottom:max(10px, env(safe-area-inset-bottom));">
+      <div style="padding:10px 12px;border-top:1px solid var(--border);flex-shrink:0;background:var(--bg);" id="msg-input-bar">
 
         <!-- Waveform enregistrement -->
         <div id="waveform-zone" style="display:none;align-items:center;gap:12px;padding:8px 4px;margin-bottom:8px;">
@@ -4328,6 +4478,9 @@ if (isPWA) {
           <canvas id="waveform-canvas" style="flex:1;height:40px;border-radius:8px;background:rgba(255,77,109,0.06);"></canvas>
           <button onclick="annulerEnregistrement()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <button onclick="arreterEnregistrement()" style="width:32px;height:32px;border-radius:50%;background:var(--green);border:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#080810" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
           </button>
         </div>
 
@@ -4606,8 +4759,8 @@ if (isPWA) {
   <div class="profile-page">
 
     <!-- ── SOUS-PAGE: ÉDITION PROFIL ── -->
-    <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:0;">
-      <div style="max-width:600px;margin:0 auto;padding:calc(50px + max(10px, env(safe-area-inset-top)) + 5px) 20px 100px;">
+    <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:scroll;-webkit-overflow-scrolling:touch;">
+      <div style="max-width:600px;margin:0 auto;padding:calc(50px + max(10px, env(safe-area-inset-top)) + 5px) 20px 120px;">
 
         <!-- Header sous-page -->
         <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
@@ -4843,6 +4996,7 @@ if (isPWA) {
             <button class="style-tag" onclick="toggleGenre(this)">Trap</button>
             <button class="style-tag" onclick="toggleGenre(this)">Zouk</button>
           </div>
+          <button onclick="toggleStylesGrid('edit-genres-grid', this)" style="margin-top:8px;background:none;border:none;color:var(--green);font-size:11px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;padding:0;letter-spacing:0.5px;">+ Voir tous les genres</button>
         </div>
         <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:24px;">
           <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:16px;">Affichage du nom</div>
@@ -5184,6 +5338,11 @@ function showPage(id, isBack = false) {
     if (pageHistory.length > 15) pageHistory.shift();
   }
   currentPage = id;
+
+  // Barre mobile réseau
+  const _bar = document.getElementById('network-mobile-bar');
+  if (_bar) _bar.style.display = (id === 'network' && window.innerWidth <= 768) ? 'block' : 'none';
+
   // Pages à ne pas persister (auth, modales, etc.)
   const _noSave = ['home','auth','privacy','cgu','mentions'];
   if (!_noSave.includes(id)) localStorage.setItem('hako_last_page', id);
@@ -5328,8 +5487,9 @@ function switchTab(btn, tabId) {
 
 // ── Ouvrir / fermer sous-page édition ──
 function ouvrirEdition() {
-  document.getElementById('edit-profile-page').style.display = 'block';
-  window.scrollTo(0,0);
+  const page = document.getElementById('edit-profile-page');
+  page.style.display = 'block';
+  page.scrollTop = 0;
   document.querySelectorAll('.drawer-item').forEach(i => i.classList.remove('active'));
   const btn = document.getElementById('di-edit-profile');
   if (btn) btn.classList.add('active');
@@ -7757,6 +7917,10 @@ async function ouvrirConversation(uid, nom, photo) {
   document.getElementById('conv-name').textContent = nom;
 
   const convEl = document.getElementById('msg-conversation');
+  // Positionner au-dessus de la bottom nav
+  const bnav = document.getElementById('bottom-nav');
+  const bnavH = bnav ? bnav.offsetHeight : 0;
+  convEl.style.bottom = bnavH + 'px';
   convEl.style.display = 'flex';
 
   // Charger les messages
@@ -8283,16 +8447,24 @@ async function ajouterMarqueur(danseur, uid) {
 
   const nom = danseur.nomAffiche || danseur.nom || danseur.pseudo || 'Artiste';
   const styles = normaliserStyles(danseur.styles).slice(0, 3);
-  const estPublic = danseur.visibilite === 'public';
-  const emoji = estPublic ? '💃' : '🕺';
 
-  // Icône custom
+  // Couleur dérivée de l'UID — toujours la même pour le même utilisateur
+  const MARKER_COLORS = ['#00f59b','#4f9fff','#9b4fff','#ff2d5e','#e8ff00'];
+  const uidHash = uid.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const couleur = MARKER_COLORS[uidHash % MARKER_COLORS.length];
+
+  // Icône custom — background-image pour remplir tout le cadre sans débordement
+  const bgStyle = danseur.photo
+    ? `background-image:url('${danseur.photo}');background-size:cover;background-position:center;`
+    : '';
+  const fallback = danseur.photo ? '' : `<span class="hako-marker-fallback">${(nom[0] || '?').toUpperCase()}</span>`;
+
   const icon = L.divIcon({
     className: '',
-    html: `<div class="hako-marker ${estPublic ? 'public' : 'amis'}">${emoji}</div>`,
-    iconSize: [44, 44],
-    iconAnchor: [22, 22],
-    popupAnchor: [0, -26]
+    html: `<div class="hako-marker" style="border-color:${couleur};box-shadow:0 4px 20px ${couleur}44;${bgStyle}">${fallback}</div>`,
+    iconSize: [42, 42],
+    iconAnchor: [21, 21],
+    popupAnchor: [0, -25]
   });
 
   const marker = L.marker([lat, lng], { icon, hakoUid: uid })
@@ -8363,24 +8535,21 @@ function afficherListeDanseurs(danseurs) {
 
   list.innerHTML = danseurs.map(d => {
     const nom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
-    const styles = normaliserStyles(d.styles).slice(0, 2);
+    const style1 = normaliserStyles(d.styles)[0] || '';
     const dotColor = d.visibilite === 'public' ? 'var(--green)' : 'var(--yellow)';
     return `
-      <div class="dancer-card">
-        <div class="dc-avatar" style="background:#0d2b1e;position:relative;cursor:pointer;" onclick="focusDanseur('${d.uid}')">
-          ${d.photo ? `<img src="${d.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;position:absolute;inset:0;">` : '💃'}
-          <div class="dc-dot" style="background:${dotColor}"></div>
+      <div class="dancer-card" onclick="ouvrirProfilArtiste('${d.uid}')" style="padding:10px 12px;cursor:pointer;">
+        <div class="dc-avatar" style="background:#0d2b1e;position:relative;width:38px;height:38px;border-radius:12px;flex-shrink:0;">
+          ${d.photo ? `<img src="${d.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;position:absolute;inset:0;">` : '<span style="font-size:16px;line-height:38px;display:block;text-align:center;">💃</span>'}
+          <div class="dc-dot" style="background:${dotColor};width:8px;height:8px;"></div>
         </div>
-        <div class="dc-info" style="cursor:pointer;" onclick="ouvrirProfilArtiste('${d.uid}')">
-          <div class="dc-name" style="text-decoration:underline;text-decoration-color:rgba(255,255,255,0.2);">${nom}</div>
-          <div class="dc-tags">${styles.map(s => `<span class="dc-tag">${s}</span>`).join('')}</div>
-          <div class="dc-zone">📍 ${d.zone || 'Zone non définie'}</div>
-          ${window._monProfil && d.uid !== window._currentUid ? badgeCompatibilite(calculerCompatibilite(window._monProfil, d)) : ''}
+        <div class="dc-info" style="min-width:0;flex:1;">
+          <div class="dc-name" style="font-size:13px;">${nom}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:1px;">
+            ${style1 ? `<span style="color:var(--muted2);">${style1}</span>${d.zone ? ' · ' : ''}` : ''}${d.zone ? `📍 ${d.zone}` : ''}
+          </div>
         </div>
-        <button onclick="toggleSuivre('${d.uid}')" id="btn-suivre-${d.uid}"
-          style="padding:6px 12px;border-radius:10px;font-size:11px;font-weight:800;font-family:'Syne',sans-serif;border:1.5px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all 0.2s;white-space:nowrap;">
-          + Suivre
-        </button>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
     `;
   }).join('');
@@ -8659,11 +8828,145 @@ function setFiltre(type, btn) {
   filtrerDanseurs();
 }
 
+
+
+// ── Drawer mobile réseau ──
+function ouvrirDrawerReseau() {
+  const drawer = document.getElementById('network-mobile-drawer');
+  const panel = document.getElementById('network-drawer-panel');
+  if (!drawer || !panel) return;
+  drawer.style.display = 'block';
+  requestAnimationFrame(() => { panel.style.transform = 'translateY(0)'; });
+  // Sync liste
+  syncDancerListMobile();
+}
+window.ouvrirDrawerReseau = ouvrirDrawerReseau;
+
+function fermerDrawerReseau() {
+  const panel = document.getElementById('network-drawer-panel');
+  if (!panel) return;
+  panel.style.transform = 'translateY(100%)';
+  setTimeout(() => {
+    const drawer = document.getElementById('network-mobile-drawer');
+    if (drawer) drawer.style.display = 'none';
+  }, 350);
+}
+window.fermerDrawerReseau = fermerDrawerReseau;
+
+function syncSearchMobile(val) {
+  const si = document.getElementById('search-input');
+  if (si) si.value = val;
+  filtrerDanseurs();
+  syncDancerListMobile();
+  majBarreReseau();
+}
+window.syncSearchMobile = syncSearchMobile;
+
+function syncVilleMobile(val) {
+  const fz = document.getElementById('filtre-zone');
+  if (fz) fz.value = val;
+  filtrerDanseurs();
+  syncDancerListMobile();
+  majBarreReseau();
+}
+window.syncVilleMobile = syncVilleMobile;
+
+function syncFiltresMobile() {
+  filtrerDanseurs();
+  syncDancerListMobile();
+  majBarreReseau();
+}
+window.syncFiltresMobile = syncFiltresMobile;
+
+function syncDancerListMobile() {
+  const src = document.getElementById('dancer-list');
+  const dst = document.getElementById('dancer-list-mobile');
+  if (src && dst) dst.innerHTML = src.innerHTML;
+  // Rendre les cartes cliquables dans le drawer
+  if (dst) dst.querySelectorAll('.dancer-card').forEach(c => {
+    c.style.cursor = 'pointer';
+  });
+}
+window.syncDancerListMobile = syncDancerListMobile;
+
+function majBarreReseau() {
+  const dot = document.getElementById('network-bar-dot');
+  const label = document.getElementById('network-bar-label');
+  const search = document.getElementById('search-input-mobile')?.value || '';
+  const ville = document.getElementById('filtre-zone-mobile')?.value || '';
+  const actif = filtresEtatActifs.size > 0 || filtresStyleActifs.size > 0 || search || ville;
+  if (dot) dot.style.display = actif ? 'block' : 'none';
+  if (label) label.textContent = actif ? 'Filtres actifs — voir résultats' : 'Rechercher un artiste...';
+}
+window.majBarreReseau = majBarreReseau;
+
+function toggleStyleDropdownMobile() {
+  const menu = document.getElementById('style-dropdown-menu-mobile');
+  const arrow = document.getElementById('style-dropdown-arrow-mobile');
+  const btn = document.getElementById('style-dropdown-btn-mobile');
+  if (!menu) return;
+  const open = menu.style.display === 'flex';
+  menu.style.display = open ? 'none' : 'flex';
+  if (arrow) arrow.style.transform = open ? '' : 'rotate(180deg)';
+  if (btn) btn.style.borderColor = open ? 'var(--border)' : 'var(--green)';
+}
+window.toggleStyleDropdownMobile = toggleStyleDropdownMobile;
+
+function majStyleLabelMobile() {
+  const label = document.getElementById('style-dropdown-label-mobile');
+  if (!label) return;
+  const actifs = [...filtresStyleActifs];
+  label.textContent = actifs.length === 0 ? '💃 Style de danse' : '💃 ' + actifs.join(', ');
+}
+window.majStyleLabelMobile = majStyleLabelMobile;
+
+// Afficher barre + drawer selon la page
+const _origMajSearchbar = window.majSearchbarReseau;
+window.majSearchbarReseau = function(pageId) {
+  if (_origMajSearchbar) _origMajSearchbar(pageId);
+  const bar = document.getElementById('network-mobile-bar');
+  if (bar) bar.style.display = (pageId === 'network' && window.innerWidth <= 768) ? 'block' : 'none';
+};
+
+// ── Style dropdown réseau ──
+function toggleStyleDropdown() {
+  const menu = document.getElementById('style-dropdown-menu');
+  const arrow = document.getElementById('style-dropdown-arrow');
+  const btn = document.getElementById('style-dropdown-btn');
+  if (!menu) return;
+  const open = menu.style.display === 'flex';
+  menu.style.display = open ? 'none' : 'flex';
+  if (arrow) arrow.style.transform = open ? '' : 'rotate(180deg)';
+  if (btn) btn.style.borderColor = open ? 'var(--border)' : 'var(--green)';
+}
+window.toggleStyleDropdown = toggleStyleDropdown;
+
+function majStyleLabel() {
+  const label = document.getElementById('style-dropdown-label');
+  if (!label) return;
+  const actifs = [...filtresStyleActifs];
+  label.textContent = actifs.length === 0 ? '💃 Style de danse' : '💃 ' + actifs.join(', ');
+}
+window.majStyleLabel = majStyleLabel;
+
+// Fermer dropdown si clic dehors
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('style-dropdown-menu');
+  const btn = document.getElementById('style-dropdown-btn');
+  if (!menu || menu.style.display === 'none') return;
+  if (!menu.contains(e.target) && !btn?.contains(e.target)) {
+    menu.style.display = 'none';
+    const arrow = document.getElementById('style-dropdown-arrow');
+    if (arrow) arrow.style.transform = '';
+    if (btn) btn.style.borderColor = 'var(--border)';
+  }
+});
+
 function resetFiltres() {
   filtresEtatActifs.clear();
   filtresStyleActifs.clear();
-  document.querySelectorAll('#filter-row .style-fchip').forEach((c,i) => c.classList.toggle('on', i===0));
-  document.querySelectorAll('#style-filter-row .style-fchip').forEach(c => c.classList.remove('on'));
+  document.querySelectorAll('#filter-row .style-fchip, #network-filter-menu #filter-row .style-fchip').forEach((c,i) => c.classList.toggle('on', i===0));
+  document.querySelectorAll('#style-filter-row .style-fchip, #style-filter-row-menu .style-fchip').forEach(c => c.classList.remove('on'));
   const zi = document.getElementById('filtre-zone');
   if (zi) zi.value = '';
   const si = document.getElementById('search-input');
@@ -8715,6 +9018,8 @@ function filtrerDanseurs() {
     ? count + ' compatible' + (count > 1 ? 's' : '')
     : count + ' artiste' + (count > 1 ? 's' : '');
   document.getElementById('map-count').textContent = label;
+  // Sync drawer mobile
+  if (window.syncDancerListMobile) syncDancerListMobile();
 }
 
 
@@ -8732,6 +9037,8 @@ function openMapFullscreen() {
   const inner = document.getElementById('map-fullscreen-inner');
   overlay.style.display = 'block';
   document.body.style.overflow = 'hidden';
+  const closeBtn = document.getElementById('btn-map-fs-close');
+  if (closeBtn) closeBtn.style.display = 'flex';
 
   // Sync compteur
   const count = document.getElementById('map-count');
