@@ -7038,11 +7038,12 @@ async function afficherWorkshopsPage() {
     } catch(e) { console.error('Erreur workshops:', e); }
   }
 
-  if (workshops.length === 0) {
-    grid.innerHTML = '<div style="grid-column:1/-1;padding:30px;text-align:center;color:var(--muted);font-size:13px;">Aucun workshop à venir pour le moment</div>';
-    return;
-  }
-  grid.innerHTML = workshops.map(ev => _renderEventCard(ev, false)).join('');
+  _workshopsCache = workshops;
+  _workshopsFiltreActif = 'tous';
+  document.querySelectorAll('#workshops-filters .style-fchip').forEach(b => b.classList.remove('active'));
+  const firstChip = document.querySelector('#workshops-filters .style-fchip');
+  if (firstChip) firstChip.classList.add('active');
+  _afficherWorkshopsFiltres();
 }
 
 // PAGE SALLES
@@ -7147,6 +7148,45 @@ window.filtrerSalles = function(filtre, btn) {
   if (btn) btn.classList.add('active');
   afficherSalles(_sallesCache);
 };
+
+let _workshopsFiltreActif = 'tous';
+let _workshopsCache = [];
+
+window.filtrerWorkshops = function(filtre, btn) {
+  _workshopsFiltreActif = filtre;
+  document.querySelectorAll('#workshops-filters .style-fchip').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  _afficherWorkshopsFiltres();
+};
+
+function _afficherWorkshopsFiltres() {
+  const grid = document.getElementById('workshops-grid');
+  if (!grid) return;
+
+  let liste = [..._workshopsCache];
+
+  if (_workshopsFiltreActif === 'gratuit') {
+    liste = liste.filter(e => e.prix === 0 || !e.prix);
+  } else if (_workshopsFiltreActif === 'payant') {
+    liste = liste.filter(e => e.prix > 0);
+  } else if (_workshopsFiltreActif === 'cette-semaine') {
+    const now = new Date();
+    const finSemaine = new Date(now);
+    finSemaine.setDate(now.getDate() + 7);
+    const finStr = finSemaine.toISOString().split('T')[0];
+    const nowStr = now.toISOString().split('T')[0];
+    liste = liste.filter(e => {
+      const d = e.date || '';
+      return d >= nowStr && d <= finStr;
+    });
+  }
+
+  if (liste.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:30px;text-align:center;color:var(--muted);font-size:13px;">Aucun workshop dans cette catégorie</div>';
+    return;
+  }
+  grid.innerHTML = liste.map(ev => _renderEventCard(ev, false)).join('');
+}
 
 window.ouvrirModalSalle = function(id) {
   const modal = document.getElementById('modal-salle');
@@ -10813,17 +10853,18 @@ window.gainXP = async function(montant, type, labelOverride) {
       </button>
     </div>
 
-    <!-- Filtres -->
-    <div class="salles-filters" id="salles-filters">
-      <button class="style-fchip active" onclick="filtrerSalles('tous',this)">Toutes</button>
-      <button class="style-fchip" onclick="filtrerSalles('dispo',this)">Disponibles</button>
-      <button class="style-fchip" onclick="filtrerSalles('prix-asc',this)">Prix croissant</button>
-      <button class="style-fchip" onclick="filtrerSalles('prix-desc',this)">Prix décroissant</button>
-    </div>
-
     <!-- Section Workshops -->
     <div style="margin-bottom:24px;">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">🎓 Workshops à venir</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">🎓 Workshops à venir</div>
+      </div>
+      <!-- Chips workshops -->
+      <div class="salles-filters" id="workshops-filters" style="margin-bottom:12px;">
+        <button class="style-fchip active" onclick="filtrerWorkshops('tous',this)">Tous</button>
+        <button class="style-fchip" onclick="filtrerWorkshops('gratuit',this)">Gratuits</button>
+        <button class="style-fchip" onclick="filtrerWorkshops('payant',this)">Payants</button>
+        <button class="style-fchip" onclick="filtrerWorkshops('cette-semaine',this)">Cette semaine</button>
+      </div>
       <div id="workshops-grid" class="agenda-grid" style="margin-bottom:0;">
         <div style="grid-column:1/-1;padding:30px;text-align:center;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
       </div>
@@ -10833,7 +10874,16 @@ window.gainXP = async function(montant, type, labelOverride) {
     <div style="border-top:1px solid var(--border);margin:8px 0 24px;"></div>
 
     <!-- Section Studios -->
-    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">🏢 Studios à louer</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">🏢 Studios à louer</div>
+    </div>
+    <!-- Chips studios -->
+    <div class="salles-filters" id="salles-filters" style="margin-bottom:16px;">
+      <button class="style-fchip active" onclick="filtrerSalles('tous',this)">Tous</button>
+      <button class="style-fchip" onclick="filtrerSalles('dispo',this)">Disponibles</button>
+      <button class="style-fchip" onclick="filtrerSalles('prix-asc',this)">Prix croissant</button>
+      <button class="style-fchip" onclick="filtrerSalles('prix-desc',this)">Prix décroissant</button>
+    </div>
 
     <!-- Liste salles -->
     <div id="salles-grid" class="salles-grid">
@@ -10927,7 +10977,7 @@ window.gainXP = async function(montant, type, labelOverride) {
   <button class="mn-item" id="bn-agenda" onclick="showPage('agenda')" aria-label="Agenda">
     <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
   </button>
-  <button class="mn-item" id="bn-salles" onclick="showPage('salles')" aria-label="Salles">
-    <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  <button class="mn-item" id="bn-salles" onclick="showPage('salles')" aria-label="Workshops & Studios">
+    <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
   </button>
 </nav>
