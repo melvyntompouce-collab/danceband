@@ -7236,6 +7236,17 @@ async function chargerEcoles() {
   }
 }
 
+window.switchSection = function(section, btn) {
+  // Chips principale
+  document.querySelectorAll('#section-chips .style-fchip').forEach(b => b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+
+  // Afficher/cacher les sections
+  document.getElementById('section-cours').style.display    = section === 'cours'    ? 'block' : 'none';
+  document.getElementById('section-workshops').style.display = section === 'workshops' ? 'block' : 'none';
+  document.getElementById('section-studios').style.display   = section === 'studios'   ? 'block' : 'none';
+};
+
 window.filtrerEcoles = function(filtre, btn) {
   _ecolesFiltreActif = filtre;
   document.querySelectorAll('#ecoles-filters .style-fchip').forEach(b => b.classList.remove('on'));
@@ -11299,66 +11310,52 @@ window.gainXP = async function(montant, type, labelOverride) {
       <span class="salles-header-title">COURS & STUDIOS</span>
     </div>
 
+    <!-- Chips de sélection principale -->
+    <div class="salles-filters" id="section-chips" style="margin-bottom:24px;">
+      <button class="style-fchip on" onclick="switchSection('cours',this)">🎓 Cours</button>
+      <button class="style-fchip" onclick="switchSection('workshops',this)">🏆 Workshops</button>
+      <button class="style-fchip" onclick="switchSection('studios',this)">🏢 Studios</button>
+    </div>
+
+    <!-- Section Cours (écoles) -->
+    <div id="section-cours">
+      <div class="salles-filters" id="ecoles-filters" style="margin-bottom:16px;">
+        <button class="style-fchip on" onclick="filtrerEcoles('tous',this)">Toutes</button>
+        <button class="style-fchip" onclick="filtrerEcoles('niveau-debutant',this)">Débutant</button>
+        <button class="style-fchip" onclick="filtrerEcoles('niveau-intermediaire',this)">Intermédiaire</button>
+        <button class="style-fchip" onclick="filtrerEcoles('niveau-avance',this)">Avancé</button>
+      </div>
+      <div id="ecoles-grid" class="salles-grid">
+        <div class="salles-empty"><div class="salles-empty-ico">🎓</div><div>Chargement...</div></div>
+      </div>
+    </div>
 
     <!-- Section Workshops -->
-    <div style="margin-bottom:24px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">🎓 Workshops à venir</div>
-      </div>
-      <!-- Chips workshops -->
-      <div class="salles-filters" id="workshops-filters" style="margin-bottom:12px;">
+    <div id="section-workshops" style="display:none;">
+      <div class="salles-filters" id="workshops-filters" style="margin-bottom:16px;">
         <button class="style-fchip on" onclick="filtrerWorkshops('tous',this)">Tous</button>
         <button class="style-fchip" onclick="filtrerWorkshops('gratuit',this)">Gratuits</button>
         <button class="style-fchip" onclick="filtrerWorkshops('payant',this)">Payants</button>
         <button class="style-fchip" onclick="filtrerWorkshops('cette-semaine',this)">Cette semaine</button>
       </div>
-      <div id="workshops-grid" class="agenda-grid" style="margin-bottom:0;">
+      <div id="workshops-grid" class="agenda-grid">
         <div style="grid-column:1/-1;padding:30px;text-align:center;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
       </div>
     </div>
 
-    <!-- Séparateur -->
-    <div style="border-top:1px solid var(--border);margin:8px 0 24px;"></div>
-
     <!-- Section Studios -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">🏢 Studios à louer</div>
-    </div>
-    <!-- Chips studios -->
-    <div class="salles-filters" id="salles-filters" style="margin-bottom:16px;">
-      <button class="style-fchip on" onclick="filtrerSalles('tous',this)">Tous</button>
-      <button class="style-fchip" onclick="filtrerSalles('dispo',this)">Disponibles</button>
-      <button class="style-fchip" onclick="filtrerSalles('prix-asc',this)">Prix croissant</button>
-      <button class="style-fchip" onclick="filtrerSalles('prix-desc',this)">Prix décroissant</button>
-    </div>
-
-    <!-- Liste salles -->
-    <div id="salles-grid" class="salles-grid">
-      <div class="salles-empty">
-        <div class="salles-empty-ico">🏢</div>
-        <div>Chargement des salles...</div>
+    <div id="section-studios" style="display:none;">
+      <div class="salles-filters" id="salles-filters" style="margin-bottom:16px;">
+        <button class="style-fchip on" onclick="filtrerSalles('tous',this)">Tous</button>
+        <button class="style-fchip" onclick="filtrerSalles('dispo',this)">Disponibles</button>
+        <button class="style-fchip" onclick="filtrerSalles('prix-asc',this)">Prix croissant</button>
+        <button class="style-fchip" onclick="filtrerSalles('prix-desc',this)">Prix décroissant</button>
+      </div>
+      <div id="salles-grid" class="salles-grid">
+        <div class="salles-empty"><div class="salles-empty-ico">🏢</div><div>Chargement...</div></div>
       </div>
     </div>
 
-    <!-- Séparateur écoles -->
-    <div style="border-top:1px solid var(--border);margin:8px 0 24px;"></div>
-
-    <!-- Section Écoles -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">🎓 Écoles de danse</div>
-    </div>
-    <div class="salles-filters" id="ecoles-filters" style="margin-bottom:16px;">
-      <button class="style-fchip on" onclick="filtrerEcoles('tous',this)">Toutes</button>
-      <button class="style-fchip" onclick="filtrerEcoles('niveau-debutant',this)">Débutant</button>
-      <button class="style-fchip" onclick="filtrerEcoles('niveau-intermediaire',this)">Intermédiaire</button>
-      <button class="style-fchip" onclick="filtrerEcoles('niveau-avance',this)">Avancé</button>
-    </div>
-    <div id="ecoles-grid" class="salles-grid">
-      <div class="salles-empty">
-        <div class="salles-empty-ico">🎓</div>
-        <div>Chargement des écoles...</div>
-      </div>
-    </div>
   </div>
 </div>
 
