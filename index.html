@@ -8909,13 +8909,33 @@ function syncFiltresMobile() {
 window.syncFiltresMobile = syncFiltresMobile;
 
 function syncDancerListMobile() {
-  const src = document.getElementById('dancer-list');
   const dst = document.getElementById('dancer-list-mobile');
-  if (src && dst) dst.innerHTML = src.innerHTML;
-  // Rendre les cartes cliquables dans le drawer
-  if (dst) dst.querySelectorAll('.dancer-card').forEach(c => {
-    c.style.cursor = 'pointer';
-  });
+  if (!dst) return;
+  // Utiliser directement tousLesDanseurs pour ne pas dépendre du DOM caché
+  const danseurs = tousLesDanseurs || [];
+  if (danseurs.length === 0) {
+    dst.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">Aucun artiste trouvé</div>';
+    return;
+  }
+  dst.innerHTML = danseurs.map(d => {
+    const nom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
+    const style1 = normaliserStyles(d.styles)[0] || '';
+    const dotColor = d.visibilite === 'public' ? 'var(--green)' : 'var(--yellow)';
+    const MARKER_COLORS = ['#00f59b','#4f9fff','#9b4fff','#ff2d5e','#e8ff00'];
+    const uidHash = (d.uid||'').split('').reduce((a,c) => a + c.charCodeAt(0), 0);
+    const couleur = MARKER_COLORS[uidHash % MARKER_COLORS.length];
+    return `<div class="dancer-card" onclick="ouvrirProfilArtiste('${d.uid}')" style="padding:10px 12px;cursor:pointer;">
+      <div style="width:38px;height:38px;border-radius:12px;flex-shrink:0;position:relative;background:#181828;border:2px solid ${couleur};overflow:hidden;">
+        ${d.photo ? `<img src="${d.photo}" style="width:100%;height:100%;object-fit:cover;display:block;">` : `<span style="font-size:16px;line-height:38px;display:block;text-align:center;">${(nom[0]||'?').toUpperCase()}</span>`}
+        <div style="position:absolute;bottom:1px;right:1px;width:8px;height:8px;border-radius:50%;background:${dotColor};border:1.5px solid var(--bg);"></div>
+      </div>
+      <div style="min-width:0;flex:1;">
+        <div style="font-weight:700;font-size:13px;font-family:'Syne',sans-serif;">${nom}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:1px;">${style1 ? `<span style="color:var(--muted2);">${style1}</span>${d.zone ? ' · ' : ''}` : ''}${d.zone ? `📍 ${d.zone}` : ''}</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>`;
+  }).join('');
 }
 window.syncDancerListMobile = syncDancerListMobile;
 
