@@ -5032,265 +5032,6 @@ if (isPWA) {
   <div class="profile-page">
 
     <!-- ── SOUS-PAGE: ÉDITION PROFIL ── -->
-    <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;">
-      <div style="max-width:600px;margin:0 auto;padding:calc(50px + max(10px, env(safe-area-inset-top)) + 5px) 20px calc(120px + env(safe-area-inset-bottom));">
-
-        <!-- Header sous-page -->
-        <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
-          
-          <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;line-height:1;">MODIFIER MON PROFIL</div>
-        </div>
-
-        <!-- PHOTO DE PROFIL -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:20px;">Photo de profil</div>
-
-          <!-- Aperçu photo -->
-          <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
-            <div id="edit-avatar-wrap" style="width:110px;height:110px;border-radius:28px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:48px;overflow:hidden;position:relative;box-shadow:0 8px 32px rgba(0,245,155,0.2);">
-              <span id="edit-avatar-emoji">💃</span>
-              <img id="edit-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">
-            </div>
-
-            <!-- Options photo -->
-            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
-              <button onclick="document.getElementById('photo-galerie').click()" style="padding:10px 18px;border-radius:12px;background:rgba(0,245,155,0.1);border:1px solid var(--green);color:var(--green);font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;">
-                🖼️ Photothèque
-              </button>
-              <button onclick="document.getElementById('photo-camera').click()" style="padding:10px 18px;border-radius:12px;background:rgba(77,159,255,0.1);border:1px solid var(--blue);color:var(--blue);font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;">
-                📸 Prendre une photo
-              </button>
-              <button onclick="supprimerPhoto()" style="padding:10px 18px;border-radius:12px;background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">
-                🗑️ Supprimer
-              </button>
-            </div>
-            <div style="font-size:11px;color:var(--muted);">JPG, PNG — max 2MB</div>
-          </div>
-
-          <!-- Inputs fichiers cachés -->
-          <input type="file" id="photo-galerie" accept="image/*" style="display:none" onchange="previewPhoto(this)">
-          <input type="file" id="photo-camera" accept="image/*" capture="user" style="display:none" onchange="previewPhoto(this)">
-        </div>
-
-        <!-- NOM & BLASE -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:20px;">Nom & Blase</div>
-          <div style="display:flex;flex-direction:column;gap:14px;">
-            <div class="form-group" style="margin:0">
-              <label class="form-label">Nom complet <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
-              <input id="profil-nom" class="form-input" type="text" placeholder="Ex: Sofia Martinez" style="background:var(--bg2)">
-            </div>
-            <div class="form-group" style="margin:0">
-              <label class="form-label">Blase de danseur <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
-              <input id="profil-blase" class="form-input" type="text" placeholder="Ex: La Furia" style="background:var(--bg2)">
-            </div>
-            <div class="form-group" style="margin:0">
-              <label class="form-label">Numéro de téléphone <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
-              <input id="profil-tel" class="form-input" type="tel" placeholder="Ex: +33 6 12 34 56 78" style="background:var(--bg2)">
-              <div style="font-size:11px;color:var(--muted2);margin-top:6px;">Les autres pourront vous envoyer un message directement</div>
-            </div>
-            <div class="form-group" style="margin:0">
-              <label class="form-label">Ville <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
-              <input id="profil-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon, Montpellier..." autocomplete="off" style="background:var(--bg2)">
-              <div style="font-size:11px;color:var(--muted2);margin-top:6px;">Utilisée pour le score de compatibilité et la carte du réseau</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- RÉSEAUX SOCIAUX & LIENS -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:20px;">Réseaux sociaux & liens</div>
-          <div style="display:flex;flex-direction:column;gap:14px;">
-
-            <!-- Instagram -->
-            <div class="form-group" style="margin:0">
-              <label class="form-label">Instagram</label>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div style="padding:10px 14px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);font-size:13px;color:var(--muted2);white-space:nowrap;">@</div>
-                <input id="profil-instagram" class="form-input" type="text" placeholder="votre_pseudo" style="background:var(--bg2);flex:1;">
-              </div>
-            </div>
-
-            <!-- TikTok -->
-            <div class="form-group" style="margin:0">
-              <label class="form-label">TikTok</label>
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div style="padding:10px 14px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);font-size:13px;color:var(--muted2);white-space:nowrap;">@</div>
-                <input id="profil-tiktok" class="form-input" type="text" placeholder="votre_pseudo" style="background:var(--bg2);flex:1;">
-              </div>
-            </div>
-
-            <!-- Lien personnalisé -->
-            <div class="form-group" style="margin:0">
-              <label class="form-label">Lien personnalisé <span style="color:var(--muted);font-weight:400">(portfolio, site...)</span></label>
-              <input id="profil-lien" class="form-input" type="url" placeholder="https://..." style="background:var(--bg2)">
-
-              <!-- Toggle visibilité du lien -->
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:10px 14px;background:var(--bg2);border-radius:12px;">
-                <div>
-                  <div style="font-size:13px;font-weight:600;">Afficher le lien sur mon profil</div>
-                  <div style="font-size:11px;color:var(--muted2);margin-top:2px;">Visible par les visiteurs de votre profil</div>
-                </div>
-                <button id="toggle-lien-btn" onclick="toggleVisibiliteLien()" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background 0.2s;background:var(--green);">
-                  <div id="toggle-lien-dot" style="width:18px;height:18px;border-radius:50%;background:#080810;position:absolute;top:3px;right:3px;transition:transform 0.2s;"></div>
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- PLATEFORMES MUSICALES -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">Plateformes musicales</div>
-          <div style="font-size:12px;color:var(--muted2);margin-bottom:20px;">Renseigne ton lien et active l'affichage sur ton profil</div>
-          <div style="display:flex;flex-direction:column;gap:16px;">
-
-            <!-- Spotify -->
-            <div style="background:var(--bg2);border-radius:14px;padding:14px 16px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                <div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:#1db954;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#1db954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-                  Spotify
-                </div>
-                <button id="toggle-spotify-btn" onclick="togglePlateforme('spotify')" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background 0.2s;background:var(--border);">
-                  <div id="toggle-spotify-dot" style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform 0.2s;"></div>
-                </button>
-              </div>
-              <input id="profil-spotify" class="form-input" type="url" placeholder="https://open.spotify.com/user/..." style="background:var(--bg);font-size:12px;padding:8px 12px;">
-            </div>
-
-            <!-- Apple Music -->
-            <div style="background:var(--bg2);border-radius:14px;padding:14px 16px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                <div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:#fc3c44;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#fc3c44"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.064-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.05-.003-.098-.012-.148-.013H5.944l-.05.002a10.56 10.56 0 0 0-1.562.15 4.998 4.998 0 0 0-1.878.726C1.31 1.633.563 2.634.246 3.943a9.23 9.23 0 0 0-.24 2.19c-.006.08-.006 16.54.001 16.62.029.6.158 1.19.388 1.75.46 1.11 1.26 1.91 2.37 2.37.56.23 1.15.36 1.75.39.08.006 16.54.006 16.62-.001.6-.029 1.19-.158 1.75-.388 1.11-.46 1.91-1.26 2.37-2.37.23-.56.36-1.15.39-1.75.006-.08.006-16.54-.001-16.62zM15.5 8.5l-1.5 8-3-5-3 5-1.5-8H8l1 6 2-4 2 4 1-6h1.5z"/></svg>
-                  Apple Music
-                </div>
-                <button id="toggle-applemusic-btn" onclick="togglePlateforme('applemusic')" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background 0.2s;background:var(--border);">
-                  <div id="toggle-applemusic-dot" style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform 0.2s;"></div>
-                </button>
-              </div>
-              <input id="profil-applemusic" class="form-input" type="url" placeholder="https://music.apple.com/profile/..." style="background:var(--bg);font-size:12px;padding:8px 12px;">
-            </div>
-
-            <!-- Deezer -->
-            <div style="background:var(--bg2);border-radius:14px;padding:14px 16px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                <div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:#a238ff;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#a238ff"><path d="M18.81 11.564H24v2.155h-5.19zm0-3.769H24v2.155h-5.19zm0 7.538H24v2.155h-5.19zm0 3.77H24V21.2h-5.19zM12.404 15.333h5.19v2.155h-5.19zm0 3.77h5.19V21.2h-5.19zm0-11.307h5.19v2.155h-5.19zm0 3.768h5.19v2.155h-5.19zM5.999 19.103h5.19V21.2H6zm0-3.77h5.19v2.155H6zM0 19.103h5.19V21.2H0zm0-3.77h5.19v2.155H0z"/></svg>
-                  Deezer
-                </div>
-                <button id="toggle-deezer-btn" onclick="togglePlateforme('deezer')" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background 0.2s;background:var(--border);">
-                  <div id="toggle-deezer-dot" style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform 0.2s;"></div>
-                </button>
-              </div>
-              <input id="profil-deezer" class="form-input" type="url" placeholder="https://www.deezer.com/profile/..." style="background:var(--bg);font-size:12px;padding:8px 12px;">
-            </div>
-
-            <!-- SoundCloud -->
-            <div style="background:var(--bg2);border-radius:14px;padding:14px 16px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                <div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:#ff5500;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#ff5500"><path d="M1.175 12.225c-.017 0-.033.002-.049.003.03-.204.064-.408.101-.608C1.622 8.54 3.898 6 6.791 6c.768 0 1.506.186 2.162.516.199.099.314.277.314.475v9.652c0 .202-.118.381-.32.474-.066.03-.136.047-.207.047H1.175c-.648 0-1.175-.527-1.175-1.176v-.587c0-.648.527-1.176 1.175-1.176zm2.799-4.95c0-.431.35-.78.78-.78s.78.35.78.78v5.868c0 .431-.35.78-.78.78s-.78-.35-.78-.78V7.275zm2.341-.977c0-.431.35-.781.78-.781s.781.35.781.781v6.845c0 .431-.35.78-.78.78s-.781-.35-.781-.78V6.298zm9.066-1.82C14.126 2.232 12.117.967 9.793.967c-1.29 0-2.483.394-3.474 1.064.316.38.488.862.488 1.38v10.347c0 .17-.023.334-.065.49.204.017.41.026.617.026 3.86 0 6.99-3.13 6.99-6.99 0-.626-.083-1.232-.238-1.809zM22.825 8.21c-.537 0-1.047.143-1.487.394-.154-3.297-2.87-5.937-6.205-5.937-.578 0-1.138.082-1.668.232V17.7c0 .198.16.358.358.358h9.002c1.97 0 3.175-1.594 3.175-3.566V11.76c0-1.96-1.591-3.55-3.175-3.55z"/></svg>
-                  SoundCloud
-                </div>
-                <button id="toggle-soundcloud-btn" onclick="togglePlateforme('soundcloud')" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background 0.2s;background:var(--border);">
-                  <div id="toggle-soundcloud-dot" style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform 0.2s;"></div>
-                </button>
-              </div>
-              <input id="profil-soundcloud" class="form-input" type="url" placeholder="https://soundcloud.com/..." style="background:var(--bg);font-size:12px;padding:8px 12px;">
-            </div>
-
-          </div>
-        </div>
-
-        <!-- STYLES DE DANSE -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:16px;">Styles de danse</div>
-          <div class="styles-grid" id="edit-styles-grid">
-            <button class="style-tag" onclick="toggleStyle(this)">Salsa</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Kizomba</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Hip-Hop</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Bachata</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Breakdance</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Afro</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Zouk</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Dancehall</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Contemporain</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Modern Jazz</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Street Jazz</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Reggaeton</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Waacking</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Popping</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Locking</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Litefeet</button>
-            <button class="style-tag" onclick="toggleStyle(this)">House</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Samba</button>
-            <button class="style-tag" onclick="toggleStyle(this)">New Style</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Krump</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Commercial</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Heels</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Experimental</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Classique</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Electro</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Voguing</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Bharata Natyam</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Claquettes</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Tango</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Danse Orientale</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Pole Dance</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Capoeira</button>
-          </div>
-          <button onclick="toggleStylesGrid('edit-styles-grid', this)" style="margin-top:8px;background:none;border:none;color:var(--green);font-size:11px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;padding:0;letter-spacing:0.5px;">+ Voir tous les styles</button>
-        </div>
-
-        <!-- GENRES MUSICAUX -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">Genres musicaux</div>
-          <div style="font-size:12px;color:var(--muted2);margin-bottom:16px;">Sélectionne les genres que tu écoutes en dansant</div>
-          <div class="styles-grid" id="edit-genres-grid">
-            <button class="style-tag" onclick="toggleGenre(this)">Afrobeat</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Amapiano</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Bachata</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Cumbia</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Dancehall</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Electronic</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Funk</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Hip-Hop</button>
-            <button class="style-tag" onclick="toggleGenre(this)">House</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Jazz</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Kizomba</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Latin</button>
-            <button class="style-tag" onclick="toggleGenre(this)">R&B</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Reggaeton</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Salsa</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Soul</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Trap</button>
-            <button class="style-tag" onclick="toggleGenre(this)">Zouk</button>
-          </div>
-          <button onclick="toggleStylesGrid('edit-genres-grid', this)" style="margin-top:8px;background:none;border:none;color:var(--green);font-size:11px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;padding:0;letter-spacing:0.5px;">+ Voir tous les genres</button>
-        </div>
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:24px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:16px;">Affichage du nom</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button id="show-nom" class="style-tag selected" onclick="toggleAffichage('nom',this)">👤 Nom complet</button>
-            <button id="show-blase" class="style-tag" onclick="toggleAffichage('blase',this)">🎭 Blase</button>
-            <button id="show-les-deux" class="style-tag" onclick="toggleAffichage('les-deux',this)">✨ Les deux</button>
-          </div>
-          <div style="margin-top:12px;padding:12px 14px;background:var(--bg2);border-radius:12px;font-size:13px;color:var(--muted2);">
-            Aperçu : <span id="apercu-nom" style="color:var(--text);font-weight:800;font-size:15px;">Sofia Martinez</span>
-          </div>
-        </div>
-
-        <!-- BOUTON SAUVEGARDER -->
-        <button onclick="sauvegarderIdentite()" id="edit-save-btn" style="width:100%;padding:16px;border-radius:14px;background:var(--green);color:#080810;font-weight:800;font-size:16px;border:none;cursor:pointer;font-family:'Syne',sans-serif;letter-spacing:1px;">
-          SAUVEGARDER →
-        </button>
-        <div id="edit-save-msg" style="display:none;text-align:center;margin-top:12px;font-size:13px;color:var(--green);font-weight:700;">✅ Profil mis à jour !</div>
-
-      </div>
-    </div>
 
     <!-- ── PROFIL PRINCIPAL ── -->
     <div style="margin-top:-10px;display:flex;align-items:center;gap:14px;">
@@ -11394,3 +11135,262 @@ window.gainXP = async function(montant, type, labelOverride) {
     <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
   </button>
 </nav>
+    <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;height:100%;touch-action:pan-y;">
+      <div style="max-width:600px;margin:0 auto;padding:calc(50px + max(10px, env(safe-area-inset-top)) + 5px) 20px calc(120px + env(safe-area-inset-bottom));">
+
+        <!-- Header sous-page -->
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+          
+          <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;line-height:1;">MODIFIER MON PROFIL</div>
+        </div>
+
+        <!-- PHOTO DE PROFIL -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:20px;">Photo de profil</div>
+
+          <!-- Aperçu photo -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+            <div id="edit-avatar-wrap" style="width:110px;height:110px;border-radius:28px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:48px;overflow:hidden;position:relative;box-shadow:0 8px 32px rgba(0,245,155,0.2);">
+              <span id="edit-avatar-emoji">💃</span>
+              <img id="edit-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">
+            </div>
+
+            <!-- Options photo -->
+            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+              <button onclick="document.getElementById('photo-galerie').click()" style="padding:10px 18px;border-radius:12px;background:rgba(0,245,155,0.1);border:1px solid var(--green);color:var(--green);font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;">
+                🖼️ Photothèque
+              </button>
+              <button onclick="document.getElementById('photo-camera').click()" style="padding:10px 18px;border-radius:12px;background:rgba(77,159,255,0.1);border:1px solid var(--blue);color:var(--blue);font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;">
+                📸 Prendre une photo
+              </button>
+              <button onclick="supprimerPhoto()" style="padding:10px 18px;border-radius:12px;background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-weight:700;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">
+                🗑️ Supprimer
+              </button>
+            </div>
+            <div style="font-size:11px;color:var(--muted);">JPG, PNG — max 2MB</div>
+          </div>
+
+          <!-- Inputs fichiers cachés -->
+          <input type="file" id="photo-galerie" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+          <input type="file" id="photo-camera" accept="image/*" capture="user" style="display:none" onchange="previewPhoto(this)">
+        </div>
+
+        <!-- NOM & BLASE -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:20px;">Nom & Blase</div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Nom complet <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+              <input id="profil-nom" class="form-input" type="text" placeholder="Ex: Sofia Martinez" style="background:var(--bg2)">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Blase de danseur <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+              <input id="profil-blase" class="form-input" type="text" placeholder="Ex: La Furia" style="background:var(--bg2)">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Numéro de téléphone <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+              <input id="profil-tel" class="form-input" type="tel" placeholder="Ex: +33 6 12 34 56 78" style="background:var(--bg2)">
+              <div style="font-size:11px;color:var(--muted2);margin-top:6px;">Les autres pourront vous envoyer un message directement</div>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Ville <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+              <input id="profil-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon, Montpellier..." autocomplete="off" style="background:var(--bg2)">
+              <div style="font-size:11px;color:var(--muted2);margin-top:6px;">Utilisée pour le score de compatibilité et la carte du réseau</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RÉSEAUX SOCIAUX & LIENS -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:20px;">Réseaux sociaux & liens</div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+
+            <!-- Instagram -->
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Instagram</label>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="padding:10px 14px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);font-size:13px;color:var(--muted2);white-space:nowrap;">@</div>
+                <input id="profil-instagram" class="form-input" type="text" placeholder="votre_pseudo" style="background:var(--bg2);flex:1;">
+              </div>
+            </div>
+
+            <!-- TikTok -->
+            <div class="form-group" style="margin:0">
+              <label class="form-label">TikTok</label>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="padding:10px 14px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);font-size:13px;color:var(--muted2);white-space:nowrap;">@</div>
+                <input id="profil-tiktok" class="form-input" type="text" placeholder="votre_pseudo" style="background:var(--bg2);flex:1;">
+              </div>
+            </div>
+
+            <!-- Lien personnalisé -->
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Lien personnalisé <span style="color:var(--muted);font-weight:400">(portfolio, site...)</span></label>
+              <input id="profil-lien" class="form-input" type="url" placeholder="https://..." style="background:var(--bg2)">
+
+              <!-- Toggle visibilité du lien -->
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:10px 14px;background:var(--bg2);border-radius:12px;">
+                <div>
+                  <div style="font-size:13px;font-weight:600;">Afficher le lien sur mon profil</div>
+                  <div style="font-size:11px;color:var(--muted2);margin-top:2px;">Visible par les visiteurs de votre profil</div>
+                </div>
+                <button id="toggle-lien-btn" onclick="toggleVisibiliteLien()" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background 0.2s;background:var(--green);">
+                  <div id="toggle-lien-dot" style="width:18px;height:18px;border-radius:50%;background:#080810;position:absolute;top:3px;right:3px;transition:transform 0.2s;"></div>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PLATEFORMES MUSICALES -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">Plateformes musicales</div>
+          <div style="font-size:12px;color:var(--muted2);margin-bottom:20px;">Renseigne ton lien et active l'affichage sur ton profil</div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+
+            <!-- Spotify -->
+            <div style="background:var(--bg2);border-radius:14px;padding:14px 16px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:#1db954;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#1db954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                  Spotify
+                </div>
+                <button id="toggle-spotify-btn" onclick="togglePlateforme('spotify')" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background 0.2s;background:var(--border);">
+                  <div id="toggle-spotify-dot" style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform 0.2s;"></div>
+                </button>
+              </div>
+              <input id="profil-spotify" class="form-input" type="url" placeholder="https://open.spotify.com/user/..." style="background:var(--bg);font-size:12px;padding:8px 12px;">
+            </div>
+
+            <!-- Apple Music -->
+            <div style="background:var(--bg2);border-radius:14px;padding:14px 16px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:#fc3c44;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#fc3c44"><path d="M23.994 6.124a9.23 9.23 0 0 0-.24-2.19c-.317-1.31-1.064-2.31-2.18-3.043a5.022 5.022 0 0 0-1.877-.726 10.496 10.496 0 0 0-1.564-.15c-.05-.003-.098-.012-.148-.013H5.944l-.05.002a10.56 10.56 0 0 0-1.562.15 4.998 4.998 0 0 0-1.878.726C1.31 1.633.563 2.634.246 3.943a9.23 9.23 0 0 0-.24 2.19c-.006.08-.006 16.54.001 16.62.029.6.158 1.19.388 1.75.46 1.11 1.26 1.91 2.37 2.37.56.23 1.15.36 1.75.39.08.006 16.54.006 16.62-.001.6-.029 1.19-.158 1.75-.388 1.11-.46 1.91-1.26 2.37-2.37.23-.56.36-1.15.39-1.75.006-.08.006-16.54-.001-16.62zM15.5 8.5l-1.5 8-3-5-3 5-1.5-8H8l1 6 2-4 2 4 1-6h1.5z"/></svg>
+                  Apple Music
+                </div>
+                <button id="toggle-applemusic-btn" onclick="togglePlateforme('applemusic')" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background 0.2s;background:var(--border);">
+                  <div id="toggle-applemusic-dot" style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform 0.2s;"></div>
+                </button>
+              </div>
+              <input id="profil-applemusic" class="form-input" type="url" placeholder="https://music.apple.com/profile/..." style="background:var(--bg);font-size:12px;padding:8px 12px;">
+            </div>
+
+            <!-- Deezer -->
+            <div style="background:var(--bg2);border-radius:14px;padding:14px 16px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:#a238ff;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#a238ff"><path d="M18.81 11.564H24v2.155h-5.19zm0-3.769H24v2.155h-5.19zm0 7.538H24v2.155h-5.19zm0 3.77H24V21.2h-5.19zM12.404 15.333h5.19v2.155h-5.19zm0 3.77h5.19V21.2h-5.19zm0-11.307h5.19v2.155h-5.19zm0 3.768h5.19v2.155h-5.19zM5.999 19.103h5.19V21.2H6zm0-3.77h5.19v2.155H6zM0 19.103h5.19V21.2H0zm0-3.77h5.19v2.155H0z"/></svg>
+                  Deezer
+                </div>
+                <button id="toggle-deezer-btn" onclick="togglePlateforme('deezer')" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background 0.2s;background:var(--border);">
+                  <div id="toggle-deezer-dot" style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform 0.2s;"></div>
+                </button>
+              </div>
+              <input id="profil-deezer" class="form-input" type="url" placeholder="https://www.deezer.com/profile/..." style="background:var(--bg);font-size:12px;padding:8px 12px;">
+            </div>
+
+            <!-- SoundCloud -->
+            <div style="background:var(--bg2);border-radius:14px;padding:14px 16px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;color:#ff5500;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#ff5500"><path d="M1.175 12.225c-.017 0-.033.002-.049.003.03-.204.064-.408.101-.608C1.622 8.54 3.898 6 6.791 6c.768 0 1.506.186 2.162.516.199.099.314.277.314.475v9.652c0 .202-.118.381-.32.474-.066.03-.136.047-.207.047H1.175c-.648 0-1.175-.527-1.175-1.176v-.587c0-.648.527-1.176 1.175-1.176zm2.799-4.95c0-.431.35-.78.78-.78s.78.35.78.78v5.868c0 .431-.35.78-.78.78s-.78-.35-.78-.78V7.275zm2.341-.977c0-.431.35-.781.78-.781s.781.35.781.781v6.845c0 .431-.35.78-.78.78s-.781-.35-.781-.78V6.298zm9.066-1.82C14.126 2.232 12.117.967 9.793.967c-1.29 0-2.483.394-3.474 1.064.316.38.488.862.488 1.38v10.347c0 .17-.023.334-.065.49.204.017.41.026.617.026 3.86 0 6.99-3.13 6.99-6.99 0-.626-.083-1.232-.238-1.809zM22.825 8.21c-.537 0-1.047.143-1.487.394-.154-3.297-2.87-5.937-6.205-5.937-.578 0-1.138.082-1.668.232V17.7c0 .198.16.358.358.358h9.002c1.97 0 3.175-1.594 3.175-3.566V11.76c0-1.96-1.591-3.55-3.175-3.55z"/></svg>
+                  SoundCloud
+                </div>
+                <button id="toggle-soundcloud-btn" onclick="togglePlateforme('soundcloud')" style="width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;position:relative;transition:background 0.2s;background:var(--border);">
+                  <div id="toggle-soundcloud-dot" style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:transform 0.2s;"></div>
+                </button>
+              </div>
+              <input id="profil-soundcloud" class="form-input" type="url" placeholder="https://soundcloud.com/..." style="background:var(--bg);font-size:12px;padding:8px 12px;">
+            </div>
+
+          </div>
+        </div>
+
+        <!-- STYLES DE DANSE -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:16px;">Styles de danse</div>
+          <div class="styles-grid" id="edit-styles-grid">
+            <button class="style-tag" onclick="toggleStyle(this)">Salsa</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Kizomba</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Hip-Hop</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Bachata</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Breakdance</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Afro</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Zouk</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Dancehall</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Contemporain</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Modern Jazz</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Street Jazz</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Reggaeton</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Waacking</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Popping</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Locking</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Litefeet</button>
+            <button class="style-tag" onclick="toggleStyle(this)">House</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Samba</button>
+            <button class="style-tag" onclick="toggleStyle(this)">New Style</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Krump</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Commercial</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Heels</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Experimental</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Classique</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Electro</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Voguing</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Bharata Natyam</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Claquettes</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Tango</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Danse Orientale</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Pole Dance</button>
+            <button class="style-tag" onclick="toggleStyle(this)">Capoeira</button>
+          </div>
+          <button onclick="toggleStylesGrid('edit-styles-grid', this)" style="margin-top:8px;background:none;border:none;color:var(--green);font-size:11px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;padding:0;letter-spacing:0.5px;">+ Voir tous les styles</button>
+        </div>
+
+        <!-- GENRES MUSICAUX -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">Genres musicaux</div>
+          <div style="font-size:12px;color:var(--muted2);margin-bottom:16px;">Sélectionne les genres que tu écoutes en dansant</div>
+          <div class="styles-grid" id="edit-genres-grid">
+            <button class="style-tag" onclick="toggleGenre(this)">Afrobeat</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Amapiano</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Bachata</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Cumbia</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Dancehall</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Electronic</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Funk</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Hip-Hop</button>
+            <button class="style-tag" onclick="toggleGenre(this)">House</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Jazz</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Kizomba</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Latin</button>
+            <button class="style-tag" onclick="toggleGenre(this)">R&B</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Reggaeton</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Salsa</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Soul</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Trap</button>
+            <button class="style-tag" onclick="toggleGenre(this)">Zouk</button>
+          </div>
+          <button onclick="toggleStylesGrid('edit-genres-grid', this)" style="margin-top:8px;background:none;border:none;color:var(--green);font-size:11px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;padding:0;letter-spacing:0.5px;">+ Voir tous les genres</button>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:24px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:16px;">Affichage du nom</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button id="show-nom" class="style-tag selected" onclick="toggleAffichage('nom',this)">👤 Nom complet</button>
+            <button id="show-blase" class="style-tag" onclick="toggleAffichage('blase',this)">🎭 Blase</button>
+            <button id="show-les-deux" class="style-tag" onclick="toggleAffichage('les-deux',this)">✨ Les deux</button>
+          </div>
+          <div style="margin-top:12px;padding:12px 14px;background:var(--bg2);border-radius:12px;font-size:13px;color:var(--muted2);">
+            Aperçu : <span id="apercu-nom" style="color:var(--text);font-weight:800;font-size:15px;">Sofia Martinez</span>
+          </div>
+        </div>
+
+        <!-- BOUTON SAUVEGARDER -->
+        <button onclick="sauvegarderIdentite()" id="edit-save-btn" style="width:100%;padding:16px;border-radius:14px;background:var(--green);color:#080810;font-weight:800;font-size:16px;border:none;cursor:pointer;font-family:'Syne',sans-serif;letter-spacing:1px;">
+          SAUVEGARDER →
+        </button>
+        <div id="edit-save-msg" style="display:none;text-align:center;margin-top:12px;font-size:13px;color:var(--green);font-weight:700;">✅ Profil mis à jour !</div>
+
+      </div>
+    </div>
