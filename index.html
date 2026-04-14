@@ -1586,7 +1586,7 @@ body.pwa .page:not(#page-network) { padding-bottom: calc(60px + max(4px, env(saf
 
 /* ── PAGE SALLES ── */
 .salles-page { padding: 0 16px 24px; max-width: 800px; margin: 0 auto; }
-.salles-header { padding: 0 0 16px; margin-top: -14px; }
+.salles-header { padding: 0 0 16px; margin-top: -4px; }
 .salles-header-title { font-family: 'Syne', sans-serif; font-weight: 900; font-size: 20px; letter-spacing: -1px; line-height: 1; }
 .salles-header-sub { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
 
@@ -4369,7 +4369,7 @@ if (isPWA) {
       <div style="display:flex;align-items:center;gap:14px;">
         
         <div>
-          <div class="section-tag" style="margin-bottom:8px;">Événements permanents</div>
+          <div class="section-tag" style="margin-bottom:8px;">Événements éphémères</div>
           <h1 style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;line-height:1;">AGENDA</h1>
         </div>
       </div>
@@ -4378,7 +4378,6 @@ if (isPWA) {
           <button class="agenda-filter on" onclick="setAgendaFiltre('tous',this)">Tous</button>
           <button class="agenda-filter" onclick="setAgendaFiltre('soiree',this)">Soirées</button>
           <button class="agenda-filter" onclick="setAgendaFiltre('battle',this)">Battles</button>
-          <button class="agenda-filter" onclick="setAgendaFiltre('workshop',this)">Workshops</button>
         </div>
       </div>
     </div>
@@ -6708,8 +6707,8 @@ function afficherEvents() {
   maintenant.setHours(0, 0, 0, 0);
 
   let source = agendaFiltre === 'tous'
-    ? tousLesEvents
-    : tousLesEvents.filter(e => e.type === agendaFiltre);
+    ? tousLesEvents.filter(e => e.type !== 'workshop')
+    : tousLesEvents.filter(e => e.type === agendaFiltre && e.type !== 'workshop');
 
   const aVenir = source.filter(e => !_estPasse(e));
   const passes = source.filter(e => _estPasse(e)).reverse();
