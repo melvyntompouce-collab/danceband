@@ -620,12 +620,7 @@ body.pwa #agenda-passes-toggle {
     height:calc(100vh - 118px);
   }
 }
-/* Mobile : empêcher le repositionnement de la bottom nav sur page réseau */
-@media(max-width:768px){
-  body.on-network { min-height:100dvh; }
-}
-
-/* Mobile : carte en haut */
+/* Mobile : carte en haut, liste scrollable en dessous */
 @media(max-width:768px){
   #page-network {
     position:fixed !important;
@@ -5358,10 +5353,6 @@ function showPage(id, isBack = false) {
   // Barre mobile réseau
   const _bar = document.getElementById('network-mobile-bar');
   if (_bar) _bar.style.display = (id === 'network' && window.innerWidth <= 768) ? 'block' : 'none';
-  // Maintenir la hauteur du body pour éviter le saut de la bottom nav
-  if (window.innerWidth <= 768) {
-    document.body.classList.toggle('on-network', id === 'network');
-  }
 
   // Pages à ne pas persister (auth, modales, etc.)
   const _noSave = ['home','auth','privacy','cgu','mentions'];
