@@ -9484,6 +9484,50 @@ function fermerDrawerReseau() {
   }, 350);
 }
 window.fermerDrawerReseau = fermerDrawerReseau;
+// ── Swipe bas pour fermer le drawer réseau ──
+(function() {
+  const panel = document.getElementById('network-drawer-panel');
+  if (!panel) return;
+
+  let startY = 0;
+  let currentY = 0;
+  let dragging = false;
+
+  panel.addEventListener('touchstart', function(e) {
+    // Seulement si le touch commence sur le handle ou la zone haute
+    const touch = e.touches[0];
+    startY = touch.clientY;
+    currentY = touch.clientY;
+    dragging = true;
+    panel.style.transition = 'none';
+  }, { passive: true });
+
+  panel.addEventListener('touchmove', function(e) {
+    if (!dragging) return;
+    const touch = e.touches[0];
+    currentY = touch.clientY;
+    const dy = currentY - startY;
+    if (dy > 0) {
+      panel.style.transform = 'translateY(' + dy + 'px)';
+    }
+  }, { passive: true });
+
+  panel.addEventListener('touchend', function() {
+    if (!dragging) return;
+    dragging = false;
+    const dy = currentY - startY;
+    panel.style.transition = 'transform 0.32s cubic-bezier(0.32,0.72,0,1)';
+    if (dy > 80) {
+      // Swipe suffisant → fermer
+      if (window.fermerDrawerReseau) fermerDrawerReseau();
+    } else {
+      // Pas assez → remettre en place
+      panel.style.transform = 'translateY(0)';
+    }
+  }, { passive: true });
+})();
+
+
 
 function syncSearchMobile(val) {
   const si = document.getElementById('search-input');
