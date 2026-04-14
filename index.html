@@ -619,11 +619,36 @@ body.pwa #agenda-passes-toggle {
     height:calc(100vh - 118px);
   }
 }
-/* Mobile : carte en haut, liste en dessous */
+/* Mobile : carte en haut, liste scrollable en dessous */
 @media(max-width:768px){
-  .network-layout { padding:0; padding-top:calc(44px + env(safe-area-inset-top)); gap:0; }
-  .network-map-wrap { order:1; height:280px; border-radius:0; border:none; border-bottom:2px solid var(--green); }
-  .network-list-wrap { order:2; max-height:none; border-radius:0; border:none; flex:1; }
+  .network-layout {
+    padding:0 16px 16px;
+    padding-top:calc(44px + env(safe-area-inset-top) + 20px);
+    gap:12px;
+    min-height:100vh;
+    flex-direction:column;
+  }
+  .network-map-wrap {
+    order:1;
+    height:240px;
+    border-radius:16px;
+    border:2px solid var(--green);
+    box-shadow:0 0 24px rgba(0,245,155,0.12);
+    flex-shrink:0;
+  }
+  .network-list-wrap {
+    order:2;
+    max-height:calc(100vh - 44px - env(safe-area-inset-top) - 20px - 240px - 12px - 80px);
+    border-radius:16px;
+    border:1px solid var(--border);
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .dancer-list {
+    max-height:calc(100vh - 44px - env(safe-area-inset-top) - 20px - 240px - 12px - 80px - 120px);
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
 }
 
 
