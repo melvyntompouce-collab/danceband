@@ -2936,21 +2936,9 @@ if (isPWA) {
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Ta zone</label>
-          <select id="signup-zone" class="form-select">
-            <option>Angoulême</option>
-            <option>Bordeaux</option>
-            <option>Grenoble</option>
-            <option>Lille</option>
-            <option>Lyon</option>
-            <option>Marseille</option>
-            <option>Nantes</option>
-            <option>Nice</option>
-            <option>Orléans</option>
-            <option>Paris</option>
-            <option>Strasbourg</option>
-            <option>Toulouse</option>
-          </select>
+          <label class="form-label">Ta ville</label>
+          <input id="signup-zone" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon, Montpellier..." autocomplete="off">
+          <datalist id="villes-datalist"></datalist>
         </div>
         <button id="signup-btn" class="form-submit" onclick="inscrire()">Créer mon profil →</button>
       </div>
@@ -4089,13 +4077,7 @@ if (isPWA) {
         </div>
 
         <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;">
-          <select id="filtre-zone" onchange="filtrerDanseurs()" style="-webkit-appearance:none;appearance:none;flex:1;padding:7px 12px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);color:var(--muted2);font-size:12px;font-family:'Syne',sans-serif;font-weight:700;outline:none;cursor:pointer;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
-            <option value="">📍 Toutes les villes</option>
-            <option>Angoulême</option><option>Bordeaux</option><option>Grenoble</option><option>Lille</option>
-            <option>Lyon</option><option>Marseille</option><option>Nantes</option>
-            <option>Nice</option><option>Orléans</option><option>Paris</option>
-            <option>Strasbourg</option><option>Toulouse</option>
-          </select>
+          <input id="filtre-zone" type="text" list="villes-datalist" placeholder="📍 Filtrer par ville..." oninput="filtrerDanseurs()" autocomplete="off" style="flex:1;padding:7px 12px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);color:var(--muted2);font-size:12px;font-family:'Syne',sans-serif;font-weight:700;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
           <button onclick="resetFiltres()" style="height:34px;padding:0 12px;border-radius:8px;background:none;border:1.5px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;white-space:nowrap;transition:all 0.2s;flex-shrink:0;" onmouseover="this.style.borderColor='rgba(255,77,109,0.4)';this.style.color='var(--red)';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)';">
             ✕ Reset
           </button>
@@ -4517,12 +4499,7 @@ if (isPWA) {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div class="form-group" style="margin:0">
             <label class="form-label">Ville</label>
-            <select id="ev-ville" class="form-select">
-              <option>Angoulême</option><option>Bordeaux</option><option>Grenoble</option><option>Lille</option>
-              <option>Lyon</option><option>Marseille</option><option>Nantes</option>
-              <option>Nice</option><option>Orléans</option><option selected>Paris</option>
-              <option>Strasbourg</option><option>Toulouse</option>
-            </select>
+            <input id="ev-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon..." autocomplete="off" style="background:var(--bg2)">
           </div>
           <div class="form-group" style="margin:0">
             <label class="form-label">Prix (€)</label>
@@ -4683,21 +4660,7 @@ if (isPWA) {
             </div>
             <div class="form-group" style="margin:0">
               <label class="form-label">Ville <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
-              <select id="profil-ville" class="form-select" style="background:var(--bg2)">
-                <option value="">— Choisir une ville —</option>
-                <option>Angoulême</option>
-                <option>Bordeaux</option>
-                <option>Grenoble</option>
-                <option>Lille</option>
-                <option>Lyon</option>
-                <option>Marseille</option>
-                <option>Nantes</option>
-                <option>Nice</option>
-                <option>Orléans</option>
-                <option>Paris</option>
-                <option>Strasbourg</option>
-                <option>Toulouse</option>
-              </select>
+              <input id="profil-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon, Montpellier..." autocomplete="off" style="background:var(--bg2)">
               <div style="font-size:11px;color:var(--muted2);margin-top:6px;">Utilisée pour le score de compatibilité et la carte du réseau</div>
             </div>
           </div>
@@ -8192,6 +8155,8 @@ const VILLES_COORDS = {
 
 function initCarte() {
   if (carte) return;
+  // Pré-remplir le datalist avec les villes connues
+  mettreAJourDatalistVilles();
   carte = L.map('leaflet-map', {
     center: [46.8, 2.3],
     zoom: 6,
@@ -8210,18 +8175,48 @@ function initCarte() {
     .addTo(carte);
 }
 
-function coordsVille(zone) {
-  // Cherche la ville dans le nom de zone
+// Cache geocodage pour éviter requêtes répétées
+const _geocodeCache = {};
+
+async function coordsVille(zone) {
+  if (!zone) return [46.8, 2.3];
+  // Cherche d'abord dans le dict statique
   for (const [ville, coords] of Object.entries(VILLES_COORDS)) {
-    if (zone && zone.includes(ville)) return coords;
+    if (zone.includes(ville)) return coords;
   }
-  return [46.8, 2.3]; // France par défaut
+  // Fallback : Nominatim (OpenStreetMap)
+  const key = zone.trim().toLowerCase();
+  if (_geocodeCache[key]) return _geocodeCache[key];
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(zone)}&format=json&limit=1&countrycodes=fr,be,ch`;
+    const res = await fetch(url, { headers: { 'Accept-Language': 'fr' } });
+    const data = await res.json();
+    if (data && data[0]) {
+      const coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+      _geocodeCache[key] = coords;
+      return coords;
+    }
+  } catch(e) { /* silencieux */ }
+  return [46.8, 2.3];
 }
 
-function ajouterMarqueur(danseur, uid) {
+// Remplir le datalist avec les villes connues + les villes des artistes chargés
+function mettreAJourDatalistVilles() {
+  const dl = document.getElementById('villes-datalist');
+  if (!dl) return;
+  const villesConnues = Object.keys(VILLES_COORDS);
+  // Ajouter les villes présentes dans les profils chargés
+  const villesProfils = [...new Set(
+    tousLesDanseurs.map(d => d.zone || '').filter(Boolean)
+  )];
+  const toutes = [...new Set([...villesConnues, ...villesProfils])].sort();
+  dl.innerHTML = toutes.map(v => `<option value="${v}">`).join('');
+}
+
+async function ajouterMarqueur(danseur, uid) {
   if (!carte) return;
 
-  const coords = coordsVille(danseur.zone || '');
+  const coords = await coordsVille(danseur.zone || '');
   // Décalage aléatoire pour éviter superposition + respecter vie privée
   const lat = coords[0] + (Math.random() - 0.5) * 0.04;
   const lng = coords[1] + (Math.random() - 0.5) * 0.04;
@@ -8286,6 +8281,7 @@ async function chargerCarte() {
 
     afficherListeDanseurs(tousLesDanseurs);
     document.getElementById('map-count').textContent = tousLesDanseurs.length + ' artistes';
+    mettreAJourDatalistVilles();
 
   } catch(e) {
     console.error('Erreur chargement carte:', e);
@@ -8632,7 +8628,7 @@ function filtrerDanseurs() {
     filtrés = temp;
   }
 
-  if (zone)            filtrés = filtrés.filter(d => (d.zone || '').toLowerCase() === zone.toLowerCase());
+  if (zone)            filtrés = filtrés.filter(d => (d.zone || '').toLowerCase().includes(zone.toLowerCase()));
   if (filtresStyleActifs.size > 0) filtrés = filtrés.filter(d => normaliserStyles(d.styles).some(s => filtresStyleActifs.has(s)));
 
   if (search) {
@@ -8763,7 +8759,7 @@ window.inscrire = async function() {
   const pseudo   = document.getElementById('signup-pseudo').value.trim();
   const email    = document.getElementById('signup-email').value.trim();
   const password = document.getElementById('signup-password').value;
-  const zone     = document.getElementById('signup-zone').value;
+  const zone     = (document.getElementById('signup-zone').value || '').trim();
   const errDiv   = document.getElementById('signup-error');
   const okDiv    = document.getElementById('signup-success');
   const btn      = document.getElementById('signup-btn');
@@ -9055,11 +9051,7 @@ async function chargerProfil(uid) {
     if (champBlase)       champBlase.value       = d.blase      || '';
     if (champTel)         champTel.value         = d.tel        || '';
     if (champVille) {
-      const v = d.ville || d.zone || '';
-      // Sélectionner l'option correspondante
-      [...champVille.options].forEach(opt => {
-        opt.selected = opt.value === v || opt.text === v;
-      });
+      champVille.value = d.ville || d.zone || '';
     }
     if (champInsta)       champInsta.value       = d.instagram  || '';
     if (champTiktok)      champTiktok.value      = d.tiktok     || '';
