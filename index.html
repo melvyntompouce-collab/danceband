@@ -1642,38 +1642,10 @@ body.pwa .page:not(#page-network) { padding-bottom: calc(60px + max(4px, env(saf
 .salles-empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
 .salles-empty-ico { font-size: 40px; margin-bottom: 12px; }
 
-/* Admin — bouton ajout salle */
-.salle-add-btn {
-  display: flex; align-items: center; gap: 8px;
-  background: rgba(0,245,155,0.08); border: 1px dashed rgba(0,245,155,0.25);
-  border-radius: 14px; padding: 14px 18px;
-  color: var(--green); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px;
-  cursor: pointer; width: 100%; margin-bottom: 16px;
-  transition: background 0.2s;
-}
-.salle-add-btn:hover { background: rgba(0,245,155,0.14); }
-
-/* Modal ajout salle */
-#modal-salle {
-  display: none; position: fixed; inset: 0; z-index: 500;
-  background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
-  align-items: flex-end; justify-content: center;
-}
-#modal-salle.open { display: flex; }
-.modal-salle-inner {
-  background: var(--card2); border-radius: 24px 24px 0 0;
-  width: 100%; max-width: 600px; max-height: 88vh;
-  overflow-y: auto; padding: 24px 20px 40px;
-  border: 1px solid var(--border); border-bottom: none;
-}
-.modal-salle-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; margin-bottom: 20px; }
-
 @media (min-width: 769px) {
   .salles-page { max-width: 1200px !important; }
   .salles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .salles-grid .salle-card { margin-bottom: 0; }
-  #modal-salle { align-items: center; }
-  .modal-salle-inner { border-radius: 24px; border-bottom: 1px solid var(--border); max-height: 80vh; }
 }
 
 /* ── Hover utilitaires (remplace onmouseover inline) ── */
@@ -2833,7 +2805,7 @@ if (isPWA) {
 </div>
 
 <!-- ═══ PAGE: ACCUEIL ═══ -->
-<div class="page" id="page-home">
+<div class="page active" id="page-home">
 
   <!-- Halos d'arrière-plan subtils -->
   <div style="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;">
@@ -5401,7 +5373,7 @@ let currentPage = 'home';
 let _transitionLock = false;
 
 // Ordre des pages pour déterminer la direction gauche/droite
-const PAGE_ORDER = ['home', 'network', 'agenda', 'messages', 'profile', 'ranking', 'bracelet', 'notifs', 'privacy', 'cgu', 'mentions'];
+const PAGE_ORDER = ['home', 'network', 'agenda', 'messages', 'profile', 'ranking', 'salles', 'bracelet', 'notifs', 'privacy', 'cgu', 'mentions'];
 
 // Pages "profondes" — arrivent par le bas (slide up)
 const DEEP_PAGES = ['privacy', 'cgu', 'mentions', 'notifs', 'bracelet'];
@@ -5731,13 +5703,13 @@ function afficherDashboard(d) {
 
   // Forcer la désactivation de toutes les pages puis activer dashboard
   document.querySelectorAll('.page').forEach(p => {
-    p.classList.remove('on');
+    p.classList.remove('active');
     p.style.opacity = '';
     p.style.transform = '';
     p.style.transition = '';
   });
   const dash = document.getElementById('page-dashboard');
-  if (dash) dash.classList.add('on');
+  if (dash) dash.classList.add('active');
 
   // Charger les sections enrichies
   afficherActiviteDashboard();
