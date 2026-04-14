@@ -666,8 +666,11 @@ body.pwa #page-network {
   padding:0 !important;
 }
 body.pwa .network-layout {
-  padding-top:calc(42px + env(safe-area-inset-top) + 10px);
-  padding-bottom:calc(87px + env(safe-area-inset-bottom) + 64px);
+  padding-top:calc(42px + env(safe-area-inset-top) + 10px) !important;
+  padding-bottom:calc(87px + env(safe-area-inset-bottom) + 64px) !important;
+  max-width:100% !important;
+  margin:0 !important;
+  width:100% !important;
 }
 /* Titre réseau : visible sur mobile + PWA, caché sur desktop */
 @media(max-width:768px) { #network-titre-mobile { display:flex !important; } }
@@ -2400,8 +2403,8 @@ body.hide-bottomnav #bottom-nav { display: none !important; }
 body.pwa #msg-conversation { bottom: 87px !important; }
 #msg-input-bar { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
 
-body.pwa #bottom-nav .mn-item { padding-top: 24px; }
-body.pwa #bottom-nav .mn-item.mn-center { padding-top: 16px; }
+body.pwa #bottom-nav .mn-item { padding-top: 10px; }
+body.pwa #bottom-nav .mn-item.mn-center { padding-top: 8px; }
 
 #bottom-nav .mn-item {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
@@ -2410,7 +2413,7 @@ body.pwa #bottom-nav .mn-item.mn-center { padding-top: 16px; }
   transition: color 0.15s, transform 0.15s;
   flex: 1; min-width: 0;
   -webkit-tap-highlight-color: transparent;
-  padding-top: 14px;
+  padding-top: 8px;
 }
 #bottom-nav .mn-item.mn-center { padding-top: 6px; }
 #bottom-nav .mn-item.active { color: var(--green); }
@@ -4778,8 +4781,7 @@ if (isPWA) {
   <div class="profile-page">
 
     <!-- ── SOUS-PAGE: ÉDITION PROFIL ── -->
-    <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);">
-      <div style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+    <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:scroll;-webkit-overflow-scrolling:touch;">
       <div style="max-width:600px;margin:0 auto;padding:calc(50px + max(10px, env(safe-area-inset-top)) + 5px) 20px 120px;">
 
         <!-- Header sous-page -->
@@ -5036,7 +5038,6 @@ if (isPWA) {
         </button>
         <div id="edit-save-msg" style="display:none;text-align:center;margin-top:12px;font-size:13px;color:var(--green);font-weight:700;">✅ Profil mis à jour !</div>
 
-      </div>
       </div>
     </div>
 
@@ -5363,6 +5364,8 @@ function showPage(id, isBack = false) {
   // Barre mobile réseau
   const _bar = document.getElementById('network-mobile-bar');
   if (_bar) _bar.style.display = (id === 'network' && window.innerWidth <= 768) ? 'block' : 'none';
+  // Fermer le drawer réseau si on change de page
+  if (id !== 'network' && window.fermerDrawerReseau) fermerDrawerReseau();
   // Maintenir la hauteur du body pour éviter le saut de la bottom nav
   if (window.innerWidth <= 768) {
     document.body.classList.toggle('on-network', id === 'network');
