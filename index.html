@@ -9517,7 +9517,7 @@ window.fermerDrawerReseau = fermerDrawerReseau;
     dragging = false;
     const dy = currentY - startY;
     panel.style.transition = 'transform 0.32s cubic-bezier(0.32,0.72,0,1)';
-    if (dy > 80) {
+    if (dy > 180) {
       // Swipe suffisant → fermer
       if (window.fermerDrawerReseau) fermerDrawerReseau();
     } else {
