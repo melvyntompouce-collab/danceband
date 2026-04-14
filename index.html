@@ -2758,7 +2758,7 @@ if (isPWA) {
     </button>
     <button class="drawer-item" onclick="showPage('salles');closeDrawer();" id="di-salles">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      Workshops & Studios
+      Cours & Studios
     </button>
     <button class="drawer-item" onclick="closeDrawer();setTimeout(()=>showPage('bracelet'),150);" id="di-bracelet">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="5"/><circle cx="7" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="17" cy="12" r="1.5" fill="currentColor"/></svg>
@@ -4378,6 +4378,7 @@ if (isPWA) {
           <button class="agenda-filter on" onclick="setAgendaFiltre('tous',this)">Tous</button>
           <button class="agenda-filter" onclick="setAgendaFiltre('soiree',this)">Soirées</button>
           <button class="agenda-filter" onclick="setAgendaFiltre('battle',this)">Battles</button>
+          <button class="agenda-filter" onclick="setAgendaFiltre('workshop',this)">Workshops</button>
         </div>
       </div>
     </div>
@@ -4671,7 +4672,8 @@ if (isPWA) {
 
       <!-- Tous les événements -->
       <button onclick="ouvrirFormEvent()" style="width:100%;padding:14px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;margin-bottom:12px;">＋ Créer un événement</button>
-      <button onclick="ouvrirFormSalle()" style="width:100%;padding:14px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;margin-bottom:16px;">🏢 Ajouter une salle à louer</button>
+      <button onclick="ouvrirFormSalle()" style="width:100%;padding:14px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;margin-bottom:16px;">＋ Ajouter une salle à louer</button>
+      <button onclick="ouvrirFormEcole()" style="width:100%;padding:14px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;margin-bottom:16px;">＋ Ajouter une école de danse</button>
       <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Tous les événements</div>
       <div id="admin-events-list" style="margin-bottom:24px;display:flex;flex-direction:column;gap:8px;">
         <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
@@ -4680,6 +4682,12 @@ if (isPWA) {
       <!-- Salles à louer -->
       <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Salles à louer</div>
       <div id="admin-salles-list" style="margin-bottom:24px;display:flex;flex-direction:column;gap:8px;">
+        <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
+      </div>
+
+      <!-- Écoles de danse -->
+      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Écoles de danse</div>
+      <div id="admin-ecoles-list" style="margin-bottom:24px;display:flex;flex-direction:column;gap:8px;">
         <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
       </div>
 
@@ -4895,6 +4903,93 @@ if (isPWA) {
         <div style="display:flex;gap:10px;margin-top:8px;">
           <button onclick="fermerFormSalle()" style="flex:1;padding:14px;border-radius:12px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">Annuler</button>
           <button id="salle-submit-btn" onclick="sauvegarderSalle()" style="flex:2;padding:14px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">Publier la salle →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulaire ajout/modification école (admin) -->
+    <div id="admin-form-ecole" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;" id="admin-form-ecole-title">AJOUTER UNE ÉCOLE</div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+
+        <!-- Infos de base -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Nom de l'école *</label>
+          <input id="ecole-nom" class="form-input" type="text" placeholder="Ex: Studio Kizomba Paris" style="background:var(--bg2)">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Ville *</label>
+            <input id="ecole-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris" autocomplete="off" style="background:var(--bg2)">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Code postal</label>
+            <input id="ecole-cp" class="form-input" type="text" placeholder="Ex: 75010" style="background:var(--bg2)">
+          </div>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Adresse</label>
+          <input id="ecole-adresse" class="form-input" type="text" placeholder="Ex: 12 rue de la Danse, Paris" style="background:var(--bg2)">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Téléphone</label>
+            <input id="ecole-tel" class="form-input" type="tel" placeholder="+33 6 12 34 56 78" style="background:var(--bg2)">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Email</label>
+            <input id="ecole-email" class="form-input" type="email" placeholder="contact@ecole.fr" style="background:var(--bg2)">
+          </div>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Site web / lien de réservation</label>
+          <input id="ecole-lien" class="form-input" type="url" placeholder="https://..." style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Description</label>
+          <textarea id="ecole-desc" class="form-input" rows="3" placeholder="Décrivez l'école, l'ambiance, les enseignants..." style="background:var(--bg2);resize:vertical;min-height:80px;"></textarea>
+        </div>
+
+        <!-- Styles de danse -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Styles enseignés</label>
+          <input id="ecole-styles" class="form-input" type="text" placeholder="Ex: Kizomba, Salsa, Bachata" style="background:var(--bg2)">
+        </div>
+
+        <!-- Niveaux -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Niveaux</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="ecole-niveaux-pick">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Débutant" style="accent-color:var(--green);"> Débutant</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Intermédiaire" style="accent-color:var(--green);"> Intermédiaire</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Avancé" style="accent-color:var(--green);"> Avancé</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Tous niveaux" style="accent-color:var(--green);"> Tous niveaux</label>
+          </div>
+        </div>
+
+        <!-- Horaires -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Horaires des cours</label>
+          <div id="ecole-horaires-list" style="display:flex;flex-direction:column;gap:8px;margin-top:6px;"></div>
+          <button type="button" onclick="ajouterHoraire()" style="margin-top:8px;padding:8px 14px;border-radius:10px;background:rgba(0,245,155,0.08);border:1px dashed rgba(0,245,155,0.3);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;">＋ Ajouter un horaire</button>
+        </div>
+
+        <!-- Abonnements (jusqu'à 10) -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Abonnements / Tarifs</label>
+          <div id="ecole-abos-list" style="display:flex;flex-direction:column;gap:8px;margin-top:6px;"></div>
+          <button type="button" onclick="ajouterAbonnement()" style="margin-top:8px;padding:8px 14px;border-radius:10px;background:rgba(0,245,155,0.08);border:1px dashed rgba(0,245,155,0.3);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;">＋ Ajouter un abonnement</button>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Maximum 10 abonnements</div>
+        </div>
+
+        <input type="hidden" id="ecole-edit-id">
+
+        <div id="admin-form-ecole-err" style="display:none;background:rgba(255,77,109,0.1);border:1px solid var(--red);border-radius:10px;padding:12px;font-size:13px;color:var(--red);"></div>
+
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button onclick="fermerFormEcole()" style="flex:1;padding:14px;border-radius:12px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">Annuler</button>
+          <button id="ecole-submit-btn" onclick="sauvegarderEcole()" style="flex:2;padding:14px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">Publier l'école →</button>
         </div>
       </div>
     </div>
@@ -6613,8 +6708,8 @@ function afficherEvents() {
   maintenant.setHours(0, 0, 0, 0);
 
   let source = agendaFiltre === 'tous'
-    ? tousLesEvents.filter(e => e.type !== 'workshop')
-    : tousLesEvents.filter(e => e.type === agendaFiltre && e.type !== 'workshop');
+    ? tousLesEvents
+    : tousLesEvents.filter(e => e.type === agendaFiltre);
 
   const aVenir = source.filter(e => !_estPasse(e));
   const passes = source.filter(e => _estPasse(e)).reverse();
@@ -7115,6 +7210,93 @@ async function chargerSalles() {
     console.error('Erreur salles:', e);
     grid.innerHTML = '<div class="salles-empty"><div class="salles-empty-ico">❌</div><div>Erreur de chargement</div></div>';
   }
+
+  // Charger les écoles
+  chargerEcoles();
+}
+
+let _ecolesCache = [];
+let _ecolesFiltreActif = 'tous';
+
+async function chargerEcoles() {
+  if (!window._db) return;
+  const grid = document.getElementById('ecoles-grid');
+  if (!grid) return;
+  grid.innerHTML = '<div class="salles-empty"><div class="salles-empty-ico">⏳</div><div>Chargement...</div></div>';
+  try {
+    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const snap = await getDocs(collection(window._db, 'ecoles'));
+    _ecolesCache = [];
+    snap.forEach(d => _ecolesCache.push({ id: d.id, ...d.data() }));
+    _ecolesCache.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    afficherEcoles(_ecolesCache);
+  } catch(e) {
+    console.error('Erreur écoles:', e);
+    grid.innerHTML = '<div class="salles-empty"><div class="salles-empty-ico">❌</div><div>Erreur de chargement</div></div>';
+  }
+}
+
+window.filtrerEcoles = function(filtre, btn) {
+  _ecolesFiltreActif = filtre;
+  document.querySelectorAll('#ecoles-filters .style-fchip').forEach(b => b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  afficherEcoles(_ecolesCache);
+};
+
+function afficherEcoles(ecoles) {
+  const grid = document.getElementById('ecoles-grid');
+  if (!grid) return;
+
+  let liste = [...ecoles];
+  if (_ecolesFiltreActif !== 'tous') {
+    const niv = _ecolesFiltreActif.replace('niveau-', '');
+    const map = {'debutant':'Débutant','intermediaire':'Intermédiaire','avance':'Avancé'};
+    const cible = map[niv] || niv;
+    liste = liste.filter(e => (e.niveaux || []).some(n => n.toLowerCase() === cible.toLowerCase()) || (e.niveaux || []).includes('Tous niveaux'));
+  }
+
+  if (liste.length === 0) {
+    grid.innerHTML = '<div class="salles-empty"><div class="salles-empty-ico">🎓</div><div>Aucune école dans cette catégorie</div></div>';
+    return;
+  }
+
+  grid.innerHTML = liste.map(e => {
+    const niveaux = (e.niveaux || []).map(n => `<span class="salle-card-tag">${n}</span>`).join('');
+    const horaires = (e.horaires || []).filter(h => h.jour).map(h =>
+      `<div style="font-size:12px;color:var(--muted2);">${h.jour} · ${h.heure}</div>`
+    ).join('');
+    const abos = (e.abonnements || []).slice(0, 3).map(a =>
+      `<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted2);">${a.nom}</span><span style="color:var(--green);font-weight:700;">${a.prix}€</span></div>`
+    ).join('');
+    const plusAbos = e.abonnements && e.abonnements.length > 3 ? `<div style="font-size:11px;color:var(--muted);margin-top:4px;">+${e.abonnements.length - 3} autres formules</div>` : '';
+
+    const contactHtml = (e.tel || e.email) ? `
+      <a href="${e.tel ? 'tel:' + e.tel.replace(/\s/g,'') : 'mailto:' + e.email}" class="salle-card-contact">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.8 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.1a16 16 0 0 0 6 6l1.09-1.08a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.9 15l.02 1.92z"/></svg>
+        Contacter
+      </a>` : '';
+
+    const siteHtml = e.lien ? `<a href="${e.lien}" target="_blank" rel="noopener" class="salle-card-contact" style="margin-top:6px;text-decoration:none;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Voir le site ↗
+      </a>` : '';
+
+    return `<div class="salle-card">
+      <div class="salle-card-top">
+        <div>
+          <div class="salle-card-name">${e.nom || 'Sans nom'}</div>
+          <div class="salle-card-city">${e.ville || ''}${e.adresse ? ' · ' + e.adresse : ''}</div>
+        </div>
+      </div>
+      ${e.styles ? `<div style="font-size:12px;color:var(--muted2);margin-bottom:8px;">💃 ${e.styles}</div>` : ''}
+      <div class="salle-card-tags" style="margin-bottom:10px;">${niveaux}</div>
+      ${horaires ? `<div style="margin-bottom:10px;">${horaires}</div>` : ''}
+      ${e.description ? `<div class="salle-card-desc">${e.description}</div>` : ''}
+      ${abos ? `<div style="margin-bottom:10px;">${abos}${plusAbos}</div>` : ''}
+      ${contactHtml}
+      ${siteHtml}
+    </div>`;
+  }).join('');
 }
 
 function afficherSalles(salles) {
@@ -7355,17 +7537,19 @@ async function chargerDashboardAdmin() {
       'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
     );
 
-    const [usersSnap, eventsSnap, codesSnap, sallesSnap] = await Promise.all([
+    const [usersSnap, eventsSnap, codesSnap, sallesSnap, ecolesSnap] = await Promise.all([
       getDocs(collection(window._db, 'danseurs')),
       getDocs(collection(window._db, 'evenements')),
       getDocs(collection(window._db, 'inviteCodes')),
-      getDocs(collection(window._db, 'salles'))
+      getDocs(collection(window._db, 'salles')),
+      getDocs(collection(window._db, 'ecoles'))
     ]);
 
     const users  = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
     const events = eventsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
     const codes  = codesSnap.docs.map(d => d.data());
     const salles = sallesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const ecoles = ecolesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
     const totalInscrits = events.reduce((s, e) => s + (e.inscrits || 0), 0);
     const codesUsed     = codes.filter(c => c.usedBy).length;
@@ -7390,6 +7574,27 @@ async function chargerDashboardAdmin() {
             <div style="display:flex;gap:6px;">
               <button onclick="ouvrirFormSalle('${s.id}')" style="padding:6px 12px;border-radius:8px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap;">Modifier</button>
               <button onclick="supprimerSalle('${s.id}')" style="padding:6px 12px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap;">Supprimer</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Liste écoles
+    const ecolesList = document.getElementById('admin-ecoles-list');
+    if (ecolesList) {
+      if (ecoles.length === 0) {
+        ecolesList.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">Aucune école publiée</div>';
+      } else {
+        ecolesList.innerHTML = ecoles.map(e => `
+          <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;gap:12px;">
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.nom || 'Sans nom'}</div>
+              <div style="font-size:11px;color:var(--muted2);margin-top:2px;">${e.ville || ''} · ${(e.niveaux || []).join(', ') || 'Niveaux non renseignés'}</div>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <button onclick="ouvrirFormEcole('${e.id}')" style="padding:6px 12px;border-radius:8px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap;">Modifier</button>
+              <button onclick="supprimerEcole('${e.id}')" style="padding:6px 12px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap;">Supprimer</button>
             </div>
           </div>
         `).join('');
@@ -7765,6 +7970,181 @@ window.supprimerSalle = async function(id) {
     console.error('Erreur suppression salle:', e);
   }
 };
+
+// ── Formulaire école (admin) ──
+
+let _horaireCount = 0;
+let _aboCount = 0;
+
+window.ajouterHoraire = function() {
+  const list = document.getElementById('ecole-horaires-list');
+  if (!list) return;
+  const id = 'horaire-' + _horaireCount++;
+  const div = document.createElement('div');
+  div.id = id;
+  div.style.cssText = 'display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;';
+  div.innerHTML = `
+    <select class="form-select ecole-horaire-jour" style="background:var(--bg2);font-size:13px;padding:10px;">
+      <option value="">Jour</option>
+      <option>Lundi</option><option>Mardi</option><option>Mercredi</option>
+      <option>Jeudi</option><option>Vendredi</option><option>Samedi</option><option>Dimanche</option>
+    </select>
+    <input type="text" class="form-input ecole-horaire-heure" placeholder="Ex: 19h00 - 20h30" style="background:var(--bg2);font-size:13px;padding:10px;">
+    <button type="button" onclick="document.getElementById('${id}').remove()" style="padding:8px 10px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);cursor:pointer;font-size:14px;font-weight:700;">✕</button>
+  `;
+  list.appendChild(div);
+};
+
+window.ajouterAbonnement = function() {
+  const list = document.getElementById('ecole-abos-list');
+  if (!list || list.children.length >= 10) return;
+  const id = 'abo-' + _aboCount++;
+  const div = document.createElement('div');
+  div.id = id;
+  div.style.cssText = 'display:grid;grid-template-columns:2fr 1fr auto;gap:8px;align-items:center;';
+  div.innerHTML = `
+    <input type="text" class="form-input ecole-abo-nom" placeholder="Ex: Abonnement mensuel" style="background:var(--bg2);font-size:13px;padding:10px;">
+    <input type="number" class="form-input ecole-abo-prix" placeholder="Prix €" min="0" style="background:var(--bg2);font-size:13px;padding:10px;">
+    <button type="button" onclick="document.getElementById('${id}').remove()" style="padding:8px 10px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);cursor:pointer;font-size:14px;font-weight:700;">✕</button>
+  `;
+  list.appendChild(div);
+};
+
+window.ouvrirFormEcole = function(ecoleId) {
+  document.getElementById('admin-dashboard').style.display = 'none';
+
+  // Reset
+  ['ecole-nom','ecole-ville','ecole-cp','ecole-adresse','ecole-tel','ecole-email','ecole-lien','ecole-desc','ecole-styles'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('ecole-edit-id').value = '';
+  document.getElementById('admin-form-ecole-err').style.display = 'none';
+  document.getElementById('admin-form-ecole-title').textContent = 'AJOUTER UNE ÉCOLE';
+  document.getElementById('ecole-submit-btn').textContent = "Publier l'école →";
+  document.querySelectorAll('#ecole-niveaux-pick input[type=checkbox]').forEach(cb => cb.checked = false);
+  document.getElementById('ecole-horaires-list').innerHTML = '';
+  document.getElementById('ecole-abos-list').innerHTML = '';
+  _horaireCount = 0; _aboCount = 0;
+
+  if (ecoleId) {
+    document.getElementById('ecole-edit-id').value = ecoleId;
+    document.getElementById('admin-form-ecole-title').textContent = "MODIFIER L'ÉCOLE";
+    document.getElementById('ecole-submit-btn').textContent = 'Enregistrer →';
+    (async () => {
+      try {
+        const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+        const snap = await getDoc(doc(window._db, 'ecoles', ecoleId));
+        if (!snap.exists()) return;
+        const e = snap.data();
+        document.getElementById('ecole-nom').value    = e.nom        || '';
+        document.getElementById('ecole-ville').value  = e.ville      || '';
+        document.getElementById('ecole-cp').value     = e.cp         || '';
+        document.getElementById('ecole-adresse').value= e.adresse    || '';
+        document.getElementById('ecole-tel').value    = e.tel        || '';
+        document.getElementById('ecole-email').value  = e.email      || '';
+        document.getElementById('ecole-lien').value   = e.lien       || '';
+        document.getElementById('ecole-desc').value   = e.description|| '';
+        document.getElementById('ecole-styles').value = e.styles     || '';
+        (e.niveaux || []).forEach(n => {
+          const cb = document.querySelector(`#ecole-niveaux-pick input[value="${n}"]`);
+          if (cb) cb.checked = true;
+        });
+        (e.horaires || []).forEach(h => {
+          ajouterHoraire();
+          const items = document.querySelectorAll('.ecole-horaire-jour');
+          const jours = document.querySelectorAll('.ecole-horaire-heure');
+          const last = items.length - 1;
+          items[last].value = h.jour || '';
+          jours[last].value = h.heure || '';
+        });
+        (e.abonnements || []).forEach(a => {
+          ajouterAbonnement();
+          const noms = document.querySelectorAll('.ecole-abo-nom');
+          const prix = document.querySelectorAll('.ecole-abo-prix');
+          const last = noms.length - 1;
+          noms[last].value = a.nom || '';
+          prix[last].value = a.prix || '';
+        });
+      } catch(e) { console.error('Erreur chargement école:', e); }
+    })();
+  }
+
+  document.getElementById('admin-form-ecole').style.display = 'block';
+  document.getElementById('admin-form-ecole').scrollIntoView({ behavior: 'smooth' });
+};
+
+window.fermerFormEcole = function() {
+  document.getElementById('admin-form-ecole').style.display = 'none';
+  document.getElementById('admin-dashboard').style.display = 'block';
+  chargerDashboardAdmin();
+};
+
+window.sauvegarderEcole = async function() {
+  if (!window._db) return;
+  const errDiv = document.getElementById('admin-form-ecole-err');
+  errDiv.style.display = 'none';
+
+  const nom   = document.getElementById('ecole-nom').value.trim();
+  const ville = document.getElementById('ecole-ville').value.trim();
+  if (!nom || !ville) {
+    errDiv.textContent = '⚠️ Nom et ville sont obligatoires.';
+    errDiv.style.display = 'block'; return;
+  }
+
+  const btn = document.getElementById('ecole-submit-btn');
+  btn.textContent = '⏳ Enregistrement...'; btn.disabled = true;
+
+  const niveaux = Array.from(document.querySelectorAll('#ecole-niveaux-pick input[type=checkbox]:checked')).map(cb => cb.value);
+
+  const horaires = Array.from(document.getElementById('ecole-horaires-list').children).map(div => ({
+    jour:  div.querySelector('.ecole-horaire-jour')?.value || '',
+    heure: div.querySelector('.ecole-horaire-heure')?.value || '',
+  })).filter(h => h.jour || h.heure);
+
+  const abonnements = Array.from(document.getElementById('ecole-abos-list').children).map(div => ({
+    nom:  div.querySelector('.ecole-abo-nom')?.value.trim() || '',
+    prix: parseFloat(div.querySelector('.ecole-abo-prix')?.value) || 0,
+  })).filter(a => a.nom);
+
+  const data = {
+    nom, ville,
+    cp:          document.getElementById('ecole-cp').value.trim(),
+    adresse:     document.getElementById('ecole-adresse').value.trim(),
+    tel:         document.getElementById('ecole-tel').value.trim(),
+    email:       document.getElementById('ecole-email').value.trim(),
+    lien:        document.getElementById('ecole-lien').value.trim() || null,
+    description: document.getElementById('ecole-desc').value.trim(),
+    styles:      document.getElementById('ecole-styles').value.trim(),
+    niveaux, horaires, abonnements,
+    updatedAt: Date.now(),
+  };
+
+  try {
+    const { collection, doc, setDoc, addDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const editId = document.getElementById('ecole-edit-id').value;
+    if (editId) {
+      await setDoc(doc(window._db, 'ecoles', editId), data, { merge: true });
+    } else {
+      data.createdAt = Date.now();
+      await addDoc(collection(window._db, 'ecoles'), data);
+    }
+    fermerFormEcole();
+  } catch(e) {
+    errDiv.textContent = '❌ Erreur : ' + e.message;
+    errDiv.style.display = 'block';
+    btn.textContent = "Publier l'école →"; btn.disabled = false;
+  }
+};
+
+window.supprimerEcole = async function(id) {
+  if (!confirm('Supprimer cette école définitivement ?')) return;
+  try {
+    const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    await deleteDoc(doc(window._db, 'ecoles', id));
+    chargerDashboardAdmin();
+  } catch(e) { console.error('Erreur suppression école:', e); }
+};
+
 
 window.modifierEvent = async function(id) {
   try {
@@ -10915,8 +11295,8 @@ window.gainXP = async function(montant, type, labelOverride) {
 <div class="page" id="page-salles">
   <div class="salles-page">
     <div class="salles-header">
-      <div class="salles-header-sub">Événements temporaires</div>
-      <span class="salles-header-title">WORKSHOPS & STUDIOS</span>
+      <div class="salles-header-sub">Cours, écoles & studios</div>
+      <span class="salles-header-title">COURS & STUDIOS</span>
     </div>
 
 
@@ -10959,6 +11339,26 @@ window.gainXP = async function(montant, type, labelOverride) {
         <div>Chargement des salles...</div>
       </div>
     </div>
+
+    <!-- Séparateur écoles -->
+    <div style="border-top:1px solid var(--border);margin:8px 0 24px;"></div>
+
+    <!-- Section Écoles -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">🎓 Écoles de danse</div>
+    </div>
+    <div class="salles-filters" id="ecoles-filters" style="margin-bottom:16px;">
+      <button class="style-fchip on" onclick="filtrerEcoles('tous',this)">Toutes</button>
+      <button class="style-fchip" onclick="filtrerEcoles('niveau-debutant',this)">Débutant</button>
+      <button class="style-fchip" onclick="filtrerEcoles('niveau-intermediaire',this)">Intermédiaire</button>
+      <button class="style-fchip" onclick="filtrerEcoles('niveau-avance',this)">Avancé</button>
+    </div>
+    <div id="ecoles-grid" class="salles-grid">
+      <div class="salles-empty">
+        <div class="salles-empty-ico">🎓</div>
+        <div>Chargement des écoles...</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -10978,7 +11378,7 @@ window.gainXP = async function(montant, type, labelOverride) {
   <button class="mn-item" id="bn-agenda" onclick="showPage('agenda')" aria-label="Agenda">
     <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
   </button>
-  <button class="mn-item" id="bn-salles" onclick="showPage('salles')" aria-label="Workshops & Studios">
+  <button class="mn-item" id="bn-salles" onclick="showPage('salles')" aria-label="Cours & Studios">
     <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
   </button>
 </nav>
