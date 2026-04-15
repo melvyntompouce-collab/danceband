@@ -8018,6 +8018,8 @@ window.fermerFormEvent = function() {
   const retour = window._formRetour || 'orga';
   window._formRetour = null;
   window._adminEditMode = false;
+  const btn = document.getElementById('ev-submit-btn');
+  if (btn) { btn.textContent = "Publier l'événement →"; btn.disabled = false; }
   if (retour === 'admin') {
     document.getElementById('admin-dashboard').style.display = 'block';
     chargerDashboardAdmin();
@@ -8079,6 +8081,8 @@ window.ouvrirFormSalle = function(salleId) {
 window.fermerFormSalle = function() {
   document.getElementById('admin-form-salle').style.display = 'none';
   document.getElementById('admin-dashboard').style.display = 'block';
+  const btn = document.getElementById('salle-submit-btn');
+  if (btn) { btn.textContent = 'Publier la salle →'; btn.disabled = false; }
   chargerDashboardAdmin();
 };
 
@@ -8252,6 +8256,8 @@ window.ouvrirFormEcole = function(ecoleId) {
 window.fermerFormEcole = function() {
   document.getElementById('admin-form-ecole').style.display = 'none';
   document.getElementById('admin-dashboard').style.display = 'block';
+  const btn = document.getElementById('ecole-submit-btn');
+  if (btn) { btn.textContent = "Publier l'école →"; btn.disabled = false; }
   chargerDashboardAdmin();
 };
 
