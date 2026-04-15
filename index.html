@@ -1078,7 +1078,7 @@ body.pwa #network-mobile-bar {
 .to.sc{background:rgba(123,79,255,0.1);border-color:var(--purple);color:var(--purple);}
 .to.sa{background:rgba(255,217,61,0.1);border-color:var(--yellow);color:var(--yellow);}
 .to.sr{background:rgba(255,77,109,0.1);border-color:var(--red);color:var(--red);}
-#pe-pub,#pe-com,#pe-ami,#pe-priv{flex:1;padding:3px 4px;border-radius:10px;font-size:10px;}
+#pe-pub,#pe-com,#pe-ami,#pe-priv{flex:1;padding:4px 2px;border-radius:8px;font-size:9px;}
 
 .zone-opts{padding:16px 20px;display:flex;flex-direction:column;gap:8px;}
 .zo{
@@ -5219,7 +5219,7 @@ if (isPWA) {
     <div class="profile-grid" style="margin-top:20px;">
 
       <div class="profile-card" style="margin-top:12px;">
-        <div class="pc-header" style="flex-direction:column;align-items:flex-start;gap:4px;padding-top:13px;">
+        <div class="pc-header" style="flex-direction:column;align-items:flex-start;gap:4px;padding-top:13px;padding-bottom:14px;">
           <div class="pc-title">Confidentialité</div>
           <div style="font-size:12px;color:var(--muted2);">Choisis qui peut voir chaque info</div>
         </div>
@@ -5313,17 +5313,18 @@ if (isPWA) {
 
       <!-- SECTION PRÉSENCE AUX ÉVÉNEMENTS -->
       <div class="profile-card" style="margin-top:12px;">
-        <div class="pc-header" style="flex-direction:column;align-items:flex-start;gap:4px;padding-top:13px;">
+        <div class="pc-header" style="flex-direction:column;align-items:flex-start;gap:4px;padding-top:13px;padding-bottom:14px;">
           <div class="pc-title">Présence aux événements</div>
           <div style="font-size:12px;color:var(--muted2);">Choisis qui te vois</div>
         </div>
-        <div style="display:flex;gap:6px;width:100%;margin-top:14px;">
+        <div style="display:flex;gap:6px;width:100%;padding:14px 20px 0;">
           <button class="to" id="pe-pub" onclick="setPresenceEvenements('public',this)">PUB</button>
           <button class="to sc" id="pe-com" onclick="setPresenceEvenements('communaute',this)">COMMU</button>
           <button class="to" id="pe-ami" onclick="setPresenceEvenements('amis',this)">AMIS</button>
           <button class="to" id="pe-priv" onclick="setPresenceEvenements('prive',this)">PRIV</button>
         </div>
-        <div id="pe-desc" style="font-size:11px;color:var(--muted);margin-top:10px;padding:8px 10px;background:var(--bg2);border-radius:8px;line-height:1.5;"></div>
+        <div id="pe-desc" style="font-size:11px;color:var(--muted);margin:10px 20px 0;padding:8px 10px;background:var(--bg2);border-radius:8px;line-height:1.5;"></div>
+        <div style="height:16px;"></div>
       </div>
 
       <!-- SECTION FAVORIS (privé — visible uniquement par soi) -->
