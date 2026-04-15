@@ -7327,7 +7327,7 @@ function afficherEcoles(ecoles) {
         <div class="salle-item-city">${e.ville || ''}${e.adresse ? ' · ' + e.adresse : ''}</div>
       </div>
       <div class="salle-item-right">
-        ${niveauPrincipal ? `<span class="salle-item-tag">${niveauPrincipal}</span>` : ''}
+        ${niveauPrincipal && niveauPrincipal !== 'Débutant' ? `<span class="salle-item-tag">${niveauPrincipal}</span>` : ''}
         <span class="salle-item-arrow">›</span>
       </div>
     </div>`;
