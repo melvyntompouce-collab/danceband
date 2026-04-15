@@ -6701,19 +6701,9 @@ function ouvrirEvent(id) {
   const bg = document.getElementById('ev-detail-banner-bg');
   if (bg) bg.style.background = ev.photoUrl ? `url('${ev.photoUrl}') center/cover no-repeat` : cfg.bg;
   const bannerEl = document.getElementById('ev-detail-banner');
-  if (bannerEl) bannerEl.style.height = ev.photoUrl ? '220px' : '140px';
+  if (bannerEl) bannerEl.style.height = 'calc(220px + env(safe-area-inset-top))';
   const typeEl = document.getElementById('ev-detail-type');
-  if (typeEl) {
-    typeEl.textContent = cfg.label;
-    typeEl.style.color = cfg.couleur;
-    if (ev.photoUrl) {
-      typeEl.style.bottom = '14px';
-      typeEl.style.top = '';
-    } else {
-      typeEl.style.bottom = '';
-      typeEl.style.top = 'calc(31px + env(safe-area-inset-top))';
-    }
-  }
+  if (typeEl) { typeEl.textContent = cfg.label; typeEl.style.color = cfg.couleur; typeEl.style.bottom = '14px'; typeEl.style.top = ''; }
   const titleEl = document.getElementById('ev-detail-title');
   if (titleEl) titleEl.textContent = ev.titre || '';
 
