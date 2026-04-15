@@ -4466,6 +4466,14 @@ if (isPWA) {
         <button class="style-fchip" onclick="setFiltre('enligne',this);syncFiltresMobile()"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00f59b;box-shadow:0 0 6px #00f59b;margin-right:5px;"></span>En ligne</button>
         <button class="style-fchip" onclick="setFiltre('compatible',this);syncFiltresMobile()">⚡ Compatible</button>
       </div>
+      <!-- Filtre métier -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+        <button class="style-fchip filtre-metier-chip on" data-metier="tous" onclick="setMetierFiltre('tous',this);syncDancerListMobile()">Tous</button>
+        <button class="style-fchip filtre-metier-chip" data-metier="danseur" onclick="setMetierFiltre('danseur',this);syncDancerListMobile()">💃 Danseur·se</button>
+        <button class="style-fchip filtre-metier-chip" data-metier="beatmaker" onclick="setMetierFiltre('beatmaker',this);syncDancerListMobile()">🎧 Beatmaker</button>
+        <button class="style-fchip filtre-metier-chip" data-metier="photographe" onclick="setMetierFiltre('photographe',this);syncDancerListMobile()">📷 Photo</button>
+        <button class="style-fchip filtre-metier-chip" data-metier="videaste" onclick="setMetierFiltre('videaste',this);syncDancerListMobile()">🎥 Vidéo</button>
+      </div>
       <input id="filtre-zone-mobile" type="text" list="villes-datalist" placeholder="📍 Ville..." oninput="syncVilleMobile(this.value)" autocomplete="off" style="width:100%;box-sizing:border-box;padding:7px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:8px;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
       <!-- Dropdown styles mobile -->
       <div style="position:relative;" id="style-filter-row-mobile">
@@ -9869,6 +9877,29 @@ function focusDanseur(uid) {
 
 let filtresStyleActifs = new Set();
 let filtresEtatActifs = new Set();
+let filtresMetierActifs = new Set();
+
+function setMetierFiltre(metier, btn) {
+  if (metier === 'tous') {
+    filtresMetierActifs.clear();
+    document.querySelectorAll('.filtre-metier-chip').forEach(c => c.classList.remove('on'));
+    btn.classList.add('on');
+  } else {
+    document.querySelectorAll('.filtre-metier-chip[data-metier="tous"]').forEach(c => c.classList.remove('on'));
+    if (filtresMetierActifs.has(metier)) {
+      filtresMetierActifs.delete(metier);
+      btn.classList.remove('on');
+    } else {
+      filtresMetierActifs.add(metier);
+      btn.classList.add('on');
+    }
+    if (filtresMetierActifs.size === 0) {
+      document.querySelectorAll('.filtre-metier-chip[data-metier="tous"]').forEach(c => c.classList.add('on'));
+    }
+  }
+  filtrerDanseurs();
+}
+window.setMetierFiltre = setMetierFiltre;
 
 function setStyleFiltre(style, btn) {
   if (filtresStyleActifs.has(style)) {
@@ -10103,8 +10134,10 @@ document.addEventListener('click', function(e) {
 function resetFiltres() {
   filtresEtatActifs.clear();
   filtresStyleActifs.clear();
+  filtresMetierActifs.clear();
   document.querySelectorAll('#filter-row .style-fchip, #network-filter-menu #filter-row .style-fchip').forEach((c,i) => c.classList.toggle('on', i===0));
   document.querySelectorAll('#style-filter-row .style-fchip, #style-filter-row-menu .style-fchip').forEach(c => c.classList.remove('on'));
+  document.querySelectorAll('.filtre-metier-chip').forEach((c,i) => c.classList.toggle('on', i===0));
   const zi = document.getElementById('filtre-zone');
   if (zi) zi.value = '';
   const si = document.getElementById('search-input');
@@ -10132,6 +10165,10 @@ function filtrerDanseurs() {
   }
 
   if (zone)            filtrés = filtrés.filter(d => (d.zone || '').toLowerCase().includes(zone.toLowerCase()));
+  if (filtresMetierActifs.size > 0) filtrés = filtrés.filter(d => {
+    const dm = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
+    return dm.some(m => filtresMetierActifs.has(m));
+  });
   if (filtresStyleActifs.size > 0) filtrés = filtrés.filter(d => normaliserStyles(d.styles).some(s => filtresStyleActifs.has(s)));
 
   if (search) {
