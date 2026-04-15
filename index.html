@@ -7472,7 +7472,7 @@ window.envoyerNotifGlobale = async function() {
   const retour  = document.getElementById('admin-notif-msg');
 
   if (!titre || !extrait) {
-    retour.textContent = '⚠️ Le titre et l'extrait sont obligatoires.';
+    retour.textContent = '⚠️ Le titre et l\'extrait sont obligatoires.';
     retour.style.color = 'var(--red)';
     retour.style.display = 'block';
     return;
@@ -9833,15 +9833,6 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Exposer les fonctions nécessaires au module Firebase
-window.normaliserStyles    = normaliserStyles;
-window.afficherDashboard   = afficherDashboard;
-window.chargerAbonnements  = chargerAbonnements;
-window.chargerFavoris      = chargerFavoris;
-window.mettreAJourNav      = mettreAJourNav;
-window.brctLeverBlur       = typeof brctLeverBlur !== 'undefined' ? brctLeverBlur : function(){};
-window.detecterPairageKima = typeof detecterPairageKima !== 'undefined' ? detecterPairageKima : function(){};
-window.afficherBarreLogoDeconnecte = typeof afficherBarreLogoDeconnecte !== 'undefined' ? afficherBarreLogoDeconnecte : function(){};
 </script>
 
 <!-- ═══ FIREBASE AUTH ═══ -->
@@ -10696,16 +10687,21 @@ function detecterPairageKima(estConnecte) {
   }
 }
 
+// Exposer les fonctions du script classique sur window
+window.normaliserStyles   = normaliserStyles;
+window.chargerAbonnements = chargerAbonnements;
+window.chargerFavoris     = chargerFavoris;
+
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     console.log('✅ Connecté :', user.email);
-    if (window.afficherBarreLogoDeconnecte) window.afficherBarreLogoDeconnecte(false);
+    afficherBarreLogoDeconnecte(false);
     try { await chargerProfil(user.uid); }   catch(e) { console.error('❌ chargerProfil:', e); }
     try { await window.chargerAbonnements(); }       catch(e) { console.error('❌ chargerAbonnements:', e); }
     try { await window.chargerFavoris(); }           catch(e) { console.error('❌ chargerFavoris:', e); }
-    if (window.afficherDashboard) window.afficherDashboard(window._monProfil);
-    if (window.mettreAJourNav) window.mettreAJourNav(window._monProfil || user);
-    if (window.brctLeverBlur) window.brctLeverBlur();
+    afficherDashboard(window._monProfil);
+    mettreAJourNav(window._monProfil || user);
+    brctLeverBlur();
     detecterPairageKima(true);
   } else {
     console.log('👤 Non connecté');
