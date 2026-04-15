@@ -513,6 +513,9 @@ body.pwa #agenda-passes-toggle {
 }
 .form-select option{background:var(--bg2);}
 .styles-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;overflow:hidden;max-height:80px;transition:max-height 0.3s ease;}
+.metier-chip{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;flex:1;min-width:calc(50% - 4px);}
+.metier-chip.selected{border-color:var(--green);background:rgba(0,245,155,0.08);color:var(--green);}
+.metier-chip .metier-ico{font-size:18px;}
 .styles-grid.expanded{max-height:1000px;}
 .style-tag{
   padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;
@@ -3048,13 +3051,24 @@ if (isPWA) {
         <p class="auth-sub">Crée ton profil en 2 minutes</p>
         <div id="signup-error" style="display:none;background:rgba(255,77,109,0.1);border:1px solid var(--red);border-radius:10px;padding:12px;font-size:13px;color:var(--red);margin-bottom:16px;"></div>
         <div id="signup-success" style="display:none;background:rgba(0,245,155,0.1);border:1px solid var(--green);border-radius:10px;padding:12px;font-size:13px;color:var(--green);margin-bottom:16px;"></div>
+
+        <div class="form-group">
+          <label class="form-label">Tu es... <span style="color:var(--muted);font-weight:400">(plusieurs possibles)</span></label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="signup-types">
+            <button type="button" class="style-tag" onclick="toggleSignupType(this,'danseur')">💃 Danseur·se</button>
+            <button type="button" class="style-tag" onclick="toggleSignupType(this,'photographe')">📷 Photographe</button>
+            <button type="button" class="style-tag" onclick="toggleSignupType(this,'videaste')">🎥 Vidéaste</button>
+            <button type="button" class="style-tag" onclick="toggleSignupType(this,'beatmaker')">🎧 Beatmaker / DJ</button>
+          </div>
+        </div>
+
         <div class="form-group">
           <label class="form-label">Nom complet <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
           <input id="signup-nom" class="form-input" type="text" placeholder="Ex: Sofia Martinez">
         </div>
         <div class="form-group">
-          <label class="form-label">Blase de danseur <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
-          <input id="signup-pseudo" class="form-input" type="text" placeholder="Ex: La Furia">
+          <label class="form-label">Pseudo / Blase <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+          <input id="signup-pseudo" class="form-input" type="text" placeholder="Ex: La Furia, DJ Koz...">
         </div>
         <div class="form-group">
           <label class="form-label">Email</label>
@@ -3064,41 +3078,118 @@ if (isPWA) {
           <label class="form-label">Mot de passe</label>
           <input id="signup-password" class="form-input" type="password" placeholder="••••••••">
         </div>
-        <div class="form-group">
-          <label class="form-label">Tes styles de danse</label>
-          <div class="styles-grid" id="styles-grid">
-            <button class="style-tag" onclick="toggleStyle(this)">Salsa</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Kizomba</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Hip-Hop</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Bachata</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Breakdance</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Afro</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Zouk</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Dancehall</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Popping</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Litefeet</button>
-            <button class="style-tag" onclick="toggleStyle(this)">House</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Samba</button>
-            <button class="style-tag" onclick="toggleStyle(this)">New Style</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Krump</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Commercial</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Heels</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Experimental</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Locking</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Classique</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Electro</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Voguing</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Modern Jazz</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Street Jazz</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Bharata Natyam</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Claquettes</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Tango</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Danse Orientale</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Pole Dance</button>
-            <button class="style-tag" onclick="toggleStyle(this)">Capoeira</button>
+
+        <div id="signup-section-danseur" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">Tes styles de danse</label>
+            <div class="styles-grid" id="styles-grid">
+              <button class="style-tag" onclick="toggleStyle(this)">Salsa</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Kizomba</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Hip-Hop</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Bachata</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Breakdance</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Afro</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Zouk</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Dancehall</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Popping</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Litefeet</button>
+              <button class="style-tag" onclick="toggleStyle(this)">House</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Samba</button>
+              <button class="style-tag" onclick="toggleStyle(this)">New Style</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Krump</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Commercial</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Heels</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Experimental</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Locking</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Classique</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Electro</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Voguing</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Modern Jazz</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Street Jazz</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Bharata Natyam</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Claquettes</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Tango</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Danse Orientale</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Pole Dance</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Capoeira</button>
+            </div>
+            <button onclick="toggleStylesGrid('styles-grid', this)" style="margin-top:8px;background:none;border:none;color:var(--green);font-size:11px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;padding:0;letter-spacing:0.5px;">+ Voir tous les styles</button>
           </div>
-          <button onclick="toggleStylesGrid('styles-grid', this)" style="margin-top:8px;background:none;border:none;color:var(--green);font-size:11px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;padding:0;letter-spacing:0.5px;">+ Voir tous les styles</button>
+          <div class="form-group">
+            <label class="form-label">Niveau</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="signup-niveaux-danseur">
+              <button type="button" class="style-tag" onclick="toggleSignupSingle(this,'signup-niveaux-danseur')">Débutant</button>
+              <button type="button" class="style-tag" onclick="toggleSignupSingle(this,'signup-niveaux-danseur')">Intermédiaire</button>
+              <button type="button" class="style-tag" onclick="toggleSignupSingle(this,'signup-niveaux-danseur')">Avancé</button>
+              <button type="button" class="style-tag" onclick="toggleSignupSingle(this,'signup-niveaux-danseur')">Professionnel</button>
+            </div>
+          </div>
         </div>
+
+        <div id="signup-section-photographe" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">Spécialités photo</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="signup-styles-photo">
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Événement</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Portrait</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Battle</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Clip</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Studio</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Sport</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Mode</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Reportage</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Matériel <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+            <input id="signup-materiel-photo" class="form-input" type="text" placeholder="Ex: Sony A7III, Canon R5...">
+          </div>
+        </div>
+
+        <div id="signup-section-videaste" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">Spécialités vidéo</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="signup-styles-video">
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Clip musical</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Événement</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Documentaire</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Battle</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Court-métrage</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Freestyle</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Pub / Promo</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Montage</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Matériel <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+            <input id="signup-materiel-video" class="form-input" type="text" placeholder="Ex: Sony FX3, DJI Ronin, Premiere Pro...">
+          </div>
+        </div>
+
+        <div id="signup-section-beatmaker" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">Genres musicaux</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="signup-genres-beat">
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Afrobeat</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Hip-Hop</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Trap</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">RnB</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">House</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Techno</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Kizomba / Semba</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Dancehall</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Électro</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Jazz</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Funk</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Soul</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">DAW / Logiciels <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+            <input id="signup-daw" class="form-input" type="text" placeholder="Ex: FL Studio, Ableton, Logic Pro...">
+          </div>
+        </div>
+
         <div class="form-group">
           <label class="form-label">Ta ville</label>
           <input id="signup-zone" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon, Montpellier..." autocomplete="off">
@@ -3106,7 +3197,6 @@ if (isPWA) {
         </div>
         <button id="signup-btn" class="form-submit" onclick="inscrire()">Créer mon profil →</button>
       </div>
-
       <!-- CONNEXION -->
       <div id="tab-login" style="display:none">
         <div class="auth-title">BON<br>RETOUR !</div>
@@ -5586,6 +5676,41 @@ function toggleStylesGrid(gridId, btn) {
 function toggleGenre(el) {
   el.classList.toggle('selected');
 }
+
+// ── Sélection type métier à l'inscription ──
+let _signupTypes = new Set();
+
+function toggleSignupType(btn, type) {
+  if (_signupTypes.has(type)) {
+    _signupTypes.delete(type);
+    btn.classList.remove('selected');
+  } else {
+    _signupTypes.add(type);
+    btn.classList.add('selected');
+  }
+  // Afficher/masquer les sections selon les types sélectionnés
+  ['danseur','photographe','videaste','beatmaker'].forEach(t => {
+    const section = document.getElementById('signup-section-' + t);
+    if (section) section.style.display = _signupTypes.has(t) ? 'block' : 'none';
+  });
+}
+window.toggleSignupType = toggleSignupType;
+
+// Toggle multi-sélection dans les champs spécifiques
+function toggleStyle2(el) {
+  el.classList.toggle('selected');
+}
+window.toggleStyle2 = toggleStyle2;
+
+// Toggle sélection unique (ex: niveau)
+function toggleSignupSingle(btn, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.querySelectorAll('.style-tag').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+window.toggleSignupSingle = toggleSignupSingle;
+
 
 function goHome() {
   if (window._monProfil) showPage('dashboard');
@@ -9875,21 +10000,39 @@ window.inscrire = async function() {
   const okDiv    = document.getElementById('signup-success');
   const btn      = document.getElementById('signup-btn');
 
-  // Choix d'affichage : nom par défaut (modifiable dans le profil)
   const displayChoice = 'nom';
   const nomAffiche    = nom || pseudo || 'Artiste';
 
-  // Récupérer les styles sélectionnés
+  // Types métier sélectionnés
+  const metiers = [..._signupTypes];
+
+  // Styles de danse (si danseur)
   const styles = [...document.querySelectorAll('#styles-grid .style-tag.selected')]
     .map(t => t.textContent);
 
+  // Niveau danseur
+  const niveauDanseur = document.querySelector('#signup-niveaux-danseur .style-tag.selected')?.textContent || '';
+
+  // Champs photographe
+  const specialitesPhoto = [...document.querySelectorAll('#signup-styles-photo .style-tag.selected')]
+    .map(t => t.textContent);
+  const materielPhoto = document.getElementById('signup-materiel-photo')?.value.trim() || '';
+
+  // Champs vidéaste
+  const specialitesVideo = [...document.querySelectorAll('#signup-styles-video .style-tag.selected')]
+    .map(t => t.textContent);
+  const materielVideo = document.getElementById('signup-materiel-video')?.value.trim() || '';
+
+  // Champs beatmaker
+  const genresBeat = [...document.querySelectorAll('#signup-genres-beat .style-tag.selected')]
+    .map(t => t.textContent);
+  const daw = document.getElementById('signup-daw')?.value.trim() || '';
+
   // Validation
   errDiv.style.display = 'none';
-  if (!nom)    { afficherErreur(errDiv, '⚠️ Entre ton nom complet'); return; }
-  if (!pseudo) { afficherErreur(errDiv, '⚠️ Entre ton blase de danseur'); return; }
   if (!email)  { afficherErreur(errDiv, '⚠️ Entre ton email'); return; }
   if (password.length < 6) { afficherErreur(errDiv, '⚠️ Mot de passe trop court (6 caractères min)'); return; }
-  if (styles.length === 0) { afficherErreur(errDiv, '⚠️ Choisis au moins 1 style de danse'); return; }
+  if (metiers.length === 0) { afficherErreur(errDiv, '⚠️ Choisis au moins un type de profil'); return; }
 
   btn.textContent = 'Création en cours...';
   btn.disabled = true;
@@ -9898,13 +10041,13 @@ window.inscrire = async function() {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     const uid  = cred.user.uid;
 
-    await setDoc(doc(db, 'danseurs', uid), {
+    const profileData = {
       nom,
       pseudo,
       displayChoice,
       nomAffiche,
       email,
-      styles,
+      metiers,
       zone,
       visibilite: 'amis',
       disponible: true,
@@ -9913,7 +10056,27 @@ window.inscrire = async function() {
       echanges: 0,
       evenements: 0,
       createdAt: new Date().toISOString()
-    });
+    };
+
+    // Champs spécifiques par métier
+    if (metiers.includes('danseur')) {
+      profileData.styles         = styles;
+      profileData.niveauDanseur  = niveauDanseur;
+    }
+    if (metiers.includes('photographe')) {
+      profileData.specialitesPhoto = specialitesPhoto;
+      profileData.materielPhoto    = materielPhoto;
+    }
+    if (metiers.includes('videaste')) {
+      profileData.specialitesVideo = specialitesVideo;
+      profileData.materielVideo    = materielVideo;
+    }
+    if (metiers.includes('beatmaker')) {
+      profileData.genresBeat = genresBeat;
+      profileData.daw        = daw;
+    }
+
+    await setDoc(doc(db, 'danseurs', uid), profileData);
 
     okDiv.textContent = '✅ Compte créé ! Bienvenue sur HAKO !';
     okDiv.style.display = 'block';
@@ -10020,6 +10183,22 @@ window.sauvegarderIdentite = async function() {
                    : affichageType === 'blase'    ? blase
                    : [nom, blase].filter(Boolean).join(' · ');
 
+  // Champs spécifiques par métier
+  const metiersSauv = window._monProfil?.metiers || [];
+  const metierData = {};
+  if (metiersSauv.includes('photographe')) {
+    metierData.specialitesPhoto = [...document.querySelectorAll('#edit-specialites-photo .style-tag.selected')].map(t => t.textContent.trim());
+    metierData.materielPhoto    = document.getElementById('edit-materiel-photo')?.value.trim() || '';
+  }
+  if (metiersSauv.includes('videaste')) {
+    metierData.specialitesVideo = [...document.querySelectorAll('#edit-specialites-video .style-tag.selected')].map(t => t.textContent.trim());
+    metierData.materielVideo    = document.getElementById('edit-materiel-video')?.value.trim() || '';
+  }
+  if (metiersSauv.includes('beatmaker')) {
+    metierData.genresBeat = [...document.querySelectorAll('#edit-genres-beat .style-tag.selected')].map(t => t.textContent.trim());
+    metierData.daw        = document.getElementById('edit-daw')?.value.trim() || '';
+  }
+
   try {
     await setDoc(doc(db, 'danseurs', user.uid), {
       nom, blase, tel,
@@ -10030,7 +10209,8 @@ window.sauvegarderIdentite = async function() {
       affichageType, nomAffiche,
       ...(styles.length > 0 ? { styles } : {}),
       ...(genres.length > 0 ? { genres } : {}),
-      ...(window._photoBase64 ? { photo: window._photoBase64 } : {})
+      ...(window._photoBase64 ? { photo: window._photoBase64 } : {}),
+      ...metierData
     }, { merge: true });
 
     // Mettre à jour l'entête du profil immédiatement
@@ -10175,6 +10355,42 @@ async function chargerProfil(uid) {
     if (champApple)       champApple.value       = d.applemusic || '';
     if (champDeezer)      champDeezer.value      = d.deezer     || '';
     if (champSoundcloud)  champSoundcloud.value  = d.soundcloud || '';
+
+    // ── Sections métier (édition profil) ──
+    const metiers = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
+    ['danseur','photographe','videaste','beatmaker'].forEach(m => {
+      const sec = document.getElementById('edit-section-' + m);
+      if (sec) sec.style.display = metiers.includes(m) ? 'block' : 'none';
+    });
+
+    // Pré-remplir champs métier spécifiques
+    if (metiers.includes('photographe')) {
+      const elP = document.getElementById('edit-materiel-photo');
+      if (elP) elP.value = d.materielPhoto || '';
+      (d.specialitesPhoto || []).forEach(s => {
+        document.querySelectorAll('#edit-specialites-photo .style-tag').forEach(tag => {
+          if (tag.textContent === s) tag.classList.add('selected');
+        });
+      });
+    }
+    if (metiers.includes('videaste')) {
+      const elV = document.getElementById('edit-materiel-video');
+      if (elV) elV.value = d.materielVideo || '';
+      (d.specialitesVideo || []).forEach(s => {
+        document.querySelectorAll('#edit-specialites-video .style-tag').forEach(tag => {
+          if (tag.textContent === s) tag.classList.add('selected');
+        });
+      });
+    }
+    if (metiers.includes('beatmaker')) {
+      const elD = document.getElementById('edit-daw');
+      if (elD) elD.value = d.daw || '';
+      (d.genresBeat || []).forEach(s => {
+        document.querySelectorAll('#edit-genres-beat .style-tag').forEach(tag => {
+          if (tag.textContent === s) tag.classList.add('selected');
+        });
+      });
+    }
 
     // ── Toggles plateformes ──
     const pv = d.plateformesVisibles || {};
@@ -11426,7 +11642,8 @@ window.gainXP = async function(montant, type, labelOverride) {
           </div>
         </div>
 
-        <!-- STYLES DE DANSE -->
+        <!-- STYLES DE DANSE (danseur) -->
+        <div id="edit-section-danseur" style="display:none;">
         <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
           <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:16px;">Styles de danse</div>
           <div class="styles-grid" id="edit-styles-grid">
@@ -11492,6 +11709,69 @@ window.gainXP = async function(montant, type, labelOverride) {
           </div>
           <button onclick="toggleStylesGrid('edit-genres-grid', this)" style="margin-top:8px;background:none;border:none;color:var(--green);font-size:11px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;padding:0;letter-spacing:0.5px;">+ Voir tous les genres</button>
         </div>
+        </div><!-- /edit-section-danseur -->
+
+        <!-- CHAMPS PHOTOGRAPHE (édition) -->
+        <div id="edit-section-photographe" style="display:none;">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;">📸 Spécialités photo</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;" id="edit-specialites-photo">
+              <button class="style-tag" onclick="toggleStyle(this)">Événement</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Portrait</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Battle</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Clip</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Studio</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Sport</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Mode</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Reportage</button>
+            </div>
+            <label class="form-label" style="margin-bottom:6px;">Matériel</label>
+            <input id="edit-materiel-photo" class="form-input" type="text" placeholder="Ex: Sony A7III, Canon R5..." style="background:var(--bg2);">
+          </div>
+        </div>
+
+        <!-- CHAMPS VIDÉASTE (édition) -->
+        <div id="edit-section-videaste" style="display:none;">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;">🎬 Spécialités vidéo</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;" id="edit-specialites-video">
+              <button class="style-tag" onclick="toggleStyle(this)">Clip musical</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Événement</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Documentaire</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Battle</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Court-métrage</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Freestyle</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Pub / Promo</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Montage</button>
+            </div>
+            <label class="form-label" style="margin-bottom:6px;">Matériel</label>
+            <input id="edit-materiel-video" class="form-input" type="text" placeholder="Ex: Sony FX3, DJI Ronin..." style="background:var(--bg2);">
+          </div>
+        </div>
+
+        <!-- CHAMPS BEATMAKER (édition) -->
+        <div id="edit-section-beatmaker" style="display:none;">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;">🎧 Genres produits / mixés</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;" id="edit-genres-beat">
+              <button class="style-tag" onclick="toggleStyle(this)">Hip-Hop</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Afrobeat</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Amapiano</button>
+              <button class="style-tag" onclick="toggleStyle(this)">R&B</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Trap</button>
+              <button class="style-tag" onclick="toggleStyle(this)">House</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Techno</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Kizomba / Semba</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Dancehall</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Jazz</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Funk</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Soul</button>
+            </div>
+            <label class="form-label" style="margin-bottom:6px;">DAW / Logiciels</label>
+            <input id="edit-daw" class="form-input" type="text" placeholder="Ex: FL Studio, Ableton, Logic Pro..." style="background:var(--bg2);">
+          </div>
+        </div>
+
         <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:24px;">
           <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:16px;">Affichage du nom</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
