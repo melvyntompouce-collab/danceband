@@ -2466,7 +2466,7 @@ body.hide-bottomnav #bottom-nav { display: none !important; }
 /* Conversation : bottom ajusté pour la bottom nav */
 @media(max-width:768px) {
 }
-#msg-input-bar { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+#msg-input-bar { padding-bottom: max(10px, env(safe-area-inset-bottom)); margin-bottom: 15px; }
 #msg-conversation { top: 0; bottom: 0; }
 body.keyboard-open #bottom-nav { display: none !important; }
 body.conv-ouverte #bottom-nav { display: none !important; }
@@ -8729,19 +8729,19 @@ async function ouvrirConversation(uid, nom, photo) {
       const keyboardH = wH - vvH; // hauteur du clavier
       const keyboardOpen = keyboardH > 100;
 
+      const inputBar = document.getElementById('msg-input-bar');
       if (keyboardOpen) {
         document.body.classList.add('keyboard-open');
-        // La conversation occupe tout sauf le clavier
-        // top = 0 (on garde padding-top pour le main-nav)
-        // bottom = hauteur du clavier
         conv.style.top    = '0';
         conv.style.bottom = keyboardH + 'px';
         conv.style.height = '';
+        if (inputBar) inputBar.style.marginBottom = '0';
       } else {
         document.body.classList.remove('keyboard-open');
         conv.style.top    = '0';
         conv.style.bottom = '0';
         conv.style.height = '';
+        if (inputBar) inputBar.style.marginBottom = '15px';
       }
     };
     window.visualViewport.addEventListener('resize', window._vpListener);
