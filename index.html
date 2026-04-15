@@ -1053,8 +1053,9 @@ body.pwa #network-mobile-bar {
 }
 .ph-edit:hover{background:rgba(255,255,255,0.08);}
 .ph-stats{
-  display:flex;gap:0;margin-top:28px;
+  display:flex;gap:0;margin-top:16px;
   background:rgba(255,255,255,0.03);border-radius:16px;overflow:hidden;
+  flex-wrap:wrap;
 }
 .ph-stat{flex:1;padding:16px;text-align:center;}
 .ph-stat+.ph-stat{border-left:1px solid var(--border);}
@@ -1543,9 +1544,9 @@ body.pwa .page:not(#page-network) { padding-bottom: calc(60px + max(4px, env(saf
   .ph-handle { font-size: 13px; }
   .ph-band { font-size: 10px; padding: 5px 10px; margin-top: 8px; }
   .ph-led { width: 6px; height: 6px; }
-  .ph-stats { flex-wrap: wrap; }
+  .ph-stats { flex-wrap: wrap; margin-top: 12px; }
   .ph-stat { min-width: 50%; border-bottom: 1px solid var(--border); }
-  .ph-stat:last-child, .ph-stat:nth-last-child(2) { border-bottom: none; }
+  .ph-stat:nth-last-child(-n+2) { border-bottom: none; }
   .ph-edit { width: 100%; margin-top: 10px; align-self: auto; }
   .ph-meta-row { flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px; }
   .profile-grid { grid-template-columns: 1fr; gap: 14px; }
@@ -5209,27 +5210,21 @@ if (isPWA) {
               <span style="background:rgba(255,77,109,0.15);border:1px solid rgba(255,77,109,0.45);color:#ff4d6d;font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:2px;padding:3px 10px;border-radius:6px;text-transform:uppercase;">⚡ Admin HAKO</span>
             </div>
           </div>
+          <div class="ph-stats">
+            <div class="ph-stat"><div class="ph-stat-v">247</div><div class="ph-stat-l">ÉCHANGES</div></div>
+            <div class="ph-stat"><div class="ph-stat-v">32</div><div class="ph-stat-l">ÉVÉNEMENTS</div></div>
+            <div class="ph-stat"><div class="ph-stat-v">4/5</div><div class="ph-stat-l">NIVEAU</div></div>
+            <div class="ph-stat" onclick="showPage('ranking')" style="cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,245,155,0.05)'" onmouseout="this.style.background=''"><div class="ph-stat-v">#12</div><div class="ph-stat-l">CLASSEMENT</div></div>
+            <div class="ph-stat" onclick="ouvrirListeSociale('abonnements')" style="cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,245,155,0.05)'" onmouseout="this.style.background=''">
+              <div class="ph-stat-v" id="stat-abonnements">0</div>
+              <div class="ph-stat-l">ABONNEMENTS</div>
+            </div>
+            <div class="ph-stat" onclick="ouvrirListeSociale('abonnes')" style="cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,245,155,0.05)'" onmouseout="this.style.background=''">
+              <div class="ph-stat-v" id="stat-abonnes">0</div>
+              <div class="ph-stat-l">ABONNÉS</div>
+            </div>
+          </div>
       </div>
-      <div class="ph-stats">
-        <div class="ph-stat"><div class="ph-stat-v">247</div><div class="ph-stat-l">ÉCHANGES</div></div>
-        <div class="ph-stat"><div class="ph-stat-v">32</div><div class="ph-stat-l">ÉVÉNEMENTS</div></div>
-        <div class="ph-stat"><div class="ph-stat-v">4/5</div><div class="ph-stat-l">NIVEAU</div></div>
-        <div class="ph-stat" onclick="showPage('ranking')" style="cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,245,155,0.05)'" onmouseout="this.style.background=''"><div class="ph-stat-v">#12</div><div class="ph-stat-l">CLASSEMENT</div></div>
-      </div>
-
-      <!-- Abonnés / Abonnements — ligne séparée -->
-      <div style="display:flex;gap:0;margin-top:8px;background:rgba(255,255,255,0.03);border-radius:12px;overflow:hidden;">
-        <div class="ph-stat" onclick="ouvrirListeSociale('abonnements')" style="cursor:pointer;transition:background 0.2s;flex:1;border-right:1px solid var(--border);" onmouseover="this.style.background='rgba(0,245,155,0.05)'" onmouseout="this.style.background=''">
-          <div class="ph-stat-v" id="stat-abonnements">0</div>
-          <div class="ph-stat-l">ABONNEMENTS</div>
-        </div>
-        <div class="ph-stat" onclick="ouvrirListeSociale('abonnes')" style="cursor:pointer;transition:background 0.2s;flex:1;" onmouseover="this.style.background='rgba(0,245,155,0.05)'" onmouseout="this.style.background=''">
-          <div class="ph-stat-v" id="stat-abonnes">0</div>
-          <div class="ph-stat-l">ABONNÉS</div>
-        </div>
-      </div>
-    </div>
-    </div>
 
     <!-- Modal abonnés / abonnements -->
     <div id="social-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:20px;">
