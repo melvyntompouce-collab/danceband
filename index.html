@@ -4349,9 +4349,16 @@ if (isPWA) {
   <div class="network-layout">
 
     <!-- Titre réseau -->
-    <div id="network-titre-mobile" style="flex-shrink:0;padding:0 4px 10px;display:flex;flex-direction:column;">
+    <div id="network-titre-mobile" style="flex-shrink:0;padding:0 4px 6px;display:flex;flex-direction:column;">
       <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;">Communauté</div>
       <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;line-height:1;color:var(--text);">RÉSEAU</span>
+    </div>
+
+    <!-- ONGLETS -->
+    <div id="network-tabs" style="flex-shrink:0;display:flex;gap:6px;padding:0 2px 8px;">
+      <button class="style-fchip on" onclick="switchNetworkTab('artistes',this)">👤 Artistes</button>
+      <button class="style-fchip" onclick="switchNetworkTab('evenements',this)">🎉 Événements</button>
+      <button class="style-fchip" onclick="switchNetworkTab('lieux',this)">📍 Lieux</button>
     </div>
 
     <!-- CARTE -->
@@ -4452,8 +4459,8 @@ if (isPWA) {
       </div>
     </div>
 
-    <!-- Filtres -->
-    <div style="padding:0 16px 8px;flex-shrink:0;border-bottom:1px solid var(--border);">
+    <!-- Filtres (artistes uniquement) -->
+    <div id="drawer-filtres-artistes" style="padding:0 16px 8px;flex-shrink:0;border-bottom:1px solid var(--border);">
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;" id="filter-row-mobile">
         <button class="style-fchip on" onclick="setFiltre('tous',this);syncFiltresMobile()">Tous</button>
         <button class="style-fchip" onclick="setFiltre('enligne',this);syncFiltresMobile()"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00f59b;box-shadow:0 0 6px #00f59b;margin-right:5px;"></span>En ligne</button>
@@ -11580,6 +11587,202 @@ window.gainXP = async function(montant, type, labelOverride) {
     console.error('Erreur gainXP:', e);
   }
 };
+
+
+// ═══════════════════════════════════════════════
+// RÉSEAU — ONGLETS (Artistes / Événements / Lieux)
+// ═══════════════════════════════════════════════
+
+let _networkTab = 'artistes';
+let _networkEventsLoaded = false;
+let _networkLieuxLoaded = false;
+let _networkEventsData = [];
+let _networkLieuxData = [];
+let _networkMapMarkers = [];
+
+function _clearNetworkMarkers() {
+  _networkMapMarkers.forEach(m => { if (carte) carte.removeLayer(m); });
+  _networkMapMarkers = [];
+}
+
+window.switchNetworkTab = function(tab, btn) {
+  _networkTab = tab;
+  document.querySelectorAll('#network-tabs .style-fchip').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+
+  const filtresArt = document.getElementById('drawer-filtres-artistes');
+  const mapCount = document.getElementById('map-count');
+  const barLabel = document.getElementById('network-bar-label');
+
+  if (tab === 'artistes') {
+    if (filtresArt) filtresArt.style.display = '';
+    _clearNetworkMarkers();
+    Object.entries(markersMap || {}).forEach(([uid, m]) => { if (carte && !carte.hasLayer(m)) m.addTo(carte); });
+    if (mapCount) mapCount.textContent = tousLesDanseurs.length + ' artistes';
+    if (barLabel) barLabel.textContent = 'Rechercher par nom...';
+  } else {
+    if (filtresArt) filtresArt.style.display = 'none';
+    Object.values(markersMap || {}).forEach(m => { if (carte) carte.removeLayer(m); });
+    _clearNetworkMarkers();
+
+    if (tab === 'evenements') {
+      if (barLabel) barLabel.textContent = 'Événements à venir';
+      if (!_networkEventsLoaded) {
+        _networkEventsLoaded = true;
+        _chargerNetworkEvents().then(() => {
+          _placerMarqueursEvents();
+          if (mapCount) mapCount.textContent = _networkEventsData.length + ' événement' + (_networkEventsData.length > 1 ? 's' : '');
+        });
+      } else {
+        _placerMarqueursEvents();
+        if (mapCount) mapCount.textContent = _networkEventsData.length + ' événement' + (_networkEventsData.length > 1 ? 's' : '');
+      }
+    } else if (tab === 'lieux') {
+      if (barLabel) barLabel.textContent = 'Salles & cours';
+      if (!_networkLieuxLoaded) {
+        _networkLieuxLoaded = true;
+        _chargerNetworkLieux().then(() => {
+          _placerMarqueursLieux();
+          const total = _networkLieuxData.length;
+          if (mapCount) mapCount.textContent = total + ' lieu' + (total > 1 ? 'x' : '');
+        });
+      } else {
+        _placerMarqueursLieux();
+        const total = _networkLieuxData.length;
+        if (mapCount) mapCount.textContent = total + ' lieu' + (total > 1 ? 'x' : '');
+      }
+    }
+  }
+};
+
+async function _chargerNetworkEvents() {
+  if (typeof tousLesEvents !== 'undefined' && tousLesEvents.length > 0) {
+    _networkEventsData = tousLesEvents.filter(e => !_estPasse(e));
+    return;
+  }
+  if (!window._db) return;
+  try {
+    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const snap = await getDocs(collection(window._db, 'evenements'));
+    const all = [];
+    snap.forEach(d => all.push({ id: d.id, ...d.data() }));
+    _networkEventsData = all.filter(e => !_estPasse(e));
+  } catch(e) { console.error(e); }
+}
+
+async function _chargerNetworkLieux() {
+  const salles = (typeof _sallesCache !== 'undefined' && _sallesCache.length > 0) ? _sallesCache : await _fetchCol('salles');
+  const ecoles = (typeof _ecolesCache !== 'undefined' && _ecolesCache.length > 0) ? _ecolesCache : await _fetchCol('ecoles');
+  _networkLieuxData = [
+    ...salles.map(s => ({ ...s, _type: 'salle' })),
+    ...ecoles.map(e => ({ ...e, _type: 'cours' }))
+  ];
+}
+
+async function _fetchCol(col) {
+  if (!window._db) return [];
+  try {
+    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const snap = await getDocs(collection(window._db, col));
+    const arr = [];
+    snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+    return arr;
+  } catch(e) { return []; }
+}
+
+async function _placerMarqueursEvents() {
+  if (!carte) return;
+  _clearNetworkMarkers();
+  for (const ev of _networkEventsData) {
+    const ville = ev.ville || ev.lieu || '';
+    if (!ville) continue;
+    const coords = await coordsVille(ville);
+    const couleur = ev.type === 'battle' ? '#f0c040' : ev.type === 'workshop' ? '#00F59B' : '#a855f7';
+    const emoji = ev.type === 'battle' ? '🏆' : ev.type === 'workshop' ? '🎓' : '🎉';
+    const label = ev.type === 'battle' ? 'Battle' : ev.type === 'workshop' ? 'Workshop' : 'Soirée';
+    const dateStr = typeof _formatDate === 'function' ? _formatDate(_getDatePrincipale(ev)) : '';
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="width:36px;height:36px;border-radius:50%;background:rgba(8,8,16,0.9);border:2px solid ${couleur};box-shadow:0 0 12px ${couleur}66;display:flex;align-items:center;justify-content:center;font-size:16px;">${emoji}</div>`,
+      iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -22]
+    });
+    const m = L.marker(coords, { icon }).addTo(carte);
+    m.bindPopup(`<div style="min-width:160px;padding:4px;"><div class="popup-name">${ev.nom || 'Événement'}</div><div class="popup-zone">📅 ${dateStr}</div><div class="popup-zone">📍 ${ev.ville || ''}</div><button onclick="showPage('agenda')" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 12px;border-radius:10px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.3);color:#00f59b;font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;width:100%;justify-content:center;">Voir l'agenda →</button></div>`);
+    _networkMapMarkers.push(m);
+  }
+}
+
+async function _placerMarqueursLieux() {
+  if (!carte) return;
+  _clearNetworkMarkers();
+  for (const lieu of _networkLieuxData) {
+    const ville = lieu.ville || '';
+    if (!ville) continue;
+    const coords = await coordsVille(ville);
+    const isSalle = lieu._type === 'salle';
+    const couleur = isSalle ? '#60a5fa' : '#00F59B';
+    const emoji = isSalle ? '🏢' : '🎓';
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="width:36px;height:36px;border-radius:50%;background:rgba(8,8,16,0.9);border:2px solid ${couleur};box-shadow:0 0 12px ${couleur}66;display:flex;align-items:center;justify-content:center;font-size:16px;">${emoji}</div>`,
+      iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -22]
+    });
+    const m = L.marker(coords, { icon }).addTo(carte);
+    m.bindPopup(`<div style="min-width:160px;padding:4px;"><div class="popup-name">${lieu.nom || ''}</div><div class="popup-zone">📍 ${ville}${lieu.adresse ? ' · ' + lieu.adresse : ''}</div>${lieu.styles ? `<div class="popup-zone">💃 ${lieu.styles}</div>` : ''}<button onclick="showPage('salles')" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 12px;border-radius:10px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.3);color:#00f59b;font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;width:100%;justify-content:center;">Voir les lieux →</button></div>`);
+    _networkMapMarkers.push(m);
+  }
+}
+
+// Surcharger ouvrirDrawerReseau selon onglet actif
+window.ouvrirDrawerReseau = function() {
+  const drawer = document.getElementById('network-mobile-drawer');
+  const panel = document.getElementById('network-drawer-panel');
+  if (!drawer || !panel) return;
+  drawer.style.display = 'block';
+  requestAnimationFrame(() => { panel.style.transform = 'translateY(0)'; });
+  if (_networkTab === 'artistes') {
+    syncDancerListMobile();
+  } else if (_networkTab === 'evenements') {
+    _renderDrawerEvents();
+  } else if (_networkTab === 'lieux') {
+    _renderDrawerLieux();
+  }
+};
+
+function _renderDrawerEvents() {
+  const dst = document.getElementById('dancer-list-mobile');
+  if (!dst) return;
+  if (_networkEventsData.length === 0) {
+    dst.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">Aucun événement à venir</div>';
+    return;
+  }
+  dst.innerHTML = _networkEventsData.map(ev => {
+    const couleur = ev.type === 'battle' ? 'var(--yellow)' : ev.type === 'workshop' ? 'var(--green)' : 'var(--purple)';
+    const badgeBg = ev.type === 'battle' ? 'rgba(240,192,64,0.12)' : ev.type === 'workshop' ? 'rgba(0,245,155,0.12)' : 'rgba(168,85,247,0.12)';
+    const label = ev.type === 'battle' ? 'Battle' : ev.type === 'workshop' ? 'Workshop' : 'Soirée';
+    const emoji = ev.type === 'battle' ? '🏆' : ev.type === 'workshop' ? '🎓' : '🎉';
+    const dateStr = typeof _formatDate === 'function' ? _formatDate(_getDatePrincipale(ev)) : '';
+    return `<div class="dancer-card" onclick="showPage('agenda');fermerDrawerReseau();" style="padding:10px 12px;cursor:pointer;"><div style="width:38px;height:38px;border-radius:12px;flex-shrink:0;background:${badgeBg};border:2px solid ${couleur};display:flex;align-items:center;justify-content:center;font-size:18px;">${emoji}</div><div style="min-width:0;flex:1;"><div style="font-weight:700;font-size:13px;font-family:'Syne',sans-serif;">${ev.nom || 'Événement'}</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">${dateStr}${ev.ville ? ' · ' + ev.ville : ''}</div></div><span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;background:${badgeBg};color:${couleur};border:1px solid ${couleur}44;white-space:nowrap;">${label}</span></div>`;
+  }).join('');
+}
+
+function _renderDrawerLieux() {
+  const dst = document.getElementById('dancer-list-mobile');
+  if (!dst) return;
+  if (_networkLieuxData.length === 0) {
+    dst.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted);font-size:13px;">Aucun lieu enregistré</div>';
+    return;
+  }
+  dst.innerHTML = _networkLieuxData.map(lieu => {
+    const isSalle = lieu._type === 'salle';
+    const couleur = isSalle ? '#60a5fa' : 'var(--green)';
+    const bg = isSalle ? 'rgba(96,165,250,0.12)' : 'rgba(0,245,155,0.08)';
+    const border = isSalle ? 'rgba(96,165,250,0.2)' : 'rgba(0,245,155,0.15)';
+    const emoji = isSalle ? '🏢' : '🎓';
+    const label = isSalle ? 'Salle' : 'Cours';
+    return `<div class="dancer-card" onclick="showPage('salles');fermerDrawerReseau();" style="padding:10px 12px;cursor:pointer;"><div style="width:38px;height:38px;border-radius:12px;flex-shrink:0;background:${bg};border:2px solid ${couleur};display:flex;align-items:center;justify-content:center;font-size:18px;">${emoji}</div><div style="min-width:0;flex:1;"><div style="font-weight:700;font-size:13px;font-family:'Syne',sans-serif;">${lieu.nom || label}</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">${lieu.ville || ''}${lieu.styles ? ' · ' + lieu.styles : ''}${lieu.adresse && !lieu.styles ? ' · ' + lieu.adresse : ''}</div></div><span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;background:${bg};color:${couleur};border:1px solid ${border};white-space:nowrap;">${label}</span></div>`;
+  }).join('');
+}
 
 </script>
 
