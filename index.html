@@ -1064,6 +1064,7 @@ body.pwa #network-mobile-bar {
   border-bottom:1px solid rgba(255,255,255,0.03);
 }
 .priv-row:last-child{border-bottom:none;}
+.priv-desc{font-size:11px;color:var(--muted);margin-top:8px;padding:7px 10px;background:var(--bg2);border-radius:8px;line-height:1.5;display:none;}
 .priv-left{display:flex;align-items:center;gap:12px;}
 .priv-ico{font-size:18px;width:24px;text-align:center;}
 .priv-fn{font-size:14px;font-weight:600;}
@@ -1273,7 +1274,7 @@ body.pwa #network-mobile-bar {
 .rk-row:hover{border-color:rgba(255,255,255,0.1);}
 .rk-row.me{border-color:rgba(0,245,155,0.25);background:rgba(0,245,155,0.03);}
 .rk-row.gold{border-color:rgba(255,215,0,0.2);background:rgba(255,215,0,0.02);}
-.rk-num{font-family:'Syne',sans-serif;font-size:24px;width:28px;text-align:center;font-weight:800;}
+.rk-num{font-family:'Syne',sans-serif;font-size:19px;width:28px;text-align:center;font-weight:800;}
 .rk-av{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;}
 .rk-dn{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;letter-spacing:0.3px;}
 .rk-pts{font-size:12px;color:var(--muted2);margin-top:2px;}
@@ -1644,6 +1645,33 @@ body.pwa .page:not(#page-network) { padding-bottom: calc(60px + max(4px, env(saf
 
 .salles-empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
 .salles-empty-ico { font-size: 40px; margin-bottom: 12px; }
+
+/* ── Items compacts salles/écoles ── */
+.salle-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 14px; border-radius: 14px;
+  background: var(--card); border: 1px solid var(--border);
+  margin-bottom: 8px; cursor: pointer; transition: border-color 0.2s, background 0.2s;
+}
+.salle-item:hover { border-color: rgba(0,245,155,0.25); background: rgba(0,245,155,0.03); }
+.salle-item-left { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.salle-item-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.salle-item-city { font-size: 11px; color: var(--muted2); }
+.salle-item-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.salle-item-price { font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; font-size: 16px; color: var(--green); white-space: nowrap; }
+.salle-item-arrow { color: var(--muted); font-size: 14px; }
+.salle-item-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: rgba(0,245,155,0.08); color: var(--green); border: 1px solid rgba(0,245,155,0.15); white-space: nowrap; }
+
+/* ── Overlay détail salle/école ── */
+#salle-detail-overlay {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: var(--bg); overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+.salle-detail-inner { max-width: 600px; margin: 0 auto; padding: calc(50px + max(10px, env(safe-area-inset-top)) + 5px) 20px calc(120px + env(safe-area-inset-bottom)); }
+.salle-detail-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+.salle-detail-back { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--text); font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; line-height: 1; }
+.salle-detail-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -0.5px; }
+.salle-detail-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 16px; }
 
 @media (min-width: 769px) {
   .salles-page { max-width: 1200px !important; }
@@ -4499,16 +4527,30 @@ if (isPWA) {
     <div id="event-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);">
       <div id="event-modal-scroll" style="position:absolute;top:calc(44px + env(safe-area-inset-top));left:0;right:0;bottom:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 80px;">
       <div style="max-width:500px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:24px;overflow:hidden;">
-        <div id="modal-banner" style="height:140px;position:relative;display:flex;align-items:flex-end;padding:16px;">
+        <!-- PHOTO PLEINE LARGEUR -->
+        <div id="modal-banner" style="height:220px;position:relative;">
           <div id="modal-banner-bg" style="position:absolute;inset:0;"></div>
-          <button onclick="fermerModal()" style="position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:10px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);color:white;font-size:18px;cursor:pointer;">✕</button>
-          <span id="modal-type" style="position:relative;z-index:1;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;font-family:'Syne',sans-serif;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);"></span>
+          <div id="modal-banner-overlay-wrap" style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.55) 100%);"></div>
+          <button onclick="fermerModal()" style="position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:10px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);color:white;font-size:18px;cursor:pointer;z-index:2;">✕</button>
+          <span id="modal-type" style="position:absolute;bottom:12px;left:12px;z-index:2;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;font-family:'Syne',sans-serif;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);"></span>
         </div>
-        <div style="padding:24px;">
-          <div id="modal-title" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;margin-bottom:16px;"></div>
+        <!-- TITRE JUSTE SOUS LA PHOTO -->
+        <div style="padding:16px 24px 0;">
+          <div id="modal-title" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;line-height:1.2;margin-bottom:16px;"></div>
+        </div>
+        <div style="padding:0 24px 24px;">
           <div id="modal-meta" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;"></div>
           <div id="modal-desc" style="font-size:14px;color:var(--muted2);line-height:1.7;margin-bottom:20px;"></div>
           <div id="modal-map-wrap" style="display:none;margin-bottom:20px;"></div>
+
+          <!-- PARTICIPANTS APERÇU -->
+          <div id="modal-participants-wrap" style="display:none;margin-bottom:20px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);">Participants</div>
+              <button id="modal-voir-tous-btn" onclick="ouvrirListeParticipants()" style="background:none;border:none;color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;padding:0;">Voir tous →</button>
+            </div>
+            <div id="modal-avatars-row" style="display:flex;align-items:center;gap:-6px;"></div>
+          </div>
           <div style="display:flex;align-items:center;justify-content:space-between;">
             <div>
               <div id="modal-price" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;"></div>
@@ -5237,86 +5279,101 @@ if (isPWA) {
       </div>
 
       <div class="profile-card" style="margin-top:12px;">
-        <div class="pc-header" style="flex-direction:column;align-items:flex-start;gap:10px;">
+        <div class="pc-header" style="flex-direction:column;align-items:flex-start;gap:4px;">
           <div class="pc-title">Confidentialité</div>
-          <!-- Boutons mode global -->
-          <div style="display:flex;gap:6px;width:100%;">
-            <button id="mode-public" onclick="setModeGlobal('public')"
-              style="flex:1;padding:8px 4px;border-radius:10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;border:1.5px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all 0.2s;">
-              🔵 PUB
-            </button>
-            <button id="mode-communaute" onclick="setModeGlobal('communaute')"
-              style="flex:1;padding:8px 4px;border-radius:10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;border:1.5px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all 0.2s;">
-              🟣 COMM
-            </button>
-            <button id="mode-amis" onclick="setModeGlobal('amis')"
-              style="flex:1;padding:8px 4px;border-radius:10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;border:1.5px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all 0.2s;">
-              🟠 AMIS
-            </button>
-            <button id="mode-prive" onclick="setModeGlobal('prive')"
-              style="flex:1;padding:8px 4px;border-radius:10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;border:1.5px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all 0.2s;">
-              🔴 PRIVÉ
-            </button>
-          </div>
+          <div style="font-size:12px;color:var(--muted2);">Choisis qui peut voir chaque info</div>
         </div>
-        <div class="priv-row">
+
+        <!-- NOM / PSEUDO -->
+        <div class="priv-row" id="privrow-nom">
           <div class="priv-left">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <div><div class="priv-fn">Nom / Pseudo</div><div class="priv-fv" id="priv-val-nom">—</div></div>
           </div>
           <div class="tg">
             <button class="to sp" onclick="setPriv(this,0)">PUB</button>
-            <button class="to" onclick="setPriv(this,1)">AMI</button>
-            <button class="to" onclick="setPriv(this,2)">PRIV</button>
+            <button class="to" onclick="setPriv(this,1)">COMMU</button>
+            <button class="to" onclick="setPriv(this,2)">AMIS</button>
+            <button class="to" onclick="setPriv(this,3)">PRIV</button>
           </div>
+          <div class="priv-desc" id="privdesc-nom"></div>
         </div>
-        <div class="priv-row">
+
+        <!-- STYLES -->
+        <div class="priv-row" id="privrow-styles">
           <div class="priv-left">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-            <div><div class="priv-fn">Styles</div><div class="priv-fv" id="priv-val-styles">—</div></div>
+            <div><div class="priv-fn">Styles de danse</div><div class="priv-fv" id="priv-val-styles">—</div></div>
           </div>
           <div class="tg">
             <button class="to" onclick="setPriv(this,0)">PUB</button>
-            <button class="to sa" onclick="setPriv(this,1)">AMI</button>
-            <button class="to" onclick="setPriv(this,2)">PRIV</button>
+            <button class="to sc" onclick="setPriv(this,1)">COMMU</button>
+            <button class="to" onclick="setPriv(this,2)">AMIS</button>
+            <button class="to" onclick="setPriv(this,3)">PRIV</button>
           </div>
+          <div class="priv-desc" id="privdesc-styles"></div>
         </div>
-        <div class="priv-row">
+
+        <!-- RÉSEAUX SOCIAUX -->
+        <div class="priv-row" id="privrow-reseaux">
           <div class="priv-left">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.16 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/></svg>
             <div><div class="priv-fn">Réseaux sociaux</div><div class="priv-fv" id="priv-val-reseaux">Non renseigné</div></div>
           </div>
           <div class="tg">
             <button class="to" onclick="setPriv(this,0)">PUB</button>
-            <button class="to" onclick="setPriv(this,1)">AMI</button>
-            <button class="to sr" onclick="setPriv(this,2)">PRIV</button>
+            <button class="to" onclick="setPriv(this,1)">COMMU</button>
+            <button class="to sa" onclick="setPriv(this,2)">AMIS</button>
+            <button class="to" onclick="setPriv(this,3)">PRIV</button>
           </div>
+          <div class="priv-desc" id="privdesc-reseaux"></div>
         </div>
-        <div class="priv-row">
+
+        <!-- TÉLÉPHONE -->
+        <div class="priv-row" id="privrow-tel">
           <div class="priv-left">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-            <div>
-              <div class="priv-fn">Téléphone</div>
-              <div class="priv-fv" id="tel-display-priv">Non renseigné</div>
-            </div>
+            <div><div class="priv-fn">Téléphone</div><div class="priv-fv" id="tel-display-priv">Non renseigné</div></div>
           </div>
           <div class="tg">
             <button class="to" onclick="setPriv(this,0)">PUB</button>
-            <button class="to sa" onclick="setPriv(this,1)">AMI</button>
-            <button class="to sr" onclick="setPriv(this,2)">PRIV</button>
+            <button class="to" onclick="setPriv(this,1)">COMMU</button>
+            <button class="to sa" onclick="setPriv(this,2)">AMIS</button>
+            <button class="to" onclick="setPriv(this,3)">PRIV</button>
           </div>
+          <div class="priv-desc" id="privdesc-tel"></div>
         </div>
-        <div class="priv-row">
+
+        <!-- PLAYLISTS -->
+        <div class="priv-row" id="privrow-playlists">
           <div class="priv-left">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
             <div><div class="priv-fn">Playlists</div><div class="priv-fv" id="priv-val-playlists">Non renseigné</div></div>
           </div>
           <div class="tg">
             <button class="to" onclick="setPriv(this,0)">PUB</button>
-            <button class="to sa" onclick="setPriv(this,1)">AMI</button>
-            <button class="to" onclick="setPriv(this,2)">PRIV</button>
+            <button class="to sc" onclick="setPriv(this,1)">COMMU</button>
+            <button class="to" onclick="setPriv(this,2)">AMIS</button>
+            <button class="to" onclick="setPriv(this,3)">PRIV</button>
           </div>
+          <div class="priv-desc" id="privdesc-playlists"></div>
         </div>
+
+      </div>
+
+      <!-- SECTION PRÉSENCE AUX ÉVÉNEMENTS -->
+      <div class="profile-card" style="margin-top:12px;">
+        <div class="pc-header" style="flex-direction:column;align-items:flex-start;gap:4px;">
+          <div class="pc-title">Présence aux événements</div>
+          <div style="font-size:12px;color:var(--muted2);">Choisis qui te vois</div>
+        </div>
+        <div style="display:flex;gap:6px;width:100%;margin-top:14px;">
+          <button class="to" id="pe-pub" onclick="setPresenceEvenements('public',this)" style="flex:1;padding:10px 4px;border-radius:10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;">🌍 PUB</button>
+          <button class="to sc" id="pe-com" onclick="setPresenceEvenements('communaute',this)" style="flex:1;padding:10px 4px;border-radius:10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;">💜 COM</button>
+          <button class="to" id="pe-ami" onclick="setPresenceEvenements('amis',this)" style="flex:1;padding:10px 4px;border-radius:10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;">🤝 AMI</button>
+          <button class="to" id="pe-priv" onclick="setPresenceEvenements('prive',this)" style="flex:1;padding:10px 4px;border-radius:10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;">🔒 PRIV</button>
+        </div>
+        <div id="pe-desc" style="font-size:11px;color:var(--muted);margin-top:10px;padding:8px 10px;background:var(--bg2);border-radius:8px;line-height:1.5;"></div>
       </div>
 
       <!-- SECTION FAVORIS (privé — visible uniquement par soi) -->
@@ -6325,75 +6382,89 @@ document.addEventListener('input', function(e) {
 
 // ── Privacy toggles ──
 // ── Mode global confidentialité ──
-function mettreAJourBoutonsModeGlobal(mode) {
-  const cfg = {
-    public:     { border:'#4F9FFF',    bg:'rgba(79,159,255,0.1)',  color:'#4F9FFF'      },
-    communaute: { border:'#7B4FFF',    bg:'rgba(123,79,255,0.1)',  color:'#7B4FFF'      },
-    amis:       { border:'#FFAA00',    bg:'rgba(255,170,0,0.1)',   color:'#FFAA00'      },
-    prive:      { border:'var(--red)', bg:'rgba(255,77,109,0.1)',  color:'var(--red)'   },
-  };
-  ['public','communaute','amis','prive'].forEach(m => {
-    const b = document.getElementById('mode-' + m);
-    if (!b) return;
-    const active = m === mode && cfg[m];
-    b.style.borderColor = active ? cfg[m].border : 'var(--border)';
-    b.style.background  = active ? cfg[m].bg     : 'transparent';
-    b.style.color       = active ? cfg[m].color  : 'var(--muted2)';
-  });
-}
+const PRIV_LABELS = {
+  nom:     { pub:'Ton nom est visible par tout le monde.', communaute:'Visible uniquement par les membres compatibles à 50%+.', amis:'Visible uniquement par tes amis mutuels.', prive:'Ton nom est masqué pour tout le monde.' },
+  styles:  { pub:'Tes styles sont visibles par tout le monde.', communaute:'Visibles uniquement par les membres compatibles à 50%+.', amis:'Visibles uniquement par tes amis mutuels.', prive:'Tes styles sont masqués pour tout le monde.' },
+  reseaux: { pub:'Tes réseaux sont visibles par tout le monde.', communaute:'Visibles uniquement par les membres compatibles à 50%+.', amis:'Visibles uniquement par tes amis mutuels.', prive:'Tes réseaux sont masqués pour tout le monde.' },
+  tel:     { pub:'Ton numéro est visible par tout le monde.', communaute:'Visible uniquement par les membres compatibles à 50%+.', amis:'Visible uniquement par tes amis mutuels.', prive:'Ton numéro est masqué pour tout le monde.' },
+  playlists:{ pub:'Tes playlists sont visibles par tout le monde.', communaute:'Visibles uniquement par les membres compatibles à 50%+.', amis:'Visibles uniquement par tes amis mutuels.', prive:'Tes playlists sont masquées pour tout le monde.' },
+};
 
-function detecterModeDepuisItems() {
-  const actifs = [...document.querySelectorAll('.priv-row .tg')].map(tg => {
-    if (tg.querySelector('.sr')) return 'prive';
-    if (tg.querySelector('.sa')) return 'amis';
-    return 'public';
-  });
-  if (actifs.length === 0) return 'public';
-  return new Set(actifs).size === 1 ? actifs[0] : 'mix';
-}
-
-window.setModeGlobal = async function(mode) {
-  const idx = { public:0, communaute:0, amis:1, prive:2 }[mode];
-  const cls = ['sp','sa','sr'][idx];
-
-  // Tout passer au même niveau
-  document.querySelectorAll('.priv-row .tg').forEach(tg => {
-    tg.querySelectorAll('.to').forEach(b => b.className = 'to');
-    tg.querySelectorAll('.to')[idx]?.classList.add(cls);
-  });
-
-  mettreAJourBoutonsModeGlobal(mode);
-
-  // Sauvegarder dans Firebase
-  if (!window._currentUid || !window._db) return;
-  try {
-    const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const conf = {};
-    ['nom','styles','reseaux','playlists','tel'].forEach(c => conf[c] = mode);
-    await setDoc(doc(window._db, 'danseurs', window._currentUid), { confidentialite: conf }, { merge: true });
-  } catch(e) { console.error('Mode global:', e); }
-}
+const PRIV_CHAMPS = { 'Nom / Pseudo':'nom', 'Styles de danse':'styles', 'Réseaux sociaux':'reseaux', 'Téléphone':'tel', 'Playlists':'playlists' };
+const PRIV_VALEURS = ['public','communaute','amis','prive'];
+const PRIV_CLS     = ['sp','sc','sa','sr'];
 
 function setPriv(btn, idx) {
-  // Modifier uniquement l'item cliqué
   const grp = btn.closest('.tg');
   grp.querySelectorAll('.to').forEach(b => b.className = 'to');
-  btn.classList.add(['sp','sa','sr'][idx]);
+  btn.classList.add(PRIV_CLS[idx]);
 
-  // Sauvegarder dans Firebase
   const row   = btn.closest('.priv-row');
   const champ = row?.querySelector('.priv-fn')?.textContent?.trim();
-  const champs = { 'Nom / Pseudo':'nom', 'Styles':'styles', 'Réseaux sociaux':'reseaux', 'Playlists':'playlists', 'Téléphone':'tel' };
-  const valeurs = ['public','amis','prive'];
-  if (champs[champ]) window.sauvegarderConf(champs[champ], valeurs[idx]);
+  const key   = PRIV_CHAMPS[champ];
+  const valeur = PRIV_VALEURS[idx];
 
-  // Mettre à jour le mode global selon l'ensemble des items
-  mettreAJourBoutonsModeGlobal(detecterModeDepuisItems());
+  // Afficher la description
+  const desc = row?.querySelector('.priv-desc');
+  if (desc && key && PRIV_LABELS[key]) {
+    desc.textContent = PRIV_LABELS[key][valeur] || '';
+    desc.style.display = 'block';
+  }
+
+  if (key) window.sauvegarderConf(key, valeur);
 }
 
-function calculerModeGlobalActuel() {
-  return detecterModeDepuisItems();
+function _initPrivRow(rowId, key, valeur) {
+  const row = document.getElementById(rowId);
+  if (!row) return;
+  const tg = row.querySelector('.tg');
+  if (!tg) return;
+  const idx = PRIV_VALEURS.indexOf(valeur);
+  if (idx < 0) return;
+  tg.querySelectorAll('.to').forEach(b => b.className = 'to');
+  tg.querySelectorAll('.to')[idx]?.classList.add(PRIV_CLS[idx]);
+  const desc = row.querySelector('.priv-desc');
+  if (desc && PRIV_LABELS[key]) {
+    desc.textContent = PRIV_LABELS[key][valeur] || '';
+    desc.style.display = 'block';
+  }
 }
+
+// ── Présence aux événements ──
+const PE_DESC = {
+  public:     'Tout le monde peut voir les événements auxquels tu participes.',
+  communaute: 'Visible uniquement par les membres compatibles à 50% ou plus avec toi.',
+  amis:       'Visible uniquement par tes amis mutuels (abonnement réciproque).',
+  prive:      'Personne ne peut voir les événements où tu participes.',
+};
+
+window.setPresenceEvenements = async function(valeur, btn) {
+  const ids = { public:'pe-pub', communaute:'pe-com', amis:'pe-ami', prive:'pe-priv' };
+  const cls = { public:'sp', communaute:'sc', amis:'sa', prive:'sr' };
+  Object.values(ids).forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.className = 'to';
+  });
+  const target = document.getElementById(ids[valeur]);
+  if (target) target.classList.add(cls[valeur]);
+  const desc = document.getElementById('pe-desc');
+  if (desc) desc.textContent = PE_DESC[valeur] || '';
+  await window.sauvegarderConf('presenceEvenements', valeur);
+};
+
+window.chargerPresenceEvenements = function(valeur) {
+  const v = valeur || 'communaute';
+  const ids = { public:'pe-pub', communaute:'pe-com', amis:'pe-ami', prive:'pe-priv' };
+  const cls = { public:'sp', communaute:'sc', amis:'sa', prive:'sr' };
+  Object.values(ids).forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.className = 'to';
+  });
+  const target = document.getElementById(ids[v]);
+  if (target) target.classList.add(cls[v]);
+  const desc = document.getElementById('pe-desc');
+  if (desc) desc.textContent = PE_DESC[v] || '';
+};
 
 // ── Zone selector ──
 function selectZone(el) {
@@ -6551,11 +6622,10 @@ function _renderEventCard(ev, passe) {
   const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + '€';
   const couleurPrix = ev.prix === 0 ? 'var(--green)' : cfg.couleur;
   const btnClass = ev.prix === 0 ? 'ec-btn-green' : ev.type === 'battle' ? 'ec-btn-yellow' : 'ec-btn-green';
-  const btnLabel = 'Réserver';
   const btnHtml = !passe
     ? ev.lienResa
-      ? `<a href="${ev.lienResa}" target="_blank" rel="noopener" class="ec-btn ${btnClass}" onclick="event.stopPropagation()" style="text-decoration:none;">${btnLabel} ↗</a>`
-      : `<button class="ec-btn ${btnClass}" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')">${btnLabel}</button>`
+      ? `<a href="${ev.lienResa}" target="_blank" rel="noopener" class="ec-btn ${btnClass}" onclick="event.stopPropagation()" style="text-decoration:none;">Réserver ↗</a>`
+      : `<button class="ec-btn ${btnClass}" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')" style="display:flex;align-items:center;gap:6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Enregistrer</button>`
     : '';
   const inscrits = ev.inscrits || 0;
   const estFavori = mesFavoris.has(ev.id);
@@ -6674,17 +6744,16 @@ function ouvrirEvent(id) {
   document.getElementById('modal-banner-bg').style.background = ev.photoUrl
     ? `url('${ev.photoUrl}') center/cover no-repeat`
     : cfg.bg;
-  // Overlay sombre si photo présente
-  let modalOverlay = document.getElementById('modal-banner-overlay');
-  if (!modalOverlay) {
-    modalOverlay = document.createElement('div');
-    modalOverlay.id = 'modal-banner-overlay';
-    modalOverlay.style.cssText = 'position:absolute;inset:0;';
-    document.getElementById('modal-banner-bg').insertAdjacentElement('afterend', modalOverlay);
+  // Overlay selon présence photo
+  const bannerOverlayWrap = document.getElementById('modal-banner-overlay-wrap');
+  if (bannerOverlayWrap) {
+    bannerOverlayWrap.style.background = ev.photoUrl
+      ? 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.55) 100%)'
+      : 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.65) 100%)';
   }
-  modalOverlay.style.background = ev.photoUrl
-    ? 'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.6) 100%)'
-    : 'none';
+  // Ajuster hauteur bannière selon présence photo
+  const bannerEl = document.getElementById('modal-banner');
+  if (bannerEl) bannerEl.style.height = ev.photoUrl ? '220px' : '140px';
   document.getElementById('modal-type').textContent = cfg.label;
   document.getElementById('modal-title').textContent = ev.titre || '';
   document.getElementById('modal-price').textContent = prix;
@@ -6751,7 +6820,7 @@ function ouvrirEvent(id) {
   const passe = _estPasse(ev);
   const btn = document.getElementById('modal-btn');
   if (passe) {
-    btn.textContent = 'Événement terminé';
+    btn.innerHTML = 'Événement terminé';
     btn.disabled = true;
     btn.style.background = 'var(--card2)';
     btn.style.color = 'var(--muted)';
@@ -6760,13 +6829,32 @@ function ouvrirEvent(id) {
     btn.style.padding = '10px 16px';
     btn.style.fontSize = '12px';
     btn.onclick = null;
-  } else {
-    btn.textContent = 'Réserver';
+    btn.removeAttribute('href');
+    btn.tagName === 'A' && btn.replaceWith((() => { const b = document.createElement('button'); b.id = 'modal-btn'; b.style.cssText = btn.style.cssText; b.innerHTML = btn.innerHTML; return b; })());
+  } else if (ev.lienResa) {
+    // Lien billetterie dispo → ouvrir directement
+    btn.innerHTML = 'Réserver ↗';
     btn.disabled = false;
     btn.style.background = 'var(--green)';
     btn.style.color = '#080810';
     btn.style.border = 'none';
     btn.style.cursor = 'pointer';
+    btn.style.padding = '14px 28px';
+    btn.style.fontSize = '14px';
+    btn.onclick = function() { window.open(ev.lienResa, '_blank', 'noopener'); };
+  } else {
+    // Pas de lien → enregistrer (XP + compteur)
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> Enregistrer';
+    btn.style.display = 'flex';
+    btn.style.alignItems = 'center';
+    btn.style.gap = '8px';
+    btn.disabled = false;
+    btn.style.background = 'var(--green)';
+    btn.style.color = '#080810';
+    btn.style.border = 'none';
+    btn.style.cursor = 'pointer';
+    btn.style.padding = '14px 24px';
+    btn.style.fontSize = '14px';
     btn.onclick = sInscrire;
   }
 
@@ -6787,6 +6875,9 @@ function ouvrirEvent(id) {
     if (logoBar && logoBar.offsetParent !== null) topOffset = logoBar.getBoundingClientRect().bottom + nav.offsetHeight;
     modalScroll.scrollTop = 0;
   }
+
+  // Charger les avatars participants
+  chargerAvatarsParticipants(ev);
 }
 
 window.highlightDateOpt = function() {
@@ -6803,6 +6894,142 @@ function fermerModal() {
   const mapWrap = document.getElementById('modal-map-wrap');
   if (mapWrap) { mapWrap.style.display = 'none'; mapWrap.innerHTML = ''; }
 }
+
+// ── Participants événement ──
+let _participantsProfils = [];
+
+async function chargerAvatarsParticipants(ev) {
+  const wrap = document.getElementById('modal-participants-wrap');
+  const row = document.getElementById('modal-avatars-row');
+  if (!wrap || !row) return;
+
+  const uids = ev.participants || [];
+  if (uids.length === 0) { wrap.style.display = 'none'; return; }
+
+  wrap.style.display = 'block';
+  row.innerHTML = '<div style="font-size:12px;color:var(--muted);">⏳</div>';
+
+  try {
+    const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const afficher = uids.slice(0, 6);
+    const reste = uids.length - afficher.length;
+
+    const profils = await Promise.all(
+      afficher.map(uid => getDoc(doc(window._db, 'danseurs', uid)).then(s => s.exists() ? { uid, ...s.data() } : { uid }))
+    );
+    _participantsProfils = profils;
+
+    const avatarsHtml = profils.map((p, i) => {
+      const style = `width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--purple));border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;position:relative;flex-shrink:0;margin-left:${i === 0 ? '0' : '-8px'};cursor:pointer;z-index:${10 - i};transition:transform 0.15s;`;
+      const img = p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:50%;">` : '💃';
+      return `<div style="${style}" onclick="ouvrirListeParticipants()" title="${p.nomAffiche || p.nom || p.pseudo || 'Artiste'}">${img}</div>`;
+    }).join('');
+
+    const plusHtml = reste > 0
+      ? `<div onclick="ouvrirListeParticipants()" style="width:34px;height:34px;border-radius:50%;background:var(--card2);border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted2);margin-left:-8px;cursor:pointer;flex-shrink:0;z-index:1;">+${reste}</div>`
+      : '';
+
+    row.innerHTML = avatarsHtml + plusHtml;
+  } catch(e) {
+    console.error('Avatars participants:', e);
+    wrap.style.display = 'none';
+  }
+}
+
+window.ouvrirListeParticipants = async function() {
+  if (!eventCourant) return;
+  const overlay = document.getElementById('participants-overlay');
+  const listEl = document.getElementById('participants-list-full');
+  const titreEl = document.getElementById('participants-event-titre');
+  const countEl = document.getElementById('participants-count-label');
+
+  titreEl.textContent = eventCourant.titre || '';
+  overlay.style.display = 'block';
+  overlay.scrollTop = 0;
+  listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">⏳ Chargement...</div>';
+
+  const uids = eventCourant.participants || [];
+
+  if (uids.length === 0) {
+    countEl.textContent = '0 participant';
+    listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">Aucun inscrit pour le moment</div>';
+    return;
+  }
+
+  try {
+    const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const moi = window._monProfil;
+    const monUid = window._currentUid;
+    const mesAbos = new Set(moi?.abonnements || []);
+
+    const profils = await Promise.all(
+      uids.map(uid => getDoc(doc(window._db, 'danseurs', uid)).then(s => s.exists() ? { uid, ...s.data() } : { uid }))
+    );
+
+    // Filtrer selon confidentialité de chaque participant
+    const visibles = profils.filter(p => {
+      if (p.uid === monUid) return true; // toujours soi-même
+      const regle = p.confidentialite?.presenceEvenements || 'communaute';
+      if (regle === 'prive') return false;
+      if (regle === 'public') return true;
+      if (regle === 'amis') {
+        // abonnement mutuel : je le suis ET il me suit
+        const ilMeSuit = (p.abonnements || []).includes(monUid);
+        const jeLesSuis = mesAbos.has(p.uid);
+        return ilMeSuit && jeLesSuis;
+      }
+      if (regle === 'communaute') {
+        if (!moi) return false;
+        const score = calculerCompatibilite(moi, p);
+        return score !== null && score >= 50;
+      }
+      return true;
+    });
+
+    countEl.textContent = visibles.length + ' participant' + (visibles.length > 1 ? 's' : '') +
+      (visibles.length < uids.length ? ` · ${uids.length - visibles.length} en privé` : '');
+
+    if (visibles.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">Aucun profil visible selon tes paramètres</div>';
+      return;
+    }
+
+    listEl.innerHTML = visibles.map(p => {
+      const nom = p.nomAffiche || p.nom || p.pseudo || 'Artiste';
+      const styles = p.styles && p.styles.length ? p.styles.slice(0,2).join(' · ') : '';
+      const estMoi = p.uid === monUid;
+      // Badge confidentialité
+      const regle = p.confidentialite?.presenceEvenements || 'communaute';
+      const badgeCfg = {
+        public:     { label: '🌍', title: 'Public' },
+        communaute: { label: '💜', title: 'Communauté' },
+        amis:       { label: '🤝', title: 'Amis' },
+      }[regle] || { label: '', title: '' };
+
+      return `<div onclick="${estMoi ? '' : `ouvrirProfilArtiste('${p.uid}')`}" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--card);border:1px solid var(--border);cursor:${estMoi ? 'default' : 'pointer'};transition:border-color 0.2s;" ${estMoi ? '' : `onmouseover="this.style.borderColor='rgba(0,245,155,0.25)'" onmouseout="this.style.borderColor='var(--border)'"`}>
+        <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden;position:relative;flex-shrink:0;">
+          ${p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:12px;">` : '💃'}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;">${nom}${estMoi ? ' <span style="color:var(--green);font-size:11px;font-weight:600">(Moi)</span>' : ''}</div>
+          ${styles ? `<div style="font-size:11px;color:var(--muted2);margin-top:2px;">💃 ${styles}</div>` : ''}
+          ${p.zone ? `<div style="font-size:11px;color:var(--muted);margin-top:1px;">📍 ${p.zone}</div>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          ${!estMoi && badgeCfg.label ? `<span title="${badgeCfg.title}" style="font-size:14px;">${badgeCfg.label}</span>` : ''}
+          ${!estMoi ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted);"><polyline points="9 18 15 12 9 6"/></svg>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    console.error('Liste participants:', e);
+    listEl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--red);font-size:13px;">❌ Erreur de chargement</div>';
+  }
+};
+
+window.fermerListeParticipants = function() {
+  document.getElementById('participants-overlay').style.display = 'none';
+};
 
 window.sInscrire = async function() {
   if (!window._currentUid) {
@@ -7032,7 +7259,7 @@ function afficherListeClassement(danseurs, currentUid) {
     const classeRow = pos === 1 ? 'gold' : estMoi ? 'me' : '';
 
     return `
-      <div class="rk-row ${classeRow}">
+      <div class="rk-row ${classeRow}" style="cursor:${estMoi ? 'default' : 'pointer'};" ${estMoi ? '' : `onclick="ouvrirProfilArtiste('${d.uid}')"`}>
         <div class="rk-num" style="color:${couleurNum};font-weight:800">${pos}</div>
         <div class="rk-av" style="background:#0d2b1e;overflow:hidden;position:relative;">
           ${d.photo ? `<img src="${d.photo}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:14px;">` : '💃'}
@@ -7181,43 +7408,22 @@ function afficherEcoles(ecoles) {
     return;
   }
 
-  grid.innerHTML = liste.map(e => {
-    const niveaux = (e.niveaux || []).map(n => `<span class="salle-card-tag">${n}</span>`).join('');
-    const horaires = (e.horaires || []).filter(h => h.jour).map(h =>
-      `<div style="font-size:12px;color:var(--muted2);">${h.jour} · ${h.heure}</div>`
-    ).join('');
-    const abos = (e.abonnements || []).slice(0, 3).map(a =>
-      `<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted2);">${a.nom}</span><span style="color:var(--green);font-weight:700;">${a.prix}€</span></div>`
-    ).join('');
-    const plusAbos = e.abonnements && e.abonnements.length > 3 ? `<div style="font-size:11px;color:var(--muted);margin-top:4px;">+${e.abonnements.length - 3} autres formules</div>` : '';
-
-    const contactHtml = (e.tel || e.email) ? `
-      <a href="${e.tel ? 'tel:' + e.tel.replace(/\s/g,'') : 'mailto:' + e.email}" class="salle-card-contact">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.8 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.1a16 16 0 0 0 6 6l1.09-1.08a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.9 15l.02 1.92z"/></svg>
-        Contacter
-      </a>` : '';
-
-    const siteHtml = e.lien ? `<a href="${e.lien}" target="_blank" rel="noopener" class="salle-card-contact" style="margin-top:6px;text-decoration:none;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        Voir le site ↗
-      </a>` : '';
-
-    return `<div class="salle-card">
-      <div class="salle-card-top">
-        <div>
-          <div class="salle-card-name">${e.nom || 'Sans nom'}</div>
-          <div class="salle-card-city">${e.ville || ''}${e.adresse ? ' · ' + e.adresse : ''}</div>
-        </div>
+  grid.innerHTML = liste.map((e, i) => {
+    const niveauPrincipal = e.niveaux && e.niveaux[0] ? e.niveaux[0] : '';
+    return `<div class="salle-item" onclick="ouvrirDetailSalle('ecole', ${i})">
+      <div class="salle-item-left">
+        <div class="salle-item-name">${e.nom || 'Sans nom'}</div>
+        <div class="salle-item-city">${e.ville || ''}${e.adresse ? ' · ' + e.adresse : ''}</div>
       </div>
-      ${e.styles ? `<div style="font-size:12px;color:var(--muted2);margin-bottom:8px;">💃 ${e.styles}</div>` : ''}
-      <div class="salle-card-tags" style="margin-bottom:10px;">${niveaux}</div>
-      ${horaires ? `<div style="margin-bottom:10px;">${horaires}</div>` : ''}
-      ${e.description ? `<div class="salle-card-desc">${e.description}</div>` : ''}
-      ${abos ? `<div style="margin-bottom:10px;">${abos}${plusAbos}</div>` : ''}
-      ${contactHtml}
-      ${siteHtml}
+      <div class="salle-item-right">
+        ${niveauPrincipal ? `<span class="salle-item-tag">${niveauPrincipal}</span>` : ''}
+        <span class="salle-item-arrow">›</span>
+      </div>
     </div>`;
   }).join('');
+
+  // stocker pour accès dans l'overlay
+  window._ecolesListeFiltered = liste;
 }
 
 function afficherSalles(salles) {
@@ -7234,42 +7440,25 @@ function afficherSalles(salles) {
     return;
   }
 
-  grid.innerHTML = liste.map(s => {
-    const dispos = (s.dispos || []).map(j =>
-      `<span class="salle-dispo-chip ok">${j}</span>`
-    ).join('');
+  window._sallesListeFiltered = liste;
 
-    const contactHref = s.contact && s.contact.includes('@')
-      ? `mailto:${s.contact}`
-      : s.contact ? `tel:${s.contact.replace(/\s/g,'')}` : '#';
+  grid.innerHTML = liste.map((s, i) => {
+    const dispo = s.disponible !== false;
+    const prixHtml = s.prix ? `<span class="salle-item-price">${s.prix}€<span style="font-size:10px;font-weight:400;color:var(--muted)">/h</span></span>` : '';
+    const dispoBadge = dispo
+      ? `<span class="salle-item-tag">Dispo</span>`
+      : `<span class="salle-item-tag" style="background:rgba(255,77,109,0.08);color:var(--red);border-color:rgba(255,77,109,0.15);">Indispo</span>`;
 
-    const dispoBadge = s.disponible !== false
-      ? '<span class="salle-card-tag green">Disponible</span>'
-      : '<span class="salle-card-tag">Indisponible</span>';
-
-    const surface = s.surface ? `<span class="salle-card-tag">${s.surface} m²</span>` : '';
-
-    return `<div class="salle-card">
-      <div class="salle-card-top">
-        <div>
-          <div class="salle-card-name">${s.nom || 'Sans nom'}</div>
-          <div class="salle-card-city">${s.ville || ''}${s.adresse ? ' · ' + s.adresse : ''}</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="salle-card-price">${s.prix || '—'}<span style="font-size:13px;">€</span></div>
-          <div class="salle-card-price-unit">/ heure</div>
-        </div>
+    return `<div class="salle-item" onclick="ouvrirDetailSalle('studio', ${i})">
+      <div class="salle-item-left">
+        <div class="salle-item-name">${s.nom || 'Sans nom'}</div>
+        <div class="salle-item-city">${s.ville || ''}${s.adresse ? ' · ' + s.adresse : ''}</div>
       </div>
-      <div class="salle-card-tags">
+      <div class="salle-item-right">
         ${dispoBadge}
-        ${surface}
+        ${prixHtml}
+        <span class="salle-item-arrow">›</span>
       </div>
-      ${dispos ? `<div class="salle-dispo">${dispos}</div>` : ''}
-      ${s.description ? `<div class="salle-card-desc">${s.description}</div>` : ''}
-      ${s.contact ? `<a href="${contactHref}" class="salle-card-contact">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.8 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.1a16 16 0 0 0 6 6l1.09-1.08a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.9 15l.02 1.92z"/></svg>
-        Contacter
-      </a>` : ''}
     </div>`;
   }).join('');
 }
@@ -7319,6 +7508,132 @@ function _afficherWorkshopsFiltres() {
   }
   grid.innerHTML = liste.map(ev => _renderEventCard(ev, false)).join('');
 }
+
+// ════════════════════════════════
+// OVERLAY DÉTAIL SALLE / ÉCOLE
+// ════════════════════════════════
+
+window.ouvrirDetailSalle = function(type, index) {
+  const item = type === 'ecole'
+    ? (window._ecolesListeFiltered || [])[index]
+    : (window._sallesListeFiltered || [])[index];
+  if (!item) return;
+
+  document.getElementById('salle-detail-titre').textContent = item.nom || '';
+
+  let html = '';
+
+  if (type === 'studio') {
+    // Infos principales
+    const dispo = item.disponible !== false;
+    const dispoBadge = dispo
+      ? `<span class="salle-card-tag green">Disponible</span>`
+      : `<span class="salle-card-tag" style="background:rgba(255,77,109,0.08);color:var(--red);border-color:rgba(255,77,109,0.15);">Indisponible</span>`;
+    const surface = item.surface ? `<span class="salle-card-tag">${item.surface} m²</span>` : '';
+
+    const dispoChips = (item.dispos || []).map(j =>
+      `<span class="salle-dispo-chip ok">${j}</span>`
+    ).join('');
+
+    const contactHref = item.contact && item.contact.includes('@')
+      ? `mailto:${item.contact}`
+      : item.contact ? `tel:${item.contact.replace(/\s/g,'')}` : '#';
+
+    const lienHtml = item.lien ? `<a href="${item.lien}" target="_blank" rel="noopener" class="salle-card-contact" style="margin-top:8px;text-decoration:none;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      Voir le site ↗
+    </a>` : '';
+
+    html = `
+      <div class="salle-detail-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px;">
+          <div>
+            <div style="font-size:13px;color:var(--muted2);">📍 ${item.ville || ''}${item.adresse ? '<br><span style="font-size:12px;">' + item.adresse + '</span>' : ''}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            ${item.prix ? `<div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;color:var(--green);line-height:1;">${item.prix}€</div><div style="font-size:11px;color:var(--muted);">/ heure</div>` : ''}
+          </div>
+        </div>
+        <div class="salle-card-tags" style="margin-bottom:${dispoChips ? '10px' : '0'};">
+          ${dispoBadge}${surface}
+        </div>
+        ${dispoChips ? `<div class="salle-dispo">${dispoChips}</div>` : ''}
+      </div>
+
+      ${item.description ? `<div class="salle-detail-card">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Description</div>
+        <div style="font-size:14px;color:var(--muted2);line-height:1.7;">${item.description}</div>
+      </div>` : ''}
+
+      ${item.contact ? `<div class="salle-detail-card" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:2px;">Contact</div>
+        <a href="${contactHref}" class="salle-card-contact">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.8 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.1a16 16 0 0 0 6 6l1.09-1.08a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.9 15l.02 1.92z"/></svg>
+          ${item.contact}
+        </a>
+        ${lienHtml}
+      </div>` : lienHtml ? `<div class="salle-detail-card">${lienHtml}</div>` : ''}
+    `;
+
+  } else {
+    // École
+    const niveaux = (item.niveaux || []).map(n => `<span class="salle-card-tag">${n}</span>`).join('');
+    const horaires = (item.horaires || []).filter(h => h.jour).map(h =>
+      `<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted2);">${h.jour}</span><span style="font-weight:600;">${h.heure}</span></div>`
+    ).join('');
+    const abos = (item.abonnements || []).map(a =>
+      `<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted2);">${a.nom}</span><span style="color:var(--green);font-weight:700;">${a.prix}€</span></div>`
+    ).join('');
+
+    const contactHtml = (item.tel || item.email) ? `
+      <a href="${item.tel ? 'tel:' + item.tel.replace(/\s/g,'') : 'mailto:' + item.email}" class="salle-card-contact">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.8 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.1a16 16 0 0 0 6 6l1.09-1.08a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.9 15l.02 1.92z"/></svg>
+        Contacter
+      </a>` : '';
+    const siteHtml = item.lien ? `<a href="${item.lien}" target="_blank" rel="noopener" class="salle-card-contact" style="margin-top:8px;text-decoration:none;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      Voir le site ↗
+    </a>` : '';
+
+    html = `
+      <div class="salle-detail-card">
+        <div style="font-size:13px;color:var(--muted2);margin-bottom:12px;">📍 ${item.ville || ''}${item.adresse ? ' · ' + item.adresse : ''}</div>
+        ${item.styles ? `<div style="font-size:13px;color:var(--muted2);margin-bottom:12px;">💃 ${item.styles}</div>` : ''}
+        ${niveaux ? `<div class="salle-card-tags">${niveaux}</div>` : ''}
+      </div>
+
+      ${item.description ? `<div class="salle-detail-card">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Description</div>
+        <div style="font-size:14px;color:var(--muted2);line-height:1.7;">${item.description}</div>
+      </div>` : ''}
+
+      ${horaires ? `<div class="salle-detail-card">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Horaires</div>
+        ${horaires}
+      </div>` : ''}
+
+      ${abos ? `<div class="salle-detail-card">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Formules & tarifs</div>
+        ${abos}
+      </div>` : ''}
+
+      ${(contactHtml || siteHtml) ? `<div class="salle-detail-card" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:2px;">Contact</div>
+        ${contactHtml}
+        ${siteHtml}
+      </div>` : ''}
+    `;
+  }
+
+  document.getElementById('salle-detail-content').innerHTML = html;
+  const overlay = document.getElementById('salle-detail-overlay');
+  overlay.style.display = 'block';
+  overlay.scrollTop = 0;
+};
+
+window.fermerDetailSalle = function() {
+  document.getElementById('salle-detail-overlay').style.display = 'none';
+};
 
 // ── Mobile nav sync ──
 function setMobileActive(el) {
@@ -10532,28 +10847,12 @@ async function chargerProfil(uid) {
     }
 
     // ── Confidentialité ──
-    if (d.confidentialite) {
-      const conf = d.confidentialite;
-      const rows = document.querySelectorAll('.priv-row');
-      const champs = ['nom','styles','reseaux','playlists','tel'];
-      rows.forEach((row, i) => {
-        const champ = champs[i];
-        if (!champ || !conf[champ]) return;
-        const tg = row.querySelector('.tg');
-        if (!tg) return;
-        tg.querySelectorAll('.to').forEach(b => b.className = 'to');
-        const val = conf[champ];
-        const cls = val === 'public' ? 'sp' : val === 'amis' ? 'sa' : 'sr';
-        const btns = tg.querySelectorAll('.to');
-        const idx  = val === 'public' ? 0 : val === 'amis' ? 1 : 2;
-        if (btns[idx]) btns[idx].classList.add(cls);
-      });
-      // Initialiser le mode global selon les paramètres chargés
-      setTimeout(() => mettreAJourBoutonsModeGlobal(calculerModeGlobalActuel()), 50);
-    } else {
-      // Aucune conf → mode amis par défaut
-      setTimeout(() => mettreAJourBoutonsModeGlobal('public'), 50);
-    }
+    const conf = d.confidentialite || {};
+    _initPrivRow('privrow-nom',      'nom',      conf.nom      || 'public');
+    _initPrivRow('privrow-styles',   'styles',   conf.styles   || 'communaute');
+    _initPrivRow('privrow-reseaux',  'reseaux',  conf.reseaux  || 'amis');
+    _initPrivRow('privrow-tel',      'tel',      conf.tel      || 'amis');
+    _initPrivRow('privrow-playlists','playlists',conf.playlists|| 'communaute');
 
     // ── Genres musicaux ──
     const genresNorm = window.normaliserStyles(d.genres);
@@ -10574,6 +10873,7 @@ async function chargerProfil(uid) {
 
     // ── Bracelet ──
     mettreAJourBandeBracelet(d.modeBracelet || 'public');
+    chargerPresenceEvenements(d.confidentialite?.presenceEvenements || 'communaute');
 
     // ── Abonnements / Abonnés ──
     const abonnements = d.abonnements || [];
@@ -11467,6 +11767,33 @@ window.gainXP = async function(montant, type, labelOverride) {
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ═══ OVERLAY DÉTAIL SALLE/ÉCOLE ═══ -->
+<div id="salle-detail-overlay">
+  <div class="salle-detail-inner">
+    <div class="salle-detail-header">
+      <button class="salle-detail-back" onclick="fermerDetailSalle()">←</button>
+      <div class="salle-detail-title" id="salle-detail-titre"></div>
+    </div>
+    <div id="salle-detail-content"></div>
+  </div>
+</div>
+
+<!-- ═══ OVERLAY PARTICIPANTS ÉVÉNEMENT ═══ -->
+<div id="participants-overlay" style="display:none;position:fixed;inset:0;z-index:10100;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div style="max-width:600px;margin:0 auto;padding:calc(50px + max(10px, env(safe-area-inset-top)) + 5px) 20px calc(100px + env(safe-area-inset-bottom));">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;">
+      <button onclick="fermerListeParticipants()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
+      <div>
+        <div id="participants-event-titre" style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;line-height:1.2;"></div>
+        <div id="participants-count-label" style="font-size:12px;color:var(--muted);margin-top:2px;"></div>
+      </div>
+    </div>
+    <div id="participants-list-full" style="display:flex;flex-direction:column;gap:8px;">
+      <div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
+    </div>
   </div>
 </div>
 
