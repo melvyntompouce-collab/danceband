@@ -2471,6 +2471,7 @@ body.pwa #msg-conversation { bottom: 87px !important; }
 #msg-input-bar { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
 #msg-conversation { bottom: 0 !important; }
 body.keyboard-open #bottom-nav { display: none !important; }
+body.conv-ouverte #bottom-nav { display: none !important; }
 
 body.pwa #bottom-nav .mn-item { padding-top: 10px; }
 body.pwa #bottom-nav .mn-item.mn-center { padding-top: 8px; }
@@ -4630,7 +4631,7 @@ if (isPWA) {
     </div>
 
     <!-- Fenêtre de conversation -->
-    <div id="msg-conversation" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:var(--bg);padding-top:max(65px, calc(45px + env(safe-area-inset-top)));display:none;flex-direction:column;">
+    <div id="msg-conversation" style="display:none;position:fixed;top:0;left:0;right:0;z-index:300;background:var(--bg);padding-top:max(55px, calc(35px + env(safe-area-inset-top)));display:none;flex-direction:column;">
 
       <!-- Header conversation -->
       <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;">
@@ -8718,6 +8719,7 @@ async function ouvrirConversation(uid, nom, photo) {
   const convEl = document.getElementById('msg-conversation');
   convEl.style.bottom = '0';
   convEl.style.display = 'flex';
+  document.body.classList.add('conv-ouverte');
 
   // Détecter ouverture/fermeture clavier via visualViewport
   if (window.visualViewport && !window._vpListener) {
@@ -8766,6 +8768,7 @@ function fermerConversation() {
   conv.style.top    = '0';
   conv.style.height = '';
   document.body.classList.remove('keyboard-open');
+  document.body.classList.remove('conv-ouverte');
   // Nettoyer le listener viewport
   if (window._vpListener && window.visualViewport) {
     window.visualViewport.removeEventListener('resize', window._vpListener);
