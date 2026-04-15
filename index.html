@@ -908,64 +908,86 @@ body.pwa #network-mobile-bar {
 }
 .agenda-filter.on{background:rgba(77,159,255,0.08);border-color:var(--blue);color:var(--blue);}
 .agenda-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
-  gap:20px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
+/* ── Event row compact ── */
 .event-card{
   background:var(--card);border:1px solid var(--border);
-  border-radius:24px;overflow:hidden;
-  cursor:pointer;transition:all 0.2s;
+  border-radius:18px;overflow:hidden;
+  display:flex;align-items:stretch;
+  transition:border-color 0.2s;
+  position:relative;
 }
-.event-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,0.12);}
-.ec-banner{
-  height:120px;position:relative;
-  display:flex;align-items:flex-end;padding:16px;
+.event-card:hover{border-color:rgba(255,255,255,0.14);}
+.ec-thumb{
+  width:88px;flex-shrink:0;position:relative;overflow:hidden;
 }
-.ec-banner-bg{position:absolute;inset:0;}
+.ec-thumb-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
+.ec-thumb-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.0) 60%,rgba(8,8,16,0.5) 100%);}
 .ec-type{
-  position:relative;z-index:1;
-  padding:5px 12px;border-radius:8px;
-  font-size:11px;font-weight:700;
-  font-family:'Syne',sans-serif;letter-spacing:1px;
-  background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,0.1);
+  position:absolute;bottom:6px;left:6px;z-index:1;
+  padding:2px 7px;border-radius:6px;
+  font-size:9px;font-weight:700;
+  font-family:'Syne',sans-serif;letter-spacing:0.8px;text-transform:uppercase;
+  background:rgba(0,0,0,0.55);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.1);white-space:nowrap;
 }
-.ec-body{padding:20px;}
+.ec-body{
+  flex:1;padding:12px 12px 12px 12px;
+  display:flex;flex-direction:column;justify-content:center;
+  min-width:0;
+}
 .ec-title{
   font-family:'Syne',sans-serif;
-  font-size:22px;font-weight:800;margin-bottom:10px;letter-spacing:0.5px;
+  font-size:14px;font-weight:800;letter-spacing:0.2px;
+  line-height:1.2;margin-bottom:5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.ec-meta{display:flex;flex-direction:column;gap:6px;}
-.ec-mi{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted2);}
-.ec-foot{
+.ec-meta{display:flex;flex-direction:column;gap:3px;}
+.ec-mi{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ec-foot-row{
   display:flex;align-items:center;justify-content:space-between;
-  padding:16px 20px;border-top:1px solid var(--border);
+  margin-top:8px;gap:8px;
 }
-.ec-attendees{display:flex;align-items:center;gap:8px;}
-.ec-avs{display:flex;}
-.ec-av{
-  width:26px;height:26px;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;border:2px solid var(--card);
-  margin-left:-6px;
-}
-.ec-av:first-child{margin-left:0;}
-.ec-count{font-size:12px;color:var(--muted2);}
-.ec-price-wrap{display:flex;align-items:center;gap:10px;}
 .ec-price{
-  font-family:'Syne',sans-serif;font-size:24px;
-  letter-spacing:1px;font-weight:800;
+  font-family:'Syne',sans-serif;font-size:13px;
+  font-weight:800;white-space:nowrap;
 }
+.ec-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.ec-btn-save{
+  width:32px;height:32px;border-radius:9px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  color:var(--text);font-size:15px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.2s;flex-shrink:0;
+}
+.ec-btn-save:hover{background:rgba(255,255,255,0.1);}
+.ec-btn-save.saved{color:var(--red);border-color:rgba(255,77,109,0.35);background:rgba(255,77,109,0.08);}
 .ec-btn{
-  padding:10px 20px;border-radius:10px;
-  font-weight:800;font-size:13px;border:none;cursor:pointer;
-  font-family:'DM Sans',sans-serif;transition:all 0.2s;
+  padding:7px 14px;border-radius:9px;
+  font-weight:700;font-size:11px;border:none;cursor:pointer;
+  font-family:'Syne',sans-serif;transition:all 0.15s;white-space:nowrap;letter-spacing:0.3px;
 }
 .ec-btn-green{background:var(--green);color:#080810;}
 .ec-btn-blue{background:rgba(77,159,255,0.1);color:var(--blue);border:1px solid var(--blue);}
 .ec-btn-yellow{background:var(--yellow);color:#080810;}
-.ec-btn:hover{transform:translateY(-0.5px);}
+.ec-btn:hover{opacity:0.88;}
+/* passe dimmed */
+.event-card.passe{opacity:0.5;filter:grayscale(0.4);}
+.ec-passe-tag{
+  position:absolute;top:6px;left:6px;z-index:2;
+  background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.12);
+  border-radius:5px;padding:1px 6px;font-size:9px;font-weight:700;
+  font-family:'Syne',sans-serif;color:var(--muted2);letter-spacing:1px;text-transform:uppercase;
+  backdrop-filter:blur(4px);
+}
+/* legacy unused but keep to avoid any ref errors */
+.ec-banner{display:none;}
+.ec-banner-bg{display:none;}
+.ec-attendees,.ec-avs,.ec-av,.ec-count,.ec-price-wrap,.ec-foot{display:none;}
 
 /* ══════════════════════════════
    PAGE: PROFIL
@@ -4520,7 +4542,7 @@ if (isPWA) {
         <span id="agenda-passes-label">Événements terminés</span>
         <span id="agenda-passes-count" style="margin-left:auto;background:rgba(255,255,255,0.06);border-radius:20px;padding:2px 10px;font-size:11px;"></span>
       </button>
-      <div id="agenda-passes-grid" style="display:none;margin-top:16px;" class="agenda-grid"></div>
+      <div id="agenda-passes-grid" style="display:none;margin-top:16px;flex-direction:column;gap:10px;" class="agenda-grid"></div>
     </div>
 
   </div>
@@ -6573,15 +6595,8 @@ function _renderEventCard(ev, passe) {
   const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + '€';
   const couleurPrix = ev.prix === 0 ? 'var(--green)' : cfg.couleur;
   const btnClass = ev.prix === 0 ? 'ec-btn-green' : ev.type === 'battle' ? 'ec-btn-yellow' : 'ec-btn-green';
-  const btnHtml = !passe
-    ? ev.lienResa
-      ? `<a href="${ev.lienResa}" target="_blank" rel="noopener" class="ec-btn ${btnClass}" onclick="event.stopPropagation()" style="text-decoration:none;">Réserver ↗</a>`
-      : `<button class="ec-btn ${btnClass}" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')" style="display:flex;align-items:center;gap:6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Enregistrer</button>`
-    : '';
-  const inscrits = ev.inscrits || 0;
   const estFavori = mesFavoris.has(ev.id);
-  const opacityStyle = passe ? 'opacity:0.5;filter:grayscale(0.4);' : '';
-  const passeTag = passe ? `<span style="position:absolute;top:10px;left:10px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700;font-family:'Syne',sans-serif;color:var(--muted2);letter-spacing:1px;text-transform:uppercase;backdrop-filter:blur(4px);">Terminé</span>` : '';
+  const passeClass = passe ? ' passe' : '';
 
   let dateLine = '';
   if (ev.dates && ev.dates.length > 1) {
@@ -6592,35 +6607,41 @@ function _renderEventCard(ev, passe) {
     dateLine = `📅 ${_formatDate(d)}${ev.heure ? ' · ' + ev.heure : ''}`;
   }
 
+  const locLine = [ev.ville, ev.lieu].filter(Boolean).join(' · ');
+
+  const btnHtml = !passe
+    ? ev.lienResa
+      ? `<a href="${ev.lienResa}" target="_blank" rel="noopener" class="ec-btn ${btnClass}" onclick="event.stopPropagation()" style="text-decoration:none;">Réserver ↗</a>`
+      : `<button class="ec-btn ${btnClass}" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')">En savoir plus</button>`
+    : `<button class="ec-btn" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')" style="background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--muted2);">Voir</button>`;
+
   return `
-    <div class="event-card" onclick="ouvrirEvent('${ev.id}')" style="${opacityStyle}">
-      <div class="ec-banner">
-        <div class="ec-banner-bg" style="${ev.photoUrl ? `background:url('${ev.photoUrl}') center/cover no-repeat` : `background:${cfg.bg}`}"></div>
-        ${ev.photoUrl ? `<div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 100%);"></div>` : ''}
-        <span class="ec-type">${cfg.label}</span>
-        ${passeTag}
-        <button id="fav-${ev.id}" onclick="event.stopPropagation();toggleFavori('${ev.id}')"
-          style="position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.15);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.2s;backdrop-filter:blur(4px);">
-          ${estFavori ? '♥' : '♡'}
-        </button>
+    <div class="event-card${passeClass}">
+      <!-- VIGNETTE -->
+      <div class="ec-thumb">
+        <div class="ec-thumb-bg" style="${ev.photoUrl ? `background-image:url('${ev.photoUrl}')` : `background:${cfg.bg}`}"></div>
+        <div class="ec-thumb-overlay"></div>
+        <span class="ec-type" style="color:${cfg.couleur}">${cfg.label}</span>
+        ${passe ? `<span class="ec-passe-tag">Terminé</span>` : ''}
       </div>
+      <!-- CORPS -->
       <div class="ec-body">
         <div class="ec-title">${ev.titre || 'Événement'}</div>
         <div class="ec-meta">
           <div class="ec-mi">${dateLine}</div>
-          <div class="ec-mi">📍 ${ev.ville || ''} ${ev.lieu ? '· ' + ev.lieu : ''}${ev.adresse ? ' · ' + ev.adresse : ''}${ev.geopoint ? ` <a href="https://maps.google.com/?q=${ev.geopoint.latitude},${ev.geopoint.longitude}" target="_blank" onclick="event.stopPropagation()" style="display:inline-block;margin-left:6px;padding:1px 8px;border-radius:6px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-size:10px;font-weight:700;font-family:'Syne',sans-serif;text-decoration:none;">S'y rendre ↗</a>` : ''}</div>
+          ${locLine ? `<div class="ec-mi">📍 ${locLine}</div>` : ''}
           ${ev.styles ? `<div class="ec-mi">💃 ${ev.styles}</div>` : ''}
-          ${ev.vibe ? `<div class="ec-mi">🎵 ${ev.vibe}</div>` : ''}
-          ${ev.niveau ? `<div class="ec-mi">⭐ ${ev.niveau}</div>` : ''}
         </div>
-      </div>
-      <div class="ec-foot">
-        <div class="ec-attendees">
-          <span class="ec-count">${inscrits > 0 ? '+' + inscrits + ' inscrits' : 'Soyez le premier !'}</span>
-        </div>
-        <div class="ec-price-wrap">
+        <div class="ec-foot-row">
           <span class="ec-price" style="color:${couleurPrix}">${prix}</span>
-          ${btnHtml}
+          <div class="ec-actions">
+            <button id="fav-${ev.id}" class="ec-btn-save${estFavori ? ' saved' : ''}"
+              onclick="event.stopPropagation();toggleFavori('${ev.id}')"
+              title="${estFavori ? 'Retirer des favoris' : 'Enregistrer'}">
+              ${estFavori ? '♥' : '♡'}
+            </button>
+            ${btnHtml}
+          </div>
         </div>
       </div>
     </div>
@@ -6667,7 +6688,7 @@ window.toggleEventsPassés = function() {
   const toggle = document.getElementById('agenda-passes-toggle');
   if (!grid) return;
   const ouvert = grid.style.display !== 'none';
-  grid.style.display = ouvert ? 'none' : 'grid';
+  grid.style.display = ouvert ? 'none' : 'flex';
   if (arrow) arrow.style.transform = ouvert ? 'rotate(0deg)' : 'rotate(90deg)';
   if (toggle) toggle.style.borderColor = ouvert ? 'var(--border)' : 'rgba(255,255,255,0.2)';
 }
