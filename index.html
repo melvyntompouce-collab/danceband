@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="HAKO">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#00f59b">
-<meta name="description" content="Le premier réseau social connecté pour les danseurs">
+<meta name="description" content="Le premier réseau social connecté pour les artistes">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <title>HAKO — Le réseau des artistes</title>
@@ -1375,14 +1375,15 @@ footer{
     display: flex;
     order: 10;
     margin-top: 16px;
-    padding: 16px;
+    padding: 16px 8px;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 16px;
     gap: 0;
   }
-  .hero-stat-val { font-size: 24px; }
-  .hero-stat-label { font-size: 9px; }
+  .hero-stats > div { flex: 1; text-align: center; padding: 0 4px; }
+  .hero-stat-val { font-size: 20px; }
+  .hero-stat-label { font-size: 8px; }
   .hero-content { display: flex; flex-direction: column; }
   .mobile-home-nav { order: 5; }
 }
@@ -2894,8 +2895,12 @@ if (isPWA) {
           <div class="hero-stat-label">Artistes inscrits</div>
         </div>
         <div>
-          <div class="hero-stat-val">33</div>
-          <div class="hero-stat-label">Styles de danse</div>
+          <div class="hero-stat-val">12</div>
+          <div class="hero-stat-label">Disciplines artistiques</div>
+        </div>
+        <div>
+          <div class="hero-stat-val">8</div>
+          <div class="hero-stat-label">Villes actives</div>
         </div>
         <div>
           <div class="hero-stat-val">13</div>
@@ -2909,7 +2914,7 @@ if (isPWA) {
           <button class="mhn-card" onclick="showPage('network')">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             <div class="mhn-card-name">Réseau</div>
-            <div class="mhn-card-desc">Trouve des danseurs près de toi</div>
+            <div class="mhn-card-desc">Trouve des artistes près de toi</div>
           </button>
           <button class="mhn-card" onclick="showPage('agenda')">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -2956,8 +2961,8 @@ if (isPWA) {
     <div class="features-grid">
       <div class="feature-card" onclick="showPage('network')" style="cursor:pointer;" title="Voir le réseau">
         <div class="feature-icon" style="background:rgba(0,245,155,0.1)">🗺️</div>
-        <div class="feature-title">Carte des danseurs</div>
-        <p class="feature-desc">Trouvez des danseurs près de chez vous par zone — sans géolocalisation précise. Vous choisissez ce que vous partagez.</p>
+        <div class="feature-title">Carte des artistes</div>
+        <p class="feature-desc">Trouvez des artistes près de chez vous par zone — sans géolocalisation précise. Vous choisissez ce que vous partagez.</p>
         <div style="margin-top:12px;font-size:12px;color:var(--green);font-weight:700;display:flex;align-items:center;gap:4px;">Explorer le réseau <span>→</span></div>
       </div>
       <div class="feature-card" onclick="showPage('agenda')" style="cursor:pointer;" title="Voir l'agenda">
@@ -3001,7 +3006,7 @@ if (isPWA) {
           <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-0.5px;line-height:1;">Score de compatibilité</div>
         </div>
       </div>
-      <p style="font-size:15px;color:var(--muted2);line-height:1.7;margin-bottom:24px;max-width:600px;">HAKO calcule automatiquement votre compatibilité avec chaque danseur du réseau. Plus le score est élevé, plus vous partagez de points communs.</p>
+      <p style="font-size:15px;color:var(--muted2);line-height:1.7;margin-bottom:24px;max-width:600px;">HAKO calcule automatiquement votre compatibilité avec chaque artiste du réseau. Plus le score est élevé, plus vous partagez de points communs.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
         <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:16px;">
           <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--text);margin-bottom:4px;">💃 Styles de danse</div>
@@ -3047,7 +3052,7 @@ if (isPWA) {
       <div class="step">
         <div class="step-num">02</div>
         <div class="step-title">Explorez le réseau</div>
-        <p class="step-desc">Trouvez des danseurs, découvrez des événements près de chez vous.</p>
+        <p class="step-desc">Trouvez des artistes, découvrez des événements près de chez vous.</p>
       </div>
       <div class="step">
         <div class="step-num">03</div>
@@ -3295,7 +3300,7 @@ if (isPWA) {
           <h2>Qui est responsable de tes données ?</h2>
           <p>
             Le responsable du traitement est <strong>HAKO</strong>, réseau social
-            dédié aux artistes et danseurs. Pour toute question relative à tes
+            dédié aux artistes. Pour toute question relative à tes
             données personnelles, tu peux nous contacter à l'adresse :
             <a href="/cdn-cgi/l/email-protection#0f676e64606e686a616c764f68626e6663216c6062" class="privacy-link"><span class="__cf_email__" data-cfemail="4921282226282e2c272a30092e24282025672a2624">[email&#160;protected]</span></a>
           </p>
@@ -3539,7 +3544,7 @@ if (isPWA) {
         <div class="privacy-section-content">
           <h2>Présentation du service</h2>
           <p>
-            HAKO est un réseau social destiné aux artistes et danseurs, accessible
+            HAKO est un réseau social destiné aux artistes, accessible
             via l'application web disponible à l'adresse du site. Il permet de créer
             un profil artiste, de rejoindre une communauté, de découvrir des événements
             et de se connecter avec d'autres membres.
@@ -4219,7 +4224,7 @@ if (isPWA) {
       <button onclick="showPage('network')" class="dash-nav-card">
         <div style="font-size:20px;margin-bottom:8px;">🌐</div>
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;">Réseau</div>
-        <div style="font-size:10px;color:var(--muted2);margin-top:3px;">Trouve des danseurs</div>
+        <div style="font-size:10px;color:var(--muted2);margin-top:3px;">Trouve des artistes</div>
       </button>
       <button onclick="showPage('agenda')" class="dash-nav-card">
         <div style="font-size:20px;margin-bottom:8px;">📅</div>
@@ -4296,7 +4301,7 @@ if (isPWA) {
     <div id="dash-empty-state" style="display:none;text-align:center;padding:40px 20px;background:var(--card);border:1px solid var(--border);border-radius:20px;margin-top:4px;">
       <div style="font-size:40px;margin-bottom:14px;">✨</div>
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:8px;">Bienvenue sur HAKO</div>
-      <div style="font-size:13px;color:var(--muted2);line-height:1.7;max-width:300px;margin:0 auto 20px;">Complète ton profil et explore le réseau pour rencontrer des danseurs près de chez toi.</div>
+      <div style="font-size:13px;color:var(--muted2);line-height:1.7;max-width:300px;margin:0 auto 20px;">Complète ton profil et explore le réseau pour rencontrer des artistes près de chez toi.</div>
       <div style="display:flex;flex-direction:column;gap:10px;max-width:280px;margin:0 auto;">
         <button onclick="showPage('profile')" style="padding:12px 20px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;border:none;cursor:pointer;">Compléter mon profil →</button>
         <button onclick="showPage('network')" style="padding:12px 20px;border-radius:12px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">Explorer le réseau</button>
@@ -5391,7 +5396,7 @@ if (isPWA) {
 
     <!-- HERO MON CLASSEMENT -->
     <div style="padding:0 20px 0;margin-top:-14px;display:flex;align-items:center;gap:14px;">
-      <div><div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Top danseurs</div><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;line-height:1;">CLASSEMENT</span></div>
+      <div><div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Top artistes</div><span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;line-height:1;">CLASSEMENT</span></div>
     </div>
     <div class="rk-hero fade-in" id="rk-hero" style="margin-top:8px;">
       <div class="rk-pos-wrap">
@@ -5857,9 +5862,7 @@ window.toggleDispoDashboard = async function() {
   }
   if (window._monProfil) window._monProfil.disponible = nouvelleDispo;
 
-  try {
-    const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await setDoc(doc(window._db, 'danseurs', window._currentUid), { disponible: nouvelleDispo }, { merge: true });
+  try {    await setDoc(doc(window._db, 'danseurs', window._currentUid), { disponible: nouvelleDispo }, { merge: true });
   } catch(e) { console.error(e); }
 }
 
@@ -6025,9 +6028,7 @@ window.clicNotif = async function(index) {
     window._monProfil.notifications = allNotifs;
     mettreAJourBadgeNotif(allNotifs);
     afficherPageNotifs();
-    try {
-      const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-      await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
+    try {      await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
     } catch(e) { console.error('Erreur marquage lu:', e); }
   }
 
@@ -6035,9 +6036,7 @@ window.clicNotif = async function(index) {
   if (n.type === 'nouveau_message') {
     showPage('messages');
     if (n.de) {
-      try {
-        const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-        const snap = await getDoc(doc(window._db, 'danseurs', n.de));
+      try {        const snap = await getDoc(doc(window._db, 'danseurs', n.de));
         const data = snap.exists() ? snap.data() : {};
         const nom = data.nom || 'Utilisateur';
         const photo = data.photo || '';
@@ -6081,9 +6080,7 @@ window.marquerNotifLu = async function(index) {
   window._monProfil.notifications = allNotifs;
   mettreAJourBadgeNotif(allNotifs);
   afficherPageNotifs();
-  try {
-    const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
+  try {    await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
   } catch(e) { console.error('Erreur marquage lu:', e); }
 };
 
@@ -6095,9 +6092,7 @@ window.marquerNotifNonLu = async function(index) {
   window._monProfil.notifications = allNotifs;
   mettreAJourBadgeNotif(allNotifs);
   afficherPageNotifs();
-  try {
-    const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
+  try {    await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
   } catch(e) { console.error('Erreur marquage non lu:', e); }
 };
 
@@ -6124,9 +6119,7 @@ window.marquerToutLu = async function() {
   window._monProfil.notifications = allNotifs;
   mettreAJourBadgeNotif(allNotifs);
   afficherPageNotifs();
-  try {
-    const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
+  try {    await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
   } catch(e) { console.error('Erreur tout lu:', e); }
 };
 
@@ -6140,9 +6133,7 @@ window.supprimerNotif = async function(index) {
   mettreAJourBadgeNotif(allNotifs);
   afficherPageNotifs();
   afficherActiviteDashboard();
-  try {
-    const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
+  try {    await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
   } catch(e) { console.error('Erreur suppression notif:', e); }
 };
 
@@ -6164,9 +6155,7 @@ window.supprimerNotifsLues = async function() {
   mettreAJourBadgeNotif(allNotifs);
   afficherPageNotifs();
   afficherActiviteDashboard();
-  try {
-    const { doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
+  try {    await updateDoc(doc(window._db, 'danseurs', window._currentUid), { notifications: allNotifs });
   } catch(e) { console.error('Erreur suppression notifs lues:', e); }
 };
 
@@ -6177,9 +6166,7 @@ async function afficherEventsDashboard() {
   if (!section || !list || !window._db) return;
 
   try {
-    if (tousLesEvents.length === 0) {
-      const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-      const snap = await getDocs(collection(window._db, 'evenements'));
+    if (tousLesEvents.length === 0) {      const snap = await getDocs(collection(window._db, 'evenements'));
       snap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
     }
 
@@ -6223,9 +6210,7 @@ async function afficherCompatiblesDashboard() {
   if (!section || !list || !window._monProfil || !window._db) return;
 
   try {
-    if (tousLesDanseurs.length === 0) {
-      const { collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-      const snap = await getDocs(query(collection(window._db, 'danseurs'), where('visibilite','in',['public','amis'])));
+    if (tousLesDanseurs.length === 0) {      const snap = await getDocs(query(collection(window._db, 'danseurs'), where('visibilite','in',['public','amis'])));
       snap.forEach(d => tousLesDanseurs.push({ ...d.data(), uid: d.id }));
     }
 
@@ -6265,9 +6250,7 @@ async function afficherFavorisDashboard() {
   if (mesFavoris.size === 0) { section.style.display = 'none'; return; }
 
   if (tousLesEvents.length === 0 && window._db) {
-    try {
-      const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-      const snap = await getDocs(collection(window._db, 'evenements'));
+    try {      const snap = await getDocs(collection(window._db, 'evenements'));
       snap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
     } catch(e) { return; }
   }
@@ -6540,9 +6523,6 @@ async function chargerAgenda() {
   if (grid) grid.innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted);">⏳ Chargement...</div>';
 
   try {
-    const { collection, getDocs, query, orderBy, where, Timestamp } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
 
     const snap = await getDocs(collection(window._db, 'evenements'));
 
@@ -6862,9 +6842,7 @@ async function chargerAvatarsParticipants(ev) {
   wrap.style.display = 'block';
   row.innerHTML = '<div style="font-size:12px;color:var(--muted);">⏳</div>';
 
-  try {
-    const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const afficher = uids.slice(0, 6);
+  try {    const afficher = uids.slice(0, 6);
     const reste = uids.length - afficher.length;
 
     const profils = await Promise.all(
@@ -6909,9 +6887,7 @@ window.ouvrirListeParticipants = async function() {
     return;
   }
 
-  try {
-    const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const moi = window._monProfil;
+  try {    const moi = window._monProfil;
     const monUid = window._currentUid;
     const mesAbos = new Set(moi?.abonnements || []);
 
@@ -6999,9 +6975,6 @@ window.sInscrire = async function() {
   if (btn) { btn.innerHTML = '⏳ En cours...'; btn.disabled = true; }
 
   try {
-    const { doc, updateDoc, increment, arrayUnion } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
 
     await updateDoc(doc(window._db, 'evenements', eventCourant.id), {
       inscrits: increment(1),
@@ -7113,9 +7086,6 @@ async function chargerClassement() {
   if (list) list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">⏳ Chargement...</div>';
 
   try {
-    const { collection, getDocs, query, orderBy, limit, where } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
 
     // Récupérer le profil courant
     const currentUid = window._currentUid;
@@ -7145,8 +7115,7 @@ async function chargerClassement() {
       } else {
         // User pas dans le top 20 : fetch son profil directement
         try {
-          const { doc: docFn, getDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-          const snap2 = await getDoc(docFn(window._db, 'danseurs', currentUid));
+          const snap2 = await getDoc(doc(window._db, 'danseurs', currentUid));
           if (snap2.exists()) {
             moiData = { uid: currentUid, ...snap2.data() };
             const myXp = moiData.xp || 0;
@@ -7250,9 +7219,7 @@ async function afficherWorkshopsPage() {
   if (tousLesEvents.length > 0) {
     workshops = tousLesEvents.filter(e => e.type === 'workshop' && !_estPasse(e));
   } else if (window._db) {
-    try {
-      const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-      const snap = await getDocs(collection(window._db, 'evenements'));
+    try {      const snap = await getDocs(collection(window._db, 'evenements'));
       const evs = [];
       snap.forEach(d => evs.push({ id: d.id, ...d.data() }));
       workshops = evs.filter(e => e.type === 'workshop' && !_estPasse(e));
@@ -7283,9 +7250,7 @@ async function chargerSalles() {
   if (!grid) return;
   grid.innerHTML = '<div class="salles-empty"><div class="salles-empty-ico">⏳</div><div>Chargement...</div></div>';
 
-  try {
-    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const snap = await getDocs(collection(window._db, 'salles'));
+  try {    const snap = await getDocs(collection(window._db, 'salles'));
     _sallesCache = [];
     snap.forEach(d => _sallesCache.push({ id: d.id, ...d.data() }));
     // Tri par date de création desc
@@ -7308,9 +7273,7 @@ async function chargerEcoles() {
   const grid = document.getElementById('ecoles-grid');
   if (!grid) return;
   grid.innerHTML = '<div class="salles-empty"><div class="salles-empty-ico">⏳</div><div>Chargement...</div></div>';
-  try {
-    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const snap = await getDocs(collection(window._db, 'ecoles'));
+  try {    const snap = await getDocs(collection(window._db, 'ecoles'));
     _ecolesCache = [];
     snap.forEach(d => _ecolesCache.push({ id: d.id, ...d.data() }));
     _ecolesCache.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -7615,9 +7578,6 @@ window.fermerOrganisateur = function() {
 async function chargerDashboardOrga() {
   if (!window._currentUid || !window._db) return;
   try {
-    const { getDoc, doc } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
 
     const snap = await getDoc(doc(window._db, 'danseurs', window._currentUid));
     if (!snap.exists()) return;
@@ -7652,9 +7612,6 @@ window.validerCodeInvitation = async function() {
   msg.style.display = 'none';
 
   try {
-    const { collection, getDocs, query, where, doc, updateDoc, getDoc } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
 
     const q = query(
       collection(window._db, 'inviteCodes'),
@@ -7717,9 +7674,6 @@ window.validerCodeInvitation = async function() {
 async function chargerDashboardAdmin() {
   if (!window._db) return;
   try {
-    const { collection, getDocs } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
 
     const [usersSnap, eventsSnap, codesSnap, sallesSnap, ecolesSnap] = await Promise.all([
       getDocs(collection(window._db, 'danseurs')),
@@ -7836,9 +7790,6 @@ window.adminModifierEvent = async function(id) {
 window.adminSupprimerEvent = async function(id) {
   if (!confirm('Supprimer cet événement définitivement ?')) return;
   try {
-    const { doc, deleteDoc } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
     await deleteDoc(doc(window._db, 'evenements', id));
     await chargerDashboardAdmin();
   } catch(e) { alert('Erreur : ' + e.message); }
@@ -7848,9 +7799,6 @@ window.adminSupprimerCompte = async function(uid) {
   if (uid === window._currentUid) { alert('Tu ne peux pas supprimer ton propre compte depuis ici.'); return; }
   if (!confirm('Supprimer ce compte définitivement ? Cette action est irréversible.')) return;
   try {
-    const { doc, deleteDoc } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
     await deleteDoc(doc(window._db, 'danseurs', uid));
     await chargerDashboardAdmin();
   } catch(e) { alert('Erreur : ' + e.message); }
@@ -7871,9 +7819,6 @@ window.envoyerNotifGlobale = async function() {
   retour.style.display = 'none';
 
   try {
-    const { collection, getDocs, doc, updateDoc, arrayUnion } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
 
     const snap = await getDocs(collection(window._db, 'danseurs'));
     const notif = {
@@ -7908,9 +7853,6 @@ window.envoyerNotifGlobale = async function() {
 
 async function chargerMesEvents() {
   try {
-    const { collection, getDocs, query, where } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
     const snap = await getDocs(query(
       collection(window._db, 'evenements'),
       where('organisateurUid', '==', window._currentUid)
@@ -8128,9 +8070,7 @@ window.ouvrirFormSalle = function(salleId) {
     document.getElementById('salle-submit-btn').textContent = 'Enregistrer →';
     // Charger les données existantes
     (async () => {
-      try {
-        const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-        const snap = await getDoc(doc(window._db, 'salles', salleId));
+      try {        const snap = await getDoc(doc(window._db, 'salles', salleId));
         if (!snap.exists()) return;
         const s = snap.data();
         document.getElementById('salle-nom').value     = s.nom        || '';
@@ -8197,9 +8137,7 @@ window.sauvegarderSalle = async function() {
     updatedAt:   Date.now(),
   };
 
-  try {
-    const { collection, doc, setDoc, addDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const editId = document.getElementById('salle-edit-id').value;
+  try {    const editId = document.getElementById('salle-edit-id').value;
     if (editId) {
       await setDoc(doc(window._db, 'salles', editId), data, { merge: true });
     } else {
@@ -8218,9 +8156,7 @@ window.sauvegarderSalle = async function() {
 
 window.supprimerSalle = async function(id) {
   if (!confirm('Supprimer cette salle définitivement ?')) return;
-  try {
-    const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await deleteDoc(doc(window._db, 'salles', id));
+  try {    await deleteDoc(doc(window._db, 'salles', id));
     chargerDashboardAdmin();
   } catch(e) {
     console.error('Erreur suppression salle:', e);
@@ -8287,9 +8223,7 @@ window.ouvrirFormEcole = function(ecoleId) {
     document.getElementById('admin-form-ecole-title').textContent = "MODIFIER L'ÉCOLE";
     document.getElementById('ecole-submit-btn').textContent = 'Enregistrer →';
     (async () => {
-      try {
-        const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-        const snap = await getDoc(doc(window._db, 'ecoles', ecoleId));
+      try {        const snap = await getDoc(doc(window._db, 'ecoles', ecoleId));
         if (!snap.exists()) return;
         const e = snap.data();
         document.getElementById('ecole-nom').value    = e.nom        || '';
@@ -8377,9 +8311,7 @@ window.sauvegarderEcole = async function() {
     updatedAt: Date.now(),
   };
 
-  try {
-    const { collection, doc, setDoc, addDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const editId = document.getElementById('ecole-edit-id').value;
+  try {    const editId = document.getElementById('ecole-edit-id').value;
     if (editId) {
       await setDoc(doc(window._db, 'ecoles', editId), data, { merge: true });
     } else {
@@ -8396,9 +8328,7 @@ window.sauvegarderEcole = async function() {
 
 window.supprimerEcole = async function(id) {
   if (!confirm('Supprimer cette école définitivement ?')) return;
-  try {
-    const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await deleteDoc(doc(window._db, 'ecoles', id));
+  try {    await deleteDoc(doc(window._db, 'ecoles', id));
     chargerDashboardAdmin();
   } catch(e) { console.error('Erreur suppression école:', e); }
 };
@@ -8406,9 +8336,6 @@ window.supprimerEcole = async function(id) {
 
 window.modifierEvent = async function(id) {
   try {
-    const { getDoc, doc } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
     const snap = await getDoc(doc(window._db, 'evenements', id));
     if (!snap.exists()) return;
     const ev = snap.data();
@@ -8498,9 +8425,6 @@ window.sauvegarderEvent = async function() {
   };
 
   try {
-    const { doc, getDoc, setDoc, addDoc, collection } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
 
     if (eventEnEdition) {
       const snap = await getDoc(doc(window._db, 'evenements', eventEnEdition));
@@ -8570,9 +8494,6 @@ window.supprimerEvent = async function(id) {
   if (!window._currentUid) return;
   if (!confirm('Supprimer cet événement définitivement ?')) return;
   try {
-    const { doc, getDoc, deleteDoc } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
     const snap = await getDoc(doc(window._db, 'evenements', id));
     if (!snap.exists() || snap.data().organisateurUid !== window._currentUid) {
       alert('⛔ Action non autorisée.');
@@ -8591,9 +8512,6 @@ window.voirInscrits = async function(eventId) {
   list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);">⏳ Chargement...</div>';
 
   try {
-    const { getDoc, doc } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
     const snap = await getDoc(doc(window._db, 'evenements', eventId));
     if (!snap.exists()) return;
     const ev = snap.data();
@@ -8655,9 +8573,6 @@ window.validerCheckin = async function() {
   result.style.color = 'var(--muted2)';
 
   try {
-    const { collection, query, where, getDocs, doc, updateDoc, arrayUnion } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
 
     // Chercher par email ou par UID
     let danseurUid = null;
@@ -8669,9 +8584,7 @@ window.validerCheckin = async function() {
       const d = q.docs[0].data();
       danseurNom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
     } else if (input.length > 10) {
-      // Essayer comme UID direct
-      const { getDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-      const snap = await getDoc(doc(window._db, 'danseurs', input));
+      // Essayer comme UID direct      const snap = await getDoc(doc(window._db, 'danseurs', input));
       if (snap.exists()) {
         danseurUid = input;
         const d = snap.data();
@@ -8715,9 +8628,6 @@ window.ouvrirListeSociale = async function(type) {
   list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);">⏳ Chargement...</div>';
 
   try {
-    const { getDoc, doc, collection, getDocs, query, where } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
 
     const moi = await getDoc(doc(window._db, 'danseurs', window._currentUid));
     if (!moi.exists()) return;
@@ -8781,9 +8691,7 @@ let mesFavoris = new Set();
 
 async function chargerFavoris() {
   if (!window._currentUid || !window._db) return;
-  try {
-    const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const snap = await getDoc(doc(window._db, 'danseurs', window._currentUid));
+  try {    const snap = await getDoc(doc(window._db, 'danseurs', window._currentUid));
     if (snap.exists()) {
       mesFavoris = new Set(snap.data().favoris || []);
     }
@@ -8795,8 +8703,6 @@ window.toggleFavori = async function(eventId) {
   const estFavori = mesFavoris.has(eventId);
 
   try {
-    const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-
     if (estFavori) {
       mesFavoris.delete(eventId);
     } else {
@@ -8843,9 +8749,6 @@ async function afficherFavorisProfile() {
   // Charger les events si pas encore chargés
   if (tousLesEvents.length === 0 && window._db) {
     try {
-      const { collection, getDocs } = await import(
-        'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-      );
       const snap = await getDocs(collection(window._db, 'evenements'));
       snap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
     } catch(e) { console.error(e); return; }
@@ -8876,9 +8779,7 @@ let convOuverte = null;
 
 async function chargerAbonnements() {
   if (!window._currentUid || !window._db) return;
-  try {
-    const { getDoc, doc, collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const snap = await getDoc(doc(window._db, 'danseurs', window._currentUid));
+  try {    const snap = await getDoc(doc(window._db, 'danseurs', window._currentUid));
     if (snap.exists()) {
       const d = snap.data();
       mesAbonnements = new Set(d.abonnements || []);
@@ -8889,9 +8790,7 @@ async function chargerAbonnements() {
   } catch(e) { console.error('Abonnements:', e); }
 
   // Comptage abonnés dans un try séparé pour ne pas bloquer
-  try {
-    const { collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const abonnesSnap = await getDocs(query(
+  try {    const abonnesSnap = await getDocs(query(
       collection(window._db, 'danseurs'),
       where('abonnements', 'array-contains', window._currentUid)
     ));
@@ -8925,9 +8824,6 @@ window.toggleSuivre = async function(targetUid) {
   if (targetUid === window._currentUid) return;
 
   try {
-    const { doc, updateDoc, arrayUnion, arrayRemove, getDoc } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
 
     const estSuivi = mesAbonnements.has(targetUid);
 
@@ -8972,9 +8868,6 @@ async function chargerMessages() {
   document.getElementById('msg-list').style.display = 'block';
 
   try {
-    const { getDoc, doc, collection, getDocs, query, orderBy, limit } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
 
     // Charger mon profil pour avoir mes abonnements
     const moi = await getDoc(doc(window._db, 'danseurs', window._currentUid));
@@ -9002,7 +8895,7 @@ async function chargerMessages() {
         <div style="text-align:center;padding:60px 20px;">
           <div style="font-size:48px;margin-bottom:16px;">🤝</div>
           <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-bottom:8px;">Aucun ami mutuel pour l'instant</div>
-          <div style="font-size:13px;color:var(--muted2);line-height:1.6;">Suis des danseurs et attend qu'ils te suivent en retour pour pouvoir leur écrire</div>
+          <div style="font-size:13px;color:var(--muted2);line-height:1.6;">Suis des artistes et attend qu'ils te suivent en retour pour pouvoir leur écrire</div>
           <button onclick="showPage('network')" style="margin-top:20px;padding:12px 24px;border-radius:12px;background:var(--green);color:#080810;font-weight:800;font-size:13px;border:none;cursor:pointer;font-family:'Syne',sans-serif;">Explorer le réseau →</button>
         </div>`;
       return;
@@ -9077,9 +8970,6 @@ async function ouvrirConversation(uid, nom, photo) {
   // Écouter en temps réel
   const convId = [window._currentUid, uid].sort().join('_');
   try {
-    const { collection, query, orderBy, onSnapshot } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
     window._msgListener = onSnapshot(
       query(collection(window._db, 'conversations', convId, 'messages'), orderBy('date', 'asc')),
       snap => afficherMessages(snap.docs.map(d => d.data()))
@@ -9106,9 +8996,6 @@ function fermerConversation() {
 
 async function chargerMessagesConv(uid) {
   try {
-    const { collection, query, orderBy, getDocs } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
     const convId = [window._currentUid, uid].sort().join('_');
     const snap = await getDocs(query(
       collection(window._db, 'conversations', convId, 'messages'),
@@ -9421,9 +9308,6 @@ window.arreterEnregistrement = async function() {
 // ── Fonction commune d'envoi ──
 async function _envoyerDansConv(data) {
   try {
-    const { collection, addDoc, doc, setDoc } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
     const convId = [window._currentUid, convOuverte].sort().join('_');
 
     await setDoc(doc(window._db, 'conversations', convId), {
@@ -9439,9 +9323,6 @@ async function _envoyerDansConv(data) {
       ...data
     });
 
-    const { updateDoc, arrayUnion } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
     await updateDoc(doc(window._db, 'danseurs', convOuverte), {
       notifications: arrayUnion({
         type: 'nouveau_message',
@@ -9551,6 +9432,8 @@ function initCarte() {
 
 // Cache geocodage pour éviter requêtes répétées
 const _geocodeCache = {};
+// Requêtes en vol — évite d'appeler Nominatim N fois pour la même ville simultanément
+const _geocodeInFlight = {};
 
 // Normaliser une ville : "   bruxelles  " → "Bruxelles", "new york" → "New York"
 function normaliserVille(ville) {
@@ -9570,15 +9453,23 @@ async function coordsVille(zone) {
   // Fallback : Nominatim (OpenStreetMap)
   const key = zoneNorm.toLowerCase();
   if (_geocodeCache[key]) return _geocodeCache[key];
+  // Si une requête est déjà en vol pour cette ville, attendre son résultat
+  if (_geocodeInFlight[key]) return _geocodeInFlight[key];
   try {
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(zone)}&format=json&limit=1&countrycodes=fr,be,ch`;
-    const res = await fetch(url, { headers: { 'Accept-Language': 'fr' } });
-    const data = await res.json();
-    if (data && data[0]) {
-      const coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-      _geocodeCache[key] = coords;
-      return coords;
-    }
+    _geocodeInFlight[key] = fetch(url, { headers: { 'Accept-Language': 'fr' } })
+      .then(r => r.json())
+      .then(data => {
+        if (data && data[0]) {
+          const coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+          _geocodeCache[key] = coords;
+          return coords;
+        }
+        return [46.8, 2.3];
+      })
+      .catch(() => [46.8, 2.3])
+      .finally(() => { delete _geocodeInFlight[key]; });
+    return _geocodeInFlight[key];
   } catch(e) { /* silencieux */ }
   return [46.8, 2.3];
 }
@@ -9649,9 +9540,6 @@ async function chargerCarte() {
   initCarte();
 
   try {
-    const { collection, getDocs, query, where } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
 
     const snap = await getDocs(query(
       collection(window._db, 'danseurs'),
@@ -9727,9 +9615,6 @@ window.ouvrirProfilArtiste = async function(uid) {
   window.scrollTo(0, 0);
 
   try {
-    const { getDoc, doc } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
     const snap = await getDoc(doc(window._db, 'danseurs', uid));
     if (!snap.exists()) return;
     const d = snap.data();
@@ -10356,7 +10241,7 @@ document.addEventListener('click', function(e) {
 <!-- ═══ FIREBASE AUTH ═══ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, where }
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, where, updateDoc, deleteDoc, addDoc, getCountFromServer }
   from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
   onAuthStateChanged, signOut, sendPasswordResetEmail, deleteUser }
@@ -10650,8 +10535,7 @@ window.supprimerCompte = async function() {
     const user = auth.currentUser;
     if (!user) return;
 
-    const { doc: docRef, deleteDoc, collection: col, getDocs: gds, query: q, where: wh } =
-      await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const docRef = doc; const col = collection; const gds = getDocs; const q = query; const wh = where;
 
     // 1. Supprimer le document Firestore du profil
     await deleteDoc(docRef(window._db, 'danseurs', window._currentUid));
@@ -10987,9 +10871,7 @@ window.cyclerModeBracelet = async function() {
   const suivant = modes[(modes.indexOf(actuel) + 1) % modes.length];
   mettreAJourBandeBracelet(suivant);
   if (window._monProfil) window._monProfil.modeBracelet = suivant;
-  try {
-    const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await setDoc(doc(window._db, 'danseurs', window._currentUid), { modeBracelet: suivant }, { merge: true });
+  try {    await setDoc(doc(window._db, 'danseurs', window._currentUid), { modeBracelet: suivant }, { merge: true });
   } catch(e) { console.error('Erreur mode bracelet:', e); }
 }
 
@@ -11217,9 +11099,7 @@ window.confirmerPairing = async function() {
   const btn = document.getElementById('kima-pair-confirm-btn');
   if (btn) { btn.textContent = 'Association...'; btn.disabled = true; }
 
-  try {
-    const { doc, setDoc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const kimaId = _kimaIdEnAttente;
+  try {    const kimaId = _kimaIdEnAttente;
     const uid    = window._currentUid;
     const now    = new Date().toISOString();
 
@@ -11290,9 +11170,11 @@ onAuthStateChanged(auth, async (user) => {
   if (user) {
     console.log('✅ Connecté :', user.email);
     afficherBarreLogoDeconnecte(false);
-    try { await chargerProfil(user.uid); }   catch(e) { console.error('❌ chargerProfil:', e); }
-    try { await window.chargerAbonnements(); }       catch(e) { console.error('❌ chargerAbonnements:', e); }
-    try { await window.chargerFavoris(); }           catch(e) { console.error('❌ chargerFavoris:', e); }
+    await Promise.allSettled([
+      chargerProfil(user.uid).catch(e => console.error('❌ chargerProfil:', e)),
+      window.chargerAbonnements().catch(e => console.error('❌ chargerAbonnements:', e)),
+      window.chargerFavoris().catch(e => console.error('❌ chargerFavoris:', e)),
+    ]);
     afficherDashboard(window._monProfil);
     mettreAJourNav(window._monProfil || user);
     brctLeverBlur();
@@ -11355,9 +11237,6 @@ window.closeNavProfileMenu = function() {
 // Charger le vrai nombre d'artistes pour la page d'accueil
 (async () => {
   try {
-    const { collection, getCountFromServer } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
     const snap = await getCountFromServer(collection(window._db, 'danseurs'));
     const count = snap.data().count;
     const el = document.getElementById('stat-artistes');
@@ -11423,10 +11302,8 @@ window.brctSetMode = function brctSetMode(mode, immediat) {
     }
   }
   if (window._currentUid && window._db) {
-    import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js').then(({ doc, setDoc }) => {
-      setDoc(doc(window._db, 'danseurs', window._currentUid), { modeBracelet: mode }, { merge: true });
-      if (window._monProfil) window._monProfil.modeBracelet = mode;
-    }).catch(() => {});
+    setDoc(doc(window._db, 'danseurs', window._currentUid), { modeBracelet: mode }, { merge: true }).catch(() => {});
+    if (window._monProfil) window._monProfil.modeBracelet = mode;
   }
 }
 
@@ -11515,9 +11392,7 @@ window.brctRejoindreWaitlist = async function brctRejoindreWaitlist() {
     return;
   }
 
-  try {
-    const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const key = email.toLowerCase().replace(/[^a-z0-9]/g, '_');
+  try {    const key = email.toLowerCase().replace(/[^a-z0-9]/g, '_');
     await setDoc(doc(window._db, 'bracelet_waitlist', key), {
       email, date: new Date().toISOString(), uid: window._currentUid || null
     });
@@ -11539,9 +11414,7 @@ async function brctChargerCountWaitlist() {
       await new Promise(r => setTimeout(r, 300));
       retries++;
     }
-    if (!window._db) return;
-    const { collection, getCountFromServer } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const snap = await getCountFromServer(collection(window._db, 'bracelet_waitlist'));
+    if (!window._db) return;    const snap = await getCountFromServer(collection(window._db, 'bracelet_waitlist'));
     const el = document.getElementById('brct-waitlist-count');
     if (el) el.textContent = snap.data().count;
   } catch(e) { console.warn('Compteur waitlist:', e); }
@@ -11680,9 +11553,6 @@ function _formatXpDate(iso) {
 window.gainXP = async function(montant, type, labelOverride) {
   if (!window._currentUid || !window._db) return;
   try {
-    const { doc, updateDoc, increment, arrayUnion } = await import(
-      'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js'
-    );
     const cfg   = xpActionCfg(type);
     const label = labelOverride || cfg.label;
     const now   = new Date().toISOString();
@@ -11781,9 +11651,7 @@ async function _chargerNetworkEvents() {
     return;
   }
   if (!window._db) return;
-  try {
-    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const snap = await getDocs(collection(window._db, 'evenements'));
+  try {    const snap = await getDocs(collection(window._db, 'evenements'));
     const all = [];
     snap.forEach(d => all.push({ id: d.id, ...d.data() }));
     _networkEventsData = all.filter(e => !_estPasse(e));
@@ -11801,9 +11669,7 @@ async function _chargerNetworkLieux() {
 
 async function _fetchCol(col) {
   if (!window._db) return [];
-  try {
-    const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const snap = await getDocs(collection(window._db, col));
+  try {    const snap = await getDocs(collection(window._db, col));
     const arr = [];
     snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
     return arr;
