@@ -5591,6 +5591,8 @@ function showPage(id, isBack = false) {
   // Actions spécifiques par page
   if (id === 'notifs')    setTimeout(afficherPageNotifs, DURATION);
   if (id === 'messages')  setTimeout(chargerMessages,   DURATION);
+  if (id === 'agenda')    setTimeout(chargerAgenda,     DURATION);
+  if (id === 'network')   setTimeout(() => { if (tousLesDanseurs.length === 0) chargerCarte(); }, DURATION);
   if (id === 'bracelet')  setTimeout(initPageBracelet,  DURATION);
   if (id === 'ranking')   setTimeout(chargerClassement, DURATION);
   if (id === 'salles')    setTimeout(chargerSalles,     DURATION);
@@ -7266,7 +7268,7 @@ async function chargerSalles() {
   if (!window._db) { setTimeout(chargerSalles, 500); return; }
 
   // Charger les workshops depuis tousLesEvents (déjà en mémoire ou Firestore)
-  afficherWorkshopsPage();
+  try { await afficherWorkshopsPage(); } catch(e) { console.error('Erreur workshops:', e); }
 
   const grid = document.getElementById('salles-grid');
   if (!grid) return;
@@ -8881,6 +8883,10 @@ window.toggleSuivre = async function(targetUid) {
 // ════════════════════════════════
 async function chargerMessages() {
   if (!window._currentUid || !window._db) {
+    if (!window._currentUid && window._db) {
+      setTimeout(chargerMessages, 600);
+      return;
+    }
     document.getElementById('msg-not-connected').style.display = 'block';
     document.getElementById('msg-list').style.display = 'none';
     return;
