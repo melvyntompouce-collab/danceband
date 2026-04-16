@@ -7754,11 +7754,10 @@ function setMobileActive(el) {
 // ════════════════════════════════
 let eventEnEdition = null;
 
-window.ouvrirOrganisateur = async function() {
+window.ouvrirOrganisateur = function() {
   closeDrawer();
   closeNavProfileMenu();
   showPage('orga');
-  await chargerDashboardOrga();
 }
 
 window.fermerOrganisateur = function() {
@@ -7766,7 +7765,10 @@ window.fermerOrganisateur = function() {
 }
 
 async function chargerDashboardOrga() {
-  if (!window._currentUid || !window._db) return;
+  if (!window._currentUid || !window._db) {
+    setTimeout(chargerDashboardOrga, 400);
+    return;
+  }
   try {
 
     const snap = await window._getDoc(window._doc(window._db, 'danseurs', window._currentUid));
