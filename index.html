@@ -4585,7 +4585,7 @@ if (isPWA) {
 
     <!-- SECTION EVENTS PASSÉS (collapsible) -->
     <div id="agenda-passes-wrap" style="display:none;margin-top:32px;margin-bottom:16px;">
-      <button id="agenda-passes-toggle" onclick="toggleEventsPassés()"
+      <button id="agenda-passes-toggle" onclick="toggleEventsPasses()"
         style="display:flex;align-items:center;gap:10px;width:100%;background:transparent;border:1px solid var(--border);border-radius:14px;padding:14px 18px;cursor:pointer;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;">
         <span id="agenda-passes-arrow" style="font-size:10px;transition:transform 0.25s;">▶</span>
         <span id="agenda-passes-label">Événements terminés</span>
@@ -6661,7 +6661,7 @@ const TYPE_CONFIG = {
   soiree:   { label:'🎉 SOIRÉE',   bg:'linear-gradient(135deg,#1a0526,#260d1a)', couleur:'var(--purple)' },
   
   battle:   { label:'🏆 BATTLE',   bg:'linear-gradient(135deg,#2b1a0a,#1a0d0d)', couleur:'var(--yellow)' },
-  workshop: { label:'🎓 WORKSHOP', bg:'linear-gradient(135deg,#1a2b0d,#0d2b1e)', couleur:'var(--green)'  },
+  workshop: { label:'🎓 WS', bg:'linear-gradient(135deg,#1a2b0d,#0d2b1e)', couleur:'var(--green)'  },
 };
 
 function setAgendaFiltre(type, btn) {
@@ -6832,7 +6832,7 @@ function afficherEvents() {
   }
 }
 
-window.toggleEventsPassés = function() {
+window.toggleEventsPasses = function() {
   const grid = document.getElementById('agenda-passes-grid');
   const arrow = document.getElementById('agenda-passes-arrow');
   const toggle = document.getElementById('agenda-passes-toggle');
@@ -6893,7 +6893,7 @@ function ouvrirEvent(id) {
 
   // Carte Google Maps
   const mapsLink = ev.geopoint?.latitude
-    ? `<a href="https://maps.google.com/?q=${ev.geopoint.latitude},${ev.geopoint.longitude}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;border-radius:14px;background:rgba(0,245,155,0.10);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:14px;text-decoration:none;letter-spacing:0.2px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Y aller</a>`
+    ? `<a href="https://maps.google.com/?q=${ev.geopoint.latitude},${ev.geopoint.longitude}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 14px;border-radius:12px;background:rgba(0,245,155,0.07);border:1px solid rgba(0,245,155,0.2);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;text-decoration:none;">🗺️ Ouvrir dans Google Maps ↗</a>`
     : '';
 
   // Bouton action
@@ -7638,8 +7638,6 @@ window.ouvrirDetailSalle = function(type, index) {
         </a>
         ${lienHtml}
       </div>` : lienHtml ? `<div class="salle-detail-card">${lienHtml}</div>` : ''}
-
-      ${item.geopoint?.latitude ? `<a href="https://maps.google.com/?q=${item.geopoint.latitude},${item.geopoint.longitude}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;border-radius:14px;background:rgba(0,245,155,0.10);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:14px;text-decoration:none;letter-spacing:0.2px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Y aller</a>` : ''}
     `;
 
   } else {
@@ -7689,8 +7687,6 @@ window.ouvrirDetailSalle = function(type, index) {
         ${contactHtml}
         ${siteHtml}
       </div>` : ''}
-
-      ${item.geopoint?.latitude ? `<a href="https://maps.google.com/?q=${item.geopoint.latitude},${item.geopoint.longitude}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;border-radius:14px;background:rgba(0,245,155,0.10);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:14px;text-decoration:none;letter-spacing:0.2px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Y aller</a>` : ''}
     `;
   }
 
