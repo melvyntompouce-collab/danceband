@@ -7757,7 +7757,12 @@ let eventEnEdition = null;
 window.ouvrirOrganisateur = function() {
   closeDrawer();
   closeNavProfileMenu();
-  showPage('orga');
+  // Forcer la sauvegarde de la page courante dans l'historique
+  if (currentPage && currentPage !== 'orga') {
+    pageHistory.push(currentPage);
+    if (pageHistory.length > 15) pageHistory.shift();
+  }
+  showPage('orga', true);
 }
 
 window.fermerOrganisateur = function() {
