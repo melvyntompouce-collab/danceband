@@ -8177,13 +8177,15 @@ function _renderDatesList() {
     return;
   }
   container.innerHTML = window._evDates.map((d, i) => `
-    <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;min-width:0;">
-      <input class="form-input" type="date" value="${d.date}" style="background:var(--bg2);min-width:0;width:100%;"
-        oninput="window._evDates[${i}].date=this.value">
-      <input class="form-input" type="text" placeholder="Ex: 21h00 → 04h00" value="${d.heure}" style="background:var(--bg2)"
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input class="form-input" type="date" value="${d.date}" style="background:var(--bg2);flex:1;"
+          oninput="window._evDates[${i}].date=this.value">
+        <button type="button" onclick="supprimerDateEvent(${i})"
+          style="width:32px;height:32px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:#ff4d6d;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;">✕</button>
+      </div>
+      <input class="form-input" type="text" placeholder="Ex: 21h00 → 04h00" value="${d.heure}" style="background:var(--bg2);"
         oninput="window._evDates[${i}].heure=this.value">
-      <button type="button" onclick="supprimerDateEvent(${i})"
-        style="width:32px;height:32px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:#ff4d6d;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;">✕</button>
     </div>
   `).join('');
 }
