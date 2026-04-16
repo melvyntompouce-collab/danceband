@@ -3117,7 +3117,6 @@ if (isPWA) {
             <button type="button" class="style-tag" onclick="toggleSignupType(this,'photographe')">📷 Photographe</button>
             <button type="button" class="style-tag" onclick="toggleSignupType(this,'videaste')">🎥 Vidéaste</button>
             <button type="button" class="style-tag" onclick="toggleSignupType(this,'beatmaker')">🎧 Beatmaker / DJ</button>
-            <button type="button" class="style-tag" onclick="toggleSignupType(this,'realisateur')">🎬 Réalisateur·rice</button>
           </div>
         </div>
 
@@ -3222,26 +3221,6 @@ if (isPWA) {
           <div class="form-group">
             <label class="form-label">Matériel <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
             <input id="signup-materiel-video" class="form-input" type="text" placeholder="Ex: Sony FX3, DJI Ronin, Premiere Pro...">
-          </div>
-        </div>
-
-        <div id="signup-section-realisateur" style="display:none;">
-          <div class="form-group">
-            <label class="form-label">Genres / formats</label>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="signup-genres-real">
-              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Clip musical</button>
-              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Court-métrage</button>
-              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Documentaire</button>
-              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Pub / Promo</button>
-              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Fiction</button>
-              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Événement</button>
-              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Série</button>
-              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Reportage</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Logiciels <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
-            <input id="signup-logiciels-real" class="form-input" type="text" placeholder="Ex: Premiere Pro, DaVinci Resolve, After Effects...">
           </div>
         </div>
 
@@ -4499,7 +4478,6 @@ if (isPWA) {
         <button class="style-fchip filtre-metier-chip" data-metier="beatmaker" onclick="setMetierFiltre('beatmaker',this);syncDancerListMobile()">🎧 Beatmaker</button>
         <button class="style-fchip filtre-metier-chip" data-metier="photographe" onclick="setMetierFiltre('photographe',this);syncDancerListMobile()">📷 Photo</button>
         <button class="style-fchip filtre-metier-chip" data-metier="videaste" onclick="setMetierFiltre('videaste',this);syncDancerListMobile()">🎥 Vidéo</button>
-        <button class="style-fchip filtre-metier-chip" data-metier="realisateur" onclick="setMetierFiltre('realisateur',this);syncDancerListMobile()">🎬 Réal</button>
       </div>
       <input id="filtre-zone-mobile" type="text" list="villes-datalist" placeholder="📍 Ville..." oninput="syncVilleMobile(this.value)" autocomplete="off" style="width:100%;box-sizing:border-box;padding:7px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:8px;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
       <!-- Dropdown styles mobile -->
@@ -5591,8 +5569,6 @@ function showPage(id, isBack = false) {
   // Actions spécifiques par page
   if (id === 'notifs')    setTimeout(afficherPageNotifs, DURATION);
   if (id === 'messages')  setTimeout(chargerMessages,   DURATION);
-  if (id === 'agenda')    setTimeout(chargerAgenda,     DURATION);
-  if (id === 'network')   setTimeout(() => { if (tousLesDanseurs.length === 0) chargerCarte(); }, DURATION);
   if (id === 'bracelet')  setTimeout(initPageBracelet,  DURATION);
   if (id === 'ranking')   setTimeout(chargerClassement, DURATION);
   if (id === 'salles')    setTimeout(chargerSalles,     DURATION);
@@ -5765,7 +5741,7 @@ function toggleSignupType(btn, type) {
     btn.classList.add('selected');
   }
   // Afficher/masquer les sections selon les types sélectionnés
-  ['danseur','photographe','videaste','beatmaker','realisateur'].forEach(t => {
+  ['danseur','photographe','videaste','beatmaker'].forEach(t => {
     const section = document.getElementById('signup-section-' + t);
     if (section) section.style.display = _signupTypes.has(t) ? 'block' : 'none';
   });
@@ -7268,7 +7244,7 @@ async function chargerSalles() {
   if (!window._db) { setTimeout(chargerSalles, 500); return; }
 
   // Charger les workshops depuis tousLesEvents (déjà en mémoire ou Firestore)
-  try { await afficherWorkshopsPage(); } catch(e) { console.error('Erreur workshops:', e); }
+  afficherWorkshopsPage();
 
   const grid = document.getElementById('salles-grid');
   if (!grid) return;
@@ -8883,10 +8859,6 @@ window.toggleSuivre = async function(targetUid) {
 // ════════════════════════════════
 async function chargerMessages() {
   if (!window._currentUid || !window._db) {
-    if (!window._currentUid && window._db) {
-      setTimeout(chargerMessages, 600);
-      return;
-    }
     document.getElementById('msg-not-connected').style.display = 'block';
     document.getElementById('msg-list').style.display = 'none';
     return;
@@ -10334,11 +10306,6 @@ window.inscrire = async function() {
     .map(t => t.textContent);
   const daw = document.getElementById('signup-daw')?.value.trim() || '';
 
-  // Champs réalisateur
-  const genresReal = [...document.querySelectorAll('#signup-genres-real .style-tag.selected')]
-    .map(t => t.textContent);
-  const logicielsReal = document.getElementById('signup-logiciels-real')?.value.trim() || '';
-
   // Validation
   errDiv.style.display = 'none';
   if (!email)  { afficherErreur(errDiv, '⚠️ Entre ton email'); return; }
@@ -10385,10 +10352,6 @@ window.inscrire = async function() {
     if (metiers.includes('beatmaker')) {
       profileData.genresBeat = genresBeat;
       profileData.daw        = daw;
-    }
-    if (metiers.includes('realisateur')) {
-      profileData.genresReal    = genresReal;
-      profileData.logicielsReal = logicielsReal;
     }
 
     await setDoc(doc(db, 'danseurs', uid), profileData);
@@ -10512,10 +10475,6 @@ window.sauvegarderIdentite = async function() {
   if (metiersSauv.includes('beatmaker')) {
     metierData.genresBeat = [...document.querySelectorAll('#edit-genres-beat .style-tag.selected')].map(t => t.textContent.trim());
     metierData.daw        = document.getElementById('edit-daw')?.value.trim() || '';
-  }
-  if (metiersSauv.includes('realisateur')) {
-    metierData.genresReal    = [...document.querySelectorAll('#edit-genres-real .style-tag.selected')].map(t => t.textContent.trim());
-    metierData.logicielsReal = document.getElementById('edit-logiciels-real')?.value.trim() || '';
   }
 
   try {
@@ -10676,7 +10635,7 @@ async function chargerProfil(uid) {
 
     // ── Sections métier (édition profil) ──
     const metiers = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
-    ['danseur','photographe','videaste','beatmaker','realisateur'].forEach(m => {
+    ['danseur','photographe','videaste','beatmaker'].forEach(m => {
       const sec = document.getElementById('edit-section-' + m);
       if (sec) sec.style.display = metiers.includes(m) ? 'block' : 'none';
     });
@@ -10705,15 +10664,6 @@ async function chargerProfil(uid) {
       if (elD) elD.value = d.daw || '';
       (d.genresBeat || []).forEach(s => {
         document.querySelectorAll('#edit-genres-beat .style-tag').forEach(tag => {
-          if (tag.textContent === s) tag.classList.add('selected');
-        });
-      });
-    }
-    if (metiers.includes('realisateur')) {
-      const elR = document.getElementById('edit-logiciels-real');
-      if (elR) elR.value = d.logicielsReal || '';
-      (d.genresReal || []).forEach(s => {
-        document.querySelectorAll('#edit-genres-real .style-tag').forEach(tag => {
           if (tag.textContent === s) tag.classList.add('selected');
         });
       });
@@ -12288,25 +12238,6 @@ function _renderDrawerLieux() {
             </div>
             <label class="form-label" style="margin-bottom:6px;">DAW / Logiciels</label>
             <input id="edit-daw" class="form-input" type="text" placeholder="Ex: FL Studio, Ableton, Logic Pro..." style="background:var(--bg2);">
-          </div>
-        </div>
-
-        <!-- CHAMPS RÉALISATEUR (édition) -->
-        <div id="edit-section-realisateur" style="display:none;">
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;">🎬 Genres / formats</div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;" id="edit-genres-real">
-              <button class="style-tag" onclick="toggleStyle(this)">Clip musical</button>
-              <button class="style-tag" onclick="toggleStyle(this)">Court-métrage</button>
-              <button class="style-tag" onclick="toggleStyle(this)">Documentaire</button>
-              <button class="style-tag" onclick="toggleStyle(this)">Pub / Promo</button>
-              <button class="style-tag" onclick="toggleStyle(this)">Fiction</button>
-              <button class="style-tag" onclick="toggleStyle(this)">Événement</button>
-              <button class="style-tag" onclick="toggleStyle(this)">Série</button>
-              <button class="style-tag" onclick="toggleStyle(this)">Reportage</button>
-            </div>
-            <label class="form-label" style="margin-bottom:6px;">Logiciels</label>
-            <input id="edit-logiciels-real" class="form-input" type="text" placeholder="Ex: Premiere Pro, DaVinci Resolve, After Effects..." style="background:var(--bg2);">
           </div>
         </div>
 
