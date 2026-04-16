@@ -7758,10 +7758,12 @@ window.ouvrirOrganisateur = function() {
   closeDrawer();
   closeNavProfileMenu();
   // Forcer la sauvegarde de la page courante dans l'historique
-  if (currentPage && currentPage !== 'orga') {
-    pageHistory.push(currentPage);
-    if (pageHistory.length > 15) pageHistory.shift();
-  }
+  const _retourPage = (!currentPage || currentPage === 'home' || currentPage === 'orga')
+    ? 'dashboard'
+    : currentPage;
+  pageHistory = pageHistory.filter(p => p !== 'orga');
+  pageHistory.push(_retourPage);
+  if (pageHistory.length > 15) pageHistory.shift();
   showPage('orga', true);
 }
 
