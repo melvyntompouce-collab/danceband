@@ -7846,11 +7846,7 @@ function afficherSalles(salles) {
   window._sallesListeFiltered = liste;
 
   grid.innerHTML = liste.map((s, i) => {
-    const dispo = s.disponible !== false;
     const prixHtml = s.prix ? `<span class="salle-item-price">${s.prix}€<span style="font-size:10px;font-weight:400;color:var(--muted)">/h</span></span>` : '';
-    const dispoBadge = dispo
-      ? `<span class="salle-item-tag">Dispo</span>`
-      : `<span class="salle-item-tag" style="background:rgba(255,77,109,0.08);color:var(--red);border-color:rgba(255,77,109,0.15);">Indispo</span>`;
 
     return `<div class="salle-item" onclick="ouvrirDetailSalle('studio', ${i})">
       <div class="salle-item-left">
@@ -7858,7 +7854,6 @@ function afficherSalles(salles) {
         <div class="salle-item-city">${s.ville || ''}${s.adresse ? ' · ' + s.adresse : ''}</div>
       </div>
       <div class="salle-item-right">
-        ${dispoBadge}
         ${prixHtml}
         <span class="salle-item-arrow">›</span>
       </div>
@@ -7928,10 +7923,6 @@ window.ouvrirDetailSalle = function(type, index) {
 
   if (type === 'studio') {
     // Infos principales
-    const dispo = item.disponible !== false;
-    const dispoBadge = dispo
-      ? `<span class="salle-card-tag green">Disponible</span>`
-      : `<span class="salle-card-tag" style="background:rgba(255,77,109,0.08);color:var(--red);border-color:rgba(255,77,109,0.15);">Indisponible</span>`;
     const surface = item.surface ? `<span class="salle-card-tag">${item.surface} m²</span>` : '';
 
 
@@ -7955,9 +7946,7 @@ window.ouvrirDetailSalle = function(type, index) {
             ${item.prix ? `<div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;color:var(--green);line-height:1;">${item.prix}€</div><div style="font-size:11px;color:var(--muted);">/ heure</div>` : ''}
           </div>
         </div>
-        <div class="salle-card-tags" style="margin-bottom:10px;">
-          ${dispoBadge}${surface}
-        </div>
+        ${surface ? `<div class="salle-card-tags" style="margin-bottom:10px;">${surface}</div>` : ''}
 
       </div>
 
@@ -9432,6 +9421,9 @@ window.toggleSuivre = async function(targetUid) {
       mesAbonnements.add(targetUid);
       mettreAJourBtnSuivre(targetUid, true);
     }
+    // Mettre à jour le compteur abonnements en temps réel
+    const statAbos = document.getElementById('stat-abonnements');
+    if (statAbos) statAbos.textContent = mesAbonnements.size;
   } catch(e) { console.error('Erreur abonnement:', e); }
 }
 
