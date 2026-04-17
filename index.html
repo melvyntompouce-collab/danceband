@@ -4645,8 +4645,8 @@ if (isPWA) {
 <div id="event-detail-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div style="max-width:600px;margin:0 auto;padding:0 0 calc(120px + env(safe-area-inset-bottom));">
     <!-- PHOTO HEADER -->
-    <div id="ev-detail-banner" style="height:calc(220px + env(safe-area-inset-top));position:relative;width:100%;">
-      <div id="ev-detail-banner-bg" style="position:absolute;inset:0;background:#1a0d2b;"></div>
+    <div id="ev-detail-banner" style="height:calc(280px + env(safe-area-inset-top));position:relative;width:100%;">
+      <div id="ev-detail-banner-bg" style="position:absolute;inset:0;background:#1a0d2b;background-size:cover;background-repeat:no-repeat;"></div>
       <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.6) 100%);"></div>
       <button onclick="fermerDetailEvent()" style="position:absolute;top:calc(16px + env(safe-area-inset-top));left:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);color:white;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;line-height:1;">←</button>
       <span id="ev-detail-type" style="position:absolute;bottom:14px;left:16px;z-index:2;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:700;font-family:'Syne',sans-serif;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);"></span>
@@ -5041,9 +5041,35 @@ if (isPWA) {
         </div>
         <div class="form-group" style="margin:0">
           <label class="form-label">Photo de couverture <span style="color:var(--muted);font-weight:400;">(optionnel)</span></label>
-          <div id="ev-photo-preview-wrap" style="display:none;position:relative;margin-bottom:10px;border-radius:12px;overflow:hidden;height:120px;">
-            <img id="ev-photo-preview" src="" alt="" style="width:100%;height:100%;object-fit:cover;">
-            <button type="button" onclick="supprimerPhotoEvent()" style="position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">✕</button>
+          <div id="ev-photo-preview-wrap" style="display:none;position:relative;margin-bottom:10px;">
+            <!-- Aperçu statique -->
+            <div id="ev-preview-static" style="position:relative;width:100%;height:140px;overflow:hidden;border-radius:12px;">
+              <img id="ev-photo-preview" src="" alt="" style="position:absolute;left:0;width:100%;pointer-events:none;">
+              <button type="button" onclick="supprimerPhotoEvent()" style="position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;z-index:2;">✕</button>
+            </div>
+            <!-- Bouton recadrer -->
+            <button type="button" onclick="ouvrirCropModal()" style="margin-top:8px;width:100%;padding:10px;border-radius:10px;background:var(--bg2);border:1.5px solid var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+              Recadrer la photo
+            </button>
+          </div>
+
+          <!-- Modal de crop -->
+          <div id="ev-crop-modal" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
+            <div style="width:min(92vw,420px);background:var(--card);border-radius:20px;border:1px solid var(--border);overflow:hidden;">
+              <div style="padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);">
+                <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;">Recadrer la photo</span>
+                <button type="button" onclick="fermerCropModal()" style="width:30px;height:30px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);color:var(--muted2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;">✕</button>
+              </div>
+              <div style="padding:16px;">
+                <div id="ev-crop-area" style="position:relative;width:100%;height:220px;overflow:hidden;border-radius:12px;cursor:ns-resize;user-select:none;touch-action:none;background:#111;">
+                  <img id="ev-crop-img" src="" alt="" style="position:absolute;left:0;width:100%;pointer-events:none;">
+                  <div style="position:absolute;inset:0;pointer-events:none;border-radius:12px;box-shadow:inset 0 0 0 2px rgba(0,245,155,0.3);"></div>
+                  <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);border:1px solid rgba(255,255,255,0.15);backdrop-filter:blur(8px);border-radius:20px;padding:5px 14px;font-size:11px;color:rgba(255,255,255,0.7);pointer-events:none;white-space:nowrap;">↕ Glisse pour recadrer</div>
+                </div>
+                <button type="button" onclick="validerCrop()" style="margin-top:12px;width:100%;padding:13px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">Valider le recadrage</button>
+              </div>
+            </div>
           </div>
           <label id="ev-photo-label" for="ev-photo" style="display:flex;align-items:center;gap:10px;padding:14px;border-radius:12px;border:1.5px dashed var(--border);background:var(--bg2);cursor:pointer;transition:border-color 0.2s;">
             <span style="font-size:20px;">🖼️</span>
@@ -6928,9 +6954,16 @@ function ouvrirEvent(id) {
 
   // Bannière photo
   const bg = document.getElementById('ev-detail-banner-bg');
-  if (bg) bg.style.background = ev.photoUrl ? `url('${ev.photoUrl}') center/cover no-repeat` : cfg.bg;
+  if (bg) {
+    if (ev.photoUrl) {
+      const cropY = (ev.photoCropY !== undefined && ev.photoCropY !== null) ? ev.photoCropY : 50;
+      bg.style.background = `url('${ev.photoUrl}') center ${cropY}%/cover no-repeat`;
+    } else {
+      bg.style.background = cfg.bg;
+    }
+  }
   const bannerEl = document.getElementById('ev-detail-banner');
-  if (bannerEl) bannerEl.style.height = 'calc(220px + env(safe-area-inset-top))';
+  if (bannerEl) bannerEl.style.height = 'calc(280px + env(safe-area-inset-top))';
   const typeEl = document.getElementById('ev-detail-type');
   if (typeEl) { typeEl.textContent = cfg.label; typeEl.style.color = cfg.couleur; typeEl.style.bottom = '14px'; typeEl.style.top = ''; }
   const titleEl = document.getElementById('ev-detail-title');
@@ -8244,16 +8277,99 @@ async function chargerMesEvents() {
 }
 
 // ── Formulaire événement ──
+window._evCropY = 50; // % vertical (0=haut, 100=bas)
+window._evCropYTemp = 50; // valeur temporaire pendant le crop modal
+
+function _applyStaticPreview(cropY) {
+  const img = document.getElementById('ev-photo-preview');
+  if (!img || !img.naturalHeight) return;
+  const areaH = 140;
+  const areaW = img.parentElement ? img.parentElement.offsetWidth : 350;
+  const renderedH = (img.naturalHeight / img.naturalWidth) * areaW;
+  const maxOffset = Math.max(0, renderedH - areaH);
+  const offset = (cropY / 100) * maxOffset;
+  img.style.width = areaW + 'px';
+  img.style.height = renderedH + 'px';
+  img.style.top = `-${offset}px`;
+}
+
 window.previewPhotoEvent = function(input) {
   const file = input.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
-    document.getElementById('ev-photo-preview').src = e.target.result;
+    const img = document.getElementById('ev-photo-preview');
+    img.src = e.target.result;
+    img.onload = function() { _applyStaticPreview(window._evCropY); };
     document.getElementById('ev-photo-preview-wrap').style.display = 'block';
     document.getElementById('ev-photo-label').style.display = 'none';
+    window._evCropY = 50;
+    window._evCropYTemp = 50;
   };
   reader.readAsDataURL(file);
+};
+
+window.ouvrirCropModal = function() {
+  const srcImg = document.getElementById('ev-photo-preview');
+  if (!srcImg || !srcImg.src) return;
+  const modal = document.getElementById('ev-crop-modal');
+  const cropImg = document.getElementById('ev-crop-img');
+  cropImg.src = srcImg.src;
+  window._evCropYTemp = window._evCropY;
+  modal.style.display = 'flex';
+  cropImg.onload = function() { _initCropModal(window._evCropYTemp); };
+  if (cropImg.complete && cropImg.naturalHeight) _initCropModal(window._evCropYTemp);
+};
+
+window.fermerCropModal = function() {
+  document.getElementById('ev-crop-modal').style.display = 'none';
+};
+
+window.validerCrop = function() {
+  window._evCropY = window._evCropYTemp;
+  _applyStaticPreview(window._evCropY);
+  fermerCropModal();
+};
+
+function _initCropModal(initialCrop) {
+  const area = document.getElementById('ev-crop-area');
+  const img = document.getElementById('ev-crop-img');
+  if (!area || !img) return;
+
+  const areaH = 220;
+  const areaW = area.offsetWidth || 380;
+  const renderedH = (img.naturalHeight / img.naturalWidth) * areaW;
+
+  img.style.width = areaW + 'px';
+  img.style.height = renderedH + 'px';
+
+  function applyCrop(pct) {
+    window._evCropYTemp = Math.max(0, Math.min(100, pct));
+    const maxOffset = Math.max(0, renderedH - areaH);
+    const offset = (window._evCropYTemp / 100) * maxOffset;
+    img.style.top = `-${offset}px`;
+  }
+  applyCrop(initialCrop);
+
+  let dragStartY = null;
+  let dragStartCrop = null;
+
+  function onDown(clientY) { dragStartY = clientY; dragStartCrop = window._evCropYTemp; }
+  function onMove(clientY) {
+    if (dragStartY === null) return;
+    const maxOffset = Math.max(1, renderedH - areaH);
+    const delta = (dragStartY - clientY) / maxOffset * 100;
+    applyCrop(dragStartCrop + delta);
+  }
+  function onUp() { dragStartY = null; }
+
+  area.onmousedown = (e) => { e.preventDefault(); onDown(e.clientY); };
+  area.onmousemove = (e) => onMove(e.clientY);
+  area.onmouseup = onUp;
+  area.onmouseleave = onUp;
+  area.ontouchstart = (e) => { e.preventDefault(); onDown(e.touches[0].clientY); };
+  area.ontouchmove = (e) => { e.preventDefault(); onMove(e.touches[0].clientY); };
+  area.ontouchend = onUp;
 }
 
 window.supprimerPhotoEvent = function() {
@@ -8263,6 +8379,7 @@ window.supprimerPhotoEvent = function() {
   document.getElementById('ev-photo-label').style.display = 'flex';
   document.getElementById('ev-photo-label-text').textContent = 'Choisir une image JPG ou PNG';
   window._evPhotoUrl = null;
+  window._evCropY = 50;
 }
 
 // ── Vibe musicale ──
@@ -8688,8 +8805,11 @@ window.modifierEvent = async function(id) {
 
     // Photo de couverture
     window._evPhotoUrl = ev.photoUrl || null;
+    window._evCropY = (ev.photoCropY !== undefined && ev.photoCropY !== null) ? ev.photoCropY : 50;
     if (ev.photoUrl) {
-      document.getElementById('ev-photo-preview').src = ev.photoUrl;
+      const img = document.getElementById('ev-photo-preview');
+      img.src = ev.photoUrl;
+      img.onload = function() { _applyStaticPreview(window._evCropY); };
       document.getElementById('ev-photo-preview-wrap').style.display = 'block';
       document.getElementById('ev-photo-label').style.display = 'none';
     } else {
@@ -8753,6 +8873,7 @@ window.sauvegarderEvent = async function() {
     description:   document.getElementById('ev-desc').value,
     lienResa:      document.getElementById('ev-lien-resa').value.trim() || null,
     photoUrl:      photoUrl || null,
+    photoCropY:    photoUrl ? (window._evCropY !== undefined ? window._evCropY : 50) : null,
     organisateurUid: window._currentUid,
     updatedAt:     new Date().toISOString(),
   };
