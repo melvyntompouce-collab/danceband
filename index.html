@@ -3162,14 +3162,23 @@ if (isPWA) {
         <div class="form-group">
           <label class="form-label">Tu es... <span style="color:var(--muted);font-weight:400">(plusieurs possibles)</span></label>
           <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="signup-types">
-            <button type="button" class="style-tag" onclick="toggleSignupType(this,'danseur')">💃 Danseur·se</button>
-            <button type="button" class="style-tag" onclick="toggleSignupType(this,'photographe')">📷 Photographe</button>
-            <button type="button" class="style-tag" onclick="toggleSignupType(this,'videaste')">🎥 Vidéaste</button>
-            <button type="button" class="style-tag" onclick="toggleSignupType(this,'beatmaker')">🎧 Beatmaker</button>
-            <button type="button" class="style-tag" onclick="toggleSignupType(this,'realisateur')">🎬 Réalisateur·rice</button>
-            <button type="button" class="style-tag" onclick="toggleSignupType(this,'dj')">🎛️ DJ</button>
-            <button type="button" class="style-tag" onclick="toggleSignupType(this,'musicien')">🎸 Musicien·ne</button>
-            <button type="button" class="style-tag" onclick="toggleSignupType(this,'chanteur')">🎤 Chanteur·se / Rappeur·se</button>
+            <!-- Catégorie -->
+            <div style="margin-bottom:6px;">
+              <label class="form-label" style="font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;">Catégorie</label>
+              <select id="signup-categorie" class="form-select" onchange="updateSignupSpecialites(this.value)" style="margin-top:4px;">
+                <option value="">Choisir une catégorie...</option>
+                <option value="scene">🎭 Scène</option>
+                <option value="musique">🎵 Musique</option>
+                <option value="audiovisuel">🎬 Audiovisuel</option>
+                <option value="arts_visuels">🎨 Arts Visuels</option>
+              </select>
+            </div>
+            <!-- Spécialité (dynamique) -->
+            <div id="signup-specialite-wrap" style="display:none;">
+              <label class="form-label" style="font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;">Spécialité</label>
+              <select id="signup-specialite" class="form-select" onchange="toggleSignupType(null, this.value)" style="margin-top:4px;">
+              </select>
+            </div>
           </div>
         </div>
 
@@ -4656,14 +4665,10 @@ if (isPWA) {
       <!-- Filtre métier -->
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
         <button class="style-fchip filtre-metier-chip on" data-metier="tous" onclick="setMetierFiltre('tous',this);syncDancerListMobile()">Tous</button>
-        <button class="style-fchip filtre-metier-chip" data-metier="danseur" onclick="setMetierFiltre('danseur',this);syncDancerListMobile()">💃 Danseur·se</button>
-        <button class="style-fchip filtre-metier-chip" data-metier="beatmaker" onclick="setMetierFiltre('beatmaker',this);syncDancerListMobile()">🎧 Beatmaker</button>
-        <button class="style-fchip filtre-metier-chip" data-metier="photographe" onclick="setMetierFiltre('photographe',this);syncDancerListMobile()">📷 Photo</button>
-        <button class="style-fchip filtre-metier-chip" data-metier="videaste" onclick="setMetierFiltre('videaste',this);syncDancerListMobile()">🎥 Vidéo</button>
-        <button class="style-fchip filtre-metier-chip" data-metier="realisateur" onclick="setMetierFiltre('realisateur',this);syncDancerListMobile()">🎬 Réal</button>
-        <button class="style-fchip filtre-metier-chip" data-metier="dj" onclick="setMetierFiltre('dj',this);syncDancerListMobile()">🎛️ DJ</button>
-        <button class="style-fchip filtre-metier-chip" data-metier="musicien" onclick="setMetierFiltre('musicien',this);syncDancerListMobile()">🎸 Musicien</button>
-        <button class="style-fchip filtre-metier-chip" data-metier="chanteur" onclick="setMetierFiltre('chanteur',this);syncDancerListMobile()">🎤 Chanteur</button>
+        <button class="style-fchip filtre-metier-chip" data-metier="scene" onclick="setMetierFiltre('scene',this);syncDancerListMobile()">🎭 Scène</button>
+        <button class="style-fchip filtre-metier-chip" data-metier="musique" onclick="setMetierFiltre('musique',this);syncDancerListMobile()">🎵 Musique</button>
+        <button class="style-fchip filtre-metier-chip" data-metier="audiovisuel" onclick="setMetierFiltre('audiovisuel',this);syncDancerListMobile()">🎬 Audiovisuel</button>
+        <button class="style-fchip filtre-metier-chip" data-metier="arts_visuels" onclick="setMetierFiltre('arts_visuels',this);syncDancerListMobile()">🎨 Arts Visuels</button>
       </div>
       <input id="filtre-zone-mobile" type="text" list="villes-datalist" placeholder="📍 Ville..." oninput="syncVilleMobile(this.value)" autocomplete="off" style="width:100%;box-sizing:border-box;padding:7px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:8px;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
       <!-- Dropdown styles mobile -->
@@ -6016,18 +6021,34 @@ function toggleGenre(el) {
 }
 
 // ── Sélection type métier à l'inscription ──
+window.updateSignupSpecialites = function(categorie) {
+  const wrap = document.getElementById('signup-specialite-wrap');
+  const sel = document.getElementById('signup-specialite');
+  if (!wrap || !sel || !categorie) { if(wrap) wrap.style.display='none'; return; }
+  const cfg = CATEGORIES_ARTISTE[categorie];
+  if (!cfg) { wrap.style.display='none'; return; }
+  sel.innerHTML = '<option value="">Choisir une spécialité...</option>' +
+    cfg.specialites.map(s => `<option value="${s}">${SPECIALITE_LABELS[s] || s}</option>`).join('');
+  wrap.style.display = 'block';
+  // Reset sections
+  ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
+   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur'].forEach(t => {
+    const sec = document.getElementById('signup-section-' + t);
+    if (sec) sec.style.display = 'none';
+  });
+};
+
+// ── Sélection type métier à l'inscription ──
 let _signupTypes = new Set();
 
 function toggleSignupType(btn, type) {
-  if (_signupTypes.has(type)) {
-    _signupTypes.delete(type);
-    btn.classList.remove('selected');
-  } else {
-    _signupTypes.add(type);
-    btn.classList.add('selected');
-  }
-  // Afficher/masquer les sections selon les types sélectionnés
-  ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur'].forEach(t => {
+  if (!type) return;
+  _signupTypes.clear();
+  if (btn) { document.querySelectorAll('.style-tag[data-type]').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
+  _signupTypes.add(type);
+  // Afficher la section correspondante
+  ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
+   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur'].forEach(t => {
     const section = document.getElementById('signup-section-' + t);
     if (section) section.style.display = _signupTypes.has(t) ? 'block' : 'none';
   });
@@ -10304,7 +10325,9 @@ async function ajouterMarqueur(danseur, uid) {
   const lng = coords[1] + (Math.random() - 0.5) * 0.04;
 
   const nom = danseur.nomAffiche || danseur.nom || danseur.pseudo || 'Artiste';
-  const styles = normaliserStyles(danseur.styles).slice(0, 3);
+  const metiersList = danseur.metiers || (danseur.styles && danseur.styles.length ? ['danseur'] : []);
+  const categorieLabel = getLabelCategorie(metiersList);
+  const specialiteLabel = metiersList.length ? (SPECIALITE_LABELS[metiersList[0]] || metiersList[0]) : '';
 
   // Couleur dérivée de l'UID — toujours la même pour le même utilisateur
   const MARKER_COLORS = ['#00f59b','#4f9fff','#9b4fff','#ff2d5e','#e8ff00'];
@@ -10330,7 +10353,8 @@ async function ajouterMarqueur(danseur, uid) {
       <div style="min-width:160px;padding:4px">
         <div class="popup-name">${nom}</div>
         <div class="popup-styles">
-          ${styles.map(s => `<span class="popup-tag">${s}</span>`).join('')}
+          <span class="popup-tag">${categorieLabel}</span>
+          ${specialiteLabel ? `<span class="popup-tag" style="opacity:0.7;">${specialiteLabel}</span>` : ''}
         </div>
         <div class="popup-zone">📍 ${danseur.zone || 'Zone non définie'}</div>
         ${danseur.disponible ? '<div class="popup-dispo">✅ Disponible</div>' : ''}
@@ -10840,6 +10864,34 @@ let filtresStyleActifs = new Set();
 let filtresEtatActifs = new Set();
 let filtresMetierActifs = new Set();
 
+
+const CATEGORIES_ARTISTE = {
+  scene:       { label:'🎭 Scène',       specialites: ['danseur','comedien','mannequin','performeur'] },
+  musique:     { label:'🎵 Musique',      specialites: ['beatmaker','dj','musicien','chanteur'] },
+  audiovisuel: { label:'🎬 Audiovisuel', specialites: ['photographe','videaste','realisateur'] },
+  arts_visuels:{ label:'🎨 Arts Visuels',specialites: ['dessinateur','peintre','graphiste','illustrateur'] },
+};
+
+const SPECIALITE_LABELS = {
+  danseur:'💃 Danseur·se', comedien:'🎭 Comédien·ne', mannequin:'🪞 Mannequin', performeur:'✨ Performeur·se',
+  beatmaker:'🎧 Beatmaker', dj:'🎛️ DJ', musicien:'🎸 Musicien·ne', chanteur:'🎤 Chanteur·se',
+  photographe:'📷 Photographe', videaste:'🎥 Vidéaste', realisateur:'🎬 Réalisateur·rice',
+  dessinateur:'✏️ Dessinateur·rice', peintre:'🖌️ Peintre', graphiste:'🖥️ Graphiste', illustrateur:'🖼️ Illustrateur·rice',
+};
+
+function getCategorieFromMetiers(metiers) {
+  if (!metiers || !metiers.length) return 'scene';
+  for (const [cat, cfg] of Object.entries(CATEGORIES_ARTISTE)) {
+    if (metiers.some(m => cfg.specialites.includes(m))) return cat;
+  }
+  return 'scene';
+}
+
+function getLabelCategorie(metiers) {
+  const cat = getCategorieFromMetiers(metiers);
+  return CATEGORIES_ARTISTE[cat]?.label || '🎭 Scène';
+}
+
 function setMetierFiltre(metier, btn) {
   if (metier === 'tous') {
     filtresMetierActifs.clear();
@@ -11128,7 +11180,12 @@ function filtrerDanseurs() {
   if (zone)            filtrés = filtrés.filter(d => (d.zone || '').toLowerCase().includes(zone.toLowerCase()));
   if (filtresMetierActifs.size > 0) filtrés = filtrés.filter(d => {
     const dm = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
-    return dm.some(m => filtresMetierActifs.has(m));
+    return filtresMetierActifs.has('tous') || dm.some(m => {
+      for (const [cat, cfg] of Object.entries(CATEGORIES_ARTISTE)) {
+        if (filtresMetierActifs.has(cat) && cfg.specialites.includes(m)) return true;
+      }
+      return filtresMetierActifs.has(m);
+    });
   });
   if (filtresStyleActifs.size > 0) filtrés = filtrés.filter(d => normaliserStyles(d.styles).some(s => filtresStyleActifs.has(s)));
 
