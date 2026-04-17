@@ -4743,6 +4743,19 @@ if (isPWA) {
       </div>
     </div>
 
+    <!-- SOUS-FILTRES battle/workshop -->
+    <div id="agenda-subfiltres" style="display:none;margin-top:4px;display:none;flex-direction:column;gap:8px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <button class="agenda-filter on" onclick="setAgendaNiveau('tous',this)">Tous niveaux</button>
+        <button class="agenda-filter" onclick="setAgendaNiveau('debutant',this)">Débutant</button>
+        <button class="agenda-filter" onclick="setAgendaNiveau('intermediaire',this)">Intermédiaire</button>
+        <button class="agenda-filter" onclick="setAgendaNiveau('avance',this)">Avancé</button>
+      </div>
+      <input id="agenda-ville-search" type="text" placeholder="🔍 Rechercher une ville..." oninput="setAgendaVille(this.value)"
+        style="padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;max-width:280px;transition:border-color 0.2s;"
+        onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
+    </div>
+
     <!-- GRILLE EVENTS À VENIR -->
     <div class="agenda-grid" id="agenda-grid">
       <div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted);font-size:14px;">
@@ -6895,7 +6908,36 @@ document.querySelectorAll('.rk-tab').forEach(t => {
 let tousLesEvents = [];
 let agendaFiltre = 'tous';
 let agendaCategorie = 'toutes';
+let agendaNiveau = 'tous';
+let agendaVille = '';
 let eventCourant = null;
+
+function _toggleSubfiltres(type) {
+  const bloc = document.getElementById('agenda-subfiltres');
+  if (!bloc) return;
+  const show = (type === 'battle' || type === 'workshop');
+  bloc.style.display = show ? 'flex' : 'none';
+  if (!show) {
+    // reset sous-filtres
+    agendaNiveau = 'tous';
+    agendaVille = '';
+    const inp = document.getElementById('agenda-ville-search');
+    if (inp) inp.value = '';
+    bloc.querySelectorAll('.agenda-filter').forEach((b,i) => b.classList.toggle('on', i===0));
+  }
+}
+
+function setAgendaNiveau(niveau, btn) {
+  agendaNiveau = niveau;
+  document.querySelectorAll('#agenda-subfiltres .agenda-filter').forEach(b => b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  afficherEvents();
+}
+
+function setAgendaVille(val) {
+  agendaVille = val.trim().toLowerCase();
+  afficherEvents();
+}
 
 const CHIPS_PAR_DISCIPLINE = {
   toutes: [
@@ -6948,6 +6990,13 @@ function _updateChipsAgenda(categorie) {
 function setAgendaCategorie(val) {
   agendaCategorie = val;
   _updateChipsAgenda(val);
+  // Reset sous-filtres
+  agendaNiveau = 'tous';
+  agendaVille = '';
+  const inp = document.getElementById('agenda-ville-search');
+  if (inp) inp.value = '';
+  const bloc = document.getElementById('agenda-subfiltres');
+  if (bloc) bloc.style.display = 'none';
   afficherEvents();
 }
 
@@ -7026,9 +7075,10 @@ function _typeBg(type) {
   return cfg.bg;
 }
 function setAgendaFiltre(type, btn) {
-  document.querySelectorAll('.agenda-filter').forEach(f => f.classList.remove('on'));
+  document.querySelectorAll('#agenda-filters .agenda-filter').forEach(f => f.classList.remove('on'));
   btn.classList.add('on');
   agendaFiltre = type;
+  _toggleSubfiltres(type);
   afficherEvents();
 }
 
@@ -7187,6 +7237,19 @@ function afficherEvents() {
   // Filtrer par type d'événement
   if (agendaFiltre !== 'tous') {
     source = source.filter(e => e.type === agendaFiltre);
+  }
+  // Sous-filtres niveau (battles/workshops)
+  if (agendaNiveau !== 'tous') {
+    const niveauMap = { debutant:'Débutant', intermediaire:'Intermédiaire', avance:'Avancé' };
+    const cible = niveauMap[agendaNiveau] || agendaNiveau;
+    source = source.filter(e => {
+      const n = (e.niveau || '').toLowerCase();
+      return n === cible.toLowerCase() || n === 'tous niveaux';
+    });
+  }
+  // Sous-filtre ville
+  if (agendaVille) {
+    source = source.filter(e => (e.ville || '').toLowerCase().includes(agendaVille));
   }
 
   const aVenir = source.filter(e => !_estPasse(e));
@@ -7930,6 +7993,19 @@ window.switchSection = function(section, btn) {
   document.getElementById('section-studios').style.display   = section === 'studios'   ? 'block' : 'none';
 };
 
+let _ecolesVilleRecherche = '';
+let _sallesVilleRecherche = '';
+
+window.filtrerEcolesVille = function(val) {
+  _ecolesVilleRecherche = val.trim().toLowerCase();
+  afficherEcoles(_ecolesCache);
+};
+
+window.filtrerSallesVille = function(val) {
+  _sallesVilleRecherche = val.trim().toLowerCase();
+  afficherSalles(_sallesCache);
+};
+
 window.filtrerEcoles = function(filtre, btn) {
   _ecolesFiltreActif = filtre;
   document.querySelectorAll('#ecoles-filters .style-fchip').forEach(b => b.classList.remove('on'));
@@ -7947,6 +8023,9 @@ function afficherEcoles(ecoles) {
     const map = {'debutant':'Débutant','intermediaire':'Intermédiaire','avance':'Avancé'};
     const cible = map[niv] || niv;
     liste = liste.filter(e => (e.niveaux || []).some(n => n.toLowerCase() === cible.toLowerCase()) || (e.niveaux || []).includes('Tous niveaux'));
+  }
+  if (_ecolesVilleRecherche) {
+    liste = liste.filter(e => (e.ville || '').toLowerCase().includes(_ecolesVilleRecherche));
   }
 
   if (liste.length === 0) {
@@ -7980,6 +8059,9 @@ function afficherSalles(salles) {
   if (_sallesFiltreActif === 'dispo')      liste = liste.filter(s => s.disponible !== false);
   if (_sallesFiltreActif === 'prix-asc')   liste.sort((a,b) => (a.prix||0) - (b.prix||0));
   if (_sallesFiltreActif === 'prix-desc')  liste.sort((a,b) => (b.prix||0) - (a.prix||0));
+  if (_sallesVilleRecherche) {
+    liste = liste.filter(s => (s.ville || '').toLowerCase().includes(_sallesVilleRecherche));
+  }
 
   if (liste.length === 0) {
     grid.innerHTML = '<div class="salles-empty"><div class="salles-empty-ico">🏢</div><div>Aucune salle disponible pour le moment.</div></div>';
@@ -13098,6 +13180,9 @@ function _renderDrawerLieux() {
 
     <!-- Section Cours (écoles) -->
     <div id="section-cours">
+      <input id="ecoles-ville-search" type="text" placeholder="🔍 Rechercher une ville..." oninput="filtrerEcolesVille(this.value)"
+        style="margin-bottom:12px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color 0.2s;"
+        onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
       <div class="salles-filters" id="ecoles-filters" style="margin-bottom:16px;">
         <button class="style-fchip on" onclick="filtrerEcoles('tous',this)">Toutes</button>
         <button class="style-fchip" onclick="filtrerEcoles('niveau-debutant',this)">Débutant</button>
@@ -13111,6 +13196,9 @@ function _renderDrawerLieux() {
 
     <!-- Section Studios -->
     <div id="section-studios" style="display:none;">
+      <input id="salles-ville-search" type="text" placeholder="🔍 Rechercher une ville..." oninput="filtrerSallesVille(this.value)"
+        style="margin-bottom:12px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color 0.2s;"
+        onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
       <div class="salles-filters" id="salles-filters" style="margin-bottom:16px;">
         <button class="style-fchip on" onclick="filtrerSalles('tous',this)">Tous</button>
         <button class="style-fchip" onclick="filtrerSalles('dispo',this)">Disponibles</button>
