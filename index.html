@@ -5005,7 +5005,7 @@ if (isPWA) {
           </div>
         </div>
         <div class="form-group" style="margin:0">
-          <label class="form-label">Adresse complète</label>
+          <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">Adresse complète <a id="ev-lieu-maps-btn" href="#" target="_blank" onclick="var v=document.getElementById('ev-lieu').value.trim();if(!v){event.preventDefault();return;};this.href='https://maps.google.com/?q='+encodeURIComponent(v);" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--green);text-decoration:none;opacity:0.7;transition:opacity 0.2s;" title="Ouvrir dans Google Maps"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Maps</a></label>
           <input id="ev-lieu" class="form-input" type="text" placeholder="Ex: Le Rex Club, Paris 10e" style="background:var(--bg2)">
         </div>
         <div class="form-group" style="margin:0">
@@ -5117,7 +5117,7 @@ if (isPWA) {
         </div>
 
         <div class="form-group" style="margin:0">
-          <label class="form-label">Adresse complète</label>
+          <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">Adresse complète <a id="salle-adresse-maps-btn" href="#" target="_blank" onclick="var v=document.getElementById('salle-adresse').value.trim();if(!v){event.preventDefault();return;};this.href='https://maps.google.com/?q='+encodeURIComponent(v);" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--green);text-decoration:none;opacity:0.7;transition:opacity 0.2s;" title="Ouvrir dans Google Maps"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Maps</a></label>
           <input id="salle-adresse" class="form-input" type="text" placeholder="Ex: 12 rue de la Danse, 33000 Bordeaux" style="background:var(--bg2)">
         </div>
 
@@ -5192,7 +5192,7 @@ if (isPWA) {
           </div>
         </div>
         <div class="form-group" style="margin:0">
-          <label class="form-label">Adresse complète</label>
+          <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">Adresse complète <a id="ecole-adresse-maps-btn" href="#" target="_blank" onclick="var v=document.getElementById('ecole-adresse').value.trim();if(!v){event.preventDefault();return;};this.href='https://maps.google.com/?q='+encodeURIComponent(v);" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--green);text-decoration:none;opacity:0.7;transition:opacity 0.2s;" title="Ouvrir dans Google Maps"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Maps</a></label>
           <input id="ecole-adresse" class="form-input" type="text" placeholder="Ex: 12 rue de la Danse, Paris" style="background:var(--bg2)">
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
