@@ -4948,7 +4948,7 @@ if (isPWA) {
 
     <!-- Header -->
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
-      <button onclick="fermerOrganisateur()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
+      <button onclick="retourOrga()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
       <div>
         <div style="font-family:'Syne',sans-serif;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Espace</div>
         <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:32px;letter-spacing:-1px;">ORGANISATEUR</div>
@@ -5749,6 +5749,8 @@ function showPage(id, isBack = false) {
   if (eventOverlay) eventOverlay.style.display = 'none';
   const artisteOverlay = document.getElementById('artiste-overlay');
   if (artisteOverlay) artisteOverlay.style.display = 'none';
+  const editProfilePage = document.getElementById('edit-profile-page');
+  if (editProfilePage) editProfilePage.style.display = 'none';
 
   const fromId   = currentPage;
   const fromPage = document.querySelector('.page.active');
@@ -8268,6 +8270,17 @@ window.ouvrirOrganisateur = function() {
 
 window.fermerOrganisateur = function() {
   goBack();
+}
+
+window.retourOrga = function() {
+  // Si un formulaire est ouvert, le fermer au lieu de quitter la page
+  const orgaForm  = document.getElementById('orga-form');
+  const salleForm = document.getElementById('admin-form-salle');
+  const ecoleForm = document.getElementById('admin-form-ecole');
+  if (orgaForm && orgaForm.style.display !== 'none') { fermerFormEvent(); return; }
+  if (salleForm && salleForm.style.display !== 'none') { fermerFormSalle(); return; }
+  if (ecoleForm && ecoleForm.style.display !== 'none') { fermerFormEcole(); return; }
+  fermerOrganisateur();
 }
 
 async function chargerDashboardOrga() {
