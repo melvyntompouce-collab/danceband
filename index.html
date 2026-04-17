@@ -5005,8 +5005,8 @@ if (isPWA) {
           </div>
         </div>
         <div class="form-group" style="margin:0">
-          <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">Adresse complète <a id="ev-lieu-maps-btn" href="#" target="_blank" onclick="var v=document.getElementById('ev-lieu').value.trim();if(!v){event.preventDefault();return;};this.href='https://maps.google.com/?q='+encodeURIComponent(v);" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--green);text-decoration:none;opacity:0.7;transition:opacity 0.2s;" title="Ouvrir dans Google Maps"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Maps</a></label>
-          <input id="ev-lieu" class="form-input" type="text" placeholder="Ex: Le Rex Club, Paris 10e" style="background:var(--bg2)">
+          <label class="form-label">Adresse complète</label>
+          <input id="ev-adresse" class="form-input" type="text" placeholder="Ex: Le Rex Club, Paris 10e" style="background:var(--bg2)">
         </div>
         <div class="form-group" style="margin:0">
           <label class="form-label">Styles de danse</label>
@@ -5117,7 +5117,7 @@ if (isPWA) {
         </div>
 
         <div class="form-group" style="margin:0">
-          <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">Adresse complète <a id="salle-adresse-maps-btn" href="#" target="_blank" onclick="var v=document.getElementById('salle-adresse').value.trim();if(!v){event.preventDefault();return;};this.href='https://maps.google.com/?q='+encodeURIComponent(v);" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--green);text-decoration:none;opacity:0.7;transition:opacity 0.2s;" title="Ouvrir dans Google Maps"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Maps</a></label>
+          <label class="form-label">Adresse complète</label>
           <input id="salle-adresse" class="form-input" type="text" placeholder="Ex: 12 rue de la Danse, 33000 Bordeaux" style="background:var(--bg2)">
         </div>
 
@@ -5192,7 +5192,7 @@ if (isPWA) {
           </div>
         </div>
         <div class="form-group" style="margin:0">
-          <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">Adresse complète <a id="ecole-adresse-maps-btn" href="#" target="_blank" onclick="var v=document.getElementById('ecole-adresse').value.trim();if(!v){event.preventDefault();return;};this.href='https://maps.google.com/?q='+encodeURIComponent(v);" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--green);text-decoration:none;opacity:0.7;transition:opacity 0.2s;" title="Ouvrir dans Google Maps"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Maps</a></label>
+          <label class="form-label">Adresse complète</label>
           <input id="ecole-adresse" class="form-input" type="text" placeholder="Ex: 12 rue de la Danse, Paris" style="background:var(--bg2)">
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
@@ -6862,7 +6862,7 @@ function _renderEventCard(ev, passe) {
     dateLine = `📅 ${_formatDate(d)}${ev.heure ? ' · ' + ev.heure : ''}`;
   }
 
-  const locLine = [ev.ville, ev.lieu].filter(Boolean).join(' · ');
+  const locLine = [ev.ville, ev.adresse].filter(Boolean).join(' · ');
 
   const btnHtml = `<button class="ec-btn ec-btn-green" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')">En savoir plus</button>`;
 
@@ -7023,7 +7023,7 @@ function ouvrirEvent(id) {
   if (content) content.innerHTML = `
     <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;">
       <div style="font-size:13px;color:var(--muted2);">${dateLine}</div>
-      <div style="font-size:13px;color:var(--muted2);">📍 ${ev.ville || ''}${ev.lieu ? ' · ' + ev.lieu : ''}${ev.adresse ? '<br><span style="font-size:12px;padding-left:18px;">' + ev.adresse + '</span>' : ''}</div>
+      <div style="font-size:13px;color:var(--muted2);">📍 ${ev.ville || ''}${ev.adresse ? ' · ' + ev.adresse : ''}</div>
       ${ev.styles ? `<div style="font-size:13px;color:var(--muted2);">💃 ${ev.styles}</div>` : ''}
       ${ev.vibe ? `<div style="font-size:13px;color:var(--muted2);">🎵 ${ev.vibe}</div>` : ''}
       ${ev.niveau ? `<div style="font-size:13px;color:var(--muted2);">⭐ ${ev.niveau}</div>` : ''}
@@ -8459,7 +8459,7 @@ window.ouvrirFormEvent = function() {
   eventEnEdition = null;
   document.getElementById('orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
   document.getElementById('ev-submit-btn').textContent = 'Publier l\'événement →';
-  ['ev-titre','ev-lieu','ev-styles','ev-desc','ev-lien-resa'].forEach(id => {
+  ['ev-titre','ev-adresse','ev-styles','ev-desc','ev-lien-resa'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -8796,7 +8796,7 @@ window.modifierEvent = async function(id) {
     _loadDatesList(ev);
     document.getElementById('ev-ville').value  = ev.ville   || 'Paris';
     document.getElementById('ev-prix').value   = ev.prix    || 0;
-    document.getElementById('ev-lieu').value   = ev.lieu    || '';
+    document.getElementById('ev-adresse').value   = ev.adresse    || '';
     document.getElementById('ev-styles').value = ev.styles  || '';
     document.getElementById('ev-niveau').value = ev.niveau  || 'Tous niveaux';
     document.getElementById('ev-lien-resa').value = ev.lienResa || '';
@@ -8866,7 +8866,7 @@ window.sauvegarderEvent = async function() {
     dates:         (window._evDates || []).filter(d => d.date).map(d => ({date: d.date, heure: d.heure || ''})),
     ville:         document.getElementById('ev-ville').value,
     prix:          parseFloat(document.getElementById('ev-prix').value) || 0,
-    lieu:          document.getElementById('ev-lieu').value,
+    adresse:       document.getElementById('ev-adresse').value,
     styles:        document.getElementById('ev-styles').value,
     vibe:          getVibeSelectionnes(),
     niveau:        document.getElementById('ev-niveau').value,
@@ -8915,7 +8915,7 @@ window.sauvegarderEvent = async function() {
       setTimeout(() => { errDiv.style.display = 'none'; errDiv.style.color = ''; }, 3000);
       btn.textContent = 'Publier l\'événement →';
       document.getElementById('orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
-      ['ev-titre','ev-lieu','ev-styles','ev-desc','ev-lien-resa'].forEach(id => {
+      ['ev-titre','ev-adresse','ev-styles','ev-desc','ev-lien-resa'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
       });
       document.getElementById('ev-prix').value = '0';
@@ -12385,7 +12385,7 @@ async function _placerMarqueursEvents() {
   if (!carte) return;
   _clearNetworkMarkers();
   for (const ev of _networkEventsData) {
-    const ville = ev.ville || ev.lieu || '';
+    const ville = ev.ville || ev.adresse || '';
     if (!ville) continue;
     const coords = await coordsVille(ville);
     const couleur = ev.type === 'battle' ? '#f0c040' : ev.type === 'workshop' ? '#00F59B' : '#a855f7';
