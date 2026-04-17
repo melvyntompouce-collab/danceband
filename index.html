@@ -8371,17 +8371,30 @@ async function chargerDashboardAdmin() {
   if (!window._db) return;
   try {
 
-    const [usersSnap, eventsSnap, codesSnap, sallesSnap, ecolesSnap] = await Promise.all([
-      window._getDocs(window._collection(window._db, 'danseurs')),
-      window._getDocs(window._collection(window._db, 'evenements')),
-      window._getDocs(window._collection(window._db, 'inviteCodes')),
-      window._getDocs(window._collection(window._db, 'salles')),
-      window._getDocs(window._collection(window._db, 'ecoles'))
-    ]);
+    const isAdmin = window._monRole === 'admin';
+    const uid = window._currentUid;
 
-    const users  = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Admin voit tout, organisateur filtre par ses propres créations
+    let eventsSnap, sallesSnap, ecolesSnap, usersSnap, codesSnap;
+    if (isAdmin) {
+      [usersSnap, eventsSnap, codesSnap, sallesSnap, ecolesSnap] = await Promise.all([
+        window._getDocs(window._collection(window._db, 'danseurs')),
+        window._getDocs(window._collection(window._db, 'evenements')),
+        window._getDocs(window._collection(window._db, 'inviteCodes')),
+        window._getDocs(window._collection(window._db, 'salles')),
+        window._getDocs(window._collection(window._db, 'ecoles'))
+      ]);
+    } else {
+      [eventsSnap, sallesSnap, ecolesSnap] = await Promise.all([
+        window._getDocs(window._query(window._collection(window._db, 'evenements'), window._where('organisateurUid', '==', uid))),
+        window._getDocs(window._query(window._collection(window._db, 'salles'), window._where('organisateurUid', '==', uid))),
+        window._getDocs(window._query(window._collection(window._db, 'ecoles'), window._where('organisateurUid', '==', uid))),
+      ]);
+    }
+
+    const users  = isAdmin ? usersSnap.docs.map(d => ({ id: d.id, ...d.data() })) : [];
     const events = eventsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    const codes  = codesSnap.docs.map(d => d.data());
+    const codes  = isAdmin ? codesSnap.docs.map(d => d.data()) : [];
     const salles = sallesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
     const ecoles = ecolesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
@@ -8923,6 +8936,7 @@ window.sauvegarderSalle = async function() {
       await window._setDoc(window._doc(window._db, 'salles', editId), data, { merge: true });
     } else {
       data.createdAt = Date.now();
+      data.organisateurUid = window._currentUid;
       await window._addDoc(window._collection(window._db, 'salles'), data);
     }
     fermerFormSalle();
@@ -8937,7 +8951,15 @@ window.sauvegarderSalle = async function() {
 
 window.supprimerSalle = async function(id) {
   if (!confirm('Supprimer cette salle définitivement ?')) return;
-  try {    await window._deleteDoc(window._doc(window._db, 'salles', id));
+  try {
+    if (window._monRole !== 'admin') {
+      const snap = await window._getDoc(window._doc(window._db, 'salles', id));
+      if (!snap.exists() || snap.data().organisateurUid !== window._currentUid) {
+        alert('❌ Tu ne peux supprimer que les salles que tu as créées.');
+        return;
+      }
+    }
+    await window._deleteDoc(window._doc(window._db, 'salles', id));
     chargerDashboardAdmin();
   } catch(e) {
     console.error('Erreur suppression salle:', e);
@@ -9099,6 +9121,7 @@ window.sauvegarderEcole = async function() {
       await window._setDoc(window._doc(window._db, 'ecoles', editId), data, { merge: true });
     } else {
       data.createdAt = Date.now();
+      data.organisateurUid = window._currentUid;
       await window._addDoc(window._collection(window._db, 'ecoles'), data);
     }
     fermerFormEcole();
@@ -9111,7 +9134,15 @@ window.sauvegarderEcole = async function() {
 
 window.supprimerEcole = async function(id) {
   if (!confirm('Supprimer cette école définitivement ?')) return;
-  try {    await window._deleteDoc(window._doc(window._db, 'ecoles', id));
+  try {
+    if (window._monRole !== 'admin') {
+      const snap = await window._getDoc(window._doc(window._db, 'ecoles', id));
+      if (!snap.exists() || snap.data().organisateurUid !== window._currentUid) {
+        alert('❌ Tu ne peux supprimer que les écoles que tu as créées.');
+        return;
+      }
+    }
+    await window._deleteDoc(window._doc(window._db, 'ecoles', id));
     chargerDashboardAdmin();
   } catch(e) { console.error('Erreur suppression école:', e); }
 };
