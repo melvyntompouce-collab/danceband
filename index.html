@@ -4595,32 +4595,17 @@ if (isPWA) {
           <input id="filtre-zone" type="text" list="villes-datalist" placeholder="📍 Filtrer par ville..." oninput="filtrerDanseurs()" autocomplete="off" style="flex:1;padding:7px 12px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);color:var(--muted2);font-size:12px;font-family:'Syne',sans-serif;font-weight:700;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
           <button onclick="resetFiltres()" style="height:34px;padding:0 12px;border-radius:8px;background:none;border:1.5px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;white-space:nowrap;transition:all 0.2s;flex-shrink:0;" onmouseover="this.style.borderColor='rgba(255,77,109,0.4)';this.style.color='var(--red)';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)';">✕ Reset</button>
         </div>
-        <div style="position:relative;margin-bottom:4px;">
-          <button onclick="toggleStyleDropdown()" id="style-dropdown-btn" style="width:100%;padding:8px 12px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);color:var(--muted2);font-size:12px;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.2s;">
-            <span id="style-dropdown-label">💃 Style de danse</span>
-            <svg id="style-dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div id="style-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:50;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;flex-wrap:wrap;gap:5px;max-height:160px;overflow-y:auto;scrollbar-width:none;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
-            <div id="style-filter-row" style="display:contents;">
-              <button class="style-fchip" onclick="setStyleFiltre('Salsa',this);majStyleLabel()">Salsa</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Kizomba',this);majStyleLabel()">Kizomba</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Hip-Hop',this);majStyleLabel()">Hip-Hop</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Bachata',this);majStyleLabel()">Bachata</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Breakdance',this);majStyleLabel()">Breakdance</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Afro',this);majStyleLabel()">Afro</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Zouk',this);majStyleLabel()">Zouk</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Dancehall',this);majStyleLabel()">Dancehall</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Popping',this);majStyleLabel()">Popping</button>
-              <button class="style-fchip" onclick="setStyleFiltre('House',this);majStyleLabel()">House</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Litefeet',this);majStyleLabel()">Litefeet</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Krump',this);majStyleLabel()">Krump</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Voguing',this);majStyleLabel()">Voguing</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Locking',this);majStyleLabel()">Locking</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Heels',this);majStyleLabel()">Heels</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Classique',this);majStyleLabel()">Classique</button>
-              <button class="style-fchip" onclick="setStyleFiltre('Tango',this);majStyleLabel()">Tango</button>
-            </div>
-          </div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:4px;">
+          <select id="map-filtre-categorie" class="form-select" style="font-size:12px;padding:7px 10px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);" onchange="setMapCategorieFiltre(this.value)">
+            <option value="">🎭 Toutes catégories</option>
+            <option value="scene">🎭 Scène</option>
+            <option value="musique">🎵 Musique</option>
+            <option value="audiovisuel">🎬 Audiovisuel</option>
+            <option value="arts_visuels">🎨 Arts Visuels</option>
+          </select>
+          <select id="map-filtre-specialite" class="form-select" style="font-size:12px;padding:7px 10px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);display:none;" onchange="setMapSpecialiteFiltre(this.value)">
+            <option value="">Toutes spécialités</option>
+          </select>
         </div>
       </div>
       <div class="dancer-list" id="dancer-list">
@@ -4662,41 +4647,20 @@ if (isPWA) {
         <button class="style-fchip" onclick="setFiltre('enligne',this);syncFiltresMobile()"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00f59b;box-shadow:0 0 6px #00f59b;margin-right:5px;"></span>En ligne</button>
         <button class="style-fchip" onclick="setFiltre('compatible',this);syncFiltresMobile()">⚡ Compatible</button>
       </div>
-      <!-- Filtre métier -->
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-        <button class="style-fchip filtre-metier-chip on" data-metier="tous" onclick="setMetierFiltre('tous',this);syncDancerListMobile()">Tous</button>
-        <button class="style-fchip filtre-metier-chip" data-metier="scene" onclick="setMetierFiltre('scene',this);syncDancerListMobile()">🎭 Scène</button>
-        <button class="style-fchip filtre-metier-chip" data-metier="musique" onclick="setMetierFiltre('musique',this);syncDancerListMobile()">🎵 Musique</button>
-        <button class="style-fchip filtre-metier-chip" data-metier="audiovisuel" onclick="setMetierFiltre('audiovisuel',this);syncDancerListMobile()">🎬 Audiovisuel</button>
-        <button class="style-fchip filtre-metier-chip" data-metier="arts_visuels" onclick="setMetierFiltre('arts_visuels',this);syncDancerListMobile()">🎨 Arts Visuels</button>
+      <!-- Filtre catégorie + spécialité -->
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">
+        <select id="map-filtre-categorie-mobile" class="form-select" style="font-size:13px;padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);" onchange="setMapCategorieFiltreMobile(this.value)">
+          <option value="">🎭 Toutes catégories</option>
+          <option value="scene">🎭 Scène</option>
+          <option value="musique">🎵 Musique</option>
+          <option value="audiovisuel">🎬 Audiovisuel</option>
+          <option value="arts_visuels">🎨 Arts Visuels</option>
+        </select>
+        <select id="map-filtre-specialite-mobile" class="form-select" style="font-size:13px;padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);display:none;" onchange="setMapSpecialiteFiltreMobile(this.value)">
+          <option value="">Toutes spécialités</option>
+        </select>
       </div>
       <input id="filtre-zone-mobile" type="text" list="villes-datalist" placeholder="📍 Ville..." oninput="syncVilleMobile(this.value)" autocomplete="off" style="width:100%;box-sizing:border-box;padding:7px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:8px;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
-      <!-- Dropdown styles mobile -->
-      <div style="position:relative;" id="style-filter-row-mobile">
-        <button onclick="toggleStyleDropdownMobile()" id="style-dropdown-btn-mobile" style="width:100%;padding:7px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--muted2);font-size:13px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color 0.2s;">
-          <span id="style-dropdown-label-mobile">💃 Style de danse</span>
-          <svg id="style-dropdown-arrow-mobile" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div id="style-dropdown-menu-mobile" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;right:0;z-index:50;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;flex-wrap:wrap;gap:5px;max-height:180px;overflow-y:auto;scrollbar-width:none;box-shadow:0 -8px 24px rgba(0,0,0,0.4);">
-          <button class="style-fchip" onclick="setStyleFiltre('Salsa',this);filtrerDanseurs();majStyleLabelMobile()">Salsa</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Kizomba',this);filtrerDanseurs();majStyleLabelMobile()">Kizomba</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Hip-Hop',this);filtrerDanseurs();majStyleLabelMobile()">Hip-Hop</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Bachata',this);filtrerDanseurs();majStyleLabelMobile()">Bachata</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Breakdance',this);filtrerDanseurs();majStyleLabelMobile()">Breakdance</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Afro',this);filtrerDanseurs();majStyleLabelMobile()">Afro</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Zouk',this);filtrerDanseurs();majStyleLabelMobile()">Zouk</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Dancehall',this);filtrerDanseurs();majStyleLabelMobile()">Dancehall</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Popping',this);filtrerDanseurs();majStyleLabelMobile()">Popping</button>
-          <button class="style-fchip" onclick="setStyleFiltre('House',this);filtrerDanseurs();majStyleLabelMobile()">House</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Litefeet',this);filtrerDanseurs();majStyleLabelMobile()">Litefeet</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Krump',this);filtrerDanseurs();majStyleLabelMobile()">Krump</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Voguing',this);filtrerDanseurs();majStyleLabelMobile()">Voguing</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Locking',this);filtrerDanseurs();majStyleLabelMobile()">Locking</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Heels',this);filtrerDanseurs();majStyleLabelMobile()">Heels</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Classique',this);filtrerDanseurs();majStyleLabelMobile()">Classique</button>
-          <button class="style-fchip" onclick="setStyleFiltre('Tango',this);filtrerDanseurs();majStyleLabelMobile()">Tango</button>
-        </div>
-      </div>
     </div>
 
     <!-- Liste artistes -->
@@ -10892,6 +10856,92 @@ function getLabelCategorie(metiers) {
   return CATEGORIES_ARTISTE[cat]?.label || '🎭 Scène';
 }
 
+// ── Selects catégorie/spécialité carte réseau (desktop + mobile) ──
+function _updateMapSpecialiteSelect(categorieVal, selId) {
+  const sel = document.getElementById(selId);
+  if (!sel) return;
+  const cfg = CATEGORIES_ARTISTE[categorieVal];
+  if (!cfg) { sel.style.display = 'none'; return; }
+  sel.innerHTML = '<option value="">Toutes spécialités</option>' +
+    cfg.specialites.map(s => `<option value="${s}">${SPECIALITE_LABELS[s] || s}</option>`).join('');
+  sel.style.display = 'block';
+  sel.value = '';
+}
+
+window.setMapCategorieFiltre = function(val) {
+  _updateMapSpecialiteSelect(val, 'map-filtre-specialite');
+  // Appliquer comme filtre métier
+  if (val) {
+    filtresMetierActifs.clear();
+    filtresMetierActifs.add(val);
+  } else {
+    filtresMetierActifs.clear();
+  }
+  filtrerDanseurs();
+};
+
+window.setMapSpecialiteFiltre = function(val) {
+  filtresMetierActifs.clear();
+  if (val) filtresMetierActifs.add(val);
+  else {
+    const cat = document.getElementById('map-filtre-categorie')?.value;
+    if (cat) filtresMetierActifs.add(cat);
+  }
+  filtrerDanseurs();
+};
+
+window.setMapCategorieFiltreMobile = function(val) {
+  _updateMapSpecialiteSelect(val, 'map-filtre-specialite-mobile');
+  if (val) {
+    filtresMetierActifs.clear();
+    filtresMetierActifs.add(val);
+  } else {
+    filtresMetierActifs.clear();
+  }
+  filtrerDanseurs();
+  syncDancerListMobile();
+};
+
+window.setMapSpecialiteFiltreMobile = function(val) {
+  filtresMetierActifs.clear();
+  if (val) filtresMetierActifs.add(val);
+  else {
+    const cat = document.getElementById('map-filtre-categorie-mobile')?.value;
+    if (cat) filtresMetierActifs.add(cat);
+  }
+  filtrerDanseurs();
+  syncDancerListMobile();
+};
+
+// ── Selects catégorie/spécialité édition profil ──
+window.updateEditSpecialites = function(categorie) {
+  const wrap = document.getElementById('edit-specialite-wrap');
+  const sel = document.getElementById('edit-specialite');
+  if (!wrap || !sel) return;
+  const cfg = CATEGORIES_ARTISTE[categorie];
+  if (!cfg) { wrap.style.display = 'none'; return; }
+  sel.innerHTML = '<option value="">Choisir...</option>' +
+    cfg.specialites.map(s => `<option value="${s}">${SPECIALITE_LABELS[s] || s}</option>`).join('');
+  wrap.style.display = 'block';
+  sel.value = '';
+  // Masquer toutes les sections
+  ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
+   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur'].forEach(t => {
+    const sec = document.getElementById('edit-section-' + t);
+    if (sec) sec.style.display = 'none';
+  });
+};
+
+window.applyEditSpecialite = function(val) {
+  if (!val) return;
+  // Simuler le comportement de toggleEditMetier
+  ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
+   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur'].forEach(t => {
+    const sec = document.getElementById('edit-section-' + t);
+    if (sec) sec.style.display = t === val ? 'block' : 'none';
+  });
+};
+
 function setMetierFiltre(metier, btn) {
   if (metier === 'tous') {
     filtresMetierActifs.clear();
@@ -11625,8 +11675,8 @@ window.sauvegarderIdentite = async function() {
                    : [nom, blase].filter(Boolean).join(' · ');
 
   // Champs spécifiques par métier
-  const metiersSauv = [...document.querySelectorAll('#edit-metiers-chips .style-tag.selected')]
-    .map(btn => btn.getAttribute('data-metier'));
+  const editSpecVal = document.getElementById('edit-specialite')?.value;
+  const metiersSauv = editSpecVal ? [editSpecVal] : [];
   const metierData = { metiers: metiersSauv };
   if (metiersSauv.includes('photographe')) {
     metierData.specialitesPhoto = [...document.querySelectorAll('#edit-specialites-photo .style-tag.selected')].map(t => t.textContent.trim());
@@ -11862,6 +11912,18 @@ async function chargerProfil(uid) {
     const metiers = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
 
     // Pré-cocher les chips de sélection de métier
+    // Pré-remplir les selects catégorie/spécialité édition
+    const editMetiersList = profil.metiers || (profil.styles && profil.styles.length ? ['danseur'] : []);
+    if (editMetiersList.length) {
+      const editCat = getCategorieFromMetiers(editMetiersList);
+      const editSelCat = document.getElementById('edit-categorie');
+      if (editSelCat) { editSelCat.value = editCat; updateEditSpecialites(editCat); }
+      setTimeout(() => {
+        const editSelSpec = document.getElementById('edit-specialite');
+        if (editSelSpec && editMetiersList[0]) editSelSpec.value = editMetiersList[0];
+        applyEditSpecialite(editMetiersList[0]);
+      }, 50);
+    }
     document.querySelectorAll('#edit-metiers-chips .style-tag').forEach(chip => {
       const m = chip.getAttribute('data-metier');
       if (metiers.includes(m)) {
@@ -13523,17 +13585,23 @@ function _renderDrawerLieux() {
         <!-- STYLES DE DANSE (danseur) -->
         <!-- SÉLECTEUR MÉTIERS (édition) -->
         <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">Mes disciplines</div>
-          <div style="font-size:12px;color:var(--muted2);margin-bottom:16px;">Tu peux en sélectionner plusieurs</div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;" id="edit-metiers-chips">
-            <button type="button" class="style-tag" data-metier="danseur" onclick="toggleEditMetier(this)">💃 Danseur·se</button>
-            <button type="button" class="style-tag" data-metier="photographe" onclick="toggleEditMetier(this)">📷 Photographe</button>
-            <button type="button" class="style-tag" data-metier="videaste" onclick="toggleEditMetier(this)">🎥 Vidéaste</button>
-            <button type="button" class="style-tag" data-metier="beatmaker" onclick="toggleEditMetier(this)">🎧 Beatmaker</button>
-            <button type="button" class="style-tag" data-metier="realisateur" onclick="toggleEditMetier(this)">🎬 Réalisateur·rice</button>
-            <button type="button" class="style-tag" data-metier="dj" onclick="toggleEditMetier(this)">🎛️ DJ</button>
-            <button type="button" class="style-tag" data-metier="musicien" onclick="toggleEditMetier(this)">🎸 Musicien·ne</button>
-            <button type="button" class="style-tag" data-metier="chanteur" onclick="toggleEditMetier(this)">🎤 Chanteur·se / Rappeur·se</button>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:16px;">Ton univers</div>
+          <div style="display:flex;flex-direction:column;gap:12px;" id="edit-metiers-chips">
+            <div>
+              <label class="form-label" style="font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:block;">Catégorie</label>
+              <select id="edit-categorie" class="form-select" onchange="updateEditSpecialites(this.value)">
+                <option value="">Choisir...</option>
+                <option value="scene">🎭 Scène</option>
+                <option value="musique">🎵 Musique</option>
+                <option value="audiovisuel">🎬 Audiovisuel</option>
+                <option value="arts_visuels">🎨 Arts Visuels</option>
+              </select>
+            </div>
+            <div id="edit-specialite-wrap" style="display:none;">
+              <label class="form-label" style="font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:block;">Spécialité</label>
+              <select id="edit-specialite" class="form-select" onchange="applyEditSpecialite(this.value)">
+              </select>
+            </div>
           </div>
         </div>
 
