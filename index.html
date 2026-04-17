@@ -8900,8 +8900,16 @@ window.fermerFormEvent = function() {
   window._adminEditMode = false;
   const btn = document.getElementById('ev-submit-btn');
   if (btn) { btn.textContent = "Publier l'événement →"; btn.disabled = false; }
-  showPage('orga');
   eventEnEdition = null;
+  // Réafficher le bon dashboard sans changer de page
+  if (retour === 'admin') {
+    document.getElementById('admin-dashboard').style.display = 'block';
+    document.getElementById('orga-dashboard').style.display = 'none';
+  } else {
+    document.getElementById('orga-dashboard').style.display = 'block';
+    document.getElementById('admin-dashboard').style.display = 'none';
+  }
+  chargerDashboardOrga();
 }
 
 // ── Formulaire salle (admin) ──
@@ -8959,7 +8967,16 @@ window.fermerFormSalle = function() {
   const btn = document.getElementById('salle-submit-btn');
   if (btn) { btn.textContent = 'Publier la salle →'; btn.disabled = false; }
   window._formRetourSalle = null;
-  showPage('orga');
+  document.getElementById('orga-form').style.display = 'none';
+  document.getElementById('admin-form-salle') && (document.getElementById('admin-form-salle').style.display = 'none');
+  if (window._monRole === 'admin') {
+    document.getElementById('admin-dashboard').style.display = 'block';
+    document.getElementById('orga-dashboard').style.display = 'none';
+  } else {
+    document.getElementById('orga-dashboard').style.display = 'block';
+    document.getElementById('admin-dashboard').style.display = 'none';
+  }
+  chargerDashboardOrga();
 };
 
 window.sauvegarderSalle = async function() {
@@ -9139,7 +9156,16 @@ window.fermerFormEcole = function() {
   const btn = document.getElementById('ecole-submit-btn');
   if (btn) { btn.textContent = "Publier l'école →"; btn.disabled = false; }
   window._formRetourEcole = null;
-  showPage('orga');
+  document.getElementById('orga-form').style.display = 'none';
+  document.getElementById('admin-form-ecole') && (document.getElementById('admin-form-ecole').style.display = 'none');
+  if (window._monRole === 'admin') {
+    document.getElementById('admin-dashboard').style.display = 'block';
+    document.getElementById('orga-dashboard').style.display = 'none';
+  } else {
+    document.getElementById('orga-dashboard').style.display = 'block';
+    document.getElementById('admin-dashboard').style.display = 'none';
+  }
+  chargerDashboardOrga();
 };
 
 window.sauvegarderEcole = async function() {
@@ -9341,7 +9367,14 @@ window.sauvegarderEvent = async function() {
     if (estEdition) {
       btn.textContent = 'Publier l\'événement →';
       document.getElementById('orga-form').style.display = 'none';
-      showPage('orga');
+      if (window._monRole === 'admin') {
+        document.getElementById('admin-dashboard').style.display = 'block';
+        document.getElementById('orga-dashboard').style.display = 'none';
+      } else {
+        document.getElementById('orga-dashboard').style.display = 'block';
+        document.getElementById('admin-dashboard').style.display = 'none';
+      }
+      chargerDashboardOrga();
     } else {
       errDiv.textContent = '✅ Événement publié !';
       errDiv.style.color = 'var(--green)';
