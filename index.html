@@ -5111,20 +5111,20 @@ if (isPWA) {
           <input id="ev-titre" class="form-input" type="text" placeholder="Ex: Nuit Kizomba — Bastille" style="background:var(--bg2)">
         </div>
         <div class="form-group" style="margin:0">
+          <label class="form-label">Discipline</label>
+          <select id="ev-discipline" class="form-select" onchange="updateFormType(this.value)">
+            <option value="danse">💃 Danse</option>
+            <option value="musique">🎵 Musique</option>
+            <option value="audiovisuel">🎬 Audiovisuel</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
           <label class="form-label">Type</label>
           <select id="ev-type" class="form-select">
             <option value="soiree">🎉 Soirée</option>
             <option value="battle">🏆 Battle</option>
             <option value="workshop">🎓 Workshop</option>
             <option value="stage">🏫 Stage</option>
-          </select>
-        </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Discipline</label>
-          <select id="ev-discipline" class="form-select">
-            <option value="danse">💃 Danse</option>
-            <option value="musique">🎵 Musique</option>
-            <option value="audiovisuel">🎬 Audiovisuel</option>
           </select>
         </div>
         <div class="form-group" style="margin:0">
@@ -6897,25 +6897,134 @@ let agendaFiltre = 'tous';
 let agendaCategorie = 'toutes';
 let eventCourant = null;
 
-const DISCIPLINE_MAP = {
-  danse:       ['danse'],
-  musique:     ['musique'],
-  audiovisuel: ['audiovisuel'],
+const CHIPS_PAR_DISCIPLINE = {
+  toutes: [
+    { type:'tous',     label:'Tous' },
+    { type:'soiree',   label:'Soirées' },
+    { type:'battle',   label:'Battles' },
+    { type:'workshop', label:'Workshops' },
+    { type:'stage',    label:'Stages' },
+    { type:'concert',  label:'Concerts' },
+    { type:'festival', label:'Festivals' },
+    { type:'atelier',  label:'Ateliers' },
+    { type:'shooting', label:'Shootings' },
+    { type:'tournage', label:'Tournages' },
+    { type:'projection',label:'Projections' },
+    { type:'exposition',label:'Expositions' },
+  ],
+  danse: [
+    { type:'tous',     label:'Tous' },
+    { type:'soiree',   label:'Soirées' },
+    { type:'battle',   label:'Battles' },
+    { type:'workshop', label:'Workshops' },
+    { type:'stage',    label:'Stages' },
+  ],
+  musique: [
+    { type:'tous',     label:'Tous' },
+    { type:'soiree',   label:'Soirées' },
+    { type:'concert',  label:'Concerts' },
+    { type:'festival', label:'Festivals' },
+    { type:'atelier',  label:'Ateliers' },
+  ],
+  audiovisuel: [
+    { type:'tous',      label:'Tous' },
+    { type:'shooting',  label:'Shootings' },
+    { type:'tournage',  label:'Tournages' },
+    { type:'projection',label:'Projections' },
+    { type:'exposition',label:'Expositions' },
+  ],
 };
+
+function _updateChipsAgenda(categorie) {
+  const chips = CHIPS_PAR_DISCIPLINE[categorie] || CHIPS_PAR_DISCIPLINE.toutes;
+  const container = document.getElementById('agenda-filters');
+  if (!container) return;
+  container.innerHTML = chips.map((c, i) =>
+    `<button class="agenda-filter${i === 0 ? ' on' : ''}" onclick="setAgendaFiltre('${c.type}',this)">${c.label}</button>`
+  ).join('');
+  agendaFiltre = 'tous';
+}
 
 function setAgendaCategorie(val) {
   agendaCategorie = val;
+  _updateChipsAgenda(val);
   afficherEvents();
 }
 
 const TYPE_CONFIG = {
-  soiree:   { label:'🎉 SOIRÉE',   bg:'linear-gradient(135deg,#1a0526,#260d1a)', couleur:'var(--purple)' },
-  
-  battle:   { label:'🏆 BATTLE',   bg:'linear-gradient(135deg,#2b1a0a,#1a0d0d)', couleur:'var(--yellow)' },
-  workshop: { label:'🎓 WS', bg:'linear-gradient(135deg,#1a2b0d,#0d2b1e)', couleur:'var(--green)'  },
-  stage:    { label:'🏫 STAGE', bg:'linear-gradient(135deg,#0d1a2b,#0a1a2e)', couleur:'var(--blue)'   },
+  // Danse
+  soiree:     { label:'🎉 SOIRÉE',     bg:'linear-gradient(135deg,#1a0526,#260d1a)', couleur:'var(--purple)' },
+  battle:     { label:'🏆 BATTLE',     bg:'linear-gradient(135deg,#2b1a0a,#1a0d0d)', couleur:'var(--yellow)' },
+  workshop:   { label:'🎓 WORKSHOP',   bg:'linear-gradient(135deg,#1a2b0d,#0d2b1e)', couleur:'var(--green)'  },
+  stage:      { label:'🏫 STAGE',      bg:'linear-gradient(135deg,#0d1a2b,#0a1a2e)', couleur:'var(--blue)'   },
+  // Musique
+  concert:    { label:'🎤 CONCERT',    bg:'linear-gradient(135deg,#1a0a2b,#0d0a26)', couleur:'var(--purple)' },
+  festival:   { label:'🎪 FESTIVAL',   bg:'linear-gradient(135deg,#2b1a00,#1a0d00)', couleur:'var(--yellow)' },
+  atelier:    { label:'🎼 ATELIER',    bg:'linear-gradient(135deg,#0d2b1a,#0a1a14)', couleur:'var(--green)'  },
+  // Audiovisuel
+  shooting:   { label:'📸 SHOOTING',   bg:'linear-gradient(135deg,#1a1a2b,#0d0d1a)', couleur:'var(--blue)'   },
+  tournage:   { label:'🎥 TOURNAGE',   bg:'linear-gradient(135deg,#2b0a0a,#1a0505)', couleur:'var(--red, #f05050)'   },
+  projection: { label:'🎞 PROJECTION', bg:'linear-gradient(135deg,#0a1a2b,#050d1a)', couleur:'var(--blue)'   },
+  exposition: { label:'🖼 EXPOSITION', bg:'linear-gradient(135deg,#1a1a0a,#0d0d05)', couleur:'var(--yellow)' },
 };
 
+const TYPES_PAR_DISCIPLINE_FORM = {
+  danse:       [
+    { value:'soiree',   label:'🎉 Soirée' },
+    { value:'battle',   label:'🏆 Battle' },
+    { value:'workshop', label:'🎓 Workshop' },
+    { value:'stage',    label:'🏫 Stage' },
+  ],
+  musique:     [
+    { value:'soiree',   label:'🎉 Soirée' },
+    { value:'concert',  label:'🎤 Concert' },
+    { value:'festival', label:'🎪 Festival' },
+    { value:'atelier',  label:'🎼 Atelier' },
+  ],
+  audiovisuel: [
+    { value:'shooting',  label:'📸 Shooting' },
+    { value:'tournage',  label:'🎥 Tournage' },
+    { value:'projection',label:'🎞 Projection' },
+    { value:'exposition',label:'🖼 Exposition' },
+  ],
+};
+
+function updateFormType(discipline) {
+  const sel = document.getElementById('ev-type');
+  if (!sel) return;
+  const opts = TYPES_PAR_DISCIPLINE_FORM[discipline] || TYPES_PAR_DISCIPLINE_FORM.danse;
+  sel.innerHTML = opts.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+}
+
+
+function _typeCouleur(type) {
+  const map = {
+    soiree:'var(--purple)', battle:'var(--yellow)', workshop:'var(--green)', stage:'var(--blue)',
+    concert:'var(--purple)', festival:'var(--yellow)', atelier:'var(--green)',
+    shooting:'var(--blue)', tournage:'#f05050', projection:'var(--blue)', exposition:'var(--yellow)',
+  };
+  return map[type] || 'var(--purple)';
+}
+function _typeEmoji(type) {
+  const map = {
+    soiree:'🎉', battle:'🏆', workshop:'🎓', stage:'🏫',
+    concert:'🎤', festival:'🎪', atelier:'🎼',
+    shooting:'📸', tournage:'🎥', projection:'🎞', exposition:'🖼',
+  };
+  return map[type] || '🎉';
+}
+function _typeLabel(type) {
+  const map = {
+    soiree:'Soirée', battle:'Battle', workshop:'Workshop', stage:'Stage',
+    concert:'Concert', festival:'Festival', atelier:'Atelier',
+    shooting:'Shooting', tournage:'Tournage', projection:'Projection', exposition:'Exposition',
+  };
+  return map[type] || 'Événement';
+}
+function _typeBg(type) {
+  const cfg = TYPE_CONFIG[type] || TYPE_CONFIG.soiree;
+  return cfg.bg;
+}
 function setAgendaFiltre(type, btn) {
   document.querySelectorAll('.agenda-filter').forEach(f => f.classList.remove('on'));
   btn.classList.add('on');
@@ -8949,8 +9058,10 @@ window.modifierEvent = async function(id) {
     eventEnEdition = id;
 
     document.getElementById('ev-titre').value  = ev.titre   || '';
-    document.getElementById('ev-type').value       = ev.type       || 'soiree';
-    document.getElementById('ev-discipline').value = ev.discipline || 'danse';
+    const _disc = ev.discipline || 'danse';
+    document.getElementById('ev-discipline').value = _disc;
+    updateFormType(_disc);
+    document.getElementById('ev-type').value = ev.type || 'soiree';
     _loadDatesList(ev);
     document.getElementById('ev-ville').value  = ev.ville   || 'Paris';
     document.getElementById('ev-prix').value   = ev.prix    || 0;
@@ -12841,9 +12952,9 @@ async function _placerMarqueursEvents() {
     const ville = ev.ville || ev.adresse || ev.lieu || '';
     if (!ville) continue;
     const coords = await coordsVille(ville);
-    const couleur = ev.type === 'battle' ? '#f0c040' : ev.type === 'workshop' ? '#00F59B' : ev.type === 'stage' ? '#4d9fff' : '#a855f7';
-    const emoji = ev.type === 'battle' ? '🏆' : ev.type === 'workshop' ? '🎓' : ev.type === 'stage' ? '🏫' : '🎉';
-    const label = ev.type === 'battle' ? 'Battle' : ev.type === 'workshop' ? 'Workshop' : ev.type === 'stage' ? 'Stage' : 'Soirée';
+    const couleur = _typeCouleur(ev.type);
+    const emoji = _typeEmoji(ev.type);
+    const label = _typeLabel(ev.type);
     const dateStr = typeof _formatDate === 'function' ? _formatDate(_getDatePrincipale(ev)) : '';
     const icon = L.divIcon({
       className: '',
@@ -12901,10 +13012,11 @@ function _renderDrawerEvents() {
     return;
   }
   dst.innerHTML = _networkEventsData.map((ev, idx) => {
-    const couleur = ev.type === 'battle' ? 'var(--yellow)' : ev.type === 'workshop' ? 'var(--green)' : ev.type === 'stage' ? 'var(--blue)' : 'var(--purple)';
-    const badgeBg = ev.type === 'battle' ? 'rgba(240,192,64,0.12)' : ev.type === 'workshop' ? 'rgba(0,245,155,0.12)' : ev.type === 'stage' ? 'rgba(77,159,255,0.12)' : 'rgba(168,85,247,0.12)';
-    const label = ev.type === 'battle' ? 'Battle' : ev.type === 'workshop' ? 'Workshop' : ev.type === 'stage' ? 'Stage' : 'Soirée';
-    const emoji = ev.type === 'battle' ? '🏆' : ev.type === 'workshop' ? '🎓' : ev.type === 'stage' ? '🏫' : '🎉';
+    const couleur = _typeCouleur(ev.type);
+    const _tcfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.soiree;
+    const badgeBg = _tcfg.couleur.includes('purple') ? 'rgba(168,85,247,0.12)' : _tcfg.couleur.includes('yellow') ? 'rgba(240,192,64,0.12)' : _tcfg.couleur.includes('green') ? 'rgba(0,245,155,0.12)' : _tcfg.couleur.includes('blue') ? 'rgba(77,159,255,0.12)' : _tcfg.couleur.includes('red') ? 'rgba(240,80,80,0.12)' : 'rgba(168,85,247,0.12)';
+    const label = _typeLabel(ev.type);
+    const emoji = _typeEmoji(ev.type);
     const dateStr = typeof _formatDate === 'function' ? _formatDate(_getDatePrincipale(ev)) : '';
     return `<div class="dancer-card" onclick="fermerDrawerReseau();ouvrirEventDepuisReseau(_networkEventsData[${idx}]);" style="padding:10px 12px;cursor:pointer;"><div style="width:38px;height:38px;border-radius:12px;flex-shrink:0;background:${badgeBg};border:2px solid ${couleur};display:flex;align-items:center;justify-content:center;font-size:18px;">${emoji}</div><div style="min-width:0;flex:1;"><div style="font-weight:700;font-size:13px;font-family:'Syne',sans-serif;">${ev.titre || 'Événement'}</div><div style="font-size:11px;color:var(--muted);margin-top:1px;">${dateStr}${ev.ville ? ' · ' + ev.ville : ''}</div></div><span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;background:${badgeBg};color:${couleur};border:1px solid ${couleur}44;white-space:nowrap;">${label}</span></div>`;
   }).join('');
