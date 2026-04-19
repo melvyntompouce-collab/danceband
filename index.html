@@ -6035,7 +6035,7 @@ window.updateSignupSpecialites = function(categorie) {
   wrap.style.display = 'block';
   // Reset sections
   ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
-   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer',
+   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode',
    'styliste','maquilleur','coiffeur_mode','costumier'].forEach(t => {
     const sec = document.getElementById('signup-section-' + t);
     if (sec) sec.style.display = 'none';
@@ -6052,7 +6052,7 @@ function toggleSignupType(btn, type) {
   _signupTypes.add(type);
   // Afficher la section correspondante
   ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
-   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer',
+   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode',
    'styliste','maquilleur','coiffeur_mode','costumier'].forEach(t => {
     const section = document.getElementById('signup-section-' + t);
     if (section) section.style.display = _signupTypes.has(t) ? 'block' : 'none';
@@ -10589,7 +10589,7 @@ function afficherListeDanseurs(danseurs) {
     return;
   }
 
-  const METIER_ICONS = { danseur:'💃', photographe:'📷', videaste:'🎥', beatmaker:'🎧', realisateur:'🎬', dj:'🎛️', musicien:'🎸', chanteur:'🎤', comedien:'🎭', performeur:'✨', mannequin:'🪞', styliste:'👗', maquilleur:'💄', coiffeur_mode:'💈', costumier:'🧵', dessinateur:'✏️', peintre:'🖌️', graphiste:'🖥️', illustrateur:'🖼️', designer:'🎨' };
+  const METIER_ICONS = { danseur:'💃', photographe:'📷', videaste:'🎥', beatmaker:'🎧', realisateur:'🎬', dj:'🎛️', musicien:'🎸', chanteur:'🎤', comedien:'🎭', performeur:'✨', mannequin:'🪞', styliste:'👗', maquilleur:'💄', coiffeur_mode:'💈', costumier:'🧵', dessinateur:'✏️', peintre:'🖌️', graphiste:'🖥️', illustrateur:'🖼️', designer:'👔', designer_mode:'🎨' };
   list.innerHTML = danseurs.map(d => {
     const nom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
     const metiers = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
@@ -11044,7 +11044,7 @@ let filtresMetierActifs = new Set();
 
 const CATEGORIES_ARTISTE = {
   scene:       { label:'🎭 Scène',       specialites: ['danseur','comedien','performeur'] },
-  mode:        { label:'👗 Mode',         specialites: ['mannequin','styliste','maquilleur','coiffeur_mode','costumier','designer'] },
+  mode:        { label:'👗 Mode',         specialites: ['mannequin','styliste','maquilleur','coiffeur_mode','costumier','designer_mode'] },
   musique:     { label:'🎵 Musique',      specialites: ['beatmaker','dj','musicien','chanteur'] },
   audiovisuel: { label:'🎬 Audiovisuel', specialites: ['photographe','videaste','realisateur'] },
   arts_visuels:{ label:'🎨 Arts Visuels',specialites: ['dessinateur','peintre','graphiste','illustrateur','designer'] },
@@ -11056,7 +11056,7 @@ const SPECIALITE_LABELS = {
   photographe:'📷 Photographe', videaste:'🎥 Vidéaste', realisateur:'🎬 Réalisateur·rice',
   dessinateur:'✏️ Dessinateur·rice', peintre:'🖌️ Peintre', graphiste:'🖥️ Graphiste', illustrateur:'🖼️ Illustrateur·rice',
   styliste:'👗 Styliste', maquilleur:'💄 Maquilleur·se', coiffeur_mode:'💈 Coiffeur·se artistique', costumier:'🧵 Costumier·ère',
-  designer:'🎨 Designer',
+  designer:'👔 Designer', designer_mode:'🎨 Designer Mode',
 };
 
 function getCategorieFromMetiers(metiers) {
@@ -11167,7 +11167,7 @@ window.updateEditSpecialites = function() {}; // conservé pour compatibilité
 window.applyEditSpecialite   = function() {}; // conservé pour compatibilité
 
 const ALL_EDIT_METIERS = ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
-  'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer',
+  'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode',
   'styliste','maquilleur','coiffeur_mode','costumier'];
 
 window.toggleEditMetier = function(metier, btn) {
@@ -12320,7 +12320,8 @@ async function chargerProfil(uid) {
         peintre:      { emoji:'🖌️', label:'Peintre' },
         graphiste:    { emoji:'🖥️', label:'Graphiste' },
         illustrateur: { emoji:'🖼️', label:'Illustrateur·rice' },
-        designer:     { emoji:'🎨', label:'Designer' },
+        designer:     { emoji:'👔', label:'Designer' },
+        designer_mode:{ emoji:'🎨', label:'Designer Mode' },
       };
       let discHtml = '';
       metiers.forEach(m => {
@@ -12411,7 +12412,7 @@ async function chargerProfil(uid) {
         performeur:'Performeur·se', mannequin:'Mannequin', styliste:'Styliste',
         maquilleur:'Maquilleur·se', coiffeur_mode:'Coiffeur·se artistique',
         costumier:'Costumier·ère', dessinateur:'Dessinateur·rice', peintre:'Peintre',
-        graphiste:'Graphiste', illustrateur:'Illustrateur·rice', designer:'Designer'
+        graphiste:'Graphiste', illustrateur:'Illustrateur·rice', designer:'Designer', designer_mode:'Designer Mode'
       };
       const metiersList = (d.metiers || []).map(m => METIER_LABELS_SHORT[m]).filter(Boolean);
       privDisc.textContent = metiersList.length ? metiersList.join(', ') : 'Non renseigné';
@@ -13879,7 +13880,7 @@ function _renderDrawerLieux() {
                 <button type="button" class="edit-metier-chip" data-metier="peintre" onclick="toggleEditMetier('peintre',this)">🖌️ Peintre</button>
                 <button type="button" class="edit-metier-chip" data-metier="graphiste" onclick="toggleEditMetier('graphiste',this)">🖥️ Graphiste</button>
                 <button type="button" class="edit-metier-chip" data-metier="illustrateur" onclick="toggleEditMetier('illustrateur',this)">🖼️ Illustrateur·rice</button>
-                <button type="button" class="edit-metier-chip" data-metier="designer" onclick="toggleEditMetier('designer',this)">🎨 Designer</button>
+                <button type="button" class="edit-metier-chip" data-metier="designer" onclick="toggleEditMetier('designer_mode',this)">🎨 Designer Mode</button>
               </div>
             </div>
 
@@ -13891,7 +13892,7 @@ function _renderDrawerLieux() {
                 <button type="button" class="edit-metier-chip" data-metier="maquilleur" onclick="toggleEditMetier('maquilleur',this)">💄 Maquilleur·se</button>
                 <button type="button" class="edit-metier-chip" data-metier="coiffeur_mode" onclick="toggleEditMetier('coiffeur_mode',this)">💈 Coiffeur·se artistique</button>
                 <button type="button" class="edit-metier-chip" data-metier="costumier" onclick="toggleEditMetier('costumier',this)">🧵 Costumier·ère</button>
-                <button type="button" class="edit-metier-chip" data-metier="designer" onclick="toggleEditMetier('designer',this)">🎨 Designer</button>
+                <button type="button" class="edit-metier-chip" data-metier="designer" onclick="toggleEditMetier('designer',this)">👔 Designer</button>
               </div>
             </div>
 
@@ -14195,7 +14196,7 @@ function _renderDrawerLieux() {
         <!-- ARTS VISUELS -->
         <div id="edit-section-designer" style="display:none;">
           <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;">🎨 Spécialités design</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;">👔 Spécialités design</div>
             <div style="display:flex;flex-wrap:wrap;gap:6px;" id="edit-specialites-designer">
               <button class="style-tag" onclick="toggleStyle(this)">Graphisme</button>
               <button class="style-tag" onclick="toggleStyle(this)">Motion design</button>
@@ -14236,6 +14237,7 @@ function _renderDrawerLieux() {
         </div>
 
         <!-- Sections vides pour toggle (Arts Visuels sans champs spécifiques) -->
+        <div id="edit-section-designer_mode" style="display:none;"></div>
         <div id="edit-section-dessinateur" style="display:none;"></div>
         <div id="edit-section-peintre" style="display:none;"></div>
         <div id="edit-section-graphiste" style="display:none;"></div>
