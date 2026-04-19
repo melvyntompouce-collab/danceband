@@ -2565,8 +2565,8 @@ body.hide-bottomnav #bottom-nav { display: none !important; }
 /* Conversation : bottom ajusté pour la bottom nav */
 @media(max-width:768px) {
 }
-#msg-input-bar { padding-bottom: max(10px, env(safe-area-inset-bottom)); margin-bottom: 15px; }
-#msg-conversation { top: 0; bottom: 0; }
+#msg-input-bar { padding-bottom: max(10px, env(safe-area-inset-bottom)); margin-bottom: 0; }
+#msg-conversation { top: 0; bottom: 0; height: 100%; }
 body.keyboard-open #bottom-nav { display: none !important; }
 body.conv-ouverte #bottom-nav { display: none !important; }
 
@@ -9963,7 +9963,7 @@ async function ouvrirConversation(uid, nom, photo) {
         conv.style.top    = '0';
         conv.style.bottom = '0';
         conv.style.height = '';
-        if (inputBar) inputBar.style.marginBottom = '15px';
+        if (inputBar) inputBar.style.marginBottom = '0';
       }
     };
     window.visualViewport.addEventListener('resize', window._vpListener);
