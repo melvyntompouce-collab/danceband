@@ -5131,8 +5131,15 @@ if (isPWA) {
             <input id="ev-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon..." autocomplete="off" style="background:var(--bg2)">
           </div>
           <div class="form-group" style="margin:0">
-            <label class="form-label">Prix (€)</label>
-            <input id="ev-prix" class="form-input" type="number" placeholder="0 = Gratuit" min="0" style="background:var(--bg2)">
+            <label class="form-label">Prix</label>
+            <div style="display:flex;gap:8px;">
+              <input id="ev-prix" class="form-input" type="number" placeholder="0 = Gratuit" min="0" style="background:var(--bg2);flex:1;">
+              <select id="ev-devise" class="form-input" style="background:var(--bg2);width:90px;flex-shrink:0;cursor:pointer;">
+                <option value="€">€ EUR</option>
+                <option value="CHF">CHF</option>
+                <option value="£">£ GBP</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="form-group" style="margin:0">
@@ -5242,8 +5249,15 @@ if (isPWA) {
             <input id="salle-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Bordeaux" autocomplete="off" style="background:var(--bg2)">
           </div>
           <div class="form-group" style="margin:0">
-            <label class="form-label">Prix / heure (€) *</label>
-            <input id="salle-prix" class="form-input" type="number" placeholder="Ex: 25" min="0" style="background:var(--bg2)">
+            <label class="form-label">Prix / heure *</label>
+            <div style="display:flex;gap:8px;">
+              <input id="salle-prix" class="form-input" type="number" placeholder="Ex: 25" min="0" style="background:var(--bg2);flex:1;">
+              <select id="salle-devise" class="form-input" style="background:var(--bg2);width:90px;flex-shrink:0;cursor:pointer;">
+                <option value="€">€ EUR</option>
+                <option value="CHF">CHF</option>
+                <option value="£">£ GBP</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -6475,7 +6489,8 @@ async function afficherEventsDashboard() {
     list.innerHTML = events.map(ev => {
       const cfg  = TYPE_CFG[ev.type] || TYPE_CFG.soiree;
       const date = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'numeric', month:'short' }) : '';
-      const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + '€';
+      const _devise = ev.devise || '€';
+      const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + _devise;
       return `<div onclick="showPage('agenda');setTimeout(()=>ouvrirEvent('${ev.id}'),300)"
         style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:border-color 0.2s;"
         onmouseover="this.style.borderColor='rgba(0,245,155,0.2)'" onmouseout="this.style.borderColor='var(--border)'">
@@ -7161,7 +7176,8 @@ function _formatDate(val) {
 
 function _renderEventCard(ev, passe) {
   const cfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.soiree;
-  const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + '€';
+  const _devise = ev.devise || '€';
+  const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + _devise;
   const couleurPrix = ev.prix === 0 ? 'var(--green)' : cfg.couleur;
   const btnClass = ev.prix === 0 ? 'ec-btn-green' : ev.type === 'battle' ? 'ec-btn-yellow' : 'ec-btn-green';
   const estFavori = mesFavoris.has(ev.id);
@@ -7286,7 +7302,8 @@ function ouvrirEvent(id) {
   eventCourant = ev;
 
   const cfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.soiree;
-  const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + '€';
+  const _devise = ev.devise || '€';
+  const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + _devise;
   const passe = _estPasse(ev);
 
   // Bannière photo
@@ -8069,7 +8086,8 @@ function afficherSalles(salles) {
   window._sallesListeFiltered = liste;
 
   grid.innerHTML = liste.map((s, i) => {
-    const prixHtml = s.prix ? `<span class="salle-item-price">${s.prix}€<span style="font-size:10px;font-weight:400;color:var(--muted)">/h</span></span>` : '';
+    const _sDevise = s.devise || '€';
+    const prixHtml = s.prix ? `<span class="salle-item-price">${s.prix}${_sDevise}<span style="font-size:10px;font-weight:400;color:var(--muted)">/h</span></span>` : '';
 
     return `<div class="salle-item" onclick="ouvrirDetailSalle('studio', ${i})">
       <div class="salle-item-left">
@@ -8166,7 +8184,7 @@ window.ouvrirDetailSalle = function(type, index) {
             <div style="font-size:13px;color:var(--muted2);">📍 ${item.ville || ''}${item.adresse ? '<br><span style="font-size:12px;">' + item.adresse + '</span>' : ''}</div>
           </div>
           <div style="text-align:right;flex-shrink:0;">
-            ${item.prix ? `<div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;color:var(--green);line-height:1;">${item.prix}€</div><div style="font-size:11px;color:var(--muted);">/ heure</div>` : ''}
+            ${item.prix ? `<div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;color:var(--green);line-height:1;">${item.prix}${item.devise||'€'}</div><div style="font-size:11px;color:var(--muted);">/ heure</div>` : ''}
           </div>
         </div>
         ${surface ? `<div class="salle-card-tags" style="margin-bottom:10px;">${surface}</div>` : ''}
@@ -8197,7 +8215,7 @@ window.ouvrirDetailSalle = function(type, index) {
       `<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted2);">${h.jour}</span><span style="font-weight:600;">${h.heure}</span></div>`
     ).join('');
     const abos = (item.abonnements || []).map(a =>
-      `<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted2);">${a.nom}</span><span style="color:var(--green);font-weight:700;">${a.prix}€</span></div>`
+      `<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted2);">${a.nom}</span><span style="color:var(--green);font-weight:700;">${a.prix}${a.devise||'€'}</span></div>`
     ).join('');
 
     const contactHtml = (item.tel || item.email) ? `
@@ -8500,7 +8518,7 @@ async function chargerDashboardAdmin() {
           <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;gap:12px;">
             <div style="flex:1;min-width:0;">
               <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.nom || 'Sans nom'}</div>
-              <div style="font-size:11px;color:var(--muted2);margin-top:2px;">${s.ville || ''} · ${s.prix || '?'}€/h · ${s.disponible !== false ? '<span style="color:var(--green);">Disponible</span>' : '<span style="color:var(--muted);">Indisponible</span>'}</div>
+              <div style="font-size:11px;color:var(--muted2);margin-top:2px;">${s.ville || ''} · ${s.prix || '?'}${s.devise || '€'}/h · ${s.disponible !== false ? '<span style="color:var(--green);">Disponible</span>' : '<span style="color:var(--muted);">Indisponible</span>'}</div>
             </div>
             <div style="display:flex;gap:6px;">
               <button onclick="ouvrirFormSalle('${s.id}')" style="padding:6px 12px;border-radius:8px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap;">Modifier</button>
@@ -8898,6 +8916,7 @@ window.ouvrirFormEvent = function() {
     if (el) el.value = '';
   });
   document.getElementById('ev-prix').value = '0';
+  document.getElementById('ev-devise').value = '€';
   _resetDatesList();
   ajouterDateEvent();
   document.getElementById('ev-photo').value = '';
@@ -8967,6 +8986,7 @@ window.ouvrirFormSalle = function(salleId) {
         document.getElementById('salle-ville').value   = s.ville      || '';
         document.getElementById('salle-adresse').value = s.adresse    || '';
         document.getElementById('salle-prix').value    = s.prix       || '';
+        document.getElementById('salle-devise').value  = s.devise     || '€';
         document.getElementById('salle-surface').value = s.surface    || '';
         document.getElementById('salle-desc').value    = s.description|| '';
         document.getElementById('salle-contact').value = s.contact    || '';
@@ -9027,6 +9047,7 @@ window.sauvegarderSalle = async function() {
     ville,
     adresse:     document.getElementById('salle-adresse').value.trim(),
     prix,
+    devise:      document.getElementById('salle-devise').value || '€',
     surface:     parseFloat(document.getElementById('salle-surface').value) || null,
     description: document.getElementById('salle-desc').value.trim(),
     contact,
@@ -9101,10 +9122,17 @@ window.ajouterAbonnement = function() {
   const id = 'abo-' + _aboCount++;
   const div = document.createElement('div');
   div.id = id;
-  div.style.cssText = 'display:grid;grid-template-columns:2fr 1fr auto;gap:8px;align-items:center;';
+  div.style.cssText = 'display:grid;grid-template-columns:2fr 1.4fr auto;gap:8px;align-items:center;';
   div.innerHTML = `
     <input type="text" class="form-input ecole-abo-nom" placeholder="Ex: Abonnement mensuel" style="background:var(--bg2);font-size:13px;padding:10px;">
-    <input type="number" class="form-input ecole-abo-prix" placeholder="Prix €" min="0" style="background:var(--bg2);font-size:13px;padding:10px;">
+    <div style="display:flex;gap:6px;align-items:center;">
+      <input type="number" class="form-input ecole-abo-prix" placeholder="Prix" min="0" style="background:var(--bg2);font-size:13px;padding:10px;flex:1;">
+      <select class="form-input ecole-abo-devise" style="background:var(--bg2);font-size:12px;padding:8px 4px;width:72px;flex-shrink:0;cursor:pointer;">
+        <option value="€">€ EUR</option>
+        <option value="CHF">CHF</option>
+        <option value="£">£ GBP</option>
+      </select>
+    </div>
     <button type="button" onclick="document.getElementById('${id}').remove()" style="padding:8px 10px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);cursor:pointer;font-size:14px;font-weight:700;">✕</button>
   `;
   list.appendChild(div);
@@ -9159,11 +9187,13 @@ window.ouvrirFormEcole = function(ecoleId) {
         });
         (e.abonnements || []).forEach(a => {
           ajouterAbonnement();
-          const noms = document.querySelectorAll('.ecole-abo-nom');
-          const prix = document.querySelectorAll('.ecole-abo-prix');
+          const noms   = document.querySelectorAll('.ecole-abo-nom');
+          const prix   = document.querySelectorAll('.ecole-abo-prix');
+          const devise = document.querySelectorAll('.ecole-abo-devise');
           const last = noms.length - 1;
-          noms[last].value = a.nom || '';
-          prix[last].value = a.prix || '';
+          noms[last].value   = a.nom    || '';
+          prix[last].value   = a.prix   || '';
+          if (devise[last]) devise[last].value = a.devise || '€';
         });
       } catch(e) { console.error('Erreur chargement école:', e); }
     })();
@@ -9213,8 +9243,9 @@ window.sauvegarderEcole = async function() {
   })).filter(h => h.jour || h.heure);
 
   const abonnements = Array.from(document.getElementById('ecole-abos-list').children).map(div => ({
-    nom:  div.querySelector('.ecole-abo-nom')?.value.trim() || '',
-    prix: parseFloat(div.querySelector('.ecole-abo-prix')?.value) || 0,
+    nom:   div.querySelector('.ecole-abo-nom')?.value.trim() || '',
+    prix:  parseFloat(div.querySelector('.ecole-abo-prix')?.value) || 0,
+    devise: div.querySelector('.ecole-abo-devise')?.value || '€',
   })).filter(a => a.nom);
 
   const data = {
@@ -9277,6 +9308,7 @@ window.modifierEvent = async function(id) {
     _loadDatesList(ev);
     document.getElementById('ev-ville').value  = ev.ville   || 'Paris';
     document.getElementById('ev-prix').value   = ev.prix    || 0;
+    document.getElementById('ev-devise').value = ev.devise  || '€';
     document.getElementById('ev-adresse').value   = ev.adresse    || '';
     document.getElementById('ev-styles').value = ev.styles  || '';
     document.getElementById('ev-niveau').value = ev.niveau  || 'Tous niveaux';
@@ -9348,6 +9380,7 @@ window.sauvegarderEvent = async function() {
     dates:         (window._evDates || []).filter(d => d.date).map(d => ({date: d.date, heure: d.heure || ''})),
     ville:         document.getElementById('ev-ville').value,
     prix:          parseFloat(document.getElementById('ev-prix').value) || 0,
+    devise:        document.getElementById('ev-devise').value || '€',
     adresse:       document.getElementById('ev-adresse').value,
     styles:        document.getElementById('ev-styles').value,
     vibe:          getVibeSelectionnes(),
@@ -9408,6 +9441,7 @@ window.sauvegarderEvent = async function() {
         const el = document.getElementById(id); if (el) el.value = '';
       });
       document.getElementById('ev-prix').value = '0';
+      document.getElementById('ev-devise').value = '€';
       _resetDatesList();
       ajouterDateEvent();
       document.getElementById('ev-photo').value = '';
