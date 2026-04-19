@@ -4877,80 +4877,7 @@ if (isPWA) {
       </div>
     </div>
 
-    <!-- Fenêtre de conversation -->
-    <div id="msg-conversation" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;background:var(--bg);">
 
-      <!-- Header — fixe en haut -->
-      <div id="conv-header" style="position:absolute;top:0;left:0;right:0;padding:16px 20px;padding-top:calc(16px + max(44px, calc(44px + env(safe-area-inset-top))));border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--bg);z-index:2;box-sizing:border-box;">
-        <button onclick="fermerConversation()" style="position:relative;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background 0.2s;" title="Retour">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <div id="conv-avatar" style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💃</div>
-        <div>
-          <div id="conv-name" style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;"></div>
-          <div id="conv-status" style="font-size:11px;color:var(--green);">✅ Amis mutuels</div>
-        </div>
-      </div>
-
-      <!-- Messages — zone scrollable, padding dynamique via JS -->
-      <div id="messages-container" style="position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 16px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none;box-sizing:border-box;"></div>
-
-      <!-- Input zone — fixe en bas -->
-      <div id="msg-input-bar" style="position:absolute;left:0;right:0;bottom:0;border-top:1px solid var(--border);background:var(--bg);z-index:2;padding:10px 12px;padding-bottom:max(10px, env(safe-area-inset-bottom));box-sizing:border-box;">
-
-      <!-- Réponse en cours -->
-      <div id="reply-preview" style="display:none;padding:8px 0 8px;border-bottom:1px solid rgba(0,245,155,0.2);margin-bottom:8px;align-items:center;gap:10px;">
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:2px;">↩️ Répondre à</div>
-          <div id="reply-text" style="font-size:12px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
-        </div>
-        <button onclick="annulerReponse()" style="width:24px;height:24px;border-radius:6px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
-      </div>
-
-        <!-- Waveform enregistrement -->
-        <div id="waveform-zone" style="display:none;align-items:center;gap:12px;padding:8px 4px;margin-bottom:8px;">
-          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-            <div style="width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1s ease infinite;"></div>
-            <span id="waveform-timer" style="font-size:12px;color:var(--red);font-weight:700;font-family:'Syne',sans-serif;">0:00</span>
-          </div>
-          <canvas id="waveform-canvas" style="flex:1;height:40px;border-radius:8px;background:rgba(255,77,109,0.06);"></canvas>
-          <button onclick="annulerEnregistrement()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-          <button onclick="arreterEnregistrement()" style="width:32px;height:32px;border-radius:50%;background:var(--green);border:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#080810" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          </button>
-        </div>
-
-        <!-- Barre input normale -->
-        <div id="input-zone" style="display:flex;gap:8px;align-items:flex-end;">
-
-          <!-- Bouton photo -->
-          <button id="btn-photo-msg" onclick="document.getElementById('msg-photo-input').click()" title="Envoyer une photo" style="width:40px;height:40px;border-radius:50%;background:var(--card2);border:1px solid var(--border);color:var(--muted2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          </button>
-          <input type="file" id="msg-photo-input" accept="image/*" style="display:none" onchange="envoyerPhoto(this)">
-
-          <!-- Input texte -->
-          <input id="msg-input" type="text" placeholder="Message..." style="flex:1;padding:10px 16px;border-radius:22px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;min-width:0;transition:border-color 0.2s;" onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')envoyerMessage()">
-
-          <!-- Bouton vocal -->
-          <button id="btn-vocal"
-            onmousedown="demarrerEnregistrement()" ontouchstart="event.preventDefault();demarrerEnregistrement()"
-            onmouseup="arreterEnregistrement()"   ontouchend="event.preventDefault();arreterEnregistrement()"
-            title="Message vocal (maintenir appuyé)"
-            style="width:40px;height:40px;border-radius:50%;background:var(--card2);border:1px solid var(--border);color:var(--muted2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;user-select:none;-webkit-user-select:none;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-          </button>
-
-          <!-- Bouton envoyer -->
-          <button onclick="envoyerMessage()" title="Envoyer" style="width:40px;height:40px;border-radius:50%;background:var(--green);border:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#080810" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          </button>
-
-        </div>
-      </div>
-    </div>
 
   </div>
 </div>
@@ -9936,55 +9863,28 @@ async function ouvrirConversation(uid, nom, photo) {
   document.getElementById('conv-name').textContent = nom;
 
   const convEl = document.getElementById('msg-conversation');
-  convEl.style.display = 'block';
+  convEl.style.display = 'flex';
   document.body.classList.add('conv-ouverte');
 
-  // Détecter ouverture/fermeture clavier via visualViewport
-  // Architecture : conv fixed top:0 bottom:0, inputBar absolute bottom:0, messages-container paddings dynamiques
-  const _updateConvLayout = () => {
-    const conv = document.getElementById('msg-conversation');
-    if (!conv || conv.style.display === 'none') return;
-
-    const vvH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-    const wH  = window.innerHeight;
-    const keyboardH = Math.max(0, wH - vvH);
-    const keyboardOpen = keyboardH > 100;
-
-    const inputBar  = document.getElementById('msg-input-bar');
-    const msgCont   = document.getElementById('messages-container');
-    const header    = document.getElementById('conv-header');
-
-    // Hauteur du header (calculée dynamiquement)
-    const headerH = header ? header.offsetHeight : 80;
-    // Hauteur de l'input bar
-    const inputBarH = inputBar ? inputBar.offsetHeight : 70;
-
-    if (keyboardOpen) {
-      document.body.classList.add('keyboard-open');
-      // Remonter l'input bar au-dessus du clavier
-      if (inputBar) inputBar.style.bottom = keyboardH + 'px';
-    } else {
-      document.body.classList.remove('keyboard-open');
-      if (inputBar) inputBar.style.bottom = '0';
-    }
-
-    // Ajuster le scroll area des messages
-    if (msgCont) {
-      msgCont.style.paddingTop  = (headerH + 8) + 'px';
-      msgCont.style.paddingBottom = (inputBarH + (keyboardOpen ? 0 : 8)) + 'px';
-    }
-  };
-  window._updateConvLayout = _updateConvLayout;
+  // Gestion clavier iOS via visualViewport : ajuster le bottom du conteneur
   if (!window._vpListener) {
-    window._vpListener = _updateConvLayout;
+    window._vpListener = () => {
+      const conv = document.getElementById('msg-conversation');
+      if (!conv || conv.style.display === 'none') return;
+      const vvH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      conv.style.height = vvH + 'px';
+      conv.style.top = (window.visualViewport ? window.visualViewport.offsetTop : 0) + 'px';
+    };
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', window._vpListener);
       window.visualViewport.addEventListener('scroll', window._vpListener);
     }
-    window.addEventListener('resize', window._vpListener);
   }
-  // Appeler une première fois après rendu
-  setTimeout(_updateConvLayout, 50);
+  // Init hauteur
+  if (window.visualViewport) {
+    convEl.style.height = window.visualViewport.height + 'px';
+    convEl.style.top = window.visualViewport.offsetTop + 'px';
+  }
 
   // Charger les messages
   await chargerMessagesConv(uid);
@@ -10002,17 +9902,10 @@ async function ouvrirConversation(uid, nom, photo) {
 function fermerConversation() {
   const conv = document.getElementById('msg-conversation');
   conv.style.display = 'none';
-  // Réinitialiser inputBar si clavier était ouvert
-  const inputBar = document.getElementById('msg-input-bar');
-  if (inputBar) inputBar.style.bottom = '0';
+  conv.style.height = '';
+  conv.style.top = '0';
   document.body.classList.remove('keyboard-open');
   document.body.classList.remove('conv-ouverte');
-  // Nettoyer le listener viewport
-  if (window._vpListener && window.visualViewport) {
-    window.visualViewport.removeEventListener('resize', window._vpListener);
-    window.visualViewport.removeEventListener('scroll', window._vpListener);
-    window._vpListener = null;
-  }
   convOuverte = null;
   if (window._msgListener) { window._msgListener(); window._msgListener = null; }
 }
@@ -10078,8 +9971,6 @@ function afficherMessages(msgs) {
       </div>`;
   }).join('');
 
-  // Recalculer les paddings après rendu puis scroller en bas
-  if (window._updateConvLayout) window._updateConvLayout();
   setTimeout(() => { container.scrollTop = container.scrollHeight; }, 10);
 
   // Ajouter swipe sur chaque message
@@ -14308,3 +14199,67 @@ function _renderDrawerLieux() {
 
       </div>
     </div>
+<!-- ═══ CONVERSATION OVERLAY ═══ -->
+<div id="msg-conversation" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:1000;background:var(--bg);flex-direction:column;overflow:hidden;">
+
+  <!-- Header -->
+  <div id="conv-header" style="flex-shrink:0;padding:16px 20px;padding-top:calc(16px + max(44px, calc(44px + env(safe-area-inset-top))));border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--bg);">
+    <button onclick="fermerConversation()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div id="conv-avatar" style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💃</div>
+    <div>
+      <div id="conv-name" style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;"></div>
+      <div id="conv-status" style="font-size:11px;color:var(--green);">✅ Amis mutuels</div>
+    </div>
+  </div>
+
+  <!-- Messages scrollables -->
+  <div id="messages-container" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none;min-height:0;"></div>
+
+  <!-- Réponse en cours -->
+  <div id="reply-preview" style="display:none;flex-shrink:0;padding:8px 16px;border-top:1px solid rgba(0,245,155,0.2);background:rgba(0,245,155,0.04);align-items:center;gap:10px;">
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:10px;color:var(--green);font-weight:700;margin-bottom:2px;">↩️ Répondre à</div>
+      <div id="reply-text" style="font-size:12px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+    </div>
+    <button onclick="annulerReponse()" style="width:24px;height:24px;border-radius:6px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
+  </div>
+
+  <!-- Input bar -->
+  <div id="msg-input-bar" style="flex-shrink:0;padding:10px 12px;padding-bottom:max(10px, env(safe-area-inset-bottom));border-top:1px solid var(--border);background:var(--bg);">
+
+    <!-- Waveform enregistrement -->
+    <div id="waveform-zone" style="display:none;align-items:center;gap:12px;padding:8px 4px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1s ease infinite;"></div>
+        <span id="waveform-timer" style="font-size:12px;color:var(--red);font-weight:700;font-family:'Syne',sans-serif;">0:00</span>
+      </div>
+      <canvas id="waveform-canvas" style="flex:1;height:40px;border-radius:8px;background:rgba(255,77,109,0.06);"></canvas>
+      <button onclick="annulerEnregistrement()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <button onclick="arreterEnregistrement()" style="width:32px;height:32px;border-radius:50%;background:var(--green);border:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#080810" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+
+    <!-- Barre input normale -->
+    <div id="input-zone" style="display:flex;gap:8px;align-items:center;">
+      <button id="btn-photo-msg" onclick="document.getElementById('msg-photo-input').click()" style="width:40px;height:40px;border-radius:50%;background:var(--card2);border:1px solid var(--border);color:var(--muted2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </button>
+      <input type="file" id="msg-photo-input" accept="image/*" style="display:none" onchange="envoyerPhoto(this)">
+      <input id="msg-input" type="text" placeholder="Message..." style="flex:1;padding:10px 16px;border-radius:22px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;min-width:0;" onkeydown="if(event.key==='Enter')envoyerMessage()">
+      <button id="btn-vocal" onmousedown="demarrerEnregistrement()" ontouchstart="event.preventDefault();demarrerEnregistrement()" onmouseup="arreterEnregistrement()" ontouchend="event.preventDefault();arreterEnregistrement()" style="width:40px;height:40px;border-radius:50%;background:var(--card2);border:1px solid var(--border);color:var(--muted2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <button onclick="envoyerMessage()" style="width:40px;height:40px;border-radius:50%;background:var(--green);border:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#080810" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
