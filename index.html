@@ -10589,7 +10589,7 @@ function afficherListeDanseurs(danseurs) {
     return;
   }
 
-  const METIER_ICONS = { danseur:'💃', photographe:'📷', videaste:'🎥', beatmaker:'🎧', realisateur:'🎬', dj:'🎛️', musicien:'🎸', chanteur:'🎤', comedien:'🎭', performeur:'✨', mannequin:'🪞', styliste:'👗', maquilleur:'💄', coiffeur_mode:'💈', costumier:'🧵', dessinateur:'✏️', peintre:'🖌️', graphiste:'🖥️', illustrateur:'🖼️', designer:'👔', designer_mode:'👔' };
+  const METIER_ICONS = { danseur:'💃', photographe:'📷', videaste:'🎥', beatmaker:'🎧', realisateur:'🎬', dj:'🎛️', musicien:'🎸', chanteur:'🎤', comedien:'🎭', performeur:'✨', mannequin:'🪞', styliste:'👗', maquilleur:'💄', coiffeur_mode:'💈', costumier:'🧵', dessinateur:'✏️', peintre:'🖌️', graphiste:'🖥️', illustrateur:'🖼️', designer:'🎨', designer_mode:'👔' };
   list.innerHTML = danseurs.map(d => {
     const nom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
     const metiers = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
@@ -10793,7 +10793,7 @@ window.ouvrirProfilArtiste = async function(uid) {
       peintre:      '🖌️ Peintre',
       graphiste:    '🖥️ Graphiste',
       illustrateur: '🖼️ Illustrateur·rice',
-      designer:     '👔 Designer',
+      designer:     '🎨 Designer',
     };
 
     let metierSection = document.getElementById('ap-metier');
@@ -11069,7 +11069,7 @@ const SPECIALITE_LABELS = {
   photographe:'📷 Photographe', videaste:'🎥 Vidéaste', realisateur:'🎬 Réalisateur·rice',
   dessinateur:'✏️ Dessinateur·rice', peintre:'🖌️ Peintre', graphiste:'🖥️ Graphiste', illustrateur:'🖼️ Illustrateur·rice',
   styliste:'👗 Styliste', maquilleur:'💄 Maquilleur·se', coiffeur_mode:'💈 Coiffeur·se artistique', costumier:'🧵 Costumier·ère',
-  designer:'👔 Designer', designer_mode:'👔 Designer Mode',
+  designer:'🎨 Designer', designer_mode:'👔 Designer Mode',
 };
 
 function getCategorieFromMetiers(metiers) {
@@ -12310,7 +12310,7 @@ async function chargerProfil(uid) {
         peintre:      '🖌️ Peintre',
         graphiste:    '🖥️ Graphiste',
         illustrateur: '🖼️ Illustrateur·rice',
-        designer:     '👔 Designer',
+        designer:     '🎨 Designer',
       };
       if (metiers.length) {
         phMetiersBadges.innerHTML = metiers.map(m => METIER_BADGES[m]
@@ -12346,7 +12346,7 @@ async function chargerProfil(uid) {
         peintre:      { emoji:'🖌️', label:'Peintre' },
         graphiste:    { emoji:'🖥️', label:'Graphiste' },
         illustrateur: { emoji:'🖼️', label:'Illustrateur·rice' },
-        designer:     { emoji:'👔', label:'Designer' },
+        designer:     { emoji:'🎨', label:'Designer' },
         designer_mode:{ emoji:'👔', label:'Designer Mode' },
       };
       let discHtml = '';
@@ -13906,7 +13906,7 @@ function _renderDrawerLieux() {
                 <button type="button" class="edit-metier-chip" data-metier="peintre" onclick="toggleEditMetier('peintre',this)">🖌️ Peintre</button>
                 <button type="button" class="edit-metier-chip" data-metier="graphiste" onclick="toggleEditMetier('graphiste',this)">🖥️ Graphiste</button>
                 <button type="button" class="edit-metier-chip" data-metier="illustrateur" onclick="toggleEditMetier('illustrateur',this)">🖼️ Illustrateur·rice</button>
-                <button type="button" class="edit-metier-chip" data-metier="designer" onclick="toggleEditMetier('designer',this)">👔 Designer</button>
+                <button type="button" class="edit-metier-chip" data-metier="designer" onclick="toggleEditMetier('designer',this)">🎨 Designer</button>
               </div>
             </div>
 
@@ -14222,7 +14222,7 @@ function _renderDrawerLieux() {
         <!-- ARTS VISUELS -->
         <div id="edit-section-designer" style="display:none;">
           <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;">👔 Spécialités design</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;">🎨 Spécialités design</div>
             <div style="display:flex;flex-wrap:wrap;gap:6px;" id="edit-specialites-designer">
               <button class="style-tag" onclick="toggleStyle(this)">Graphisme</button>
               <button class="style-tag" onclick="toggleStyle(this)">Motion design</button>
