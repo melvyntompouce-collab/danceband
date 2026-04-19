@@ -9936,8 +9936,7 @@ async function ouvrirConversation(uid, nom, photo) {
   document.getElementById('conv-name').textContent = nom;
 
   const convEl = document.getElementById('msg-conversation');
-  convEl.style.bottom = '0';
-  convEl.style.display = 'flex';
+  convEl.style.display = 'block';
   document.body.classList.add('conv-ouverte');
 
   // Détecter ouverture/fermeture clavier via visualViewport
@@ -10003,8 +10002,9 @@ async function ouvrirConversation(uid, nom, photo) {
 function fermerConversation() {
   const conv = document.getElementById('msg-conversation');
   conv.style.display = 'none';
-  conv.style.top    = '0';
-  conv.style.height = '';
+  // Réinitialiser inputBar si clavier était ouvert
+  const inputBar = document.getElementById('msg-input-bar');
+  if (inputBar) inputBar.style.bottom = '0';
   document.body.classList.remove('keyboard-open');
   document.body.classList.remove('conv-ouverte');
   // Nettoyer le listener viewport
