@@ -514,6 +514,8 @@ body.pwa #agenda-passes-toggle {
 .metier-chip{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;flex:1;min-width:calc(50% - 4px);}
 .metier-chip.selected{border-color:var(--green);background:rgba(0,245,155,0.08);color:var(--green);}
 .metier-chip .metier-ico{font-size:18px;}
+.edit-metier-chip{padding:8px 14px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;}
+.edit-metier-chip.selected{border-color:var(--green);background:rgba(0,245,155,0.10);color:var(--green);}
 .styles-grid.expanded{max-height:1000px;}
 .style-tag{
   padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;
@@ -5953,10 +5955,9 @@ function fermerEdition() {
   document.getElementById('edit-profile-page').style.display = 'none';
 }
 
-// Toggle métier dans l'édition profil
-window.toggleEditMetier = function(btn) {
+// Toggle métier dans l'édition profil (alias — logique principale en bas)
+window.toggleEditMetier = function(metier, btn) {
   btn.classList.toggle('selected');
-  const metier = btn.getAttribute('data-metier');
   const sec = document.getElementById('edit-section-' + metier);
   if (sec) sec.style.display = btn.classList.contains('selected') ? 'block' : 'none';
 };
@@ -11161,33 +11162,27 @@ window.setMapStyleFiltreMobile = function(val) {
 };
 
 // ── Selects catégorie/spécialité édition profil ──
-window.updateEditSpecialites = function(categorie) {
-  const wrap = document.getElementById('edit-specialite-wrap');
-  const sel = document.getElementById('edit-specialite');
-  if (!wrap || !sel) return;
-  const cfg = CATEGORIES_ARTISTE[categorie];
-  if (!cfg) { wrap.style.display = 'none'; return; }
-  sel.innerHTML = '<option value="">Choisir...</option>' +
-    cfg.specialites.map(s => `<option value="${s}">${SPECIALITE_LABELS[s] || s}</option>`).join('');
-  wrap.style.display = 'block';
-  sel.value = '';
-  // Masquer toutes les sections
-  ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
-   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur',
-   'styliste','maquilleur','coiffeur_mode','costumier'].forEach(t => {
-    const sec = document.getElementById('edit-section-' + t);
-    if (sec) sec.style.display = 'none';
-  });
+window.updateEditSpecialites = function() {}; // conservé pour compatibilité
+window.applyEditSpecialite   = function() {}; // conservé pour compatibilité
+
+const ALL_EDIT_METIERS = ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
+  'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur',
+  'styliste','maquilleur','coiffeur_mode','costumier'];
+
+window.toggleEditMetier = function(metier, btn) {
+  btn.classList.toggle('selected');
+  const sec = document.getElementById('edit-section-' + metier);
+  if (sec) sec.style.display = btn.classList.contains('selected') ? 'block' : 'none';
 };
 
-window.applyEditSpecialite = function(val) {
-  if (!val) return;
-  // Simuler le comportement de toggleEditMetier
-  ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
-   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur',
-   'styliste','maquilleur','coiffeur_mode','costumier'].forEach(t => {
-    const sec = document.getElementById('edit-section-' + t);
-    if (sec) sec.style.display = t === val ? 'block' : 'none';
+// Pré-sélectionner les métiers existants du profil
+window._preselectEditMetiers = function(metiers) {
+  ALL_EDIT_METIERS.forEach(m => {
+    const btn = document.querySelector(`.edit-metier-chip[data-metier="${m}"]`);
+    const sec = document.getElementById('edit-section-' + m);
+    const actif = metiers.includes(m);
+    if (btn) btn.classList.toggle('selected', actif);
+    if (sec) sec.style.display = actif ? 'block' : 'none';
   });
 };
 
@@ -11928,8 +11923,7 @@ window.sauvegarderIdentite = async function() {
                    : [nom, blase].filter(Boolean).join(' · ');
 
   // Champs spécifiques par métier
-  const editSpecVal = document.getElementById('edit-specialite')?.value;
-  const metiersSauv = editSpecVal ? [editSpecVal] : [];
+  const metiersSauv = [...document.querySelectorAll('.edit-metier-chip.selected')].map(b => b.getAttribute('data-metier'));
   const metierData = { metiers: metiersSauv };
   if (metiersSauv.includes('photographe')) {
     metierData.specialitesPhoto = [...document.querySelectorAll('#edit-specialites-photo .style-tag.selected')].map(t => t.textContent.trim());
@@ -12164,18 +12158,9 @@ async function chargerProfil(uid) {
     // ── Sections métier (édition profil) ──
     const metiers = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
 
-    // Pré-remplir les selects catégorie/spécialité édition
-    const editMetiersList = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
-    if (editMetiersList.length) {
-      const editCat = getCategorieFromMetiers(editMetiersList);
-      const editSelCat = document.getElementById('edit-categorie');
-      if (editSelCat) { editSelCat.value = editCat; updateEditSpecialites(editCat); }
-      setTimeout(() => {
-        const editSelSpec = document.getElementById('edit-specialite');
-        if (editSelSpec && editMetiersList[0]) editSelSpec.value = editMetiersList[0];
-        applyEditSpecialite(editMetiersList[0]);
-      }, 50);
-    }
+    // Pré-sélectionner les chips métier
+    window._preselectEditMetiers(metiers);
+
     document.querySelectorAll('#edit-metiers-chips .style-tag').forEach(chip => {
       const m = chip.getAttribute('data-metier');
       if (metiers.includes(m)) {
@@ -12185,10 +12170,7 @@ async function chargerProfil(uid) {
       }
     });
 
-    ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur'].forEach(m => {
-      const sec = document.getElementById('edit-section-' + m);
-      if (sec) sec.style.display = metiers.includes(m) ? 'block' : 'none';
-    });
+    // Les sections sont gérées par _preselectEditMetiers ci-dessus
 
     // Pré-remplir champs métier spécifiques
     if (metiers.includes('photographe')) {
@@ -12318,14 +12300,25 @@ async function chargerProfil(uid) {
     const disciplinesContent  = document.getElementById('profil-disciplines-content');
     if (disciplinesSection && disciplinesContent) {
       const METIER_LABELS_RO = {
-        danseur:     { emoji:'💃', label:'Danseur·se' },
-        photographe: { emoji:'📷', label:'Photographe' },
-        videaste:    { emoji:'🎥', label:'Vidéaste' },
-        beatmaker:   { emoji:'🎧', label:'Beatmaker' },
-        realisateur: { emoji:'🎬', label:'Réalisateur·rice' },
-        dj:          { emoji:'🎛️', label:'DJ' },
-        musicien:    { emoji:'🎸', label:'Musicien·ne' },
-        chanteur:    { emoji:'🎤', label:'Chanteur·se / Rappeur·se' }
+        danseur:      { emoji:'💃', label:'Danseur·se' },
+        photographe:  { emoji:'📷', label:'Photographe' },
+        videaste:     { emoji:'🎥', label:'Vidéaste' },
+        beatmaker:    { emoji:'🎧', label:'Beatmaker' },
+        realisateur:  { emoji:'🎬', label:'Réalisateur·rice' },
+        dj:           { emoji:'🎛️', label:'DJ' },
+        musicien:     { emoji:'🎸', label:'Musicien·ne' },
+        chanteur:     { emoji:'🎤', label:'Chanteur·se / Rappeur·se' },
+        comedien:     { emoji:'🎭', label:'Comédien·ne' },
+        performeur:   { emoji:'✨', label:'Performeur·se' },
+        mannequin:    { emoji:'🪞', label:'Mannequin' },
+        styliste:     { emoji:'👗', label:'Styliste' },
+        maquilleur:   { emoji:'💄', label:'Maquilleur·se' },
+        coiffeur_mode:{ emoji:'💈', label:'Coiffeur·se artistique' },
+        costumier:    { emoji:'🧵', label:'Costumier·ère' },
+        dessinateur:  { emoji:'✏️', label:'Dessinateur·rice' },
+        peintre:      { emoji:'🖌️', label:'Peintre' },
+        graphiste:    { emoji:'🖥️', label:'Graphiste' },
+        illustrateur: { emoji:'🖼️', label:'Illustrateur·rice' },
       };
       let discHtml = '';
       metiers.forEach(m => {
@@ -12409,7 +12402,15 @@ async function chargerProfil(uid) {
     // Valeur affichée pour disciplines
     const privDisc = document.getElementById('priv-val-disciplines');
     if (privDisc) {
-      const METIER_LABELS_SHORT = { danseur:'Danseur·se', photographe:'Photographe', videaste:'Vidéaste', beatmaker:'Beatmaker', realisateur:'Réalisateur·rice', dj:'DJ', musicien:'Musicien·ne', chanteur:'Chanteur·se' };
+      const METIER_LABELS_SHORT = {
+        danseur:'Danseur·se', photographe:'Photographe', videaste:'Vidéaste',
+        beatmaker:'Beatmaker', realisateur:'Réalisateur·rice', dj:'DJ',
+        musicien:'Musicien·ne', chanteur:'Chanteur·se', comedien:'Comédien·ne',
+        performeur:'Performeur·se', mannequin:'Mannequin', styliste:'Styliste',
+        maquilleur:'Maquilleur·se', coiffeur_mode:'Coiffeur·se artistique',
+        costumier:'Costumier·ère', dessinateur:'Dessinateur·rice', peintre:'Peintre',
+        graphiste:'Graphiste', illustrateur:'Illustrateur·rice'
+      };
       const metiersList = (d.metiers || []).map(m => METIER_LABELS_SHORT[m]).filter(Boolean);
       privDisc.textContent = metiersList.length ? metiersList.join(', ') : 'Non renseigné';
     }
@@ -13835,26 +13836,61 @@ function _renderDrawerLieux() {
         </div>
 
         <!-- STYLES DE DANSE (danseur) -->
-        <!-- SÉLECTEUR MÉTIERS (édition) -->
+        <!-- SÉLECTEUR MÉTIERS (édition) multi-sélection -->
         <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:16px;">Ton univers</div>
-          <div style="display:flex;flex-direction:column;gap:12px;" id="edit-metiers-chips">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;">Tes disciplines</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:16px;">Sélectionne une ou plusieurs spécialités</div>
+          <div style="display:flex;flex-direction:column;gap:16px;" id="edit-metiers-chips">
+
             <div>
-              <label class="form-label" style="font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:block;">Catégorie</label>
-              <select id="edit-categorie" class="form-select" onchange="updateEditSpecialites(this.value)">
-                <option value="">Choisir...</option>
-                <option value="scene">🎭 Scène</option>
-                <option value="musique">🎵 Musique</option>
-                <option value="audiovisuel">🎬 Audiovisuel</option>
-                <option value="arts_visuels">🎨 Arts Visuels</option>
-                <option value="mode">👗 Mode</option>
-              </select>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">🎭 Scène</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <button type="button" class="edit-metier-chip" data-metier="danseur" onclick="toggleEditMetier('danseur',this)">💃 Danseur·se</button>
+                <button type="button" class="edit-metier-chip" data-metier="comedien" onclick="toggleEditMetier('comedien',this)">🎭 Comédien·ne</button>
+                <button type="button" class="edit-metier-chip" data-metier="performeur" onclick="toggleEditMetier('performeur',this)">✨ Performeur·se</button>
+              </div>
             </div>
-            <div id="edit-specialite-wrap" style="display:none;">
-              <label class="form-label" style="font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:block;">Spécialité</label>
-              <select id="edit-specialite" class="form-select" onchange="applyEditSpecialite(this.value)">
-              </select>
+
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">🎵 Musique</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <button type="button" class="edit-metier-chip" data-metier="beatmaker" onclick="toggleEditMetier('beatmaker',this)">🎧 Beatmaker</button>
+                <button type="button" class="edit-metier-chip" data-metier="dj" onclick="toggleEditMetier('dj',this)">🎛️ DJ</button>
+                <button type="button" class="edit-metier-chip" data-metier="musicien" onclick="toggleEditMetier('musicien',this)">🎸 Musicien·ne</button>
+                <button type="button" class="edit-metier-chip" data-metier="chanteur" onclick="toggleEditMetier('chanteur',this)">🎤 Chanteur·se</button>
+              </div>
             </div>
+
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">🎬 Audiovisuel</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <button type="button" class="edit-metier-chip" data-metier="photographe" onclick="toggleEditMetier('photographe',this)">📷 Photographe</button>
+                <button type="button" class="edit-metier-chip" data-metier="videaste" onclick="toggleEditMetier('videaste',this)">🎥 Vidéaste</button>
+                <button type="button" class="edit-metier-chip" data-metier="realisateur" onclick="toggleEditMetier('realisateur',this)">🎬 Réalisateur·rice</button>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">🎨 Arts Visuels</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <button type="button" class="edit-metier-chip" data-metier="dessinateur" onclick="toggleEditMetier('dessinateur',this)">✏️ Dessinateur·rice</button>
+                <button type="button" class="edit-metier-chip" data-metier="peintre" onclick="toggleEditMetier('peintre',this)">🖌️ Peintre</button>
+                <button type="button" class="edit-metier-chip" data-metier="graphiste" onclick="toggleEditMetier('graphiste',this)">🖥️ Graphiste</button>
+                <button type="button" class="edit-metier-chip" data-metier="illustrateur" onclick="toggleEditMetier('illustrateur',this)">🖼️ Illustrateur·rice</button>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">👗 Mode</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <button type="button" class="edit-metier-chip" data-metier="mannequin" onclick="toggleEditMetier('mannequin',this)">🪞 Mannequin</button>
+                <button type="button" class="edit-metier-chip" data-metier="styliste" onclick="toggleEditMetier('styliste',this)">👗 Styliste</button>
+                <button type="button" class="edit-metier-chip" data-metier="maquilleur" onclick="toggleEditMetier('maquilleur',this)">💄 Maquilleur·se</button>
+                <button type="button" class="edit-metier-chip" data-metier="coiffeur_mode" onclick="toggleEditMetier('coiffeur_mode',this)">💈 Coiffeur·se artistique</button>
+                <button type="button" class="edit-metier-chip" data-metier="costumier" onclick="toggleEditMetier('costumier',this)">🧵 Costumier·ère</button>
+              </div>
+            </div>
+
           </div>
         </div>
 
