@@ -3240,6 +3240,7 @@ if (isPWA) {
               <button class="style-tag" onclick="toggleStyle(this)">Danse Orientale</button>
               <button class="style-tag" onclick="toggleStyle(this)">Pole Dance</button>
               <button class="style-tag" onclick="toggleStyle(this)">Capoeira</button>
+              <button class="style-tag" onclick="toggleStyle(this)">K-Pop</button>
             </div>
             <button onclick="toggleStylesGrid('styles-grid', this)" style="margin-top:8px;background:none;border:none;color:var(--green);font-size:11px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;padding:0;letter-spacing:0.5px;">+ Voir tous les styles</button>
           </div>
@@ -4606,6 +4607,10 @@ if (isPWA) {
           <select id="map-filtre-specialite" class="form-select" style="font-size:12px;padding:7px 10px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);display:none;" onchange="setMapSpecialiteFiltre(this.value)">
             <option value="">Toutes spécialités</option>
           </select>
+          <select id="map-filtre-style" class="form-select" style="font-size:12px;padding:7px 10px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);display:none;" onchange="setMapStyleFiltre(this.value)">
+            <option value="">Tous les styles</option>
+            <option>Afro</option><option>Bachata</option><option>Bharata Natyam</option><option>Breakdance</option><option>Capoeira</option><option>Claquettes</option><option>Classique</option><option>Commercial</option><option>Contemporain</option><option>Dancehall</option><option>Danse Orientale</option><option>Electro</option><option>Experimental</option><option>Heels</option><option>Hip-Hop</option><option>House</option><option>K-Pop</option><option>Kizomba</option><option>Krump</option><option>Litefeet</option><option>Locking</option><option>Modern Jazz</option><option>New Style</option><option>Pole Dance</option><option>Popping</option><option>Reggaeton</option><option>Salsa</option><option>Samba</option><option>Street Jazz</option><option>Tango</option><option>Voguing</option><option>Waacking</option><option>Zouk</option>
+          </select>
         </div>
       </div>
       <div class="dancer-list" id="dancer-list">
@@ -4658,6 +4663,10 @@ if (isPWA) {
         </select>
         <select id="map-filtre-specialite-mobile" class="form-select" style="font-size:13px;padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);display:none;" onchange="setMapSpecialiteFiltreMobile(this.value)">
           <option value="">Toutes spécialités</option>
+        </select>
+        <select id="map-filtre-style-mobile" class="form-select" style="font-size:13px;padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);display:none;" onchange="setMapStyleFiltreMobile(this.value)">
+          <option value="">Tous les styles</option>
+          <option>Afro</option><option>Bachata</option><option>Bharata Natyam</option><option>Breakdance</option><option>Capoeira</option><option>Claquettes</option><option>Classique</option><option>Commercial</option><option>Contemporain</option><option>Dancehall</option><option>Danse Orientale</option><option>Electro</option><option>Experimental</option><option>Heels</option><option>Hip-Hop</option><option>House</option><option>K-Pop</option><option>Kizomba</option><option>Krump</option><option>Litefeet</option><option>Locking</option><option>Modern Jazz</option><option>New Style</option><option>Pole Dance</option><option>Popping</option><option>Reggaeton</option><option>Salsa</option><option>Samba</option><option>Street Jazz</option><option>Tango</option><option>Voguing</option><option>Waacking</option><option>Zouk</option>
         </select>
       </div>
       <input id="filtre-zone-mobile" type="text" list="villes-datalist" placeholder="📍 Ville..." oninput="syncVilleMobile(this.value)" autocomplete="off" style="width:100%;box-sizing:border-box;padding:7px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:8px;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
@@ -11013,6 +11022,10 @@ function _updateMapSpecialiteSelect(categorieVal, selId) {
 
 window.setMapCategorieFiltre = function(val) {
   _updateMapSpecialiteSelect(val, 'map-filtre-specialite');
+  // Cacher et reset le select style
+  const selStyle = document.getElementById('map-filtre-style');
+  if (selStyle) { selStyle.style.display = 'none'; selStyle.value = ''; }
+  filtresStyleActifs.clear();
   // Appliquer comme filtre métier
   if (val) {
     filtresMetierActifs.clear();
@@ -11030,11 +11043,21 @@ window.setMapSpecialiteFiltre = function(val) {
     const cat = document.getElementById('map-filtre-categorie')?.value;
     if (cat) filtresMetierActifs.add(cat);
   }
+  // Afficher le select style si danseur sélectionné
+  const selStyle = document.getElementById('map-filtre-style');
+  if (selStyle) {
+    selStyle.style.display = (val === 'danseur') ? 'block' : 'none';
+    selStyle.value = '';
+  }
+  filtresStyleActifs.clear();
   filtrerDanseurs();
 };
 
 window.setMapCategorieFiltreMobile = function(val) {
   _updateMapSpecialiteSelect(val, 'map-filtre-specialite-mobile');
+  const selStyle = document.getElementById('map-filtre-style-mobile');
+  if (selStyle) { selStyle.style.display = 'none'; selStyle.value = ''; }
+  filtresStyleActifs.clear();
   if (val) {
     filtresMetierActifs.clear();
     filtresMetierActifs.add(val);
@@ -11052,6 +11075,25 @@ window.setMapSpecialiteFiltreMobile = function(val) {
     const cat = document.getElementById('map-filtre-categorie-mobile')?.value;
     if (cat) filtresMetierActifs.add(cat);
   }
+  const selStyle = document.getElementById('map-filtre-style-mobile');
+  if (selStyle) {
+    selStyle.style.display = (val === 'danseur') ? 'block' : 'none';
+    selStyle.value = '';
+  }
+  filtresStyleActifs.clear();
+  filtrerDanseurs();
+  syncDancerListMobile();
+};
+
+window.setMapStyleFiltre = function(val) {
+  filtresStyleActifs.clear();
+  if (val) filtresStyleActifs.add(val);
+  filtrerDanseurs();
+};
+
+window.setMapStyleFiltreMobile = function(val) {
+  filtresStyleActifs.clear();
+  if (val) filtresStyleActifs.add(val);
   filtrerDanseurs();
   syncDancerListMobile();
 };
@@ -11348,6 +11390,10 @@ function resetFiltres() {
   if (zi) zi.value = '';
   const si = document.getElementById('search-input');
   if (si) si.value = '';
+  // Reset selects catégorie / spécialité / style
+  ['map-filtre-categorie','map-filtre-categorie-mobile'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['map-filtre-specialite','map-filtre-specialite-mobile'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = 'none'; el.value = ''; } });
+  ['map-filtre-style','map-filtre-style-mobile'].forEach(id => { const el = document.getElementById(id); if (el) { el.style.display = 'none'; el.value = ''; } });
   filtrerDanseurs();
 }
 
@@ -13783,6 +13829,7 @@ function _renderDrawerLieux() {
             <button class="style-tag" onclick="toggleStyle(this)">Danse Orientale</button>
             <button class="style-tag" onclick="toggleStyle(this)">Pole Dance</button>
             <button class="style-tag" onclick="toggleStyle(this)">Capoeira</button>
+            <button class="style-tag" onclick="toggleStyle(this)">K-Pop</button>
           </div>
           <button onclick="toggleStylesGrid('edit-styles-grid', this)" style="margin-top:8px;background:none;border:none;color:var(--green);font-size:11px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;padding:0;letter-spacing:0.5px;">+ Voir tous les styles</button>
         </div>
