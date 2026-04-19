@@ -3171,6 +3171,7 @@ if (isPWA) {
                 <option value="musique">🎵 Musique</option>
                 <option value="audiovisuel">🎬 Audiovisuel</option>
                 <option value="arts_visuels">🎨 Arts Visuels</option>
+                <option value="mode">👗 Mode</option>
               </select>
             </div>
             <!-- Spécialité (dynamique) -->
@@ -4603,6 +4604,7 @@ if (isPWA) {
             <option value="musique">🎵 Musique</option>
             <option value="audiovisuel">🎬 Audiovisuel</option>
             <option value="arts_visuels">🎨 Arts Visuels</option>
+            <option value="mode">👗 Mode</option>
           </select>
           <select id="map-filtre-specialite" class="form-select" style="font-size:12px;padding:7px 10px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);display:none;" onchange="setMapSpecialiteFiltre(this.value)">
             <option value="">Toutes spécialités</option>
@@ -4660,6 +4662,7 @@ if (isPWA) {
           <option value="musique">🎵 Musique</option>
           <option value="audiovisuel">🎬 Audiovisuel</option>
           <option value="arts_visuels">🎨 Arts Visuels</option>
+          <option value="mode">👗 Mode</option>
         </select>
         <select id="map-filtre-specialite-mobile" class="form-select" style="font-size:13px;padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);display:none;" onchange="setMapSpecialiteFiltreMobile(this.value)">
           <option value="">Toutes spécialités</option>
@@ -6031,7 +6034,8 @@ window.updateSignupSpecialites = function(categorie) {
   wrap.style.display = 'block';
   // Reset sections
   ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
-   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur'].forEach(t => {
+   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur',
+   'styliste','maquilleur','coiffeur_mode','costumier'].forEach(t => {
     const sec = document.getElementById('signup-section-' + t);
     if (sec) sec.style.display = 'none';
   });
@@ -6047,7 +6051,8 @@ function toggleSignupType(btn, type) {
   _signupTypes.add(type);
   // Afficher la section correspondante
   ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
-   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur'].forEach(t => {
+   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur',
+   'styliste','maquilleur','coiffeur_mode','costumier'].forEach(t => {
     const section = document.getElementById('signup-section-' + t);
     if (section) section.style.display = _signupTypes.has(t) ? 'block' : 'none';
   });
@@ -11037,7 +11042,8 @@ let filtresMetierActifs = new Set();
 
 
 const CATEGORIES_ARTISTE = {
-  scene:       { label:'🎭 Scène',       specialites: ['danseur','comedien','mannequin','performeur'] },
+  scene:       { label:'🎭 Scène',       specialites: ['danseur','comedien','performeur'] },
+  mode:        { label:'👗 Mode',         specialites: ['mannequin','styliste','maquilleur','coiffeur_mode','costumier'] },
   musique:     { label:'🎵 Musique',      specialites: ['beatmaker','dj','musicien','chanteur'] },
   audiovisuel: { label:'🎬 Audiovisuel', specialites: ['photographe','videaste','realisateur'] },
   arts_visuels:{ label:'🎨 Arts Visuels',specialites: ['dessinateur','peintre','graphiste','illustrateur'] },
@@ -11048,6 +11054,7 @@ const SPECIALITE_LABELS = {
   beatmaker:'🎧 Beatmaker', dj:'🎛️ DJ', musicien:'🎸 Musicien·ne', chanteur:'🎤 Chanteur·se',
   photographe:'📷 Photographe', videaste:'🎥 Vidéaste', realisateur:'🎬 Réalisateur·rice',
   dessinateur:'✏️ Dessinateur·rice', peintre:'🖌️ Peintre', graphiste:'🖥️ Graphiste', illustrateur:'🖼️ Illustrateur·rice',
+  styliste:'👗 Styliste', maquilleur:'💄 Maquilleur·se', coiffeur_mode:'💈 Coiffeur·se artistique', costumier:'🧵 Costumier·ère',
 };
 
 function getCategorieFromMetiers(metiers) {
@@ -11166,7 +11173,8 @@ window.updateEditSpecialites = function(categorie) {
   sel.value = '';
   // Masquer toutes les sections
   ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
-   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur'].forEach(t => {
+   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur',
+   'styliste','maquilleur','coiffeur_mode','costumier'].forEach(t => {
     const sec = document.getElementById('edit-section-' + t);
     if (sec) sec.style.display = 'none';
   });
@@ -11176,7 +11184,8 @@ window.applyEditSpecialite = function(val) {
   if (!val) return;
   // Simuler le comportement de toggleEditMetier
   ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
-   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur'].forEach(t => {
+   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur',
+   'styliste','maquilleur','coiffeur_mode','costumier'].forEach(t => {
     const sec = document.getElementById('edit-section-' + t);
     if (sec) sec.style.display = t === val ? 'block' : 'none';
   });
@@ -13838,6 +13847,7 @@ function _renderDrawerLieux() {
                 <option value="musique">🎵 Musique</option>
                 <option value="audiovisuel">🎬 Audiovisuel</option>
                 <option value="arts_visuels">🎨 Arts Visuels</option>
+                <option value="mode">👗 Mode</option>
               </select>
             </div>
             <div id="edit-specialite-wrap" style="display:none;">
