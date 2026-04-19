@@ -5069,22 +5069,14 @@ if (isPWA) {
           <div id="ev-dates-list" style="display:flex;flex-direction:column;gap:10px;"></div>
           <button type="button" onclick="ajouterDateEvent()" style="margin-top:10px;width:100%;padding:10px;border-radius:10px;background:transparent;border:1.5px dashed var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.4)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">＋ Ajouter une date</button>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div class="form-group" style="margin:0">
-            <label class="form-label">Ville</label>
-            <input id="ev-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon..." autocomplete="off" style="background:var(--bg2)">
-          </div>
-          <div class="form-group" style="margin:0">
-            <label class="form-label">Prix</label>
-            <div style="display:flex;gap:8px;">
-              <input id="ev-prix" class="form-input" type="number" placeholder="0 = Gratuit" min="0" style="background:var(--bg2);flex:1;">
-              <select id="ev-devise" class="form-input" style="background:var(--bg2);width:90px;flex-shrink:0;cursor:pointer;">
-                <option value="€">€ EUR</option>
-                <option value="CHF">CHF</option>
-                <option value="£">£ GBP</option>
-              </select>
-            </div>
-          </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Ville</label>
+          <input id="ev-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon..." autocomplete="off" style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Tarification</label>
+          <div id="ev-tarifs-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+          <button type="button" onclick="ajouterTarifEvent()" style="width:100%;padding:10px;border-radius:10px;background:transparent;border:1.5px dashed var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.4)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">＋ Ajouter un tarif</button>
         </div>
         <div class="form-group" style="margin:0">
           <label class="form-label">Adresse complète</label>
@@ -6442,8 +6434,8 @@ async function afficherEventsDashboard() {
     list.innerHTML = events.map(ev => {
       const cfg  = TYPE_CFG[ev.type] || TYPE_CFG.soiree;
       const date = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'numeric', month:'short' }) : '';
-      const _devise = ev.devise || '€';
-      const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + _devise;
+      const _pm = _getPrixMin(ev);
+      const prix = _pm.label;
       return `<div onclick="showPage('agenda');setTimeout(()=>ouvrirEvent('${ev.id}'),300)"
         style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:border-color 0.2s;"
         onmouseover="this.style.borderColor='rgba(0,245,155,0.2)'" onmouseout="this.style.borderColor='var(--border)'">
@@ -7129,10 +7121,10 @@ function _formatDate(val) {
 
 function _renderEventCard(ev, passe) {
   const cfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.soiree;
-  const _devise = ev.devise || '€';
-  const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + _devise;
-  const couleurPrix = ev.prix === 0 ? 'var(--green)' : cfg.couleur;
-  const btnClass = ev.prix === 0 ? 'ec-btn-green' : ev.type === 'battle' ? 'ec-btn-yellow' : 'ec-btn-green';
+  const _prixMin = _getPrixMin(ev);
+  const prix = _prixMin.label;
+  const couleurPrix = _prixMin.couleur || cfg.couleur;
+  const btnClass = 'ec-btn-green';
   const estFavori = mesFavoris.has(ev.id);
   const passeClass = passe ? ' passe' : '';
 
@@ -7255,8 +7247,7 @@ function ouvrirEvent(id) {
   eventCourant = ev;
 
   const cfg = TYPE_CONFIG[ev.type] || TYPE_CONFIG.soiree;
-  const _devise = ev.devise || '€';
-  const prix = ev.prix === 0 ? 'Gratuit' : (ev.prix || '?') + _devise;
+  const _prixMin = _getPrixMin(ev);
   const passe = _estPasse(ev);
 
   // Bannière photo
@@ -7356,10 +7347,26 @@ function ouvrirEvent(id) {
     </div>
 
     <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0 8px;">
-      <div>
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:${cfg.couleur};">${prix}</div>
+      ${(() => {
+        if (ev.tarifs && ev.tarifs.length > 0) {
+          const tarifsHtml = ev.tarifs.map(t => {
+            const estGratuit = !t.prix || t.prix === 0;
+            return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+              <span style="font-size:13px;color:var(--muted2);">${t.label || 'Entrée'}</span>
+              <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:${estGratuit ? 'var(--green)' : cfg.couleur};">${estGratuit ? 'Gratuit' : t.prix + (t.devise || '€')}</span>
+            </div>`;
+          }).join('');
+          return `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:4px;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Tarifs</div>
+            ${tarifsHtml}
+          </div>`;
+        } else {
+          const estGratuit = !ev.prix || ev.prix === 0;
+          return `<div style="display:inline-block;font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:${estGratuit ? 'var(--green)' : cfg.couleur};">${estGratuit ? 'Gratuit' : ev.prix + (ev.devise||'€')}</div>`;
+        }
+      })()}
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0 8px;">
         <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="ev-detail-inscrits">${inscrits} personne${inscrits > 1 ? 's' : ''} inscrite${inscrits > 1 ? 's' : ''}</div>
-      </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
       ${btnHtml}
       ${inscriptionBtnHtml}
@@ -8641,7 +8648,8 @@ async function chargerMesEvents() {
       const ev = { id: d.id, ...d.data() };
       events.push(ev);
       totalInscrits += ev.inscrits || 0;
-      totalRevenus  += (ev.inscrits || 0) * (ev.prix || 0);
+      const prixRef = ev.tarifs && ev.tarifs.length > 0 ? (ev.tarifs[0].prix || 0) : (ev.prix || 0);
+      totalRevenus  += (ev.inscrits || 0) * prixRef;
     });
 
     document.getElementById('orga-stat-events').textContent   = events.length;
@@ -8867,6 +8875,81 @@ function _loadDatesList(ev) {
   }
   _renderDatesList();
 }
+// ── Tarifs événement ──────────────────────────────────────────────────────
+window._evTarifs = []; // [{label:'', prix:0, devise:'€'}]
+
+window.ajouterTarifEvent = function(labelVal, prixVal, deviseVal) {
+  window._evTarifs.push({ label: labelVal || '', prix: prixVal !== undefined ? prixVal : '', devise: deviseVal || '€' });
+  _renderTarifsList();
+}
+
+window.supprimerTarifEvent = function(idx) {
+  window._evTarifs.splice(idx, 1);
+  _renderTarifsList();
+}
+
+function _renderTarifsList() {
+  const container = document.getElementById('ev-tarifs-list');
+  if (!container) return;
+  if (window._evTarifs.length === 0) {
+    container.innerHTML = `<div style="padding:10px 0;font-size:13px;color:var(--muted);text-align:center;">Aucun tarif ajouté — gratuit par défaut</div>`;
+    return;
+  }
+  container.innerHTML = window._evTarifs.map((t, i) => `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input class="form-input" type="text" placeholder="Ex: Pass 2 jours, Early Bird, Entrée simple..." value="${t.label}" style="background:var(--bg2);flex:1;font-size:13px;"
+          oninput="window._evTarifs[${i}].label=this.value">
+        <button type="button" onclick="supprimerTarifEvent(${i})"
+          style="width:32px;height:32px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:#ff4d6d;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;">✕</button>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <input class="form-input" type="number" placeholder="0 = Gratuit" min="0" value="${t.prix}" style="background:var(--bg2);flex:1;"
+          oninput="window._evTarifs[${i}].prix=parseFloat(this.value)||0">
+        <select class="form-input" style="background:var(--bg2);width:90px;flex-shrink:0;cursor:pointer;"
+          onchange="window._evTarifs[${i}].devise=this.value">
+          <option value="€" ${t.devise==='€'?'selected':''}>€ EUR</option>
+          <option value="CHF" ${t.devise==='CHF'?'selected':''}>CHF</option>
+          <option value="£" ${t.devise==='£'?'selected':''}>£ GBP</option>
+        </select>
+      </div>
+    </div>
+  `).join('');
+}
+
+function _resetTarifsList() {
+  window._evTarifs = [];
+  _renderTarifsList();
+}
+
+function _loadTarifsList(ev) {
+  if (ev.tarifs && ev.tarifs.length > 0) {
+    window._evTarifs = ev.tarifs.map(t => ({
+      label: t.label || '',
+      prix: t.prix !== undefined ? t.prix : 0,
+      devise: t.devise || '€'
+    }));
+  } else if (ev.prix !== undefined && ev.prix !== null) {
+    // Rétrocompatibilité : ancien champ prix unique
+    window._evTarifs = [{ label: '', prix: ev.prix || 0, devise: ev.devise || '€' }];
+  } else {
+    window._evTarifs = [];
+  }
+  _renderTarifsList();
+}
+
+// Helper : retourne le prix min pour l'affichage sur la card
+function _getPrixMin(ev) {
+  if (ev.tarifs && ev.tarifs.length > 0) {
+    const gratuit = ev.tarifs.some(t => !t.prix || t.prix === 0);
+    if (gratuit) return { label: 'Gratuit', couleur: 'var(--green)' };
+    const min = ev.tarifs.reduce((a, b) => (a.prix <= b.prix ? a : b));
+    return { label: 'dès ' + min.prix + (min.devise || '€'), couleur: null };
+  }
+  if (ev.prix === 0) return { label: 'Gratuit', couleur: 'var(--green)' };
+  if (ev.prix) return { label: ev.prix + (ev.devise || '€'), couleur: null };
+  return { label: 'Gratuit', couleur: 'var(--green)' };
+}
 // ──────────────────────────────────────────────────────────────────────────
 
 window.ouvrirFormEvent = function() {
@@ -8877,9 +8960,9 @@ window.ouvrirFormEvent = function() {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  document.getElementById('ev-prix').value = '0';
-  document.getElementById('ev-devise').value = '€';
+  _resetTarifsList();
   _resetDatesList();
+  ajouterDateEvent();
   ajouterDateEvent();
   document.getElementById('ev-photo').value = '';
   document.getElementById('ev-photo-preview').src = '';
@@ -9271,8 +9354,7 @@ window.modifierEvent = async function(id) {
     document.getElementById('ev-type').value = ev.type || 'soiree';
     _loadDatesList(ev);
     document.getElementById('ev-ville').value  = ev.ville   || 'Paris';
-    document.getElementById('ev-prix').value   = ev.prix    || 0;
-    document.getElementById('ev-devise').value = ev.devise  || '€';
+    _loadTarifsList(ev);
     document.getElementById('ev-adresse').value   = ev.adresse    || '';
     document.getElementById('ev-styles').value = ev.styles  || '';
     document.getElementById('ev-niveau').value = ev.niveau  || 'Tous niveaux';
@@ -9344,8 +9426,7 @@ window.sauvegarderEvent = async function() {
     discipline:    document.getElementById('ev-discipline').value,
     dates:         (window._evDates || []).filter(d => d.date).map(d => ({date: d.date, heure: d.heure || ''})),
     ville:         document.getElementById('ev-ville').value,
-    prix:          parseFloat(document.getElementById('ev-prix').value) || 0,
-    devise:        document.getElementById('ev-devise').value || '€',
+    tarifs:        (window._evTarifs || []).map(t => ({ label: t.label || '', prix: parseFloat(t.prix) || 0, devise: t.devise || '€' })),
     adresse:       document.getElementById('ev-adresse').value,
     styles:        document.getElementById('ev-styles').value,
     vibe:          getVibeSelectionnes(),
@@ -9406,8 +9487,7 @@ window.sauvegarderEvent = async function() {
       ['ev-titre','ev-adresse','ev-styles','ev-desc','ev-lien-resa','ev-lien-inscription'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
       });
-      document.getElementById('ev-prix').value = '0';
-      document.getElementById('ev-devise').value = '€';
+      _resetTarifsList();
       _resetDatesList();
       ajouterDateEvent();
       document.getElementById('ev-photo').value = '';
