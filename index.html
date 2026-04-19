@@ -6035,7 +6035,7 @@ window.updateSignupSpecialites = function(categorie) {
   wrap.style.display = 'block';
   // Reset sections
   ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
-   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode',
+   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode','designer_mode',
    'styliste','maquilleur','coiffeur_mode','costumier'].forEach(t => {
     const sec = document.getElementById('signup-section-' + t);
     if (sec) sec.style.display = 'none';
@@ -6052,7 +6052,7 @@ function toggleSignupType(btn, type) {
   _signupTypes.add(type);
   // Afficher la section correspondante
   ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
-   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode',
+   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode','designer_mode',
    'styliste','maquilleur','coiffeur_mode','costumier'].forEach(t => {
     const section = document.getElementById('signup-section-' + t);
     if (section) section.style.display = _signupTypes.has(t) ? 'block' : 'none';
@@ -10589,7 +10589,7 @@ function afficherListeDanseurs(danseurs) {
     return;
   }
 
-  const METIER_ICONS = { danseur:'💃', photographe:'📷', videaste:'🎥', beatmaker:'🎧', realisateur:'🎬', dj:'🎛️', musicien:'🎸', chanteur:'🎤', comedien:'🎭', performeur:'✨', mannequin:'🪞', styliste:'👗', maquilleur:'💄', coiffeur_mode:'💈', costumier:'🧵', dessinateur:'✏️', peintre:'🖌️', graphiste:'🖥️', illustrateur:'🖼️', designer:'👔', designer_mode:'🎨' };
+  const METIER_ICONS = { danseur:'💃', photographe:'📷', videaste:'🎥', beatmaker:'🎧', realisateur:'🎬', dj:'🎛️', musicien:'🎸', chanteur:'🎤', comedien:'🎭', performeur:'✨', mannequin:'🪞', styliste:'👗', maquilleur:'💄', coiffeur_mode:'💈', costumier:'🧵', dessinateur:'✏️', peintre:'🖌️', graphiste:'🖥️', illustrateur:'🖼️', designer:'👔', designer_mode:'👔' };
   list.innerHTML = danseurs.map(d => {
     const nom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
     const metiers = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
@@ -10773,14 +10773,27 @@ window.ouvrirProfilArtiste = async function(uid) {
 
     // Badge(s) métier
     const METIER_LABELS = {
-      danseur:     '💃 Danseur·se',
-      photographe: '📷 Photographe',
-      videaste:    '🎥 Vidéaste',
-      beatmaker:   '🎧 Beatmaker',
-      realisateur: '🎬 Réalisateur·rice',
-      dj:          '🎛️ DJ',
-      musicien:    '🎸 Musicien·ne',
-      chanteur:    '🎤 Chanteur·se / Rappeur·se'
+      danseur:      '💃 Danseur·se',
+      photographe:  '📷 Photographe',
+      videaste:     '🎥 Vidéaste',
+      beatmaker:    '🎧 Beatmaker',
+      realisateur:  '🎬 Réalisateur·rice',
+      dj:           '🎛️ DJ',
+      musicien:     '🎸 Musicien·ne',
+      chanteur:     '🎤 Chanteur·se / Rappeur·se',
+      comedien:     '🎭 Comédien·ne',
+      performeur:   '✨ Performeur·se',
+      mannequin:    '🪞 Mannequin',
+      styliste:     '👗 Styliste',
+      maquilleur:   '💄 Maquilleur·se',
+      coiffeur_mode:'💈 Coiffeur·se artistique',
+      costumier:    '🧵 Costumier·ère',
+      designer_mode:'👔 Designer Mode',
+      dessinateur:  '✏️ Dessinateur·rice',
+      peintre:      '🖌️ Peintre',
+      graphiste:    '🖥️ Graphiste',
+      illustrateur: '🖼️ Illustrateur·rice',
+      designer:     '👔 Designer',
     };
 
     let metierSection = document.getElementById('ap-metier');
@@ -11056,7 +11069,7 @@ const SPECIALITE_LABELS = {
   photographe:'📷 Photographe', videaste:'🎥 Vidéaste', realisateur:'🎬 Réalisateur·rice',
   dessinateur:'✏️ Dessinateur·rice', peintre:'🖌️ Peintre', graphiste:'🖥️ Graphiste', illustrateur:'🖼️ Illustrateur·rice',
   styliste:'👗 Styliste', maquilleur:'💄 Maquilleur·se', coiffeur_mode:'💈 Coiffeur·se artistique', costumier:'🧵 Costumier·ère',
-  designer:'👔 Designer', designer_mode:'🎨 Designer Mode',
+  designer:'👔 Designer', designer_mode:'👔 Designer Mode',
 };
 
 function getCategorieFromMetiers(metiers) {
@@ -11167,7 +11180,7 @@ window.updateEditSpecialites = function() {}; // conservé pour compatibilité
 window.applyEditSpecialite   = function() {}; // conservé pour compatibilité
 
 const ALL_EDIT_METIERS = ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
-  'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode',
+  'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode','designer_mode',
   'styliste','maquilleur','coiffeur_mode','costumier'];
 
 window.toggleEditMetier = function(metier, btn) {
@@ -12277,14 +12290,27 @@ async function chargerProfil(uid) {
     const phMetiersBadges = document.getElementById('ph-metiers-badges');
     if (phMetiersBadges) {
       const METIER_BADGES = {
-        danseur:     '💃 Danseur·se',
-        photographe: '📷 Photographe',
-        videaste:    '🎥 Vidéaste',
-        beatmaker:   '🎧 Beatmaker',
-        realisateur: '🎬 Réalisateur·rice',
-        dj:          '🎛️ DJ',
-        musicien:    '🎸 Musicien·ne',
-        chanteur:    '🎤 Chanteur·se'
+        danseur:      '💃 Danseur·se',
+        photographe:  '📷 Photographe',
+        videaste:     '🎥 Vidéaste',
+        beatmaker:    '🎧 Beatmaker',
+        realisateur:  '🎬 Réalisateur·rice',
+        dj:           '🎛️ DJ',
+        musicien:     '🎸 Musicien·ne',
+        chanteur:     '🎤 Chanteur·se',
+        comedien:     '🎭 Comédien·ne',
+        performeur:   '✨ Performeur·se',
+        mannequin:    '🪞 Mannequin',
+        styliste:     '👗 Styliste',
+        maquilleur:   '💄 Maquilleur·se',
+        coiffeur_mode:'💈 Coiffeur·se artistique',
+        costumier:    '🧵 Costumier·ère',
+        designer_mode:'👔 Designer Mode',
+        dessinateur:  '✏️ Dessinateur·rice',
+        peintre:      '🖌️ Peintre',
+        graphiste:    '🖥️ Graphiste',
+        illustrateur: '🖼️ Illustrateur·rice',
+        designer:     '👔 Designer',
       };
       if (metiers.length) {
         phMetiersBadges.innerHTML = metiers.map(m => METIER_BADGES[m]
@@ -12321,7 +12347,7 @@ async function chargerProfil(uid) {
         graphiste:    { emoji:'🖥️', label:'Graphiste' },
         illustrateur: { emoji:'🖼️', label:'Illustrateur·rice' },
         designer:     { emoji:'👔', label:'Designer' },
-        designer_mode:{ emoji:'🎨', label:'Designer Mode' },
+        designer_mode:{ emoji:'👔', label:'Designer Mode' },
       };
       let discHtml = '';
       metiers.forEach(m => {
@@ -13880,7 +13906,7 @@ function _renderDrawerLieux() {
                 <button type="button" class="edit-metier-chip" data-metier="peintre" onclick="toggleEditMetier('peintre',this)">🖌️ Peintre</button>
                 <button type="button" class="edit-metier-chip" data-metier="graphiste" onclick="toggleEditMetier('graphiste',this)">🖥️ Graphiste</button>
                 <button type="button" class="edit-metier-chip" data-metier="illustrateur" onclick="toggleEditMetier('illustrateur',this)">🖼️ Illustrateur·rice</button>
-                <button type="button" class="edit-metier-chip" data-metier="designer" onclick="toggleEditMetier('designer_mode',this)">🎨 Designer Mode</button>
+                <button type="button" class="edit-metier-chip" data-metier="designer" onclick="toggleEditMetier('designer',this)">👔 Designer</button>
               </div>
             </div>
 
@@ -13892,7 +13918,7 @@ function _renderDrawerLieux() {
                 <button type="button" class="edit-metier-chip" data-metier="maquilleur" onclick="toggleEditMetier('maquilleur',this)">💄 Maquilleur·se</button>
                 <button type="button" class="edit-metier-chip" data-metier="coiffeur_mode" onclick="toggleEditMetier('coiffeur_mode',this)">💈 Coiffeur·se artistique</button>
                 <button type="button" class="edit-metier-chip" data-metier="costumier" onclick="toggleEditMetier('costumier',this)">🧵 Costumier·ère</button>
-                <button type="button" class="edit-metier-chip" data-metier="designer" onclick="toggleEditMetier('designer',this)">👔 Designer</button>
+                <button type="button" class="edit-metier-chip" data-metier="designer_mode" onclick="toggleEditMetier('designer_mode',this)">👔 Designer Mode</button>
               </div>
             </div>
 
