@@ -5223,6 +5223,10 @@ if (isPWA) {
           <label class="form-label">Lien de réservation</label>
           <input id="ev-lien-resa" class="form-input" type="url" placeholder="https://shotgun.live/..." style="background:var(--bg2);">
         </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Lien d'inscription <span style="font-size:11px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <input id="ev-lien-inscription" class="form-input" type="url" placeholder="https://forms.google.com/..." style="background:var(--bg2);">
+        </div>
 
         <div id="orga-form-err" style="display:none;background:rgba(255,77,109,0.1);border:1px solid var(--red);border-radius:10px;padding:12px;font-size:13px;color:var(--red);"></div>
 
@@ -5353,6 +5357,10 @@ if (isPWA) {
         <div class="form-group" style="margin:0">
           <label class="form-label">Site web / lien de réservation</label>
           <input id="ecole-lien" class="form-input" type="url" placeholder="https://..." style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Lien d'inscription <span style="font-size:11px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <input id="ecole-lien-inscription" class="form-input" type="url" placeholder="https://forms.google.com/..." style="background:var(--bg2)">
         </div>
         <div class="form-group" style="margin:0">
           <label class="form-label">Description</label>
@@ -7369,6 +7377,9 @@ function ouvrirEvent(id) {
   } else {
     btnHtml = `<button onclick="sInscrire()" style="padding:13px 24px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Enregistrer</button>`;
   }
+  const inscriptionBtnHtml = ev.lienInscription
+    ? `<a href="${ev.lienInscription}" target="_blank" rel="noopener" style="padding:13px 24px;border-radius:14px;background:transparent;border:1.5px solid var(--green);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;text-decoration:none;display:inline-block;">S'inscrire ↗</a>`
+    : '';
 
   // Bloc participants
   const inscrits = ev.inscrits || 0;
@@ -7404,7 +7415,10 @@ function ouvrirEvent(id) {
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:${cfg.couleur};">${prix}</div>
         <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="ev-detail-inscrits">${inscrits} personne${inscrits > 1 ? 's' : ''} inscrite${inscrits > 1 ? 's' : ''}</div>
       </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
       ${btnHtml}
+      ${inscriptionBtnHtml}
+      </div>
     </div>
   `;
 
@@ -8227,6 +8241,7 @@ window.ouvrirDetailSalle = function(type, index) {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
       Voir le site ↗
     </a>` : '';
+    const inscriptionHtml = item.lienInscription ? `<a href="${item.lienInscription}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;border-radius:14px;background:transparent;border:1.5px solid var(--green);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:14px;text-decoration:none;letter-spacing:0.2px;">S'inscrire ↗</a>` : '';
 
     html = `
       <div class="salle-detail-card">
@@ -8255,6 +8270,8 @@ window.ouvrirDetailSalle = function(type, index) {
         ${contactHtml}
         ${siteHtml}
       </div>` : ''}
+
+      ${inscriptionHtml ? `<div>${inscriptionHtml}</div>` : ''}
 
       ${(() => { const q = item.geopoint?.latitude ? `${item.geopoint.latitude},${item.geopoint.longitude}` : [item.adresse, item.ville].filter(Boolean).join(' '); return q ? `<a href="https://maps.google.com/?q=${encodeURIComponent(q)}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;border-radius:14px;background:rgba(0,245,155,0.10);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:14px;text-decoration:none;letter-spacing:0.2px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Y aller</a>` : ''; })()}
     `;
@@ -8911,7 +8928,7 @@ window.ouvrirFormEvent = function() {
   eventEnEdition = null;
   document.getElementById('orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
   document.getElementById('ev-submit-btn').textContent = 'Publier l\'événement →';
-  ['ev-titre','ev-adresse','ev-styles','ev-desc','ev-lien-resa'].forEach(id => {
+  ['ev-titre','ev-adresse','ev-styles','ev-desc','ev-lien-resa','ev-lien-inscription'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -9144,7 +9161,7 @@ window.ouvrirFormEcole = function(ecoleId) {
   document.getElementById('orga-dashboard').style.display = 'none';
 
   // Reset
-  ['ecole-nom','ecole-ville','ecole-cp','ecole-adresse','ecole-tel','ecole-email','ecole-lien','ecole-desc','ecole-styles'].forEach(id => {
+  ['ecole-nom','ecole-ville','ecole-cp','ecole-adresse','ecole-tel','ecole-email','ecole-lien','ecole-lien-inscription','ecole-desc','ecole-styles'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   document.getElementById('ecole-edit-id').value = '';
@@ -9171,6 +9188,7 @@ window.ouvrirFormEcole = function(ecoleId) {
         document.getElementById('ecole-tel').value    = e.tel        || '';
         document.getElementById('ecole-email').value  = e.email      || '';
         document.getElementById('ecole-lien').value   = e.lien       || '';
+        document.getElementById('ecole-lien-inscription').value = e.lienInscription || '';
         document.getElementById('ecole-desc').value   = e.description|| '';
         document.getElementById('ecole-styles').value = e.styles     || '';
         (e.niveaux || []).forEach(n => {
@@ -9255,6 +9273,7 @@ window.sauvegarderEcole = async function() {
     tel:         document.getElementById('ecole-tel').value.trim(),
     email:       document.getElementById('ecole-email').value.trim(),
     lien:        document.getElementById('ecole-lien').value.trim() || null,
+    lienInscription: document.getElementById('ecole-lien-inscription').value.trim() || null,
     description: document.getElementById('ecole-desc').value.trim(),
     styles:      document.getElementById('ecole-styles').value.trim(),
     niveaux, horaires, abonnements,
@@ -9313,6 +9332,7 @@ window.modifierEvent = async function(id) {
     document.getElementById('ev-styles').value = ev.styles  || '';
     document.getElementById('ev-niveau').value = ev.niveau  || 'Tous niveaux';
     document.getElementById('ev-lien-resa').value = ev.lienResa || '';
+    document.getElementById('ev-lien-inscription').value = ev.lienInscription || '';
     setVibeChips(ev.vibe || '');
     document.getElementById('ev-desc').value   = ev.description || '';
 
@@ -9387,6 +9407,7 @@ window.sauvegarderEvent = async function() {
     niveau:        document.getElementById('ev-niveau').value,
     description:   document.getElementById('ev-desc').value,
     lienResa:      document.getElementById('ev-lien-resa').value.trim() || null,
+    lienInscription: document.getElementById('ev-lien-inscription').value.trim() || null,
     photoUrl:      photoUrl || null,
     photoCropY:    photoUrl ? (window._evCropY !== undefined ? window._evCropY : 50) : null,
     organisateurUid: window._currentUid,
@@ -9437,7 +9458,7 @@ window.sauvegarderEvent = async function() {
       setTimeout(() => { errDiv.style.display = 'none'; errDiv.style.color = ''; }, 3000);
       btn.textContent = 'Publier l\'événement →';
       document.getElementById('orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
-      ['ev-titre','ev-adresse','ev-styles','ev-desc','ev-lien-resa'].forEach(id => {
+      ['ev-titre','ev-adresse','ev-styles','ev-desc','ev-lien-resa','ev-lien-inscription'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
       });
       document.getElementById('ev-prix').value = '0';
