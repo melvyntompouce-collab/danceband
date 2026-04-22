@@ -9119,25 +9119,6 @@ window.ouvrirFormEvent = function() {
   // navigation gérée par la surcharge
 }
 
-window.fermerFormEvent = function() {
-  document.getElementById('orga-form').style.display = 'none';
-  const retour = window._formRetour || 'orga';
-  window._formRetour = null;
-  window._adminEditMode = false;
-  const btn = document.getElementById('ev-submit-btn');
-  if (btn) { btn.textContent = "Publier l'événement →"; btn.disabled = false; }
-  eventEnEdition = null;
-  // Réafficher le bon dashboard sans changer de page
-  if (retour === 'admin') {
-    document.getElementById('admin-dashboard').style.display = 'block';
-    document.getElementById('orga-dashboard').style.display = 'none';
-  } else {
-    document.getElementById('orga-dashboard').style.display = 'block';
-    document.getElementById('admin-dashboard').style.display = 'none';
-  }
-  chargerDashboardOrga();
-}
-
 // ── Formulaire salle (admin) ──
 
 window.ouvrirFormSalle = function(salleId) {
@@ -9185,19 +9166,8 @@ window.ouvrirFormSalle = function(salleId) {
 };
 
 window.fermerFormSalle = function() {
-  document.getElementById('admin-form-salle').style.display = 'none';
   const btn = document.getElementById('salle-submit-btn');
   if (btn) { btn.textContent = 'Publier la salle →'; btn.disabled = false; }
-  window._formRetourSalle = null;
-  document.getElementById('orga-form').style.display = 'none';
-  document.getElementById('admin-form-salle') && (document.getElementById('admin-form-salle').style.display = 'none');
-  if (window._monRole === 'admin') {
-    document.getElementById('admin-dashboard').style.display = 'block';
-    document.getElementById('orga-dashboard').style.display = 'none';
-  } else {
-    document.getElementById('orga-dashboard').style.display = 'block';
-    document.getElementById('admin-dashboard').style.display = 'none';
-  }
   chargerDashboardOrga();
 };
 
@@ -9380,19 +9350,8 @@ window.ouvrirFormEcole = function(ecoleId) {
 };
 
 window.fermerFormEcole = function() {
-  document.getElementById('admin-form-ecole').style.display = 'none';
   const btn = document.getElementById('ecole-submit-btn');
   if (btn) { btn.textContent = "Publier l'école →"; btn.disabled = false; }
-  window._formRetourEcole = null;
-  document.getElementById('orga-form').style.display = 'none';
-  document.getElementById('admin-form-ecole') && (document.getElementById('admin-form-ecole').style.display = 'none');
-  if (window._monRole === 'admin') {
-    document.getElementById('admin-dashboard').style.display = 'block';
-    document.getElementById('orga-dashboard').style.display = 'none';
-  } else {
-    document.getElementById('orga-dashboard').style.display = 'block';
-    document.getElementById('admin-dashboard').style.display = 'none';
-  }
   chargerDashboardOrga();
 };
 
@@ -9511,7 +9470,6 @@ window.modifierEvent = async function(id) {
 
     document.getElementById('orga-form-title').textContent = 'MODIFIER L\'ÉVÉNEMENT';
     document.getElementById('ev-submit-btn').textContent = 'Enregistrer les modifications →';
-    document.getElementById('orga-form').style.display = 'block';
     document.getElementById('orga-dashboard').style.display = 'none';
   } catch(e) { console.error(e); }
 }
@@ -9600,8 +9558,7 @@ window.sauvegarderEvent = async function() {
 
     if (estEdition) {
       btn.textContent = 'Publier l\'événement →';
-      document.getElementById('orga-form').style.display = 'none';
-      if (window._monRole === 'admin') {
+          if (window._monRole === 'admin') {
         showPage('admin');
       } else {
         document.getElementById('orga-dashboard').style.display = 'block';
@@ -14673,26 +14630,6 @@ window.confirmerPaiementHako = async function() {
 };
 
 // Navigation vers les pages formulaires
-window._origOuvrirFormEvent = window.ouvrirFormEvent;
-window.ouvrirFormEvent = function() {
-  window._formRetour = typeof currentPage !== 'undefined' ? currentPage : 'orga';
-  window._origOuvrirFormEvent();
-  showPage('form-event');
-};
-
-window._origOuvrirFormSalle = window.ouvrirFormSalle;
-window.ouvrirFormSalle = function(salleId) {
-  window._formRetourSalle = typeof currentPage !== 'undefined' ? currentPage : 'orga';
-  window._origOuvrirFormSalle(salleId);
-  showPage('form-salle');
-};
-
-window._origOuvrirFormEcole = window.ouvrirFormEcole;
-window.ouvrirFormEcole = function(ecoleId) {
-  window._formRetourEcole = typeof currentPage !== 'undefined' ? currentPage : 'orga';
-  window._origOuvrirFormEcole(ecoleId);
-  showPage('form-ecole');
-};
 
 function _retourDashboard(r) {
   showPage(r);
