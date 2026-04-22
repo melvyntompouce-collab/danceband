@@ -2888,7 +2888,11 @@ if (isPWA) {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       Politique de confidentialité
     </button>
-    <button class="drawer-item" onclick="showPage('cgu');closeDrawer();" id="di-cgu">
+    <button class="drawer-item" onclick="showPage('cgv');closeDrawer();">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        CGV
+      </button>
+      <button class="drawer-item" onclick="showPage('cgu');closeDrawer();" id="di-cgu">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
       Conditions générales d'utilisation
     </button>
@@ -3149,6 +3153,7 @@ if (isPWA) {
       <div class="footer-links">
         <a class="footer-link" href="#" onclick="showPage('privacy')">Confidentialité</a>
         <a class="footer-link" href="#" onclick="showPage('cgu')">CGU</a>
+        <a class="footer-link" href="#" onclick="showPage('cgv')">CGV</a>
         <a class="footer-link" href="#" onclick="showPage('mentions')">Mentions légales</a>
       </div>
     </div>
@@ -3470,7 +3475,7 @@ if (isPWA) {
   <div class="privacy-container">
 
     <div class="privacy-header">
-            <div class="privacy-tag">RGPD · Dernière mise à jour : avril 2026</div>
+      <div class="privacy-tag">RGPD · Dernière mise à jour : avril 2026</div>
       <h1 class="privacy-title">Politique de<br>confidentialité</h1>
       <p class="privacy-intro">
         Chez HAKO, la protection de tes données personnelles est une priorité.
@@ -3489,7 +3494,7 @@ if (isPWA) {
             Le responsable du traitement est <strong>HAKO</strong>, réseau social
             dédié aux artistes. Pour toute question relative à tes
             données personnelles, tu peux nous contacter à l'adresse :
-            <a href="/cdn-cgi/l/email-protection#0f676e64606e686a616c764f68626e6663216c6062" class="privacy-link"><span class="__cf_email__" data-cfemail="4921282226282e2c272a30092e24282025672a2624">[email&#160;protected]</span></a>
+            <a href="mailto:melvyn@hakosphere.fr" class="privacy-link">melvyn@hakosphere.fr</a>
           </p>
         </div>
       </section>
@@ -3514,10 +3519,25 @@ if (isPWA) {
                 <span>Nom d'artiste, disciplines pratiquées, disponibilités, et toute information que tu choisis de partager sur ton profil public ou privé.</span>
               </div>
             </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Données de paiement (organisateurs uniquement)</strong>
+                <span>Si tu actives la billetterie HAKO, tes informations bancaires sont traitées exclusivement par Stripe. HAKO ne stocke jamais tes coordonnées bancaires directement. Seul un identifiant de compte Stripe est conservé dans notre base de données.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Données de transaction (acheteurs)</strong>
+                <span>Lors d'un achat de billet sur HAKO, les données nécessaires au paiement (montant, événement, statut) sont conservées à des fins comptables et de suivi des inscriptions.</span>
+              </div>
+            </li>
           </ul>
           <p class="privacy-note">
             Nous ne collectons pas de données de localisation précise, de numéro de téléphone,
-            ni aucune donnée sensible au sens du RGPD.
+            ni aucune donnée sensible au sens du RGPD. Les données bancaires sont gérées
+            directement par Stripe, certifié PCI-DSS.
           </p>
         </div>
       </section>
@@ -3593,12 +3613,19 @@ if (isPWA) {
               <span class="privacy-bullet"></span>
               <div>
                 <strong>Vercel</strong>
-                <span>Hébergement de l'application web.</span>
+                <span>Hébergement de l'application web et des fonctions serverless.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Stripe</strong>
+                <span>Traitement sécurisé des paiements en ligne via Stripe Connect. Stripe est certifié PCI-DSS niveau 1. Tes données bancaires ne transitent jamais par les serveurs de HAKO. Politique de confidentialité Stripe : stripe.com/fr/privacy.</span>
               </div>
             </li>
           </ul>
           <p class="privacy-note">
-            Ces prestataires agissent en tant que sous-traitants et sont soumis à des obligations contractuelles strictes de confidentialité.
+            Ces prestataires agissent en tant que sous-traitants et sont soumis à des obligations contractuelles strictes de confidentialité. Aucune de tes données n'est vendue à des tiers.
           </p>
         </div>
       </section>
@@ -3665,7 +3692,7 @@ if (isPWA) {
           </div>
           <p>
             Pour exercer ces droits, contacte-nous à
-            <a href="/cdn-cgi/l/email-protection#cda5aca6a2acaaa8a3aeb48daaa0aca4a1e3aea2a0" class="privacy-link"><span class="__cf_email__" data-cfemail="355d545e5a5452505b564c755258545c591b565a58">[email&#160;protected]</span></a>.
+            <a href="mailto:melvyn@hakosphere.fr" class="privacy-link">melvyn@hakosphere.fr</a>.
             Tu as également le droit d'introduire une réclamation auprès de la
             <a href="https://www.cnil.fr" target="_blank" class="privacy-link">CNIL</a>.
           </p>
@@ -3709,6 +3736,29 @@ if (isPWA) {
 
       <section class="privacy-section">
         <div class="privacy-section-number">10</div>
+        <div class="privacy-section-content">
+          <h2>Paiements et billetterie</h2>
+          <p>
+            HAKO propose aux organisateurs d'activer une billetterie directe via Stripe Connect.
+            Dans ce cadre, HAKO agit en tant que plateforme intermédiaire et perçoit une commission
+            de 10 % sur chaque transaction. Le reste est reversé directement à l'organisateur
+            via son compte Stripe.
+          </p>
+          <p>
+            Les données de paiement (numéro de carte, IBAN) ne sont jamais stockées par HAKO.
+            Elles sont traitées exclusivement par Stripe. En cas de litige sur un paiement,
+            contacte-nous à <a href="mailto:melvyn@hakosphere.fr" class="privacy-link">melvyn@hakosphere.fr</a>.
+          </p>
+          <p class="privacy-note">
+            HAKO est responsable des remboursements et des contestations de paiement
+            conformément aux conditions Stripe Connect acceptées lors de l'activation
+            de la billetterie.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">11</div>
         <div class="privacy-section-content">
           <h2>Modifications de cette politique</h2>
           <p>
@@ -3760,7 +3810,7 @@ if (isPWA) {
           </p>
           <p>
             L'éditeur du service est HAKO. Pour tout contact :
-            <a href="/cdn-cgi/l/email-protection#92faf3f9fdf3f5f7fcf1ebd2f5fff3fbfebcf1fdff" class="privacy-link"><span class="__cf_email__" data-cfemail="1870797377797f7d767b61587f75797174367b7775">[email&#160;protected]</span></a>
+            <a href="mailto:melvyn@hakosphere.fr" class="privacy-link">melvyn@hakosphere.fr</a>
           </p>
         </div>
       </section>
@@ -3919,7 +3969,7 @@ if (isPWA) {
               <span class="privacy-bullet"></span>
               <div>
                 <strong>Par l'utilisateur</strong>
-                <span>Tu peux supprimer ton compte à tout moment en nous contactant à <a href="/cdn-cgi/l/email-protection#6008010b0f0107050e031920070d01090c4e030f0d" class="privacy-link"><span class="__cf_email__" data-cfemail="6a020b01050b0d0f0409132a0d070b030644090507">[email&#160;protected]</span></a>. Tes données seront effacées dans un délai de 30 jours.</span>
+                <span>Tu peux supprimer ton compte à tout moment en nous contactant à <a href="mailto:melvyn@hakosphere.fr" class="privacy-link">melvyn@hakosphere.fr</a>. Tes données seront effacées dans un délai de 30 jours.</span>
               </div>
             </li>
             <li>
@@ -3953,6 +4003,48 @@ if (isPWA) {
       <section class="privacy-section">
         <div class="privacy-section-number">10</div>
         <div class="privacy-section-content">
+          <h2>Billetterie et paiements</h2>
+          <p>
+            HAKO permet aux organisateurs titulaires d'un accès organisateur de proposer
+            des événements payants via la fonctionnalité de billetterie intégrée, propulsée
+            par Stripe Connect.
+          </p>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Commission HAKO</strong>
+                <span>HAKO prélève une commission de 10 % sur chaque vente de billet réalisée via la plateforme. Le montant restant est reversé à l'organisateur via son compte Stripe.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Responsabilité de l'organisateur</strong>
+                <span>L'organisateur est seul responsable de l'événement proposé, de son annulation éventuelle et des remboursements à effectuer envers les participants. HAKO ne saurait être tenu responsable en cas d'annulation ou de litige entre organisateur et participants.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Contestations et remboursements</strong>
+                <span>En cas de contestation de paiement (chargeback), HAKO est responsable vis-à-vis de Stripe conformément aux conditions Stripe Connect. L'organisateur s'engage à maintenir un solde suffisant et à traiter les demandes de remboursement légitimes.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Paiements sécurisés</strong>
+                <span>Tous les paiements sont traités par Stripe, certifié PCI-DSS. HAKO ne stocke aucune donnée bancaire.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">11</div>
+        <div class="privacy-section-content">
           <h2>Droit applicable</h2>
           <p>
             Les présentes CGU sont soumises au droit français. En cas de litige,
@@ -3960,7 +4052,243 @@ if (isPWA) {
           </p>
           <p>
             Pour toute réclamation ou question, contacte-nous à
-            <a href="/cdn-cgi/l/email-protection#3159505a5e5056545f524871565c50585d1f525e5c" class="privacy-link"><span class="__cf_email__" data-cfemail="f991989296989e9c979a80b99e94989095d79a9694">[email&#160;protected]</span></a>.
+            <a href="mailto:melvyn@hakosphere.fr" class="privacy-link">melvyn@hakosphere.fr</a>.
+          </p>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="privacy-footer-nav">
+      <button class="privacy-back-btn" onclick="goBack()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Retour
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ PAGE: CGV ═══ -->
+<div class="page" id="page-cgv">
+  <div class="privacy-container">
+
+    <div class="privacy-header">
+      <div class="privacy-tag">Légal · Dernière mise à jour : avril 2026</div>
+      <h1 class="privacy-title">Conditions générales<br>de vente</h1>
+      <p class="privacy-intro">
+        Les présentes CGV régissent l'achat de billets d'événements via la plateforme HAKO.
+        Elles s'appliquent à toute transaction réalisée entre un acheteur et un organisateur
+        via la billetterie intégrée HAKO.
+      </p>
+    </div>
+
+    <div class="privacy-body">
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">01</div>
+        <div class="privacy-section-content">
+          <h2>Parties concernées</h2>
+          <p>Les présentes CGV impliquent trois parties :</p>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>HAKO</strong>
+                <span>Plateforme intermédiaire, éditée par Melvyn TOMPOUCE. Contact : <a href="mailto:melvyn@hakosphere.fr" class="privacy-link">melvyn@hakosphere.fr</a>. HAKO fournit l'infrastructure technique permettant la mise en relation entre organisateurs et acheteurs.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>L'organisateur</strong>
+                <span>Artiste ou structure titulaire d'un accès organisateur HAKO, proposant un événement payant via la billetterie intégrée et ayant connecté un compte Stripe pour recevoir les paiements.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>L'acheteur</strong>
+                <span>Tout utilisateur inscrit sur HAKO procédant à l'achat d'un billet pour un événement proposé par un organisateur.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">02</div>
+        <div class="privacy-section-content">
+          <h2>Objet et champ d'application</h2>
+          <p>
+            Les présentes CGV s'appliquent exclusivement aux achats de billets réalisés
+            via la fonctionnalité de billetterie intégrée de HAKO. Elles ne s'appliquent
+            pas aux événements gratuits ni aux inscriptions via des liens externes.
+          </p>
+          <p>
+            Tout achat implique l'acceptation pleine et entière des présentes CGV,
+            ainsi que des CGU et de la politique de confidentialité de HAKO.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">03</div>
+        <div class="privacy-section-content">
+          <h2>Description du service et tarifs</h2>
+          <p>
+            HAKO permet aux organisateurs de vendre des billets pour leurs événements
+            directement via la plateforme. Le prix de chaque billet est fixé librement
+            par l'organisateur et affiché clairement sur la page de l'événement avant
+            tout achat.
+          </p>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Prix affiché</strong>
+                <span>Le prix indiqué sur la page de l'événement est le prix total TTC payé par l'acheteur. Il inclut la commission HAKO de 10 %.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Commission HAKO</strong>
+                <span>HAKO prélève 10 % du montant de chaque transaction en tant que frais de service de plateforme. Ce montant est déduit automatiquement avant reversement à l'organisateur.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Devise</strong>
+                <span>Tous les paiements sont effectués en euros (EUR).</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">04</div>
+        <div class="privacy-section-content">
+          <h2>Processus de paiement</h2>
+          <p>
+            Les paiements sont traités de manière sécurisée par <strong>Stripe</strong>,
+            certifié PCI-DSS niveau 1. HAKO ne stocke à aucun moment tes coordonnées
+            bancaires sur ses serveurs.
+          </p>
+          <p>
+            La commande est confirmée dès validation du paiement par Stripe.
+            Tu recevras une notification de confirmation dans l'application.
+          </p>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Moyens de paiement acceptés</strong>
+                <span>Carte bancaire (Visa, Mastercard, American Express) et tout moyen accepté par Stripe selon ta localisation.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Sécurité</strong>
+                <span>Toutes les transactions sont chiffrées via le protocole TLS. Stripe gère l'authentification forte (3D Secure) conformément à la directive DSP2.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">05</div>
+        <div class="privacy-section-content">
+          <h2>Annulation et remboursement</h2>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Annulation par l'acheteur</strong>
+                <span>Les billets achetés ne sont pas remboursables sauf annulation de l'événement par l'organisateur. Aucun remboursement ne sera effectué pour une absence ou un empêchement de l'acheteur.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Annulation par l'organisateur</strong>
+                <span>En cas d'annulation de l'événement par l'organisateur, celui-ci est tenu de rembourser intégralement les acheteurs dans un délai de 14 jours. HAKO facilite ce remboursement mais ne saurait être tenu responsable de la défaillance d'un organisateur.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Droit de rétractation</strong>
+                <span>Conformément à l'article L221-28 du Code de la consommation, le droit de rétractation de 14 jours ne s'applique pas aux prestations de loisirs devant être fournis à une date déterminée (événements). L'acheteur en est informé et y consent lors de l'achat.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">06</div>
+        <div class="privacy-section-content">
+          <h2>Responsabilités</h2>
+          <ul class="privacy-list">
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Responsabilité de l'organisateur</strong>
+                <span>L'organisateur est seul responsable du contenu, de l'organisation et du bon déroulement de son événement. Il s'engage à fournir une prestation conforme à la description publiée sur HAKO.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Responsabilité de HAKO</strong>
+                <span>HAKO est un intermédiaire technique. Sa responsabilité se limite à la mise à disposition de l'infrastructure de paiement. HAKO ne garantit pas la tenue de l'événement ni la qualité de la prestation organisateur.</span>
+              </div>
+            </li>
+            <li>
+              <span class="privacy-bullet"></span>
+              <div>
+                <strong>Contestations</strong>
+                <span>En cas de litige sur un paiement, contacte-nous à <a href="mailto:melvyn@hakosphere.fr" class="privacy-link">melvyn@hakosphere.fr</a>. Nous nous engageons à traiter toute réclamation dans un délai de 7 jours ouvrés.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">07</div>
+        <div class="privacy-section-content">
+          <h2>Protection des données</h2>
+          <p>
+            Les données collectées lors de l'achat (email, montant, événement) sont
+            traitées conformément à notre politique de confidentialité et au RGPD.
+            Elles sont utilisées pour la gestion des inscriptions et la comptabilité.
+          </p>
+          <p>
+            Les données bancaires sont traitées exclusivement par Stripe et ne sont
+            jamais accessibles par HAKO.
+          </p>
+        </div>
+      </section>
+
+      <section class="privacy-section">
+        <div class="privacy-section-number">08</div>
+        <div class="privacy-section-content">
+          <h2>Droit applicable et litiges</h2>
+          <p>
+            Les présentes CGV sont soumises au droit français. En cas de litige,
+            une solution amiable sera recherchée en priorité. À défaut, les tribunaux
+            français compétents seront saisis.
+          </p>
+          <p>
+            Conformément aux articles L611-1 et suivants du Code de la consommation,
+            tu peux recourir gratuitement à un médiateur de la consommation en cas
+            de litige non résolu avec HAKO.
           </p>
         </div>
       </section>
@@ -5785,7 +6113,7 @@ function showPage(id, isBack = false) {
     orga: '/organisateur', admin: '/admin', ranking: '/classement', salles: '/salles',
     bracelet: '/kima', notifs: '/notifications', privacy: '/confidentialite',
     'form-event': '/creer-evenement', 'form-salle': '/creer-salle', 'form-ecole': '/creer-ecole',
-    cgu: '/cgu', mentions: '/mentions'
+    cgu: '/cgu', cgv: '/cgv', mentions: '/mentions'
   };
   const _url = _routeMap[id] || '/';
   if (!isBack && window.location.pathname !== _url) {
@@ -5900,7 +6228,7 @@ window.addEventListener('popstate', function(e) {
     '/agenda': 'agenda', '/messages': 'messages', '/dashboard': 'dashboard',
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
-    '/cgu': 'cgu', '/mentions': 'mentions',
+    '/cgu': 'cgu', '/cgv': 'cgv', '/mentions': 'mentions',
     '/creer-evenement': 'form-event', '/creer-salle': 'form-salle', '/creer-ecole': 'form-ecole'
   };
   // Fermer les overlays ouverts
@@ -5929,7 +6257,7 @@ function _initRouter() {
     '/agenda': 'agenda', '/messages': 'messages', '/dashboard': 'dashboard',
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
-    '/cgu': 'cgu', '/mentions': 'mentions',
+    '/cgu': 'cgu', '/cgv': 'cgv', '/mentions': 'mentions',
     '/creer-evenement': 'form-event', '/creer-salle': 'form-salle', '/creer-ecole': 'form-ecole'
   };
   const pathname = window.location.pathname;
@@ -6192,7 +6520,7 @@ function afficherDashboard(d) {
     '/agenda': 'agenda', '/messages': 'messages', '/dashboard': 'dashboard',
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
-    '/cgu': 'cgu', '/mentions': 'mentions',
+    '/cgu': 'cgu', '/cgv': 'cgv', '/mentions': 'mentions',
     '/creer-evenement': 'form-event', '/creer-salle': 'form-salle', '/creer-ecole': 'form-ecole'
   };
   const _currentPath = window.location.pathname;
