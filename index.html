@@ -14581,11 +14581,34 @@ async function verifierCompteStripeOrga() {
 function afficherStripeConnecte(accountId) {
   const statusDiv = document.getElementById('stripe-connect-status');
   if (!statusDiv) return;
-  statusDiv.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.2);">
-    <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
-    <div><div style="font-size:13px;font-weight:600;color:var(--text);">Compte bancaire connecté</div><div style="font-size:11px;color:var(--muted2);">${accountId}</div></div>
+  statusDiv.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border-radius:12px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.2);">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
+      <div><div style="font-size:13px;font-weight:600;color:var(--text);">Compte bancaire connecté</div><div style="font-size:11px;color:var(--muted2);">${accountId}</div></div>
+    </div>
+    <button onclick="deconnecterStripe()" style="padding:6px 12px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;flex-shrink:0;">Déconnecter</button>
   </div>`;
 }
+
+window.deconnecterStripe = async function() {
+  if (!confirm('Déconnecter ton compte bancaire ? Les paiements via HAKO seront désactivés pour tes événements.')) return;
+  try {
+    const user = window._auth ? window._auth.currentUser : null;
+    if (!user) throw new Error('Non connecté');
+    await window._updateDoc(window._doc(window._db, 'danseurs', user.uid), {
+      stripeAccountId: null,
+      stripeOnboardingComplete: false
+    });
+    window._stripeAccountId = null;
+    const statusDiv = document.getElementById('stripe-connect-status');
+    if (statusDiv) statusDiv.innerHTML = `<button type="button" onclick="connecterStripe()" id="btn-connecter-stripe" style="width:100%;padding:12px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      Connecter mon compte bancaire
+    </button>`;
+  } catch(e) {
+    alert('Erreur : ' + e.message);
+  }
+};
 
 window.connecterStripe = async function() {
   const btn = document.getElementById('btn-connecter-stripe');
