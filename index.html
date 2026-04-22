@@ -9115,15 +9115,15 @@ window.ouvrirFormEvent = function() {
   document.getElementById('ev-photo-label-text').textContent = 'Choisir une image JPG ou PNG';
   window._evPhotoUrl = null;
   setVibeChips('');
-  // Mémoriser d'où on vient
-  // navigation gérée par la surcharge
+  window._formRetour = currentPage;
+  showPage('form-event');
 }
 
 // ── Formulaire salle (admin) ──
 
 window.ouvrirFormSalle = function(salleId) {
   // Sauvegarder le contexte de retour
-  window._formRetourSalle = (window._monRole === 'admin') ? 'admin' : 'orga';
+  window._formRetourSalle = currentPage;
   // Reset champs
   const ids = ['salle-nom','salle-ville','salle-adresse','salle-prix','salle-surface','salle-desc','salle-contact','salle-lien'];
   ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -9162,7 +9162,7 @@ window.ouvrirFormSalle = function(salleId) {
     })();
   }
 
-  // navigation gérée par la surcharge
+  showPage('form-salle');
 };
 
 window.fermerFormSalle = function() {
@@ -9346,7 +9346,8 @@ window.ouvrirFormEcole = function(ecoleId) {
     })();
   }
 
-  // navigation gérée par la surcharge
+  window._formRetourEcole = currentPage;
+  showPage('form-ecole');
 };
 
 window.fermerFormEcole = function() {
