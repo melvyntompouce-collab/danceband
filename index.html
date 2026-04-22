@@ -5062,7 +5062,7 @@ if (isPWA) {
 
 <div class="page" id="page-form-event" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div style="max-width:700px;margin:0 auto;padding:24px 20px calc(100px + env(safe-area-inset-bottom));">
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;"><button onclick="window._formRetour ? showPage(window._formRetour) : showPage('orga')" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button></div>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;"><button onclick="fermerFormEvent()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button></div>
     <!-- Formulaire créer/modifier événement -->
     <div id="orga-form" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;" id="orga-form-title">CRÉER UN ÉVÉNEMENT</div>
@@ -5217,7 +5217,7 @@ if (isPWA) {
 
 <div class="page" id="page-form-salle" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div style="max-width:700px;margin:0 auto;padding:24px 20px calc(100px + env(safe-area-inset-bottom));">
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;"><button onclick="window._formRetourSalle ? showPage(window._formRetourSalle) : showPage('orga')" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button></div>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;"><button onclick="fermerFormSalle()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button></div>
     <!-- Formulaire ajout/modification salle (admin) -->
     <div id="admin-form-salle" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;" id="admin-form-salle-title">AJOUTER UNE SALLE</div>
@@ -5304,7 +5304,7 @@ if (isPWA) {
 
 <div class="page" id="page-form-ecole" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div style="max-width:700px;margin:0 auto;padding:24px 20px calc(100px + env(safe-area-inset-bottom));">
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;"><button onclick="window._formRetourEcole ? showPage(window._formRetourEcole) : showPage('orga')" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button></div>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;"><button onclick="fermerFormEcole()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button></div>
     <!-- Formulaire ajout/modification école (admin) -->
     <div id="admin-form-ecole" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;" id="admin-form-ecole-title">AJOUTER UNE ÉCOLE</div>
@@ -8711,10 +8711,8 @@ window.adminModifierEvent = async function(id) {
   window._adminEditMode = true;
   window._formRetour = 'admin';
   eventEnEdition = null;
-  document.getElementById('admin-dashboard').style.display = 'none';
   await window.modifierEvent(id);
-  document.getElementById('orga-form').style.display = 'block';
-  document.getElementById('orga-dashboard').style.display = 'none';
+  showPage('form-event');
 }
 
 window.adminSupprimerEvent = async function(id) {
@@ -14710,12 +14708,28 @@ window.ouvrirFormEcole = function(ecoleId) {
   showPage('form-ecole');
 };
 
+function _retourDashboard(r) {
+  showPage(r);
+  // Restaurer l'affichage du bon dashboard
+  if (r === 'admin') {
+    setTimeout(() => {
+      const ad = document.getElementById('admin-dashboard');
+      if (ad) ad.style.display = 'block';
+    }, 50);
+  } else {
+    setTimeout(() => {
+      const od = document.getElementById('orga-dashboard');
+      if (od) od.style.display = 'block';
+    }, 50);
+  }
+}
+
 window.fermerFormEvent = function() {
   window._adminEditMode = false;
   eventEnEdition = null;
   const r = window._formRetour || 'orga';
   window._formRetour = null;
-  showPage(r);
+  _retourDashboard(r);
 };
 
 window.fermerFormSalle = function() {
@@ -14723,7 +14737,7 @@ window.fermerFormSalle = function() {
   if (btn) { btn.textContent = 'Publier la salle →'; btn.disabled = false; }
   const r = window._formRetourSalle || 'orga';
   window._formRetourSalle = null;
-  showPage(r);
+  _retourDashboard(r);
 };
 
 window.fermerFormEcole = function() {
@@ -14731,7 +14745,7 @@ window.fermerFormEcole = function() {
   if (btn) { btn.textContent = "Publier l'école →"; btn.disabled = false; }
   const r = window._formRetourEcole || 'orga';
   window._formRetourEcole = null;
-  showPage(r);
+  _retourDashboard(r);
 };
 
 window.adminModifierEvent = async function(id) {
