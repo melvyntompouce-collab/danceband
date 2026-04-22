@@ -8443,16 +8443,10 @@ async function chargerDashboardOrga() {
     const d = snap.data();
     window._monRole = d.role || null;
 
-    // Cacher toutes les sections
-    document.getElementById('orga-demande').style.display       = 'none';
-    document.getElementById('orga-attente').style.display       = 'none';
-    document.getElementById('orga-dashboard').style.display     = 'none';
-    document.getElementById('admin-dashboard').style.display    = 'none';
-    document.getElementById('orga-form').style.display          = 'none';
-    const _afSalle = document.getElementById('admin-form-salle');
-    const _afEcole = document.getElementById('admin-form-ecole');
-    if (_afSalle) _afSalle.style.display = 'none';
-    if (_afEcole) _afEcole.style.display = 'none';
+    // Cacher les sections de page-orga uniquement
+    document.getElementById('orga-demande').style.display   = 'none';
+    document.getElementById('orga-attente').style.display   = 'none';
+    document.getElementById('orga-dashboard').style.display = 'none';
 
     if (d.role === 'admin') {
       showPage('admin');
