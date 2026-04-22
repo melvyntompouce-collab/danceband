@@ -5018,7 +5018,6 @@ if (isPWA) {
     <div id="orga-attente" style="display:none;"></div>
 
     <!-- Dashboard admin déplacé vers page-admin -->
-    <div id="admin-dashboard" style="display:none;"></div>
 
     <!-- Dashboard organisateur -->
     <div id="orga-dashboard" style="display:none;">
@@ -5058,6 +5057,12 @@ if (isPWA) {
       </div>
     </div>
 
+</div>
+</div>
+
+<div class="page" id="page-form-event" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div style="max-width:700px;margin:0 auto;padding:24px 20px calc(100px + env(safe-area-inset-bottom));">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;"><button onclick="retourDepuisFormulaire()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button></div>
     <!-- Formulaire créer/modifier événement -->
     <div id="orga-form" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;" id="orga-form-title">CRÉER UN ÉVÉNEMENT</div>
@@ -5207,7 +5212,12 @@ if (isPWA) {
         </div>
       </div>
     </div>
+  </div>
+</div>
 
+<div class="page" id="page-form-salle" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div style="max-width:700px;margin:0 auto;padding:24px 20px calc(100px + env(safe-area-inset-bottom));">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;"><button onclick="retourDepuisFormulaire()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button></div>
     <!-- Formulaire ajout/modification salle (admin) -->
     <div id="admin-form-salle" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;" id="admin-form-salle-title">AJOUTER UNE SALLE</div>
@@ -5289,7 +5299,12 @@ if (isPWA) {
         </div>
       </div>
     </div>
+  </div>
+</div>
 
+<div class="page" id="page-form-ecole" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div style="max-width:700px;margin:0 auto;padding:24px 20px calc(100px + env(safe-area-inset-bottom));">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;"><button onclick="retourDepuisFormulaire()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button></div>
     <!-- Formulaire ajout/modification école (admin) -->
     <div id="admin-form-ecole" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;" id="admin-form-ecole-title">AJOUTER UNE ÉCOLE</div>
@@ -5406,7 +5421,6 @@ if (isPWA) {
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -5769,7 +5783,7 @@ function showPage(id, isBack = false) {
     home: '/', auth: '/connexion', network: '/reseau', profile: '/profil',
     agenda: '/agenda', messages: '/messages', dashboard: '/dashboard',
     orga: '/organisateur', admin: '/admin', ranking: '/classement', salles: '/salles',
-    bracelet: '/kima', notifs: '/notifications', privacy: '/confidentialite',
+    bracelet: '/kima', notifs: '/notifications', 'form-event': '/creer-evenement', 'form-salle': '/creer-salle', 'form-ecole': '/creer-ecole', privacy: '/confidentialite',
     cgu: '/cgu', mentions: '/mentions'
   };
   const _url = _routeMap[id] || '/';
@@ -14678,5 +14692,89 @@ window.confirmerPaiementHako = async function() {
     errDiv.textContent = e.message; errDiv.style.display = 'block';
     btn.textContent = 'Payer maintenant'; btn.disabled = false;
   }
+};
+
+// ── Pages formulaires dédiées ──
+function retourDepuisFormulaire() {
+  const retour = window._formRetour || window._formRetourSalle || window._formRetourEcole || 'orga';
+  window._formRetour = null;
+  window._formRetourSalle = null;
+  window._formRetourEcole = null;
+  showPage(retour);
+  if (retour === 'admin') chargerDashboardAdmin();
+  else chargerDashboardOrga();
+}
+
+// Surcharge ouvrirFormEvent pour naviguer vers page-form-event
+const _origOuvrirFormEvent = window.ouvrirFormEvent;
+window.ouvrirFormEvent = function() {
+  window._formRetour = currentPage;
+  // Reset et préparation
+  eventEnEdition = null;
+  document.getElementById('orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
+  document.getElementById('ev-submit-btn').textContent = "Publier l\'événement →";
+  ['ev-titre','ev-adresse','ev-styles','ev-desc','ev-lien-resa','ev-lien-inscription'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  if (typeof _resetTarifsList === 'function') _resetTarifsList();
+  if (typeof _resetDatesList === 'function') _resetDatesList();
+  if (typeof ajouterDateEvent === 'function') { ajouterDateEvent(); ajouterDateEvent(); }
+  const ph = document.getElementById('ev-photo'); if (ph) ph.value = '';
+  const pp = document.getElementById('ev-photo-preview'); if (pp) pp.src = '';
+  const ppw = document.getElementById('ev-photo-preview-wrap'); if (ppw) ppw.style.display = 'none';
+  const pl = document.getElementById('ev-photo-label'); if (pl) pl.style.display = 'flex';
+  const plt = document.getElementById('ev-photo-label-text'); if (plt) plt.textContent = 'Choisir une image JPG ou PNG';
+  window._evPhotoUrl = null;
+  if (typeof setVibeChips === 'function') setVibeChips('');
+  showPage('form-event');
+};
+
+// Surcharge ouvrirFormSalle
+const _origOuvrirFormSalle = window.ouvrirFormSalle;
+window.ouvrirFormSalle = function(salleId) {
+  window._formRetourSalle = currentPage;
+  _origOuvrirFormSalle(salleId);
+  showPage('form-salle');
+};
+
+// Surcharge ouvrirFormEcole
+const _origOuvrirFormEcole = window.ouvrirFormEcole;
+window.ouvrirFormEcole = function(ecoleId) {
+  window._formRetourEcole = currentPage;
+  _origOuvrirFormEcole(ecoleId);
+  showPage('form-ecole');
+};
+
+// Surcharge fermerFormEvent
+window.fermerFormEvent = function() {
+  window._adminEditMode = false;
+  eventEnEdition = null;
+  const retour = window._formRetour || 'orga';
+  window._formRetour = null;
+  showPage(retour);
+  if (retour === 'admin') chargerDashboardAdmin();
+  else chargerDashboardOrga();
+};
+
+// Surcharge fermerFormSalle
+window.fermerFormSalle = function() {
+  const btn = document.getElementById('salle-submit-btn');
+  if (btn) { btn.textContent = 'Publier la salle →'; btn.disabled = false; }
+  const retour = window._formRetourSalle || 'orga';
+  window._formRetourSalle = null;
+  showPage(retour);
+  if (retour === 'admin') chargerDashboardAdmin();
+  else chargerDashboardOrga();
+};
+
+// Surcharge fermerFormEcole
+window.fermerFormEcole = function() {
+  const btn = document.getElementById('ecole-submit-btn');
+  if (btn) { btn.textContent = "Publier l\'école →"; btn.disabled = false; }
+  const retour = window._formRetourEcole || 'orga';
+  window._formRetourEcole = null;
+  showPage(retour);
+  if (retour === 'admin') chargerDashboardAdmin();
+  else chargerDashboardOrga();
 };
 </script>
