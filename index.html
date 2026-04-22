@@ -6142,15 +6142,27 @@ function afficherDashboard(d) {
   // Disponibilité
   mettreAJourDispo(d.disponible);
 
-  // Forcer la désactivation de toutes les pages puis activer dashboard
-  document.querySelectorAll('.page').forEach(p => {
-    p.classList.remove('active');
-    p.style.opacity = '';
-    p.style.transform = '';
-    p.style.transition = '';
-  });
-  const dash = document.getElementById('page-dashboard');
-  if (dash) dash.classList.add('active');
+  // Activer dashboard seulement si aucune URL spécifique n'est demandée
+  const _reverseRouteMap = {
+    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profile',
+    '/agenda': 'agenda', '/messages': 'messages', '/dashboard': 'dashboard',
+    '/organisateur': 'orga', '/classement': 'ranking', '/salles': 'salles',
+    '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
+    '/cgu': 'cgu', '/mentions': 'mentions'
+  };
+  const _currentPath = window.location.pathname;
+  const _targetPage = _reverseRouteMap[_currentPath];
+  const _isDefaultRoute = !_targetPage || _targetPage === 'home' || _targetPage === 'dashboard';
+  if (_isDefaultRoute) {
+    document.querySelectorAll('.page').forEach(p => {
+      p.classList.remove('active');
+      p.style.opacity = '';
+      p.style.transform = '';
+      p.style.transition = '';
+    });
+    const dash = document.getElementById('page-dashboard');
+    if (dash) dash.classList.add('active');
+  }
 
   // Charger les sections enrichies
   afficherActiviteDashboard();
@@ -13022,21 +13034,24 @@ onAuthStateChanged(auth, async (user) => {
     detecterPairageKima(true);
     // XP connexion journalière
     _verifierXPConnexionJournaliere();
-    // Router : naviguer vers l'URL courante si connecté
+    // Router : naviguer vers l'URL demandée si différente du dashboard
+    const _savedUrl = sessionStorage.getItem('hako_redirect_url');
+    if (_savedUrl) {
+      sessionStorage.removeItem('hako_redirect_url');
+      window.location.pathname !== _savedUrl && history.replaceState({}, '', _savedUrl);
+    }
     _initRouter();
   } else {
     console.log('👤 Non connecté');
     afficherBarreLogoDeconnecte(true);
     mettreAJourNav(null);
     detecterPairageKima(false);
-    // Pas connecté : afficher page home sauf si URL publique
-    const _publicRoutes = ['/connexion', '/'];
+    // Pas connecté : mémoriser l'URL demandée et afficher home
     const _pathname = window.location.pathname;
-    if (_publicRoutes.includes(_pathname) || _pathname === '/') {
-      window.showPage('home');
-    } else {
-      window.showPage('home');
+    if (_pathname !== '/' && _pathname !== '/connexion') {
+      sessionStorage.setItem('hako_redirect_url', _pathname);
     }
+    window.showPage('home');
   }
   // Masquer le splash dans tous les cas
   const loader = document.getElementById('app-loader');
