@@ -14716,7 +14716,6 @@ window.fermerFormEvent = function() {
   const r = window._formRetour || 'orga';
   window._formRetour = null;
   showPage(r);
-  if (r === 'admin') chargerDashboardAdmin(); else chargerDashboardOrga();
 };
 
 window.fermerFormSalle = function() {
@@ -14725,7 +14724,6 @@ window.fermerFormSalle = function() {
   const r = window._formRetourSalle || 'orga';
   window._formRetourSalle = null;
   showPage(r);
-  if (r === 'admin') chargerDashboardAdmin(); else chargerDashboardOrga();
 };
 
 window.fermerFormEcole = function() {
@@ -14734,7 +14732,6 @@ window.fermerFormEcole = function() {
   const r = window._formRetourEcole || 'orga';
   window._formRetourEcole = null;
   showPage(r);
-  if (r === 'admin') chargerDashboardAdmin(); else chargerDashboardOrga();
 };
 
 window.adminModifierEvent = async function(id) {
