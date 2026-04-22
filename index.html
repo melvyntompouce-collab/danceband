@@ -9092,8 +9092,18 @@ function _getPrixMin(ev) {
 
 window.ouvrirFormEvent = function() {
   eventEnEdition = null;
+  window._formRetour = (window._monRole === 'admin') ? 'admin' : 'orga';
+  if (window._monRole === 'admin' && currentPage === 'admin') {
+    showPage('orga');
+    setTimeout(_preparerFormEvent, 320);
+  } else {
+    _preparerFormEvent();
+  }
+}
+
+function _preparerFormEvent() {
   document.getElementById('orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
-  document.getElementById('ev-submit-btn').textContent = 'Publier l\'événement →';
+  document.getElementById('ev-submit-btn').textContent = "Publier l'événement →";
   ['ev-titre','ev-adresse','ev-styles','ev-desc','ev-lien-resa','ev-lien-inscription'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
@@ -9109,11 +9119,10 @@ window.ouvrirFormEvent = function() {
   document.getElementById('ev-photo-label-text').textContent = 'Choisir une image JPG ou PNG';
   window._evPhotoUrl = null;
   setVibeChips('');
-  // Mémoriser d'où on vient
-  window._formRetour = (window._monRole === 'admin') ? 'admin' : 'orga';
   document.getElementById('orga-form').style.display = 'block';
   document.getElementById('orga-dashboard').style.display = 'none';
-  document.getElementById('admin-dashboard').style.display = 'none';
+  const adminDash = document.getElementById('admin-dashboard');
+  if (adminDash) adminDash.style.display = 'none';
   document.getElementById('orga-form').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -9125,15 +9134,13 @@ window.fermerFormEvent = function() {
   const btn = document.getElementById('ev-submit-btn');
   if (btn) { btn.textContent = "Publier l'événement →"; btn.disabled = false; }
   eventEnEdition = null;
-  // Réafficher le bon dashboard sans changer de page
+  // Retourner vers la bonne page
   if (retour === 'admin') {
-    document.getElementById('admin-dashboard').style.display = 'block';
-    document.getElementById('orga-dashboard').style.display = 'none';
+    showPage('admin');
   } else {
     document.getElementById('orga-dashboard').style.display = 'block';
-    document.getElementById('admin-dashboard').style.display = 'none';
+    chargerDashboardOrga();
   }
-  chargerDashboardOrga();
 }
 
 // ── Formulaire salle (admin) ──
@@ -9141,8 +9148,15 @@ window.fermerFormEvent = function() {
 window.ouvrirFormSalle = function(salleId) {
   // Sauvegarder le contexte de retour
   window._formRetourSalle = (window._monRole === 'admin') ? 'admin' : 'orga';
+  // Si admin sur page-admin, naviguer vers page-orga d'abord
+  if (window._monRole === 'admin' && currentPage === 'admin') {
+    showPage('orga');
+    setTimeout(() => window.ouvrirFormSalle(salleId), 320);
+    return;
+  }
   // Cacher dashboard admin
-  document.getElementById('admin-dashboard').style.display = 'none';
+  const adminDash = document.getElementById('admin-dashboard');
+  if (adminDash) adminDash.style.display = 'none';
   document.getElementById('orga-dashboard').style.display = 'none';
 
   // Reset champs
@@ -9195,13 +9209,11 @@ window.fermerFormSalle = function() {
   document.getElementById('orga-form').style.display = 'none';
   document.getElementById('admin-form-salle') && (document.getElementById('admin-form-salle').style.display = 'none');
   if (window._monRole === 'admin') {
-    document.getElementById('admin-dashboard').style.display = 'block';
-    document.getElementById('orga-dashboard').style.display = 'none';
+    showPage('admin');
   } else {
     document.getElementById('orga-dashboard').style.display = 'block';
-    document.getElementById('admin-dashboard').style.display = 'none';
+    chargerDashboardOrga();
   }
-  chargerDashboardOrga();
 };
 
 window.sauvegarderSalle = async function() {
@@ -9323,7 +9335,13 @@ window.ajouterAbonnement = function() {
 
 window.ouvrirFormEcole = function(ecoleId) {
   window._formRetourEcole = (window._monRole === 'admin') ? 'admin' : 'orga';
-  document.getElementById('admin-dashboard').style.display = 'none';
+  if (window._monRole === 'admin' && currentPage === 'admin') {
+    showPage('orga');
+    setTimeout(() => window.ouvrirFormEcole(ecoleId), 320);
+    return;
+  }
+  const adminDash = document.getElementById('admin-dashboard');
+  if (adminDash) adminDash.style.display = 'none';
   document.getElementById('orga-dashboard').style.display = 'none';
 
   // Reset
@@ -9395,13 +9413,11 @@ window.fermerFormEcole = function() {
   document.getElementById('orga-form').style.display = 'none';
   document.getElementById('admin-form-ecole') && (document.getElementById('admin-form-ecole').style.display = 'none');
   if (window._monRole === 'admin') {
-    document.getElementById('admin-dashboard').style.display = 'block';
-    document.getElementById('orga-dashboard').style.display = 'none';
+    showPage('admin');
   } else {
     document.getElementById('orga-dashboard').style.display = 'block';
-    document.getElementById('admin-dashboard').style.display = 'none';
+    chargerDashboardOrga();
   }
-  chargerDashboardOrga();
 };
 
 window.sauvegarderEcole = async function() {
