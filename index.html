@@ -5745,6 +5745,19 @@ function showPage(id, isBack = false) {
   }
   currentPage = id;
 
+  // ── Routing URL ──
+  const _routeMap = {
+    home: '/', auth: '/connexion', network: '/reseau', profile: '/profil',
+    agenda: '/agenda', messages: '/messages', dashboard: '/dashboard',
+    orga: '/organisateur', ranking: '/classement', salles: '/salles',
+    bracelet: '/kima', notifs: '/notifications', privacy: '/confidentialite',
+    cgu: '/cgu', mentions: '/mentions'
+  };
+  const _url = _routeMap[id] || '/';
+  if (!isBack && window.location.pathname !== _url) {
+    history.pushState({ page: id }, '', _url);
+  }
+
   // Barre mobile réseau
   const _bar = document.getElementById('network-mobile-bar');
   if (_bar) _bar.style.display = (id === 'network' && window.innerWidth <= 768) ? 'block' : 'none';
@@ -5835,6 +5848,68 @@ function goBack() {
     showPage(prev, true);
   } else {
     goHome();
+  }
+}
+
+// ── Gestion bouton retour navigateur ──
+window.addEventListener('popstate', function(e) {
+  const _reverseRouteMap = {
+    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profile',
+    '/agenda': 'agenda', '/messages': 'messages', '/dashboard': 'dashboard',
+    '/organisateur': 'orga', '/classement': 'ranking', '/salles': 'salles',
+    '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
+    '/cgu': 'cgu', '/mentions': 'mentions'
+  };
+  // Fermer les overlays ouverts
+  const artisteOverlay = document.getElementById('artiste-overlay');
+  if (artisteOverlay && artisteOverlay.style.display !== 'none') {
+    artisteOverlay.style.display = 'none';
+    return;
+  }
+  const eventOverlay = document.getElementById('event-detail-overlay');
+  if (eventOverlay && eventOverlay.style.display !== 'none') {
+    eventOverlay.style.display = 'none';
+    return;
+  }
+  if (e.state && e.state.page && !['profil-artiste','event'].includes(e.state.page)) {
+    showPage(e.state.page, true);
+  } else {
+    const page = _reverseRouteMap[window.location.pathname] || 'home';
+    showPage(page, true);
+  }
+});
+
+// ── Router au chargement ──
+function _initRouter() {
+  const _reverseRouteMap = {
+    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profile',
+    '/agenda': 'agenda', '/messages': 'messages', '/dashboard': 'dashboard',
+    '/organisateur': 'orga', '/classement': 'ranking', '/salles': 'salles',
+    '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
+    '/cgu': 'cgu', '/mentions': 'mentions'
+  };
+  const pathname = window.location.pathname;
+  // Gérer les URLs dynamiques
+  const profileMatch = pathname.match(/^\/profil\/(.+)$/);
+  const eventMatch = pathname.match(/^\/event\/(.+)$/);
+  if (profileMatch) {
+    // Ouvrir le profil d'un artiste
+    setTimeout(() => {
+      if (window.ouvrirProfilPublic) ouvrirProfilPublic(profileMatch[1]);
+      else showPage('network', true);
+    }, 800);
+  } else if (eventMatch) {
+    // Ouvrir un événement
+    setTimeout(() => {
+      if (window.ouvrirEvent) ouvrirEvent(eventMatch[1]);
+      else showPage('agenda', true);
+    }, 800);
+  } else {
+    const page = _reverseRouteMap[pathname];
+    if (page && page !== 'home') {
+      // Pousser l'état initial dans l'historique
+      history.replaceState({ page: page }, '', pathname);
+    }
   }
 }
 
@@ -7258,6 +7333,8 @@ window.toggleEventsPasses = function() {
 }
 
 function ouvrirEvent(id) {
+  // Routing URL
+  if (id) history.pushState({ page: 'event', eventId: id }, '', '/event/' + id);
   const ev = tousLesEvents.find(e => e.id === id);
   if (!ev) return;
   eventCourant = ev;
@@ -10667,6 +10744,8 @@ window.ouvrirProfilArtiste = async function(uid) {
   cacherBarreReseau();
   document.getElementById('artiste-overlay').style.display = 'block';
   window.scrollTo(0, 0);
+  // Routing URL
+  history.pushState({ page: 'profil-artiste', uid: uid }, '', '/profil/' + uid);
 
   try {
     const snap = await window._getDoc(window._doc(window._db, 'danseurs', uid));
@@ -12943,13 +13022,21 @@ onAuthStateChanged(auth, async (user) => {
     detecterPairageKima(true);
     // XP connexion journalière
     _verifierXPConnexionJournaliere();
+    // Router : naviguer vers l'URL courante si connecté
+    _initRouter();
   } else {
     console.log('👤 Non connecté');
     afficherBarreLogoDeconnecte(true);
     mettreAJourNav(null);
     detecterPairageKima(false);
-    // Pas connecté : afficher page home
-    window.showPage('home');
+    // Pas connecté : afficher page home sauf si URL publique
+    const _publicRoutes = ['/connexion', '/'];
+    const _pathname = window.location.pathname;
+    if (_publicRoutes.includes(_pathname) || _pathname === '/') {
+      window.showPage('home');
+    } else {
+      window.showPage('home');
+    }
   }
   // Masquer le splash dans tous les cas
   const loader = document.getElementById('app-loader');
