@@ -5784,6 +5784,7 @@ function showPage(id, isBack = false) {
     agenda: '/agenda', messages: '/messages', dashboard: '/dashboard',
     orga: '/organisateur', admin: '/admin', ranking: '/classement', salles: '/salles',
     bracelet: '/kima', notifs: '/notifications', privacy: '/confidentialite',
+    'form-event': '/creer-evenement', 'form-salle': '/creer-salle', 'form-ecole': '/creer-ecole',
     cgu: '/cgu', mentions: '/mentions'
   };
   const _url = _routeMap[id] || '/';
@@ -5899,7 +5900,8 @@ window.addEventListener('popstate', function(e) {
     '/agenda': 'agenda', '/messages': 'messages', '/dashboard': 'dashboard',
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
-    '/cgu': 'cgu', '/mentions': 'mentions'
+    '/cgu': 'cgu', '/mentions': 'mentions',
+    '/creer-evenement': 'form-event', '/creer-salle': 'form-salle', '/creer-ecole': 'form-ecole'
   };
   // Fermer les overlays ouverts
   const artisteOverlay = document.getElementById('artiste-overlay');
@@ -5927,7 +5929,8 @@ function _initRouter() {
     '/agenda': 'agenda', '/messages': 'messages', '/dashboard': 'dashboard',
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
-    '/cgu': 'cgu', '/mentions': 'mentions'
+    '/cgu': 'cgu', '/mentions': 'mentions',
+    '/creer-evenement': 'form-event', '/creer-salle': 'form-salle', '/creer-ecole': 'form-ecole'
   };
   const pathname = window.location.pathname;
   // Gérer les URLs dynamiques
@@ -6189,7 +6192,8 @@ function afficherDashboard(d) {
     '/agenda': 'agenda', '/messages': 'messages', '/dashboard': 'dashboard',
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
-    '/cgu': 'cgu', '/mentions': 'mentions'
+    '/cgu': 'cgu', '/mentions': 'mentions',
+    '/creer-evenement': 'form-event', '/creer-salle': 'form-salle', '/creer-ecole': 'form-ecole'
   };
   const _currentPath = window.location.pathname;
   const _targetPage = _reverseRouteMap[_currentPath];
@@ -9116,11 +9120,7 @@ window.ouvrirFormEvent = function() {
   window._evPhotoUrl = null;
   setVibeChips('');
   // Mémoriser d'où on vient
-  window._formRetour = (window._monRole === 'admin') ? 'admin' : 'orga';
-  document.getElementById('orga-form').style.display = 'block';
-  document.getElementById('orga-dashboard').style.display = 'none';
-  document.getElementById('admin-dashboard').style.display = 'none';
-  document.getElementById('orga-form').scrollIntoView({ behavior: 'smooth' });
+  // navigation gérée par la surcharge
 }
 
 window.fermerFormEvent = function() {
@@ -9147,10 +9147,6 @@ window.fermerFormEvent = function() {
 window.ouvrirFormSalle = function(salleId) {
   // Sauvegarder le contexte de retour
   window._formRetourSalle = (window._monRole === 'admin') ? 'admin' : 'orga';
-  // Cacher dashboard admin
-  document.getElementById('admin-dashboard').style.display = 'none';
-  document.getElementById('orga-dashboard').style.display = 'none';
-
   // Reset champs
   const ids = ['salle-nom','salle-ville','salle-adresse','salle-prix','salle-surface','salle-desc','salle-contact','salle-lien'];
   ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -9189,8 +9185,7 @@ window.ouvrirFormSalle = function(salleId) {
     })();
   }
 
-  document.getElementById('admin-form-salle').style.display = 'block';
-  document.getElementById('admin-form-salle').scrollIntoView({ behavior: 'smooth' });
+  // navigation gérée par la surcharge
 };
 
 window.fermerFormSalle = function() {
@@ -9328,10 +9323,6 @@ window.ajouterAbonnement = function() {
 };
 
 window.ouvrirFormEcole = function(ecoleId) {
-  window._formRetourEcole = (window._monRole === 'admin') ? 'admin' : 'orga';
-  document.getElementById('admin-dashboard').style.display = 'none';
-  document.getElementById('orga-dashboard').style.display = 'none';
-
   // Reset
   ['ecole-nom','ecole-ville','ecole-cp','ecole-adresse','ecole-tel','ecole-email','ecole-lien','ecole-lien-inscription','ecole-desc','ecole-styles'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
@@ -9389,8 +9380,7 @@ window.ouvrirFormEcole = function(ecoleId) {
     })();
   }
 
-  document.getElementById('admin-form-ecole').style.display = 'block';
-  document.getElementById('admin-form-ecole').scrollIntoView({ behavior: 'smooth' });
+  // navigation gérée par la surcharge
 };
 
 window.fermerFormEcole = function() {
