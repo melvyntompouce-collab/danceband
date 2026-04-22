@@ -8425,13 +8425,6 @@ window.fermerOrganisateur = function() {
 }
 
 window.retourOrga = function() {
-  // Si un formulaire est ouvert, le fermer au lieu de quitter la page
-  const orgaForm  = document.getElementById('orga-form');
-  const salleForm = document.getElementById('admin-form-salle');
-  const ecoleForm = document.getElementById('admin-form-ecole');
-  if (orgaForm && orgaForm.style.display !== 'none') { fermerFormEvent(); return; }
-  if (salleForm && salleForm.style.display !== 'none') { fermerFormSalle(); return; }
-  if (ecoleForm && ecoleForm.style.display !== 'none') { fermerFormEcole(); return; }
   fermerOrganisateur();
 }
 
