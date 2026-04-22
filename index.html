@@ -4899,100 +4899,424 @@ if (isPWA) {
 
 <!-- ═══ ESPACE ORGANISATEUR (overlay) ═══ -->
 <div class="page" id="page-admin" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
+
   <div style="max-width:700px;margin:0 auto;padding:24px 20px calc(100px + env(safe-area-inset-bottom));">
 
     <!-- Header -->
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
-      <button onclick="showPage('dashboard')" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
+      <button onclick="showPage('admin')" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
       <div>
-        <div style="font-family:'Syne',sans-serif;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Panneau de contrôle</div>
+        <div style="font-family:'Syne',sans-serif;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Espace</div>
         <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:32px;letter-spacing:-1px;">ADMIN</div>
       </div>
     </div>
 
-    <div id="admin-dashboard" style="display:block;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-        <span style="background:rgba(255,77,109,0.15);border:1px solid rgba(255,77,109,0.4);color:var(--red);font-family:'Syne',sans-serif;font-weight:800;font-size:11px;letter-spacing:2px;padding:4px 12px;border-radius:8px;text-transform:uppercase;">Admin</span>
-        <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--muted2);">Panneau de contrôle</span>
-      </div>
+    <!-- Demande accès organisateur (si pas encore organisateur) -->
+    <!-- Saisie code d'invitation -->
+    <div id="adm-orga-demande" style="display:none;" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;text-align:center;margin-bottom:20px;">
+      <div style="font-size:40px;margin-bottom:12px;">🎪</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:8px;">Espace réservé</div>
+      <div style="font-size:13px;color:var(--muted2);line-height:1.7;margin-bottom:20px;">Saisis ton code d'invitation pour accéder à l'espace organisateur.</div>
+      <input id="adm-orga-code-input" type="text" placeholder="Code d'invitation" style="width:100%;padding:14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;text-align:center;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;box-sizing:border-box;">
+      <button onclick="void(0)" style="width:100%;padding:14px 28px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">Valider le code →</button>
+      <div id="adm-orga-demande-msg" style="display:none;margin-top:12px;font-size:13px;font-weight:700;"></div>
+    </div>
 
-      <!-- Stats globales -->
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;">
+    <!-- En attente (conservé pour rétrocompat) -->
+    <div id="adm-orga-attente" style="display:none;" style="display:none;"></div>
+
+    <!-- Dashboard admin déplacé vers page-admin -->
+    <div id="adm-admin-dashboard" style="display:none;"></div>
+
+    <!-- Dashboard organisateur -->
+    <div id="adm-orga-dashboard" style="display:block;">
+
+
+      <!-- Stats rapides -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;">
         <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;">
-          <div id="admin-stat-users" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--green);">—</div>
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Utilisateurs</div>
-        </div>
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;">
-          <div id="admin-stat-events" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--blue);">—</div>
+          <div id="adm-orga-stat-events" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--green);">0</div>
           <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Événements</div>
         </div>
         <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;">
-          <div id="admin-stat-inscrits" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--yellow);">—</div>
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Inscrits total</div>
+          <div id="adm-orga-stat-inscrits" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--blue);">0</div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Inscrits</div>
         </div>
         <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;">
-          <div id="admin-stat-codes" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--red);">—</div>
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Codes utilisés</div>
+          <div id="adm-orga-stat-revenus" style="font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--yellow);">0€</div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Revenus</div>
         </div>
       </div>
 
-      <!-- Notification broadcast -->
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">📣 Notification globale</div>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:10px;">
-          <div>
-            <label style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">Titre *</label>
-            <input id="admin-notif-titre" type="text" placeholder="Ex: Mise à jour HAKO 🎉" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;">
-          </div>
-          <div>
-            <label style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">Extrait (affiché dans la notif) *</label>
-            <input id="admin-notif-extrait" type="text" placeholder="Ex: Découvrez les nouvelles fonctionnalités..." style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;">
-          </div>
-          <div>
-            <label style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px;">Message complet</label>
-            <textarea id="admin-notif-input" placeholder="Écrivez votre message complet ici..." rows="5" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;box-sizing:border-box;resize:vertical;min-height:100px;"></textarea>
-          </div>
-        </div>
-        <button onclick="envoyerNotifGlobale()" style="width:100%;padding:12px;border-radius:10px;background:var(--red);color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;border:none;cursor:pointer;">Envoyer à tous →</button>
-        <div id="admin-notif-msg" style="display:none;margin-top:8px;font-size:12px;color:var(--green);font-weight:700;"></div>
-      </div>
+      <!-- Boutons actions -->
+      <button onclick="ouvrirAdmFormEvent()" style="width:100%;padding:16px;border-radius:16px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-bottom:12px;">
+        ＋ Créer un événement
+      </button>
+      <button onclick="ouvrirAdmFormSalle()" style="width:100%;padding:16px;border-radius:16px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-bottom:12px;">
+        ＋ Ajouter une salle à louer
+      </button>
+      <button onclick="ouvrirAdmFormEcole()" style="width:100%;padding:16px;border-radius:16px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-bottom:24px;">
+        ＋ Ajouter une école de danse
+      </button>
 
-      <!-- Tous les événements -->
-      <button onclick="ouvrirFormEvent()" style="width:100%;padding:14px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;margin-bottom:12px;">＋ Créer un événement</button>
-      <button onclick="ouvrirFormSalle()" style="width:100%;padding:14px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;margin-bottom:16px;">＋ Ajouter une salle à louer</button>
-      <button onclick="ouvrirFormEcole()" style="width:100%;padding:14px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;margin-bottom:16px;">＋ Ajouter une école de danse</button>
-      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Tous les événements</div>
-      <input id="admin-search-events" type="text" placeholder="🔍 Rechercher un événement..." oninput="filtrerAdminListe('events')" style="width:100%;box-sizing:border-box;padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:12px;transition:border-color 0.2s;" onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
-      <div id="admin-events-list" style="margin-bottom:24px;display:flex;flex-direction:column;gap:8px;">
-        <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
-      </div>
-
-      <!-- Salles à louer -->
-      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Salles à louer</div>
-      <div id="admin-salles-list" style="margin-bottom:24px;display:flex;flex-direction:column;gap:8px;">
-        <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
-      </div>
-
-      <!-- Écoles de danse -->
-      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Écoles de danse</div>
-      <div id="admin-ecoles-list" style="margin-bottom:24px;display:flex;flex-direction:column;gap:8px;">
-        <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
-      </div>
-
-      <!-- Tous les utilisateurs -->
-      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Tous les utilisateurs</div>
-      <input id="admin-search-users" type="text" placeholder="🔍 Rechercher un utilisateur..." oninput="filtrerAdminListe('users')" style="width:100%;box-sizing:border-box;padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:12px;transition:border-color 0.2s;" onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
-      <div id="admin-users-list" style="display:flex;flex-direction:column;gap:8px;">
-        <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
+      <!-- Mes événements -->
+      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Mes événements</div>
+      <div id="adm-orga-events-list">
+        <div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
       </div>
     </div>
 
-    <!-- Formulaires (event, salle, école) -->
+    <!-- Formulaire créer/modifier événement -->
+    <div id="adm-orga-form" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;" id="adm-orga-form-title">CRÉER UN ÉVÉNEMENT</div>
 
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Titre de l'événement</label>
+          <input id="adm-ev-titre" class="form-input" type="text" placeholder="Ex: Nuit Kizomba — Bastille" style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Discipline</label>
+          <select id="adm-ev-discipline" class="form-select" onchange="updateFormType(this.value)">
+            <option value="danse">💃 Danse</option>
+            <option value="musique">🎵 Musique</option>
+            <option value="audiovisuel">🎬 Audiovisuel</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Type</label>
+          <select id="adm-ev-type" class="form-select">
+            <option value="soiree">🎉 Soirée</option>
+            <option value="battle">🏆 Battle</option>
+            <option value="workshop">🎓 Workshop</option>
+            <option value="stage">🏫 Stage</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Dates</label>
+          <div id="adm-ev-dates-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+          <button type="button" onclick="ajouterDateEvent()" style="margin-top:10px;width:100%;padding:10px;border-radius:10px;background:transparent;border:1.5px dashed var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.4)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">＋ Ajouter une date</button>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Ville</label>
+          <input id="adm-ev-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon..." autocomplete="off" style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Tarification</label>
+          <div id="adm-ev-tarifs-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+          <button type="button" onclick="ajouterTarifEvent()" style="width:100%;padding:10px;border-radius:10px;background:transparent;border:1.5px dashed var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.4)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">＋ Ajouter un tarif</button>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Adresse complète</label>
+          <input id="adm-ev-adresse" class="form-input" type="text" placeholder="Ex: Le Rex Club, Paris 10e" style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Styles de danse</label>
+          <input id="adm-ev-styles" class="form-input" type="text" placeholder="Ex: Kizomba, Semba, Tarraxo" style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Vibe musicale <span style="color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;" id="adm-ev-vibe-chips">
+            <button type="button" class="vibe-chip" data-vibe="Afro" onclick="toggleVibeChip(this)">🌍 Afro</button>
+            <button type="button" class="vibe-chip" data-vibe="Afrobeats" onclick="toggleVibeChip(this)">🥁 Afrobeats</button>
+            <button type="button" class="vibe-chip" data-vibe="Amapiano" onclick="toggleVibeChip(this)">🎹 Amapiano</button>
+            <button type="button" class="vibe-chip" data-vibe="R&B" onclick="toggleVibeChip(this)">🎵 R&B</button>
+            <button type="button" class="vibe-chip" data-vibe="Hip-Hop" onclick="toggleVibeChip(this)">🎤 Hip-Hop</button>
+            <button type="button" class="vibe-chip" data-vibe="Rap" onclick="toggleVibeChip(this)">🎙️ Rap</button>
+            <button type="button" class="vibe-chip" data-vibe="Dancehall" onclick="toggleVibeChip(this)">🌴 Dancehall</button>
+            <button type="button" class="vibe-chip" data-vibe="Reggaeton" onclick="toggleVibeChip(this)">🔥 Reggaeton</button>
+            <button type="button" class="vibe-chip" data-vibe="House" onclick="toggleVibeChip(this)">🎧 House</button>
+            <button type="button" class="vibe-chip" data-vibe="Techno" onclick="toggleVibeChip(this)">⚡ Techno</button>
+            <button type="button" class="vibe-chip" data-vibe="UK Garage" onclick="toggleVibeChip(this)">🔊 UK Garage</button>
+            <button type="button" class="vibe-chip" data-vibe="Kuduro" onclick="toggleVibeChip(this)">🇦🇴 Kuduro</button>
+            <button type="button" class="vibe-chip" data-vibe="Latino" onclick="toggleVibeChip(this)">💃 Latino</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Niveau</label>
+          <select id="adm-ev-niveau" class="form-select">
+            <option>Tous niveaux</option>
+            <option>Débutants</option>
+            <option>Intermédiaire</option>
+            <option>Avancé</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Photo de couverture <span style="color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <div id="adm-ev-photo-preview-wrap" style="display:none;position:relative;margin-bottom:10px;">
+            <!-- Aperçu statique -->
+            <div id="adm-ev-preview-static" style="position:relative;width:100%;height:140px;overflow:hidden;border-radius:12px;">
+              <img id="adm-ev-photo-preview" src="" alt="" style="position:absolute;left:0;width:100%;pointer-events:none;">
+              <button type="button" onclick="supprimerPhotoEvent()" style="position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;z-index:2;">✕</button>
+            </div>
+            <!-- Bouton recadrer -->
+            <button type="button" onclick="ouvrirCropModal()" style="margin-top:8px;width:100%;padding:10px;border-radius:10px;background:var(--bg2);border:1.5px solid var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+              Recadrer la photo
+            </button>
+          </div>
 
+          <!-- Modal de crop -->
+          <div id="adm-ev-crop-modal" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
+            <div style="width:min(92vw,420px);background:var(--card);border-radius:20px;border:1px solid var(--border);overflow:hidden;">
+              <div style="padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);">
+                <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;">Recadrer la photo</span>
+                <button type="button" onclick="fermerCropModal()" style="width:30px;height:30px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);color:var(--muted2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;">✕</button>
+              </div>
+              <div style="padding:16px;">
+                <div id="adm-ev-crop-area" style="position:relative;width:100%;height:220px;overflow:hidden;border-radius:12px;cursor:ns-resize;user-select:none;touch-action:none;background:#111;">
+                  <img id="adm-ev-crop-img" src="" alt="" style="position:absolute;left:0;width:100%;pointer-events:none;">
+                  <div style="position:absolute;inset:0;pointer-events:none;border-radius:12px;box-shadow:inset 0 0 0 2px rgba(0,245,155,0.3);"></div>
+                  <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.65);border:1px solid rgba(255,255,255,0.15);backdrop-filter:blur(8px);border-radius:20px;padding:5px 14px;font-size:11px;color:rgba(255,255,255,0.7);pointer-events:none;white-space:nowrap;">↕ Glisse pour recadrer</div>
+                </div>
+                <button type="button" onclick="validerCrop()" style="margin-top:12px;width:100%;padding:13px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">Valider le recadrage</button>
+              </div>
+            </div>
+          </div>
+          <label id="adm-ev-photo-label" for="adm-ev-photo" style="display:flex;align-items:center;gap:10px;padding:14px;border-radius:12px;border:1.5px dashed var(--border);background:var(--bg2);cursor:pointer;transition:border-color 0.2s;">
+            <span style="font-size:20px;">🖼️</span>
+            <span id="adm-ev-photo-label-text" style="font-size:13px;color:var(--muted2);">Choisir une image JPG ou PNG</span>
+          </label>
+          <input id="adm-ev-photo" type="file" accept="image/*" style="display:none;" onchange="previewPhotoEvent(this)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Description</label>
+          <textarea id="adm-ev-desc" class="form-input" rows="3" placeholder="Décrivez votre événement..." style="background:var(--bg2);resize:vertical;min-height:80px;"></textarea>
+        </div>
+        <!-- Mode billetterie -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Billetterie</label>
+          <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <button type="button" id="adm-btn-billetterie-externe" onclick="setBilletterieMode('externe')" style="flex:1;padding:10px;border-radius:10px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;border:none;cursor:pointer;">Lien externe</button>
+            <button type="button" id="adm-btn-billetterie-hako" onclick="setBilletterieMode('hako')" style="flex:1;padding:10px;border-radius:10px;background:var(--bg2);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;border:1.5px solid var(--border);cursor:pointer;">Paiement via HAKO</button>
+          </div>
+          <div id="adm-billetterie-externe-fields">
+            <input id="adm-ev-lien-resa" class="form-input" type="url" placeholder="https://shotgun.live/..." style="background:var(--bg2);margin-bottom:10px;">
+            <input id="adm-ev-lien-inscription" class="form-input" type="url" placeholder="https://forms.google.com/... (optionnel)" style="background:var(--bg2);">
+          </div>
+          <div id="adm-billetterie-hako-fields" style="display:none;">
+            <div style="background:rgba(0,245,155,0.06);border:1px solid rgba(0,245,155,0.2);border-radius:12px;padding:14px;margin-bottom:12px;">
+              <div style="font-size:12px;color:var(--muted2);line-height:1.6;">Les paiements sont encaissés directement sur HAKO. HAKO prélève 10% de commission, le reste est viré sur ton compte bancaire.</div>
+            </div>
+            <div id="adm-stripe-connect-status">
+              <button type="button" onclick="connecterStripe()" id="adm-btn-connecter-stripe" style="width:100%;padding:12px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                Connecter mon compte bancaire
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="adm-orga-form-err" style="display:none;background:rgba(255,77,109,0.1);border:1px solid var(--red);border-radius:10px;padding:12px;font-size:13px;color:var(--red);"></div>
+
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button onclick="fermerAdmFormEvent()" style="flex:1;padding:14px;border-radius:12px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">Annuler</button>
+          <button id="adm-ev-submit-btn" onclick="sauvegarderAdmEvent()" style="flex:2;padding:14px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">Publier l'événement →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulaire ajout/modification salle (admin) -->
+    <div id="adm-admin-form-salle" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;" id="adm-admin-form-salle-title">AJOUTER UNE SALLE</div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Nom de la salle *</label>
+          <input id="adm-salle-nom" class="form-input" type="text" placeholder="Ex: Studio Groove Bordeaux" style="background:var(--bg2)">
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Ville *</label>
+            <input id="adm-salle-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Bordeaux" autocomplete="off" style="background:var(--bg2)">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Prix / heure *</label>
+            <div style="display:flex;gap:8px;">
+              <input id="adm-salle-prix" class="form-input" type="number" placeholder="Ex: 25" min="0" style="background:var(--bg2);flex:1;">
+              <select id="adm-salle-devise" class="form-input" style="background:var(--bg2);width:90px;flex-shrink:0;cursor:pointer;">
+                <option value="€">€ EUR</option>
+                <option value="CHF">CHF</option>
+                <option value="£">£ GBP</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Adresse complète</label>
+          <input id="adm-salle-adresse" class="form-input" type="text" placeholder="Ex: 12 rue de la Danse, 33000 Bordeaux" style="background:var(--bg2)">
+        </div>
+
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Superficie (m²)</label>
+          <input id="adm-salle-surface" class="form-input" type="number" placeholder="Ex: 80" min="0" style="background:var(--bg2)">
+        </div>
+
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Description</label>
+          <textarea id="adm-salle-desc" class="form-input" rows="3" placeholder="Parquet, miroirs, sono, climatisation..." style="background:var(--bg2);resize:vertical;min-height:80px;"></textarea>
+        </div>
+
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Disponibilités</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="adm-salle-dispos-pick">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Lun" style="accent-color:var(--green);"> Lun</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Mar" style="accent-color:var(--green);"> Mar</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Mer" style="accent-color:var(--green);"> Mer</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Jeu" style="accent-color:var(--green);"> Jeu</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Ven" style="accent-color:var(--green);"> Ven</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Sam" style="accent-color:var(--green);"> Sam</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Dim" style="accent-color:var(--green);"> Dim</label>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Contact (tél ou email) *</label>
+          <input id="adm-salle-contact" class="form-input" type="text" placeholder="Ex: +33 6 12 34 56 78 ou contact@studio.fr" style="background:var(--bg2)">
+        </div>
+
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Lien de réservation</label>
+          <input id="adm-salle-lien" class="form-input" type="url" placeholder="https://..." style="background:var(--bg2)">
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;">
+          <input type="checkbox" id="adm-salle-disponible" style="accent-color:var(--green);width:16px;height:16px;" checked>
+          <label for="adm-salle-disponible" style="font-size:13px;color:var(--muted2);cursor:pointer;">Actuellement disponible à la location</label>
+        </div>
+
+        <input type="hidden" id="adm-salle-edit-id">
+
+        <div id="adm-admin-form-salle-err" style="display:none;background:rgba(255,77,109,0.1);border:1px solid var(--red);border-radius:10px;padding:12px;font-size:13px;color:var(--red);"></div>
+
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button onclick="fermerAdmFormSalle()" style="flex:1;padding:14px;border-radius:12px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">Annuler</button>
+          <button id="adm-salle-submit-btn" onclick="sauvegarderAdmSalle()" style="flex:2;padding:14px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">Publier la salle →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulaire ajout/modification école (admin) -->
+    <div id="adm-admin-form-ecole" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;" id="adm-admin-form-ecole-title">AJOUTER UNE ÉCOLE</div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+
+        <!-- Infos de base -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Nom de l'école *</label>
+          <input id="adm-ecole-nom" class="form-input" type="text" placeholder="Ex: Studio Kizomba Paris" style="background:var(--bg2)">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Ville *</label>
+            <input id="adm-ecole-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris" autocomplete="off" style="background:var(--bg2)">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Code postal</label>
+            <input id="adm-ecole-cp" class="form-input" type="text" placeholder="Ex: 75010" style="background:var(--bg2)">
+          </div>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Adresse complète</label>
+          <input id="adm-ecole-adresse" class="form-input" type="text" placeholder="Ex: 12 rue de la Danse, Paris" style="background:var(--bg2)">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Téléphone</label>
+            <input id="adm-ecole-tel" class="form-input" type="tel" placeholder="+33 6 12 34 56 78" style="background:var(--bg2)">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Email</label>
+            <input id="adm-ecole-email" class="form-input" type="email" placeholder="contact@ecole.fr" style="background:var(--bg2)">
+          </div>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Site web / lien de réservation</label>
+          <input id="adm-ecole-lien" class="form-input" type="url" placeholder="https://..." style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Lien d'inscription <span style="font-size:11px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <input id="adm-ecole-lien-inscription" class="form-input" type="url" placeholder="https://forms.google.com/..." style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Description</label>
+          <textarea id="adm-ecole-desc" class="form-input" rows="3" placeholder="Décrivez l'école, l'ambiance, les enseignants..." style="background:var(--bg2);resize:vertical;min-height:80px;"></textarea>
+        </div>
+
+        <!-- Styles de danse -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Styles enseignés</label>
+          <input id="adm-ecole-styles" class="form-input" type="text" placeholder="Ex: Kizomba, Salsa, Bachata" style="background:var(--bg2)">
+        </div>
+
+        <!-- Niveaux -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Niveaux</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="adm-ecole-niveaux-pick">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Débutant" style="accent-color:var(--green);"> Débutant</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Intermédiaire" style="accent-color:var(--green);"> Intermédiaire</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Avancé" style="accent-color:var(--green);"> Avancé</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--muted2);"><input type="checkbox" value="Tous niveaux" style="accent-color:var(--green);"> Tous niveaux</label>
+          </div>
+        </div>
+
+        <!-- Horaires -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Horaires des cours</label>
+          <div id="adm-ecole-horaires-list" style="display:flex;flex-direction:column;gap:8px;margin-top:6px;"></div>
+          <button type="button" onclick="ajouterHoraire()" style="margin-top:8px;padding:8px 14px;border-radius:10px;background:rgba(0,245,155,0.08);border:1px dashed rgba(0,245,155,0.3);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;">＋ Ajouter un horaire</button>
+        </div>
+
+        <!-- Abonnements (jusqu'à 10) -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Abonnements / Tarifs</label>
+          <div id="adm-ecole-abos-list" style="display:flex;flex-direction:column;gap:8px;margin-top:6px;"></div>
+          <button type="button" onclick="ajouterAbonnement()" style="margin-top:8px;padding:8px 14px;border-radius:10px;background:rgba(0,245,155,0.08);border:1px dashed rgba(0,245,155,0.3);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;">＋ Ajouter un abonnement</button>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Maximum 10 abonnements</div>
+        </div>
+
+        <input type="hidden" id="adm-ecole-edit-id">
+
+        <div id="adm-admin-form-ecole-err" style="display:none;background:rgba(255,77,109,0.1);border:1px solid var(--red);border-radius:10px;padding:12px;font-size:13px;color:var(--red);"></div>
+
+        <div style="display:flex;gap:10px;margin-top:8px;">
+          <button onclick="fermerAdmFormEcole()" style="flex:1;padding:14px;border-radius:12px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">Annuler</button>
+          <button id="adm-ecole-submit-btn" onclick="sauvegarderAdmEcole()" style="flex:2;padding:14px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">Publier l'école →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal inscrits -->
+    <div id="adm-orga-inscrits-modal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;padding:20px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;">INSCRITS</div>
+          <button onclick="fermerInscrits()" style="width:32px;height:32px;border-radius:8px;background:var(--card2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:16px;">✕</button>
+        </div>
+        <div id="adm-inscrits-list"></div>
+      </div>
+    </div>
+
+    <!-- Modal check-in NFC/QR -->
+    <div id="adm-checkin-modal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.9);flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+      <div style="background:var(--card);border:1px solid var(--green);border-radius:24px;padding:32px;width:100%;max-width:400px;text-align:center;">
+        <div style="font-size:48px;margin-bottom:12px;">📱</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;margin-bottom:8px;">CHECK-IN BRACELET</div>
+        <div style="font-size:13px;color:var(--muted2);margin-bottom:24px;">Approchez le bracelet du téléphone ou entrez l'ID manuellement</div>
+        <input id="adm-checkin-input" class="form-input" type="text" placeholder="ID du bracelet ou email" style="background:var(--bg2);margin-bottom:12px;text-align:center;font-size:16px;">
+        <div id="adm-checkin-result" style="display:none;padding:12px;border-radius:12px;margin-bottom:12px;font-weight:700;font-size:14px;"></div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="fermerCheckin()" style="flex:1;padding:12px;border-radius:12px;background:transparent;border:1px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;">Fermer</button>
+          <button onclick="validerCheckin()" style="flex:2;padding:12px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;border:none;cursor:pointer;">✅ Valider</button>
+        </div>
+      </div>
     </div>
 
   </div>
+
 </div>
 
 <div class="page" id="page-orga" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
@@ -5022,6 +5346,7 @@ if (isPWA) {
     <div id="orga-attente" style="display:none;"></div>
 
     <!-- Dashboard admin déplacé vers page-admin -->
+    <div id="admin-dashboard" style="display:none;"></div>
 
     <!-- Dashboard organisateur -->
     <div id="orga-dashboard" style="display:none;">
@@ -9132,12 +9457,11 @@ window.fermerFormEvent = function() {
   if (retour === 'admin') {
     document.getElementById('admin-dashboard').style.display = 'block';
     document.getElementById('orga-dashboard').style.display = 'none';
-    chargerDashboardAdmin();
   } else {
     document.getElementById('orga-dashboard').style.display = 'block';
     document.getElementById('admin-dashboard').style.display = 'none';
-    chargerDashboardOrga();
   }
+  chargerDashboardOrga();
 }
 
 // ── Formulaire salle (admin) ──
@@ -9201,12 +9525,11 @@ window.fermerFormSalle = function() {
   if (window._monRole === 'admin') {
     document.getElementById('admin-dashboard').style.display = 'block';
     document.getElementById('orga-dashboard').style.display = 'none';
-    chargerDashboardAdmin();
   } else {
     document.getElementById('orga-dashboard').style.display = 'block';
     document.getElementById('admin-dashboard').style.display = 'none';
-    chargerDashboardOrga();
   }
+  chargerDashboardOrga();
 };
 
 window.sauvegarderSalle = async function() {
@@ -9402,12 +9725,11 @@ window.fermerFormEcole = function() {
   if (window._monRole === 'admin') {
     document.getElementById('admin-dashboard').style.display = 'block';
     document.getElementById('orga-dashboard').style.display = 'none';
-    chargerDashboardAdmin();
   } else {
     document.getElementById('orga-dashboard').style.display = 'block';
     document.getElementById('admin-dashboard').style.display = 'none';
-    chargerDashboardOrga();
   }
+  chargerDashboardOrga();
 };
 
 window.sauvegarderEcole = async function() {
@@ -9613,17 +9935,15 @@ window.sauvegarderEvent = async function() {
     btn.disabled = false;
 
     if (estEdition) {
-      btn.textContent = "Publier l'événement →";
+      btn.textContent = 'Publier l\'événement →';
       document.getElementById('orga-form').style.display = 'none';
       if (window._monRole === 'admin') {
-        document.getElementById('admin-dashboard').style.display = 'block';
-        document.getElementById('orga-dashboard').style.display = 'none';
-        chargerDashboardAdmin();
+        showPage('admin');
       } else {
         document.getElementById('orga-dashboard').style.display = 'block';
         document.getElementById('admin-dashboard').style.display = 'none';
-        chargerDashboardOrga();
       }
+      chargerDashboardOrga();
     } else {
       errDiv.textContent = '✅ Événement publié !';
       errDiv.style.color = 'var(--green)';
@@ -14687,4 +15007,522 @@ window.confirmerPaiementHako = async function() {
     btn.textContent = 'Payer maintenant'; btn.disabled = false;
   }
 };
+
+
+// ═══════════════════════════════════════════
+// FONCTIONS ADMIN DÉDIÉES (IDs préfixés adm-)
+// ═══════════════════════════════════════════
+
+window.ouvrirAdmFormEvent = function() {
+  eventEnEdition = null;
+  document.getElementById('adm-orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
+  document.getElementById('adm-ev-submit-btn').textContent = 'Publier l\'événement →';
+  ['ev-titre','ev-adresse','ev-styles','ev-desc','ev-lien-resa','ev-lien-inscription'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  _resetAdmTarifsList();
+  _resetAdmDatesList();
+  ajouterAdmDateEvent();
+  ajouterAdmDateEvent();
+  document.getElementById('adm-ev-photo').value = '';
+  document.getElementById('adm-ev-photo-preview').src = '';
+  document.getElementById('adm-ev-photo-preview-wrap').style.display = 'none';
+  document.getElementById('adm-ev-photo-label').style.display = 'flex';
+  document.getElementById('adm-ev-photo-label-text').textContent = 'Choisir une image JPG ou PNG';
+  window._evPhotoUrl = null;
+  setAdmVibeChips('');
+  // Mémoriser d'où on vient
+  window._formRetour = 'admin';
+  document.getElementById('adm-orga-form').style.display = 'block';
+  document.getElementById('adm-orga-dashboard').style.display = 'none';
+  document.getElementById('adm-admin-dashboard').style.display = 'none';
+  document.getElementById('adm-orga-form').scrollIntoView({ behavior: 'smooth' });
+}
+
+window.fermerAdmFormEvent = function() {
+  document.getElementById('adm-orga-form').style.display = 'none';
+  const retour = window._formRetour || 'orga';
+  window._formRetour = null;
+  window._adminEditMode = false;
+  const btn = document.getElementById('adm-ev-submit-btn');
+  if (btn) { btn.textContent = "Publier l'événement →"; btn.disabled = false; }
+  eventEnEdition = null;
+  // Réafficher le bon dashboard sans changer de page
+  if (retour === 'admin') {
+    document.getElementById('adm-admin-dashboard').style.display = 'block';
+    document.getElementById('adm-orga-dashboard').style.display = 'none';
+  } else {
+    document.getElementById('adm-orga-dashboard').style.display = 'block';
+    document.getElementById('adm-admin-dashboard').style.display = 'none';
+  }
+  chargerDashboardAdmin();
+}
+
+window.ouvrirAdmFormSalle = function(salleId) {
+  // Sauvegarder le contexte de retour
+  window._formRetourSalle = 'admin';
+  // Cacher dashboard admin
+  document.getElementById('adm-admin-dashboard').style.display = 'none';
+  document.getElementById('adm-orga-dashboard').style.display = 'none';
+
+  // Reset champs
+  const ids = ['salle-nom','salle-ville','salle-adresse','salle-prix','salle-surface','salle-desc','salle-contact','salle-lien'];
+  ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('adm-salle-disponible').checked = true;
+  document.getElementById('adm-salle-edit-id').value = '';
+  document.getElementById('adm-admin-form-salle-err').style.display = 'none';
+  document.getElementById('adm-admin-form-salle-title').textContent = 'AJOUTER UNE SALLE';
+  document.getElementById('adm-salle-submit-btn').textContent = 'Publier la salle →';
+  document.querySelectorAll('#adm-salle-dispos-pick input[type=checkbox]').forEach(cb => cb.checked = false);
+
+  // Mode édition
+  if (salleId) {
+    document.getElementById('adm-salle-edit-id').value = salleId;
+    document.getElementById('adm-admin-form-salle-title').textContent = 'MODIFIER LA SALLE';
+    document.getElementById('adm-salle-submit-btn').textContent = 'Enregistrer →';
+    // Charger les données existantes
+    (async () => {
+      try {        const snap = await window._getDoc(window._doc(window._db, 'salles', salleId));
+        if (!snap.exists()) return;
+        const s = snap.data();
+        document.getElementById('adm-salle-nom').value     = s.nom        || '';
+        document.getElementById('adm-salle-ville').value   = s.ville      || '';
+        document.getElementById('adm-salle-adresse').value = s.adresse    || '';
+        document.getElementById('adm-salle-prix').value    = s.prix       || '';
+        document.getElementById('adm-salle-devise').value  = s.devise     || '€';
+        document.getElementById('adm-salle-surface').value = s.surface    || '';
+        document.getElementById('adm-salle-desc').value    = s.description|| '';
+        document.getElementById('adm-salle-contact').value = s.contact    || '';
+        document.getElementById('adm-salle-lien').value    = s.lienResa   || '';
+        document.getElementById('adm-salle-disponible').checked = s.disponible !== false;
+        const dispos = s.dispos || [];
+        document.querySelectorAll('#adm-salle-dispos-pick input[type=checkbox]').forEach(cb => {
+          cb.checked = dispos.includes(cb.value);
+        });
+      } catch(e) { console.error('Erreur chargement salle:', e); }
+    })();
+  }
+
+  document.getElementById('adm-admin-form-salle').style.display = 'block';
+  document.getElementById('adm-admin-form-salle').scrollIntoView({ behavior: 'smooth' });
+}
+
+window.fermerAdmFormSalle = function() {
+  document.getElementById('adm-admin-form-salle').style.display = 'none';
+  const btn = document.getElementById('adm-salle-submit-btn');
+  if (btn) { btn.textContent = 'Publier la salle →'; btn.disabled = false; }
+  window._formRetourSalle = null;
+  document.getElementById('adm-orga-form').style.display = 'none';
+  document.getElementById('adm-admin-form-salle') && (document.getElementById('adm-admin-form-salle').style.display = 'none');
+  if (window._monRole === 'admin') {
+    document.getElementById('adm-admin-dashboard').style.display = 'block';
+    document.getElementById('adm-orga-dashboard').style.display = 'none';
+  } else {
+    document.getElementById('adm-orga-dashboard').style.display = 'block';
+    document.getElementById('adm-admin-dashboard').style.display = 'none';
+  }
+  chargerDashboardAdmin();
+}
+
+window.sauvegarderAdmSalle = async function() {
+  if (!window._db) return;
+  const errDiv = document.getElementById('adm-admin-form-salle-err');
+  errDiv.style.display = 'none';
+
+  const nom     = document.getElementById('adm-salle-nom').value.trim();
+  const ville   = document.getElementById('adm-salle-ville').value.trim();
+  const contact = document.getElementById('adm-salle-contact').value.trim();
+  const prix    = parseFloat(document.getElementById('adm-salle-prix').value) || 0;
+
+  if (!nom || !ville || !contact) {
+    errDiv.textContent = '⚠️ Nom, ville et contact sont obligatoires.';
+    errDiv.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('adm-salle-submit-btn');
+  btn.textContent = '⏳ Enregistrement...';
+  btn.disabled = true;
+
+  const dispos = Array.from(document.querySelectorAll('#adm-salle-dispos-pick input[type=checkbox]:checked')).map(cb => cb.value);
+  const data = {
+    nom,
+    ville,
+    adresse:     document.getElementById('adm-salle-adresse').value.trim(),
+    prix,
+    devise:      document.getElementById('adm-salle-devise').value || '€',
+    surface:     parseFloat(document.getElementById('adm-salle-surface').value) || null,
+    description: document.getElementById('adm-salle-desc').value.trim(),
+    contact,
+    lienResa:    document.getElementById('adm-salle-lien').value.trim() || null,
+    disponible:  document.getElementById('adm-salle-disponible').checked,
+    dispos,
+    updatedAt:   Date.now(),
+  };
+
+  try {    const editId = document.getElementById('adm-salle-edit-id').value;
+    if (editId) {
+      await window._setDoc(window._doc(window._db, 'salles', editId), data, { merge: true });
+    } else {
+      data.createdAt = Date.now();
+      data.organisateurUid = window._currentUid;
+      await window._addDoc(window._collection(window._db, 'salles'), data);
+    }
+    fermerAdmFormSalle();
+  } catch(e) {
+    console.error('Erreur sauvegarde salle:', e);
+    errDiv.textContent = '❌ Erreur lors de la sauvegarde : ' + e.message;
+    errDiv.style.display = 'block';
+    btn.textContent = editId ? 'Enregistrer →' : 'Publier la salle →';
+    btn.disabled = false;
+  }
+}
+
+window.ouvrirAdmFormEcole = function(ecoleId) {
+  window._formRetourEcole = 'admin';
+  document.getElementById('adm-admin-dashboard').style.display = 'none';
+  document.getElementById('adm-orga-dashboard').style.display = 'none';
+
+  // Reset
+  ['ecole-nom','ecole-ville','ecole-cp','ecole-adresse','ecole-tel','ecole-email','ecole-lien','ecole-lien-inscription','ecole-desc','ecole-styles'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('adm-ecole-edit-id').value = '';
+  document.getElementById('adm-admin-form-ecole-err').style.display = 'none';
+  document.getElementById('adm-admin-form-ecole-title').textContent = 'AJOUTER UNE ÉCOLE';
+  document.getElementById('adm-ecole-submit-btn').textContent = "Publier l'école →";
+  document.querySelectorAll('#adm-ecole-niveaux-pick input[type=checkbox]').forEach(cb => cb.checked = false);
+  document.getElementById('adm-ecole-horaires-list').innerHTML = '';
+  document.getElementById('adm-ecole-abos-list').innerHTML = '';
+  _horaireCount = 0; _aboCount = 0;
+
+  if (ecoleId) {
+    document.getElementById('adm-ecole-edit-id').value = ecoleId;
+    document.getElementById('adm-admin-form-ecole-title').textContent = "MODIFIER L'ÉCOLE";
+    document.getElementById('adm-ecole-submit-btn').textContent = 'Enregistrer →';
+    (async () => {
+      try {        const snap = await window._getDoc(window._doc(window._db, 'ecoles', ecoleId));
+        if (!snap.exists()) return;
+        const e = snap.data();
+        document.getElementById('adm-ecole-nom').value    = e.nom        || '';
+        document.getElementById('adm-ecole-ville').value  = e.ville      || '';
+        document.getElementById('adm-ecole-cp').value     = e.cp         || '';
+        document.getElementById('adm-ecole-adresse').value= e.adresse    || '';
+        document.getElementById('adm-ecole-tel').value    = e.tel        || '';
+        document.getElementById('adm-ecole-email').value  = e.email      || '';
+        document.getElementById('adm-ecole-lien').value   = e.lien       || '';
+        document.getElementById('adm-ecole-lien-inscription').value = e.lienInscription || '';
+        document.getElementById('adm-ecole-desc').value   = e.description|| '';
+        document.getElementById('adm-ecole-styles').value = e.styles     || '';
+        (e.niveaux || []).forEach(n => {
+          const cb = document.querySelector(`#ecole-niveaux-pick input[value="${n}"]`);
+          if (cb) cb.checked = true;
+        });
+        (e.horaires || []).forEach(h => {
+          ajouterHoraire();
+          const items = document.querySelectorAll('.ecole-horaire-jour');
+          const jours = document.querySelectorAll('.ecole-horaire-heure');
+          const last = items.length - 1;
+          items[last].value = h.jour || '';
+          jours[last].value = h.heure || '';
+        });
+        (e.abonnements || []).forEach(a => {
+          ajouterAbonnement();
+          const noms   = document.querySelectorAll('.ecole-abo-nom');
+          const prix   = document.querySelectorAll('.ecole-abo-prix');
+          const devise = document.querySelectorAll('.ecole-abo-devise');
+          const last = noms.length - 1;
+          noms[last].value   = a.nom    || '';
+          prix[last].value   = a.prix   || '';
+          if (devise[last]) devise[last].value = a.devise || '€';
+        });
+      } catch(e) { console.error('Erreur chargement école:', e); }
+    })();
+  }
+
+  document.getElementById('adm-admin-form-ecole').style.display = 'block';
+  document.getElementById('adm-admin-form-ecole').scrollIntoView({ behavior: 'smooth' });
+}
+
+window.fermerAdmFormEcole = function() {
+  document.getElementById('adm-admin-form-ecole').style.display = 'none';
+  const btn = document.getElementById('adm-ecole-submit-btn');
+  if (btn) { btn.textContent = "Publier l'école →"; btn.disabled = false; }
+  window._formRetourEcole = null;
+  document.getElementById('adm-orga-form').style.display = 'none';
+  document.getElementById('adm-admin-form-ecole') && (document.getElementById('adm-admin-form-ecole').style.display = 'none');
+  if (window._monRole === 'admin') {
+    document.getElementById('adm-admin-dashboard').style.display = 'block';
+    document.getElementById('adm-orga-dashboard').style.display = 'none';
+  } else {
+    document.getElementById('adm-orga-dashboard').style.display = 'block';
+    document.getElementById('adm-admin-dashboard').style.display = 'none';
+  }
+  chargerDashboardAdmin();
+}
+
+window.sauvegarderAdmEcole = async function() {
+  if (!window._db) return;
+  const errDiv = document.getElementById('adm-admin-form-ecole-err');
+  errDiv.style.display = 'none';
+
+  const nom   = document.getElementById('adm-ecole-nom').value.trim();
+  const ville = document.getElementById('adm-ecole-ville').value.trim();
+  if (!nom || !ville) {
+    errDiv.textContent = '⚠️ Nom et ville sont obligatoires.';
+    errDiv.style.display = 'block'; return;
+  }
+
+  const btn = document.getElementById('adm-ecole-submit-btn');
+  btn.textContent = '⏳ Enregistrement...'; btn.disabled = true;
+
+  const niveaux = Array.from(document.querySelectorAll('#adm-ecole-niveaux-pick input[type=checkbox]:checked')).map(cb => cb.value);
+
+  const horaires = Array.from(document.getElementById('adm-ecole-horaires-list').children).map(div => ({
+    jour:  div.querySelector('.ecole-horaire-jour')?.value || '',
+    heure: div.querySelector('.ecole-horaire-heure')?.value || '',
+  })).filter(h => h.jour || h.heure);
+
+  const abonnements = Array.from(document.getElementById('adm-ecole-abos-list').children).map(div => ({
+    nom:   div.querySelector('.ecole-abo-nom')?.value.trim() || '',
+    prix:  parseFloat(div.querySelector('.ecole-abo-prix')?.value) || 0,
+    devise: div.querySelector('.ecole-abo-devise')?.value || '€',
+  })).filter(a => a.nom);
+
+  const data = {
+    nom, ville,
+    cp:          document.getElementById('adm-ecole-cp').value.trim(),
+    adresse:     document.getElementById('adm-ecole-adresse').value.trim(),
+    tel:         document.getElementById('adm-ecole-tel').value.trim(),
+    email:       document.getElementById('adm-ecole-email').value.trim(),
+    lien:        document.getElementById('adm-ecole-lien').value.trim() || null,
+    lienInscription: document.getElementById('adm-ecole-lien-inscription').value.trim() || null,
+    description: document.getElementById('adm-ecole-desc').value.trim(),
+    styles:      document.getElementById('adm-ecole-styles').value.trim(),
+    niveaux, horaires, abonnements,
+    updatedAt: Date.now(),
+  };
+
+  try {    const editId = document.getElementById('adm-ecole-edit-id').value;
+    if (editId) {
+      await window._setDoc(window._doc(window._db, 'ecoles', editId), data, { merge: true });
+    } else {
+      data.createdAt = Date.now();
+      data.organisateurUid = window._currentUid;
+      await window._addDoc(window._collection(window._db, 'ecoles'), data);
+    }
+    fermerAdmFormEcole();
+  } catch(e) {
+    errDiv.textContent = '❌ Erreur : ' + e.message;
+    errDiv.style.display = 'block';
+    btn.textContent = "Publier l'école →"; btn.disabled = false;
+  }
+}
+
+window.sauvegarderAdmEvent = async function() {
+  const titre = document.getElementById('adm-ev-titre').value.trim();
+  const errDiv = document.getElementById('adm-orga-form-err');
+  errDiv.style.display = 'none';
+
+  if (!titre) { errDiv.textContent = '⚠️ Le titre est obligatoire'; errDiv.style.display = 'block'; return; }
+
+  const btn = document.getElementById('adm-ev-submit-btn');
+  btn.textContent = '⏳ Publication...';
+  btn.disabled = true;
+
+  // Upload photo si nouvelle sélection
+  let photoUrl = window._evPhotoUrl || null;
+  const photoFile = document.getElementById('adm-ev-photo').files[0];
+  if (photoFile) {
+    try {
+      btn.textContent = '⏳ Upload photo...';
+      const { getStorage, ref, uploadBytes, getDownloadURL } = await import(
+        'https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js'
+      );
+      const storage = getStorage();
+      const storageRef = ref(storage, `events/${window._currentUid}/${Date.now()}_${photoFile.name}`);
+      const snap = await uploadBytes(storageRef, photoFile);
+      photoUrl = await getDownloadURL(snap.ref);
+      btn.textContent = '⏳ Publication...';
+    } catch(e) {
+      document.getElementById('adm-orga-form-err').textContent = '❌ Erreur upload photo : ' + e.message;
+      document.getElementById('adm-orga-form-err').style.display = 'block';
+      btn.textContent = eventEnEdition ? 'Enregistrer →' : 'Publier →';
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  const data = {
+    titre,
+    type:          document.getElementById('adm-ev-type').value,
+    discipline:    document.getElementById('adm-ev-discipline').value,
+    dates:         (window._evDates || []).filter(d => d.date).map(d => ({date: d.date, heure: d.heure || ''})),
+    ville:         document.getElementById('adm-ev-ville').value,
+    tarifs:        (window._evTarifs || []).map(t => ({ label: t.label || '', prix: parseFloat(t.prix) || 0, devise: t.devise || '€' })),
+    adresse:       document.getElementById('adm-ev-adresse').value,
+    styles:        document.getElementById('adm-ev-styles').value,
+    vibe:          getAdmVibeSelectionnes(),
+    niveau:        document.getElementById('adm-ev-niveau').value,
+    description:   document.getElementById('adm-ev-desc').value,
+    lienResa:      document.getElementById('adm-ev-lien-resa') ? document.getElementById('adm-ev-lien-resa').value.trim() || null : null,
+    lienInscription: document.getElementById('adm-ev-lien-inscription') ? document.getElementById('adm-ev-lien-inscription').value.trim() || null : null,
+    billetterieMode: window._billetterieMode || 'externe',
+    stripeAccountId: window._stripeAccountId || null,
+    photoUrl:      photoUrl || null,
+    photoCropY:    photoUrl ? (window._evCropY !== undefined ? window._evCropY : 50) : null,
+    organisateurUid: window._currentUid,
+    updatedAt:     new Date().toISOString(),
+  };
+
+  try {
+
+    if (eventEnEdition) {
+      const snap = await window._getDoc(window._doc(window._db, 'evenements', eventEnEdition));
+      if (!snap.exists() || (snap.data().organisateurUid !== window._currentUid && window._monRole !== 'admin')) {
+        errDiv.textContent = '⛔ Action non autorisée.';
+        errDiv.style.display = 'block';
+        btn.textContent = 'Enregistrer →';
+        btn.disabled = false;
+        return;
+      }
+      await window._setDoc(window._doc(window._db, 'evenements', eventEnEdition), data, { merge: true });
+    } else {
+      data.inscrits = 0;
+      data.createdAt = new Date().toISOString();
+      await window._addDoc(window._collection(window._db, 'evenements'), data);
+    }
+
+    tousLesEvents = [];
+    const estEdition = !!eventEnEdition;
+    const retour = window._formRetour || 'orga';
+    eventEnEdition = null;
+    window._formRetour = null;
+    window._adminEditMode = false;
+    btn.disabled = false;
+
+    if (estEdition) {
+      btn.textContent = 'Publier l\'événement →';
+      document.getElementById('adm-orga-form').style.display = 'none';
+      if (window._monRole === 'admin') {
+        showPage('admin');
+      } else {
+        document.getElementById('adm-orga-dashboard').style.display = 'block';
+        document.getElementById('adm-admin-dashboard').style.display = 'none';
+      }
+      chargerDashboardAdmin();
+    } else {
+      errDiv.textContent = '✅ Événement publié !';
+      errDiv.style.color = 'var(--green)';
+      errDiv.style.display = 'block';
+      setTimeout(() => { errDiv.style.display = 'none'; errDiv.style.color = ''; }, 3000);
+      btn.textContent = 'Publier l\'événement →';
+      document.getElementById('adm-orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
+      ['ev-titre','ev-adresse','ev-styles','ev-desc','ev-lien-resa','ev-lien-inscription'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+      });
+      _resetAdmTarifsList();
+      _resetAdmDatesList();
+      ajouterAdmDateEvent();
+      document.getElementById('adm-ev-photo').value = '';
+      document.getElementById('adm-ev-photo-preview').src = '';
+      document.getElementById('adm-ev-photo-preview-wrap').style.display = 'none';
+      document.getElementById('adm-ev-photo-label').style.display = 'flex';
+      document.getElementById('adm-ev-photo-label-text').textContent = 'Choisir une image JPG ou PNG';
+      window._evPhotoUrl = null;
+      setAdmVibeChips('');
+      document.getElementById('adm-orga-form').scrollIntoView({ behavior: 'smooth' });
+    }
+  } catch(e) {
+    errDiv.textContent = '❌ Erreur : ' + e.message;
+    errDiv.style.display = 'block';
+    btn.textContent = eventEnEdition ? 'Enregistrer →' : 'Publier →';
+    btn.disabled = false;
+  }
+}
+
+window.previewAdmPhotoEvent = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = document.getElementById('adm-ev-photo-preview');
+    img.src = e.target.result;
+    img.onload = function() { _applyStaticPreview(window._evCropY); };
+    document.getElementById('adm-ev-photo-preview-wrap').style.display = 'block';
+    document.getElementById('adm-ev-photo-label').style.display = 'none';
+    window._evCropY = 50;
+    window._evCropYTemp = 50;
+  };
+  reader.readAsDataURL(file);
+}
+
+window.ouvrirAdmCropModal = function() {
+  const srcImg = document.getElementById('adm-ev-photo-preview');
+  if (!srcImg || !srcImg.src) return;
+  const modal = document.getElementById('adm-ev-crop-modal');
+  const cropImg = document.getElementById('adm-ev-crop-img');
+  cropImg.src = srcImg.src;
+  window._evCropYTemp = window._evCropY;
+  modal.style.display = 'flex';
+  cropImg.onload = function() { _initCropModal(window._evCropYTemp); };
+  if (cropImg.complete && cropImg.naturalHeight) _initCropModal(window._evCropYTemp);
+}
+
+window.fermerAdmCropModal = function() {
+  document.getElementById('adm-ev-crop-modal').style.display = 'none';
+}
+
+window.validerAdmCrop = function() {
+  window._evCropY = window._evCropYTemp;
+  _applyStaticPreview(window._evCropY);
+  fermerAdmCropModal();
+}
+
+window.supprimerAdmPhotoEvent = function() {
+  document.getElementById('adm-ev-photo').value = '';
+  document.getElementById('adm-ev-photo-preview').src = '';
+  document.getElementById('adm-ev-photo-preview-wrap').style.display = 'none';
+  document.getElementById('adm-ev-photo-label').style.display = 'flex';
+  document.getElementById('adm-ev-photo-label-text').textContent = 'Choisir une image JPG ou PNG';
+  window._evPhotoUrl = null;
+  window._evCropY = 50;
+}
+
+window.toggleAdmVibeChip = function(btn) {
+  btn.classList.toggle('on');
+}
+
+window.ajouterAdmDateEvent = function(dateVal, heureVal) {
+  window._evDates.push({ date: dateVal || '', heure: heureVal || '' });
+  _renderDatesList();
+}
+
+window.ajouterAdmTarifEvent = function(labelVal, prixVal, deviseVal) {
+  window._evTarifs.push({ label: labelVal || '', prix: prixVal !== undefined ? prixVal : '', devise: deviseVal || '€' });
+  _renderTarifsList();
+}
+
+
+// Utilitaires adm- dédiés
+function _resetAdmTarifsList() { 
+  window._evTarifs = []; 
+  const el = document.getElementById('adm-ev-tarifs-list'); 
+  if (el) el.innerHTML = ''; 
+}
+function _resetAdmDatesList() { 
+  window._evDates = []; 
+  const el = document.getElementById('adm-ev-dates-list'); 
+  if (el) el.innerHTML = ''; 
+}
+function getAdmVibeSelectionnes() {
+  return Array.from(document.querySelectorAll('#adm-ev-vibe-chips .vibe-chip.selected')).map(b => b.dataset.vibe).join(', ');
+}
+function setAdmVibeChips(val) {
+  const chips = document.querySelectorAll('#adm-ev-vibe-chips .vibe-chip');
+  const vals = val ? val.split(', ') : [];
+  chips.forEach(c => c.classList.toggle('selected', vals.includes(c.dataset.vibe)));
+}
+
 </script>
