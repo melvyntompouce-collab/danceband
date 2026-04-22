@@ -15,6 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=Big+Shoulders+Display:wght@900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
 <style>
 @font-face {
   font-family: 'Drowner';
@@ -5155,13 +5156,32 @@ if (isPWA) {
           <label class="form-label">Description</label>
           <textarea id="ev-desc" class="form-input" rows="3" placeholder="Décrivez votre événement..." style="background:var(--bg2);resize:vertical;min-height:80px;"></textarea>
         </div>
-        <div class="form-group">
-          <label class="form-label">Lien de réservation</label>
-          <input id="ev-lien-resa" class="form-input" type="url" placeholder="https://shotgun.live/..." style="background:var(--bg2);">
-        </div>
+        <!-- Mode billetterie -->
         <div class="form-group" style="margin:0">
-          <label class="form-label">Lien d'inscription <span style="font-size:11px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
-          <input id="ev-lien-inscription" class="form-input" type="url" placeholder="https://forms.google.com/..." style="background:var(--bg2);">
+          <label class="form-label">Billetterie</label>
+          <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <button type="button" id="btn-billetterie-externe" onclick="setBilletterieMode('externe')" style="flex:1;padding:10px;border-radius:10px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;border:none;cursor:pointer;">Lien externe</button>
+            <button type="button" id="btn-billetterie-hako" onclick="setBilletterieMode('hako')" style="flex:1;padding:10px;border-radius:10px;background:var(--bg2);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;border:1.5px solid var(--border);cursor:pointer;">Paiement via HAKO</button>
+          </div>
+
+          <!-- Mode externe -->
+          <div id="billetterie-externe-fields">
+            <input id="ev-lien-resa" class="form-input" type="url" placeholder="https://shotgun.live/..." style="background:var(--bg2);margin-bottom:10px;">
+            <input id="ev-lien-inscription" class="form-input" type="url" placeholder="https://forms.google.com/... (optionnel)" style="background:var(--bg2);">
+          </div>
+
+          <!-- Mode HAKO -->
+          <div id="billetterie-hako-fields" style="display:none;">
+            <div style="background:rgba(0,245,155,0.06);border:1px solid rgba(0,245,155,0.2);border-radius:12px;padding:14px;margin-bottom:12px;">
+              <div style="font-size:12px;color:var(--muted2);line-height:1.6;">Les paiements sont encaissés directement sur HAKO. HAKO prélève 10% de commission, le reste est viré sur ton compte bancaire.</div>
+            </div>
+            <div id="stripe-connect-status">
+              <button type="button" onclick="connecterStripe()" id="btn-connecter-stripe" style="width:100%;padding:12px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                Connecter mon compte bancaire
+              </button>
+            </div>
+          </div>
         </div>
 
         <div id="orga-form-err" style="display:none;background:rgba(255,77,109,0.1);border:1px solid var(--red);border-radius:10px;padding:12px;font-size:13px;color:var(--red);"></div>
@@ -7310,6 +7330,12 @@ function ouvrirEvent(id) {
     btnHtml = `<button disabled style="padding:13px 24px;border-radius:14px;background:var(--card2);color:var(--muted);border:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:not-allowed;">Événement terminé</button>`;
   } else if (ev.lienResa) {
     btnHtml = `<a href="${ev.lienResa}" target="_blank" rel="noopener" style="padding:13px 24px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;text-decoration:none;display:inline-block;">Réserver ↗</a>`;
+  } else if (ev.stripeAccountId) {
+    const premierTarif = ev.tarifs && ev.tarifs.length > 0 ? ev.tarifs[0] : null;
+    const prix = premierTarif ? premierTarif.prix : (ev.prix || 0);
+    btnHtml = prix > 0
+      ? `<button onclick="ouvrirPaiementHako('${ev.id}')" style="padding:13px 24px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Payer et s'inscrire</button>`
+      : `<button onclick="sInscrire()" style="padding:13px 24px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;border:none;cursor:pointer;">S'inscrire</button>`;
   } else {
     btnHtml = `<button onclick="sInscrire()" style="padding:13px 24px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Enregistrer</button>`;
   }
@@ -9432,8 +9458,10 @@ window.sauvegarderEvent = async function() {
     vibe:          getVibeSelectionnes(),
     niveau:        document.getElementById('ev-niveau').value,
     description:   document.getElementById('ev-desc').value,
-    lienResa:      document.getElementById('ev-lien-resa').value.trim() || null,
-    lienInscription: document.getElementById('ev-lien-inscription').value.trim() || null,
+    lienResa:      document.getElementById('ev-lien-resa') ? document.getElementById('ev-lien-resa').value.trim() || null : null,
+    lienInscription: document.getElementById('ev-lien-inscription') ? document.getElementById('ev-lien-inscription').value.trim() || null : null,
+    billetterieMode: window._billetterieMode || 'externe',
+    stripeAccountId: window._stripeAccountId || null,
     photoUrl:      photoUrl || null,
     photoCropY:    photoUrl ? (window._evCropY !== undefined ? window._evCropY : 50) : null,
     organisateurUid: window._currentUid,
@@ -14343,3 +14371,194 @@ function _renderDrawerLieux() {
 </div>
 
 
+
+<!-- Modal paiement HAKO -->
+<div id="hako-payment-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
+  <div style="width:min(92vw,420px);background:var(--card);border-radius:20px;border:1px solid var(--border);overflow:hidden;">
+    <div style="padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);">
+      <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;">Paiement sécurisé</span>
+      <button onclick="fermerPaiementHako()" style="width:30px;height:30px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);color:var(--muted2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;">✕</button>
+    </div>
+    <div style="padding:20px;">
+      <div id="hako-payment-event-info" style="margin-bottom:16px;"></div>
+      <div id="hako-payment-element" style="margin-bottom:16px;"></div>
+      <div id="hako-payment-err" style="display:none;background:rgba(255,77,109,0.1);border:1px solid var(--red);border-radius:10px;padding:12px;font-size:13px;color:var(--red);margin-bottom:12px;"></div>
+      <button id="hako-pay-btn" onclick="confirmerPaiementHako()" style="width:100%;padding:14px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">Payer maintenant</button>
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted);"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span style="font-size:11px;color:var(--muted);">Paiement sécurisé par Stripe</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Stripe Connect ──
+window._billetterieMode = 'externe';
+window._stripeAccountId = null;
+const STRIPE_PK = 'pk_live_51OPv7FGzgaodmCR4cwFKrbxCkzysTw02qKBgBR1jyk2hV0wcoObEFHajVKvCslsAVyQQglvQHkXuV3ujSRsAAu8o00onwvzn2q';
+let _stripeInstance = null;
+let _stripeElements = null;
+let _paymentEventId = null;
+
+window.setBilletterieMode = function(mode) {
+  window._billetterieMode = mode;
+  const btnExterne = document.getElementById('btn-billetterie-externe');
+  const btnHako = document.getElementById('btn-billetterie-hako');
+  const fieldsExterne = document.getElementById('billetterie-externe-fields');
+  const fieldsHako = document.getElementById('billetterie-hako-fields');
+  if (mode === 'externe') {
+    btnExterne.style.background = 'var(--green)';
+    btnExterne.style.color = '#080810';
+    btnExterne.style.border = 'none';
+    btnHako.style.background = 'var(--bg2)';
+    btnHako.style.color = 'var(--muted2)';
+    btnHako.style.border = '1.5px solid var(--border)';
+    fieldsExterne.style.display = 'block';
+    fieldsHako.style.display = 'none';
+  } else {
+    btnHako.style.background = 'var(--green)';
+    btnHako.style.color = '#080810';
+    btnHako.style.border = 'none';
+    btnExterne.style.background = 'var(--bg2)';
+    btnExterne.style.color = 'var(--muted2)';
+    btnExterne.style.border = '1.5px solid var(--border)';
+    fieldsExterne.style.display = 'none';
+    fieldsHako.style.display = 'block';
+    // Vérifier si l'orga a déjà un compte Stripe dans Firestore
+    verifierCompteStripeOrga();
+  }
+};
+
+async function verifierCompteStripeOrga() {
+  if (!window._currentUid) return;
+  try {
+    const snap = await window._getDoc(window._doc(window._db, 'danseurs', window._currentUid));
+    if (snap.exists() && snap.data().stripeAccountId) {
+      window._stripeAccountId = snap.data().stripeAccountId;
+      afficherStripeConnecte(snap.data().stripeAccountId);
+    }
+  } catch(e) { console.error(e); }
+}
+
+function afficherStripeConnecte(accountId) {
+  const statusDiv = document.getElementById('stripe-connect-status');
+  if (!statusDiv) return;
+  statusDiv.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.2);">
+    <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--text);">Compte bancaire connecté</div>
+      <div style="font-size:11px;color:var(--muted2);">${accountId}</div>
+    </div>
+  </div>`;
+}
+
+window.connecterStripe = async function() {
+  const btn = document.getElementById('btn-connecter-stripe');
+  if (btn) { btn.textContent = '⏳ Connexion...'; btn.disabled = true; }
+  try {
+    const user = window._auth ? window._auth.currentUser : null;
+    if (!user) throw new Error('Non connecté');
+    const res = await fetch('/api/create-connect-account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: user.email, uid: user.uid })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    // Sauvegarder l'ID dans Firestore
+    await window._updateDoc(window._doc(window._db, 'danseurs', user.uid), {
+      stripeAccountId: data.accountId
+    });
+    window._stripeAccountId = data.accountId;
+    // Rediriger vers l'onboarding Stripe
+    window.open(data.onboardingUrl, '_blank');
+    afficherStripeConnecte(data.accountId);
+  } catch(e) {
+    if (btn) { btn.textContent = 'Connecter mon compte bancaire'; btn.disabled = false; }
+    alert('Erreur : ' + e.message);
+  }
+};
+
+// ── Paiement visiteur ──
+window.ouvrirPaiementHako = async function(eventId) {
+  if (!window._currentUid) { alert('Connecte-toi pour payer.'); return; }
+  const ev = tousLesEvents.find(e => e.id === eventId);
+  if (!ev) return;
+  _paymentEventId = eventId;
+  const prix = ev.tarifs && ev.tarifs.length > 0 ? ev.tarifs[0].prix : (ev.prix || 0);
+  // Afficher les infos de l'event
+  document.getElementById('hako-payment-event-info').innerHTML = `
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-bottom:4px;">${ev.titre}</div>
+    <div style="font-size:22px;font-weight:800;color:var(--green);font-family:'Syne',sans-serif;">${prix}€</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:2px;">10% de frais de service inclus</div>
+  `;
+  // Créer le payment intent
+  try {
+    const res = await fetch('/api/create-payment-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: prix,
+        eventId: ev.id,
+        eventTitle: ev.titre,
+        stripeAccountId: ev.stripeAccountId
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    // Init Stripe Elements
+    if (!_stripeInstance) _stripeInstance = Stripe(STRIPE_PK);
+    _stripeElements = _stripeInstance.elements({ clientSecret: data.clientSecret });
+    const paymentEl = _stripeElements.create('payment');
+    document.getElementById('hako-payment-element').innerHTML = '';
+    paymentEl.mount('#hako-payment-element');
+    // Afficher le modal
+    const modal = document.getElementById('hako-payment-modal');
+    modal.style.display = 'flex';
+  } catch(e) {
+    alert('Erreur paiement : ' + e.message);
+  }
+};
+
+window.fermerPaiementHako = function() {
+  document.getElementById('hako-payment-modal').style.display = 'none';
+  _paymentEventId = null;
+  _stripeElements = null;
+};
+
+window.confirmerPaiementHako = async function() {
+  if (!_stripeElements || !_stripeInstance) return;
+  const btn = document.getElementById('hako-pay-btn');
+  const errDiv = document.getElementById('hako-payment-err');
+  btn.textContent = '⏳ Paiement...';
+  btn.disabled = true;
+  errDiv.style.display = 'none';
+  try {
+    const { error } = await _stripeInstance.confirmPayment({
+      elements: _stripeElements,
+      confirmParams: { return_url: 'https://hakosphere.fr?paiement=success' },
+      redirect: 'if_required'
+    });
+    if (error) throw new Error(error.message);
+    // Inscrire l'utilisateur à l'événement
+    if (_paymentEventId) await sInscrireEvent(_paymentEventId);
+    fermerPaiementHako();
+    alert('✅ Paiement réussi ! Tu es inscrit.');
+  } catch(e) {
+    errDiv.textContent = e.message;
+    errDiv.style.display = 'block';
+    btn.textContent = 'Payer maintenant';
+    btn.disabled = false;
+  }
+};
+
+async function sInscrireEvent(eventId) {
+  try {
+    const { increment } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    await window._updateDoc(window._doc(window._db, 'evenements', eventId), {
+      inscrits: increment(1)
+    });
+  } catch(e) { console.error(e); }
+}
+</script>
