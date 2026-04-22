@@ -2947,6 +2947,7 @@ if (isPWA) {
       <div class="hero-actions">
         <a class="btn-primary" href="#" onclick="showPage('auth')">Créer mon profil →</a>
         <a class="btn-secondary" href="#" onclick="showPage('network')">Explorer le réseau</a>
+        <a class="btn-secondary" href="#" onclick="showPage('auth')" style="margin-top:8px;">Explorer l'agenda →</a>
       </div>
       <div class="hero-stats">
         <div>
@@ -5771,6 +5772,13 @@ function showPage(id, isBack = false) {
   // Pages à ne pas persister (auth, modales, etc.)
   const _noSave = ['home','auth','privacy','cgu','mentions'];
   if (!_noSave.includes(id)) localStorage.setItem('hako_last_page', id);
+
+  // Pages accessibles sans compte
+  const _pagesPubliques = ['home','auth','network','privacy','cgu','mentions'];
+  if (!window._currentUid && !_pagesPubliques.includes(id)) {
+    showPage('auth');
+    return;
+  }
 
   // Drawer actif
   document.querySelectorAll('.drawer-item').forEach(i => i.classList.remove('on'));
@@ -10750,6 +10758,13 @@ function cacherBarreReseau() {
 }
 
 window.ouvrirProfilArtiste = async function(uid) {
+  // Bloquer si non connecté
+  if (!window._currentUid) {
+    // Afficher modal d'invitation
+    const modal = document.getElementById('hako-join-modal');
+    if (modal) modal.style.display = 'flex';
+    return;
+  }
   // Fermer le drawer réseau si ouvert
   if (window.fermerDrawerReseau) fermerDrawerReseau();
   artisteCourant = uid;
@@ -12788,6 +12803,10 @@ function mettreAJourNav(user) {
       if (initEl) initEl.textContent = (nomCourt[0] || '?').toUpperCase();
     }
 
+    // Réafficher le bouton hamburger
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    if (hamburgerBtn) hamburgerBtn.style.display = '';
+
     // Avatar nav profil — PWA uniquement
     const navProfileBtn = document.getElementById('nav-profile-btn');
     if (navProfileBtn) {
@@ -12869,6 +12888,9 @@ function mettreAJourNav(user) {
     // Cacher avatar nav
     const navPB = document.getElementById('nav-profile-btn');
     if (navPB) navPB.style.display = 'none';
+    // Cacher le bouton hamburger hors connexion
+    const hamburger = document.getElementById('hamburger-btn');
+    if (hamburger) hamburger.style.display = 'none';
 
     // Drawer — header déconnecté
     document.getElementById('drawer-header-connected').style.display   = 'none';
@@ -14469,6 +14491,17 @@ function _renderDrawerLieux() {
 </div>
 
 
+
+<!-- Modal rejoindre HAKO -->
+<div id="hako-join-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
+  <div style="width:min(88vw,380px);background:var(--card);border-radius:24px;border:1px solid var(--border);padding:32px 24px;text-align:center;">
+    <div style="font-size:36px;margin-bottom:12px;">🎭</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;margin-bottom:8px;">Rejoins HAKO</div>
+    <div style="font-size:14px;color:var(--muted2);line-height:1.6;margin-bottom:24px;">Crée ton profil gratuit pour découvrir les artistes, échanger et collaborer.</div>
+    <button onclick="document.getElementById('hako-join-modal').style.display='none';showPage('auth');" style="width:100%;padding:14px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-bottom:10px;">Créer mon profil gratuit →</button>
+    <button onclick="document.getElementById('hako-join-modal').style.display='none';" style="width:100%;padding:12px;border-radius:14px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">Continuer à explorer</button>
+  </div>
+</div>
 
 <!-- Modal paiement HAKO -->
 <div id="hako-payment-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
