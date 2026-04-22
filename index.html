@@ -5906,9 +5906,9 @@ function _initRouter() {
     }, 800);
   } else {
     const page = _reverseRouteMap[pathname];
-    if (page && page !== 'home') {
-      // Pousser l'état initial dans l'historique
+    if (page && page !== 'home' && page !== 'dashboard') {
       history.replaceState({ page: page }, '', pathname);
+      showPage(page, true);
     }
   }
 }
