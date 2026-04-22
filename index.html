@@ -8410,14 +8410,17 @@ let eventEnEdition = null;
 window.ouvrirOrganisateur = function() {
   closeDrawer();
   closeNavProfileMenu();
-  // Forcer la sauvegarde de la page courante dans l'historique
-  const _retourPage = (!currentPage || currentPage === 'home' || currentPage === 'orga')
+  const _retourPage = (!currentPage || currentPage === 'home' || currentPage === 'orga' || currentPage === 'admin')
     ? 'dashboard'
     : currentPage;
-  pageHistory = pageHistory.filter(p => p !== 'orga');
+  pageHistory = pageHistory.filter(p => p !== 'orga' && p !== 'admin');
   pageHistory.push(_retourPage);
   if (pageHistory.length > 15) pageHistory.shift();
-  showPage('orga', true);
+  if (window._monRole === 'admin') {
+    showPage('admin', true);
+  } else {
+    showPage('orga', true);
+  }
 }
 
 window.fermerOrganisateur = function() {
