@@ -5068,19 +5068,18 @@ if (isPWA) {
       <div style="display:flex;align-items:center;gap:14px;">
         
         <div>
-          <div class="section-tag" style="margin-bottom:8px;">Événements éphémères</div>
           <h1 style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;line-height:1;">AGENDA</h1>
         </div>
       </div>
 
       <!-- ONGLETS AGENDA / SALLES -->
-      <div id="agenda-tabs" style="display:flex;gap:8px;margin-top:8px;">
+      <div id="agenda-tabs" style="display:flex;gap:0;margin-top:12px;background:var(--bg2);border-radius:14px;padding:4px;border:1px solid var(--border);">
         <button class="agenda-tab-btn on" id="agenda-tab-events" onclick="switchAgendaTab('events',this)"
-          style="flex:1;padding:10px;border-radius:12px;border:1.5px solid rgba(0,245,155,0.3);background:rgba(0,245,155,0.08);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;">
+          style="flex:1;padding:11px 10px;border-radius:11px;border:none;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all 0.2s;letter-spacing:0.3px;">
           📅 Événements
         </button>
         <button class="agenda-tab-btn" id="agenda-tab-salles" onclick="switchAgendaTab('salles',this)"
-          style="flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;">
+          style="flex:1;padding:11px 10px;border-radius:11px;border:none;background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all 0.2s;letter-spacing:0.3px;">
           🏢 Cours & Studios
         </button>
       </div>
@@ -9083,9 +9082,9 @@ window.switchAgendaTab = function(tab, btn) {
     b.style.borderColor = 'var(--border)';
     b.style.color = 'var(--muted2)';
   });
-  btn.style.background = 'rgba(0,245,155,0.08)';
-  btn.style.borderColor = 'rgba(0,245,155,0.3)';
-  btn.style.color = 'var(--green)';
+  btn.style.background = 'var(--green)';
+  btn.style.borderColor = 'transparent';
+  btn.style.color = '#080810';
 
   document.getElementById('agenda-content-events').style.display = tab === 'events' ? 'block' : 'none';
   document.getElementById('agenda-content-salles').style.display = tab === 'salles' ? 'block' : 'none';
