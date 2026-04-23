@@ -5060,6 +5060,21 @@ if (isPWA) {
 <div class="page" id="page-agenda">
   <div class="agenda-page">
 
+    <!-- ONGLETS AGENDA / SALLES -->
+    <div id="agenda-tabs" style="display:flex;gap:8px;padding:16px 20px 0;margin-bottom:-4px;">
+      <button class="agenda-tab-btn on" id="agenda-tab-events" onclick="switchAgendaTab('events',this)"
+        style="flex:1;padding:10px;border-radius:12px;border:1.5px solid rgba(0,245,155,0.3);background:rgba(0,245,155,0.08);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;">
+        📅 Événements
+      </button>
+      <button class="agenda-tab-btn" id="agenda-tab-salles" onclick="switchAgendaTab('salles',this)"
+        style="flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;">
+        🏢 Cours & Studios
+      </button>
+    </div>
+
+    <!-- CONTENU ÉVÉNEMENTS -->
+    <div id="agenda-content-events">
+
     <!-- HEADER -->
     <div class="agenda-header">
       <div style="display:flex;align-items:center;gap:14px;">
@@ -5116,6 +5131,49 @@ if (isPWA) {
       </button>
       <div id="agenda-passes-grid" style="display:none;margin-top:16px;flex-direction:column;gap:10px;" class="agenda-grid"></div>
     </div>
+
+    </div><!-- fin agenda-content-events -->
+
+    <!-- CONTENU SALLES & COURS -->
+    <div id="agenda-content-salles" style="display:none;padding:0 0 120px;">
+      <!-- Chips de sélection principale -->
+      <div class="salles-filters" id="agenda-section-chips" style="margin:16px 20px 20px;">
+        <button class="style-fchip on" onclick="switchAgendaSallesSection('cours',this)">🎓 Cours</button>
+        <button class="style-fchip" onclick="switchAgendaSallesSection('studios',this)">🏢 Studios</button>
+      </div>
+
+      <!-- Section Cours -->
+      <div id="agenda-section-cours" style="padding:0 20px;">
+        <input id="agenda-ecoles-ville-search" type="text" placeholder="🔍 Rechercher une ville..." oninput="filtrerEcolesVille(this.value)"
+          style="margin-bottom:12px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
+        <div class="salles-filters" id="agenda-ecoles-filters" style="margin-bottom:16px;">
+          <button class="style-fchip on" onclick="filtrerEcoles('tous',this)">Toutes</button>
+          <button class="style-fchip" onclick="filtrerEcoles('niveau-debutant',this)">Débutant</button>
+          <button class="style-fchip" onclick="filtrerEcoles('niveau-intermediaire',this)">Intermédiaire</button>
+          <button class="style-fchip" onclick="filtrerEcoles('niveau-avance',this)">Avancé</button>
+        </div>
+        <div id="ecoles-grid" class="salles-grid">
+          <div class="salles-empty"><div class="salles-empty-ico">🎓</div><div>Chargement...</div></div>
+        </div>
+      </div>
+
+      <!-- Section Studios -->
+      <div id="agenda-section-studios" style="display:none;padding:0 20px;">
+        <input id="agenda-salles-ville-search" type="text" placeholder="🔍 Rechercher une ville..." oninput="filtrerSallesVille(this.value)"
+          style="margin-bottom:12px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
+        <div class="salles-filters" id="agenda-salles-filters" style="margin-bottom:16px;">
+          <button class="style-fchip on" onclick="filtrerSalles('tous',this)">Tous</button>
+          <button class="style-fchip" onclick="filtrerSalles('dispo',this)">Disponibles</button>
+          <button class="style-fchip" onclick="filtrerSalles('prix-asc',this)">Prix croissant</button>
+          <button class="style-fchip" onclick="filtrerSalles('prix-desc',this)">Prix décroissant</button>
+        </div>
+        <div id="salles-grid" class="salles-grid">
+          <div class="salles-empty"><div class="salles-empty-ico">🏢</div><div>Chargement...</div></div>
+        </div>
+      </div>
+    </div><!-- fin agenda-content-salles -->
 
   </div>
 </div>
@@ -9018,6 +9076,31 @@ window.toggleWorkshopsPasses = function() {
 
 let _sallesCache = [];
 let _sallesFiltreActif = 'tous';
+
+window.switchAgendaTab = function(tab, btn) {
+  document.querySelectorAll('.agenda-tab-btn').forEach(b => {
+    b.style.background = 'transparent';
+    b.style.borderColor = 'var(--border)';
+    b.style.color = 'var(--muted2)';
+  });
+  btn.style.background = 'rgba(0,245,155,0.08)';
+  btn.style.borderColor = 'rgba(0,245,155,0.3)';
+  btn.style.color = 'var(--green)';
+
+  document.getElementById('agenda-content-events').style.display = tab === 'events' ? 'block' : 'none';
+  document.getElementById('agenda-content-salles').style.display = tab === 'salles' ? 'block' : 'none';
+
+  if (tab === 'salles') {
+    chargerSalles();
+  }
+};
+
+window.switchAgendaSallesSection = function(section, btn) {
+  document.querySelectorAll('#agenda-section-chips .style-fchip').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('agenda-section-cours').style.display = section === 'cours' ? 'block' : 'none';
+  document.getElementById('agenda-section-studios').style.display = section === 'studios' ? 'block' : 'none';
+};
 
 async function chargerSalles() {
   if (!window._db) { setTimeout(chargerSalles, 500); return; }
@@ -15235,7 +15318,7 @@ function _renderDrawerLieux() {
         <button class="style-fchip" onclick="filtrerEcoles('niveau-intermediaire',this)">Intermédiaire</button>
         <button class="style-fchip" onclick="filtrerEcoles('niveau-avance',this)">Avancé</button>
       </div>
-      <div id="ecoles-grid" class="salles-grid">
+      <div id="ecoles-grid-sallespage" class="salles-grid">
         <div class="salles-empty"><div class="salles-empty-ico">🎓</div><div>Chargement...</div></div>
       </div>
     </div>
@@ -15251,7 +15334,7 @@ function _renderDrawerLieux() {
         <button class="style-fchip" onclick="filtrerSalles('prix-asc',this)">Prix croissant</button>
         <button class="style-fchip" onclick="filtrerSalles('prix-desc',this)">Prix décroissant</button>
       </div>
-      <div id="salles-grid" class="salles-grid">
+      <div id="salles-grid-sallespage" class="salles-grid">
         <div class="salles-empty"><div class="salles-empty-ico">🏢</div><div>Chargement...</div></div>
       </div>
     </div>
