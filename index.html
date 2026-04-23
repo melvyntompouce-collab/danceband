@@ -11028,14 +11028,17 @@ async function chargerAbonnements() {
     }
   } catch(e) { console.error('Abonnements:', e); }
 
-  // Comptage abonnés dans un try séparé pour ne pas bloquer
-  try {    const abonnesSnap = await window._getDocs(window._query(
+  // Comptage abonnés en arrière-plan (non bloquant)
+  Promise.race([
+    window._getDocs(window._query(
       window._collection(window._db, 'danseurs'),
       window._where('abonnements', 'array-contains', window._currentUid)
-    ));
+    )),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+  ]).then(abonnesSnap => {
     const statAbonnes = document.getElementById('stat-abonnes');
     if (statAbonnes) statAbonnes.textContent = abonnesSnap.size;
-  } catch(e) { console.error('Comptage abonnés:', e); }
+  }).catch(e => console.warn('Comptage abonnés (non bloquant):', e));
 
   // Afficher bouton organisateur
   const orgaBtn = document.getElementById('orga-btn');
@@ -14132,20 +14135,22 @@ async function chargerProfil(uid) {
     const abonnements = d.abonnements || [];
     const statAbos = document.getElementById('stat-abonnements');
     if (statAbos) statAbos.textContent = abonnements.length;
-    // Comptage abonnés (ceux qui nous suivent)
-    try {
-      const abonnesSnap = await window._getDocs(window._query(
-        window._collection(window._db, 'danseurs'),
-        window._where('abonnements', 'array-contains', uid)
-      ));
-      const statAbonnes = document.getElementById('stat-abonnes');
-      if (statAbonnes) statAbonnes.textContent = abonnesSnap.size;
-    } catch(e) { console.error('Comptage abonnés:', e); }
-
     // ── Stocker uid courant EN PREMIER ──
     window._currentUid = uid;
     window._monProfil  = { ...d, uid };
     window._monRole    = d.role || null;
+
+    // Comptage abonnés en arrière-plan (non bloquant)
+    Promise.race([
+      window._getDocs(window._query(
+        window._collection(window._db, 'danseurs'),
+        window._where('abonnements', 'array-contains', uid)
+      )),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+    ]).then(abonnesSnap => {
+      const statAbonnes = document.getElementById('stat-abonnes');
+      if (statAbonnes) statAbonnes.textContent = abonnesSnap.size;
+    }).catch(e => console.warn('Comptage abonnés (non bloquant):', e));
 
     mettreAJourNav(d);
 
