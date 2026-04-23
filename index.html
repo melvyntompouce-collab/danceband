@@ -7706,6 +7706,8 @@ window.publierPost = async function() {
   if ((window._postType === 'photo' || window._postType === 'video') && window._postMediaFile) {
     try {
       const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
+      const storage = getStorage();
+      const path = `posts/${window._currentUid}/${Date.now()}_${window._postMediaFile.name}`;
       const storageRef = ref(storage, path);
       const snapshot = await uploadBytes(storageRef, window._postMediaFile);
       postData.mediaUrl = await getDownloadURL(snapshot.ref);
