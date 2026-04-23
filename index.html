@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <style>
 @font-face {
   font-family: 'Drowner';
@@ -5383,6 +5384,14 @@ if (isPWA) {
         <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
       </div>
 
+      <!-- Export catalogue -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">📊 Catalogue artistes</div>
+        <div style="font-size:12px;color:var(--muted2);margin-bottom:14px;line-height:1.6;">Exporte toutes les cartes pro en fichier Excel, avec une feuille par métier et une feuille globale.</div>
+        <button onclick="exporterCatalogueXLSX()" id="btn-export-xlsx" style="width:100%;padding:13px;border-radius:12px;background:rgba(0,245,155,0.12);border:1.5px solid rgba(0,245,155,0.4);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,245,155,0.2)'" onmouseout="this.style.background='rgba(0,245,155,0.12)'">⬇ Télécharger le catalogue .xlsx</button>
+        <div id="export-xlsx-msg" style="display:none;margin-top:8px;font-size:12px;color:var(--green);font-weight:700;text-align:center;"></div>
+      </div>
+
       <!-- Tous les utilisateurs -->
       <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Tous les utilisateurs</div>
       <input id="admin-search-users" type="text" placeholder="🔍 Rechercher un utilisateur..." oninput="filtrerAdminListe('users')" style="width:100%;box-sizing:border-box;padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:12px;transition:border-color 0.2s;" onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
@@ -9949,6 +9958,215 @@ window.adminSupprimerCompte = async function(uid) {
     await chargerDashboardAdmin();
   } catch(e) { alert('Erreur : ' + e.message); }
 }
+
+// ── Export catalogue XLSX ──
+window.exporterCatalogueXLSX = function() {
+  const users = window._adminUsersCache;
+  if (!users || users.length === 0) {
+    alert('Aucun utilisateur chargé. Ouvre d\'abord le panneau admin.');
+    return;
+  }
+
+  const btn = document.getElementById('btn-export-xlsx');
+  const msg = document.getElementById('export-xlsx-msg');
+  btn.disabled = true;
+  btn.textContent = '⏳ Génération en cours...';
+
+  const METIERS = [
+    'Danseur·se', 'Photographe', 'Vidéaste', 'Réalisateur·rice',
+    'Beatmaker', 'DJ', 'Musicien·ne', 'Chanteur·se',
+    'Mannequin', 'Styliste', 'Maquilleur·se', 'Coiffeur·se',
+    'Costumier·e', 'Graphiste', 'Designer', 'Designer mode',
+    'Illustrateur·rice', 'Peintre', 'Dessinateur·rice',
+    'Comédien·ne', 'Performeur·se'
+  ];
+
+  const COLS_COMMUNS = [
+    ['Prénom', p => p.pro_prenom],
+    ['Nom', p => p.pro_nom],
+    ['Date de naissance', p => p.pro_ddn],
+    ['Genre', p => p.pro_genre],
+    ['Ville', p => p.pro_ville],
+    ['Nationalité', p => p.pro_nationalite],
+    ['Email pro', p => p.pro_email],
+    ['Téléphone', p => p.pro_tel],
+    ['Métiers', p => (p.pro_metiers || []).join(', ')],
+    ['Disponibilités', p => (p.pro_disponibilites || []).join(', ')],
+    ['Tarif / jour (€)', p => p.pro_tarif_jour],
+    ['Tarif / heure (€)', p => p.pro_tarif_heure],
+    ['Bio pro', p => p.pro_bio],
+    ['Portfolio', p => p.pro_portfolio],
+    ['Book', p => p.pro_book_url],
+    ['Instagram', p => p.pro_instagram ? '@' + p.pro_instagram : ''],
+    ['TikTok', p => p.pro_tiktok ? '@' + p.pro_tiktok : ''],
+    ['YouTube', p => p.pro_youtube],
+    ['LinkedIn', p => p.pro_linkedin],
+    ['Behance', p => p.pro_behance],
+    ['Vimeo', p => p.pro_vimeo],
+    ['SoundCloud', p => p.pro_soundcloud_pro],
+    ['Autre lien', p => p.pro_lien2],
+    ['Éligible carte pro', p => p.pro_eligible ? 'Oui' : 'Non'],
+  ];
+
+  const COLS_METIER = {
+    'Photographe': [
+      ['Boîtier(s)', p => p.pro_boitier],
+      ['Objectifs', p => p.pro_objectifs],
+      ['Logiciels photo', p => (p.pro_logiciels_photo || []).join(', ')],
+      ['Studio photo', p => p.pro_studio_photo],
+      ['Références photo', p => p.pro_refs_photo],
+    ],
+    'Vidéaste': [
+      ['Caméra', p => p.pro_camera_videaste],
+      ['Stabilisation', p => (p.pro_stab_videaste || []).join(', ')],
+      ['Logiciels vidéo', p => (p.pro_logiciels_videaste || []).join(', ')],
+      ['Références vidéo', p => p.pro_refs_videaste],
+    ],
+    'Réalisateur·rice': [
+      ['Caméra réal', p => p.pro_camera_real],
+      ['Logiciels réal', p => (p.pro_logiciels_real || []).join(', ')],
+      ['Types de projets', p => (p.pro_types_real || []).join(', ')],
+      ['Filmographie', p => p.pro_filmo],
+    ],
+    'Beatmaker': [
+      ['DAW', p => (p.pro_daw_beat || []).join(', ')],
+      ['Matériel', p => p.pro_matos_beat],
+      ['Plugins', p => p.pro_plugins_beat],
+      ['Collabs', p => p.pro_collabs_beat],
+    ],
+    'DJ': [
+      ['Platines / Contrôleur', p => p.pro_platines],
+      ['Logiciels DJ', p => (p.pro_logiciels_dj || []).join(', ')],
+      ['Résidences', p => p.pro_residences],
+    ],
+    'Musicien·ne': [
+      ['Instruments', p => p.pro_instruments],
+      ['Niveau', p => p.pro_niveau_musicien],
+      ['Studio', p => p.pro_studio_musicien],
+      ['Projets', p => p.pro_projets_musicien],
+    ],
+    'Chanteur·se': [
+      ['Tessiture', p => (p.pro_tessiture || []).join(', ')],
+      ['Micro', p => p.pro_micro],
+      ['Formations chant', p => p.pro_formations_chanteur],
+      ['Discographie', p => p.pro_disco],
+    ],
+    'Mannequin': [
+      ['Taille (cm)', p => p.pro_taille],
+      ['Pointure', p => p.pro_pointure],
+      ['Tour de tête (cm)', p => p.pro_tour_tete],
+      ['Agence', p => p.pro_agence],
+      ['Types de shoots', p => (p.pro_types_mannequin || []).join(', ')],
+    ],
+    'Styliste': [
+      ['Logiciels', p => (p.pro_logiciels_styliste || []).join(', ')],
+      ['Spécialités', p => (p.pro_spe_styliste || []).join(', ')],
+      ['Marques', p => p.pro_marques_styliste],
+    ],
+    'Maquilleur·se': [
+      ['Marques', p => p.pro_marques_maquilleur],
+      ['Spécialités', p => (p.pro_spe_maquilleur || []).join(', ')],
+      ['Formations', p => p.pro_formations_maquilleur],
+    ],
+    'Coiffeur·se': [
+      ['Spécialités', p => (p.pro_spe_coiffeur || []).join(', ')],
+      ['Références', p => p.pro_refs_coiffeur],
+    ],
+    'Costumier·e': [
+      ['Techniques', p => (p.pro_tech_costumier || []).join(', ')],
+      ['Types de costumes', p => (p.pro_types_costumier || []).join(', ')],
+      ['Références', p => p.pro_refs_costumier],
+    ],
+    'Graphiste': [
+      ['Logiciels', p => (p.pro_logiciels_graphiste || []).join(', ')],
+      ['Spécialités', p => (p.pro_spe_graphiste || []).join(', ')],
+      ['Références', p => p.pro_refs_graphiste],
+    ],
+    'Designer': [
+      ['Spécialités', p => (p.pro_spe_designer || []).join(', ')],
+      ['Logiciels', p => p.pro_logiciels_designer],
+      ['Références', p => p.pro_refs_designer],
+    ],
+    'Designer mode': [
+      ['Logiciels', p => (p.pro_logiciels_designer_mode || []).join(', ')],
+      ['Collections', p => p.pro_collections],
+      ['Maisons', p => p.pro_maisons],
+    ],
+    'Illustrateur·rice': [
+      ['Style', p => p.pro_style_illus],
+      ['Logiciels', p => (p.pro_logiciels_illus || []).join(', ')],
+      ['Références', p => p.pro_refs_illus],
+    ],
+    'Peintre': [
+      ['Techniques', p => (p.pro_tech_peinture || []).join(', ')],
+      ['Références', p => p.pro_refs_peinture],
+    ],
+    'Dessinateur·rice': [
+      ['Techniques', p => (p.pro_tech_dessin || []).join(', ')],
+      ['Tablette / Logiciels', p => p.pro_tablette_dessin],
+      ['Références', p => p.pro_refs_dessin],
+    ],
+    'Comédien·ne': [
+      ['Formations', p => p.pro_formations_comedien],
+      ['Registres', p => (p.pro_registres_comedien || []).join(', ')],
+      ['Agence', p => p.pro_agence_comedien],
+      ['Filmographie', p => p.pro_filmo_comedien],
+    ],
+    'Performeur·se': [
+      ['Types de perf.', p => (p.pro_types_perf || []).join(', ')],
+      ['Contextes', p => (p.pro_contextes_perf || []).join(', ')],
+      ['Références', p => p.pro_refs_perf],
+    ],
+    'Danseur·se': [],
+  };
+
+  const wb = XLSX.utils.book_new();
+
+  // Feuille globale
+  const buildRow = (u, extraCols) => {
+    const p = u.proData || {};
+    const base = COLS_COMMUNS.map(([, fn]) => fn(p) || '');
+    const extra = (extraCols || []).map(([, fn]) => fn(p) || '');
+    return [...base, ...extra];
+  };
+
+  const allHeader = COLS_COMMUNS.map(([label]) => label);
+  const allRows = [allHeader];
+  users.forEach(u => {
+    const p = u.proData || {};
+    if (!p.pro_prenom && !p.pro_nom) return;
+    allRows.push(buildRow(u, []));
+  });
+  const wsAll = XLSX.utils.aoa_to_sheet(allRows);
+  wsAll['!cols'] = allHeader.map(() => ({ wch: 22 }));
+  XLSX.utils.book_append_sheet(wb, wsAll, 'Tous les artistes');
+
+  // Feuille par métier
+  METIERS.forEach(metier => {
+    const membres = users.filter(u => {
+      const p = u.proData || {};
+      return (p.pro_metiers || []).includes(metier) && (p.pro_prenom || p.pro_nom);
+    });
+    if (membres.length === 0) return;
+
+    const extraCols = COLS_METIER[metier] || [];
+    const header = [...COLS_COMMUNS.map(([label]) => label), ...extraCols.map(([label]) => label)];
+    const rows = [header, ...membres.map(u => buildRow(u, extraCols))];
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = header.map(() => ({ wch: 22 }));
+    const sheetName = metier.replace(/[\/\\?*\[\]:]/g, '').substring(0, 31);
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  });
+
+  const date = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, 'HAKO_catalogue_' + date + '.xlsx');
+
+  btn.disabled = false;
+  btn.textContent = '⬇ Télécharger le catalogue .xlsx';
+  msg.textContent = '✅ Catalogue exporté avec succès !';
+  msg.style.display = 'block';
+  setTimeout(() => { msg.style.display = 'none'; }, 4000);
+};
 
 window.envoyerNotifGlobale = async function() {
   const titre   = document.getElementById('admin-notif-titre')?.value.trim();
