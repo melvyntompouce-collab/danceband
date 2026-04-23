@@ -5060,18 +5060,6 @@ if (isPWA) {
 <div class="page" id="page-agenda">
   <div class="agenda-page">
 
-    <!-- ONGLETS AGENDA / SALLES -->
-    <div id="agenda-tabs" style="display:flex;gap:8px;padding:16px 20px 0;margin-bottom:-4px;">
-      <button class="agenda-tab-btn on" id="agenda-tab-events" onclick="switchAgendaTab('events',this)"
-        style="flex:1;padding:10px;border-radius:12px;border:1.5px solid rgba(0,245,155,0.3);background:rgba(0,245,155,0.08);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;">
-        📅 Événements
-      </button>
-      <button class="agenda-tab-btn" id="agenda-tab-salles" onclick="switchAgendaTab('salles',this)"
-        style="flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;">
-        🏢 Cours & Studios
-      </button>
-    </div>
-
     <!-- CONTENU ÉVÉNEMENTS -->
     <div id="agenda-content-events">
 
@@ -5083,6 +5071,18 @@ if (isPWA) {
           <div class="section-tag" style="margin-bottom:8px;">Événements éphémères</div>
           <h1 style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;line-height:1;">AGENDA</h1>
         </div>
+      </div>
+
+      <!-- ONGLETS AGENDA / SALLES -->
+      <div id="agenda-tabs" style="display:flex;gap:8px;margin-top:8px;">
+        <button class="agenda-tab-btn on" id="agenda-tab-events" onclick="switchAgendaTab('events',this)"
+          style="flex:1;padding:10px;border-radius:12px;border:1.5px solid rgba(0,245,155,0.3);background:rgba(0,245,155,0.08);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;">
+          📅 Événements
+        </button>
+        <button class="agenda-tab-btn" id="agenda-tab-salles" onclick="switchAgendaTab('salles',this)"
+          style="flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;">
+          🏢 Cours & Studios
+        </button>
       </div>
       <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
         <select id="agenda-categorie" class="form-select" style="background:var(--bg2);max-width:220px;font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);color:var(--text);cursor:pointer;" onchange="setAgendaCategorie(this.value)">
