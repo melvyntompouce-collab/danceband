@@ -2605,18 +2605,17 @@ body.pwa #bottom-nav .mn-item.mn-center { padding-top: 8px; }
 .mn-center { position: relative; }
 .mn-center-ico {
   width: 48px; height: 48px;
-  background: var(--green, #00F59B);
+  background: rgba(0,245,155,0.08);
+  border: 1.5px solid var(--green, #00F59B);
   border-radius: 15px;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 18px rgba(0,245,155,0.35);
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.15s, background 0.15s;
   margin-top: 16px;
   margin-bottom: 0;
 }
-.mn-center-ico svg { stroke: #080810; }
+.mn-center-ico svg { stroke: var(--green, #00F59B); }
 .mn-center:active .mn-center-ico { transform: scale(0.92); }
-.mn-center.active .mn-center-ico { box-shadow: 0 4px 24px rgba(0,245,155,0.55); }
-.mn-center .mn-lbl { color: var(--green); }
+.mn-center.active .mn-center-ico { background: rgba(0,245,155,0.15); }
 /* Quand bottom nav visible : padding bas des pages + cacher hamburger */
 body.has-bottomnav .page:not(#page-network):not(#page-conv) { padding-bottom: calc(72px + env(safe-area-inset-bottom)) !important; }
 body.has-bottomnav #hamburger-btn { display: none !important; }
@@ -4709,6 +4708,22 @@ if (isPWA) {
 </div>
 
 <!-- ═══ PAGE: DASHBOARD (connecté) ═══ -->
+<div class="page" id="page-feed">
+  <div style="padding:16px 5% 100px;max-width:680px;margin:0 auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-1px;">FEED</div>
+      <button onclick="showPage('profile')" style="width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+    </div>
+    <div style="text-align:center;padding:60px 20px;color:var(--muted2);">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;opacity:0.4;"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:8px;">Le feed arrive bientôt</div>
+      <div style="font-size:13px;opacity:0.6;">Les posts des artistes apparaîtront ici.</div>
+    </div>
+  </div>
+</div>
+
 <div class="page" id="page-dashboard">
   <div style="padding:16px 5% 100px;max-width:1200px;margin:0 auto;">
 
@@ -6109,8 +6124,8 @@ function showPage(id, isBack = false) {
   // ── Routing URL ──
   const _routeMap = {
     home: '/', auth: '/connexion', network: '/reseau', profile: '/profil',
-    agenda: '/agenda', messages: '/messages', dashboard: '/dashboard',
-    orga: '/organisateur', admin: '/admin', ranking: '/classement', salles: '/salles',
+    agenda: '/agenda', messages: '/messages', dashboard: '/profil',
+    feed: '/feed', orga: '/organisateur', admin: '/admin', ranking: '/classement', salles: '/salles',
     bracelet: '/kima', notifs: '/notifications', privacy: '/confidentialite',
     'form-event': '/creer-evenement', 'form-salle': '/creer-salle', 'form-ecole': '/creer-ecole',
     cgu: '/cgu', cgv: '/cgv', mentions: '/mentions'
@@ -6193,7 +6208,7 @@ function showPage(id, isBack = false) {
 
   // Sync mobile nav (drawer)
   document.querySelectorAll('.mn-item').forEach(i => i.classList.remove('on'));
-  const pageToNav = { home:0, network:1, agenda:2, messages:3, profile:4, ranking:5 };
+  const pageToNav = { messages:0, network:1, feed:2, agenda:3, profile:4, dashboard:4 };
   const idx = pageToNav[id];
   const mobileItems = document.querySelectorAll('.mn-item');
   if (mobileItems[idx]) {
@@ -6203,7 +6218,7 @@ function showPage(id, isBack = false) {
   }
 
   // Sync bottom nav
-  const bnMap = { messages:'bn-messages', network:'bn-network', dashboard:'bn-dashboard', agenda:'bn-agenda', salles:'bn-salles' };
+  const bnMap = { messages:'bn-messages', network:'bn-network', feed:'bn-feed', agenda:'bn-agenda', profile:'bn-profile', dashboard:'bn-profile' };
   document.querySelectorAll('#bottom-nav .mn-item').forEach(i => { i.classList.remove('on'); i.classList.remove('active'); });
   const bnId = bnMap[id];
   if (bnId) {
@@ -6315,7 +6330,7 @@ function closeDrawer() {
 function setActive(el) {} // conservé pour compatibilité
 
 function goHome() {
-  if (window._monProfil) showPage('dashboard');
+  if (window._monProfil) showPage('feed');
   else showPage('home');
 }
 function switchTab(btn, tabId) {
@@ -6471,7 +6486,7 @@ window.toggleSignupSingle = toggleSignupSingle;
 
 
 function goHome() {
-  if (window._monProfil) showPage('dashboard');
+  if (window._monProfil) showPage('feed');
   else showPage('home');
 }
 
@@ -14103,16 +14118,17 @@ function _renderDrawerLieux() {
   <button class="mn-item" id="bn-network" onclick="showPage('network')" aria-label="Réseau">
     <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
   </button>
-  <button class="mn-item mn-center" id="bn-dashboard" onclick="showPage('dashboard')" aria-label="Dashboard">
+  <button class="mn-item mn-center" id="bn-feed" onclick="showPage('feed')" aria-label="Feed">
     <div class="mn-center-ico">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
     </div>
+    <span class="mn-feed-badge" id="feed-badge" style="display:none;position:absolute;top:6px;right:calc(50% - 18px);width:8px;height:8px;background:var(--green);border-radius:50%;border:2px solid var(--bg);"></span>
   </button>
   <button class="mn-item" id="bn-agenda" onclick="showPage('agenda')" aria-label="Agenda">
     <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
   </button>
-  <button class="mn-item" id="bn-salles" onclick="showPage('salles')" aria-label="Cours & Studios">
-    <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+  <button class="mn-item" id="bn-profile" onclick="showPage('profile')" aria-label="Mon profil">
+    <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
   </button>
 </nav>
     <div id="edit-profile-page" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;height:100%;touch-action:pan-y;">
