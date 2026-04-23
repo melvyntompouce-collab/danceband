@@ -7452,7 +7452,7 @@ async function _initPostCreatePage() {
 
   if (preload) {
     // Mode pré-rempli depuis un événement : verrouiller sur event_share
-    _postType = 'event_share';
+    window._postType = 'event_share';
     document.querySelectorAll('.post-type-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.type === 'event_share');
     });
@@ -7475,7 +7475,7 @@ async function _initPostCreatePage() {
     window._postCreateEventPreload = { ...preload, _locked: true };
   } else {
     // Mode normal
-    _postType = 'text';
+    window._postType = 'text';
     document.querySelectorAll('.post-type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === 'text'));
     document.getElementById('post-media-zone').style.display = 'none';
     document.getElementById('post-link-zone').style.display = 'none';
@@ -7677,10 +7677,10 @@ window.publierPost = async function() {
   const content = document.getElementById('post-content').value.trim();
   const errMsg = (msg) => { errEl.textContent = msg; errEl.style.display = 'block'; btn.disabled = false; };
 
-  if (!content && _postType === 'text') return errMsg('Écris quelque chose avant de publier.');
+  if (!content && window._postType === 'text') return errMsg('Écris quelque chose avant de publier.');
   if (content.length > 500) return errMsg('Le texte dépasse 500 caractères.');
   const _preload = window._postCreateEventPreload;
-  if (_postType === 'event_share' && !_preload && !document.getElementById('post-event-select')?.value) return errMsg('Sélectionne un événement.');
+  if (window._postType === 'event_share' && !_preload && !document.getElementById('post-event-select')?.value) return errMsg('Sélectionne un événement.');
 
   btn.disabled = true;
   errEl.style.display = 'none';
@@ -7694,7 +7694,7 @@ window.publierPost = async function() {
     authorPhoto: p?.photo || null,
     authorDiscipline: p?.metiers?.[0] || p?.discipline || '',
     authorUnivers: p?.univers || [],
-    type: _postType,
+    type: window._postType,
     content: content || '',
     likesCount: 0,
     commentsCount: 0,
@@ -7703,19 +7703,19 @@ window.publierPost = async function() {
   };
 
   // Upload média si besoin
-  if ((_postType === 'photo' || _postType === 'video') && _postMediaFile) {
+  if ((window._postType === 'photo' || window._postType === 'video') && window._postMediaFile) {
     try {
       const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
       const storageRef = ref(storage, path);
       const snapshot = await uploadBytes(storageRef, window._postMediaFile);
       postData.mediaUrl = await getDownloadURL(snapshot.ref);
     } catch(e) { return errMsg('Erreur lors de l\'upload du fichier.'); }
-  } else if (_postType === 'link') {
+  } else if (window._postType === 'link') {
     const url = document.getElementById('post-link-url').value.trim();
     if (!url) return errMsg('Ajoute un lien.');
     postData.linkUrl = url;
     try { postData.linkTitle = document.getElementById('post-link-title').textContent; } catch(e) {}
-  } else if (_postType === 'event_share') {
+  } else if (window._postType === 'event_share') {
     if (_preload) {
       postData.eventRef = _preload.id;
       postData.eventName = _preload.titre;
