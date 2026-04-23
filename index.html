@@ -5674,6 +5674,7 @@ if (isPWA) {
         <div class="ph-info">
           <div style="font-size:11px;color:var(--muted2);margin-bottom:3px;" id="dash-heure">Bonjour</div>
           <div class="ph-name" id="ph-name-display">SOFIA M.</div>
+          <div style="font-size:11px;color:var(--muted2);margin-top:3px;" id="dash-sous-titre">Prêt à danser ?</div>
           <div class="ph-handle" id="ph-handle-display">Paris 11e</div>
           <div id="ph-admin-badge" style="display:none;">
             <span style="background:rgba(255,77,109,0.15);border:1px solid rgba(255,77,109,0.45);color:#ff4d6d;font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:2px;padding:3px 10px;border-radius:6px;text-transform:uppercase;">⚡ Admin HAKO</span>
@@ -6390,6 +6391,8 @@ function afficherDashboard(d) {
   const salut = h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir';
   const el = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
   el('dash-heure', salut);
+  const phrases = ['Prêt·e à créer ?', 'On crée quoi aujourd\'hui ?', 'La scène t\'attend !', 'Move. Create. Connect.', 'Qu\'est-ce qu\'on fait aujourd\'hui ?', 'À toi de jouer !', 'L\'art commence ici.'];
+  el('dash-sous-titre', phrases[Math.floor(Math.random() * phrases.length)]);
   // Appliquer les perks visuels niveau (avatar frame, badges)
   if (typeof appliquerPerksNiveau === 'function') appliquerPerksNiveau(calculerNiveau(d.xp || 0));
 
