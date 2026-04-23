@@ -7709,7 +7709,7 @@ window.publierPost = async function() {
       const storageRef = ref(storage, path);
       const snapshot = await uploadBytes(storageRef, window._postMediaFile);
       postData.mediaUrl = await getDownloadURL(snapshot.ref);
-    } catch(e) { return errMsg('Erreur lors de l\'upload du fichier.'); }
+    } catch(e) { console.error('UPLOAD ERROR:', e); return errMsg('Erreur lors de l\'upload du fichier. ' + (e?.message || e)); }
   } else if (window._postType === 'link') {
     const url = document.getElementById('post-link-url').value.trim();
     if (!url) return errMsg('Ajoute un lien.');
