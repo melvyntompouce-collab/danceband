@@ -6306,7 +6306,7 @@ function _initRouter() {
     }, 800);
   } else {
     const page = _reverseRouteMap[pathname];
-    if (page && page !== 'home') {
+    if (page && page !== 'home' && page !== 'auth') {
       history.replaceState({ page: page }, '', pathname);
       showPage(page, true);
     }
@@ -6534,8 +6534,11 @@ function afficherDashboard(d) {
   };
   const _currentPath = window.location.pathname;
   const _targetPage = _reverseRouteMap[_currentPath];
-  const _isDefaultRoute = !_targetPage || _targetPage === 'home';
-  if (_isDefaultRoute) showPage('feed');
+  const _isDefaultRoute = !_targetPage || _targetPage === 'home' || _targetPage === 'auth';
+  if (_isDefaultRoute) {
+    history.replaceState({}, '', '/');
+    showPage('feed');
+  }
 
   // Charger les sections enrichies
   afficherFavorisDashboard();
@@ -14565,10 +14568,6 @@ onAuthStateChanged(auth, async (user) => {
     if (_savedUrl) {
       sessionStorage.removeItem('hako_redirect_url');
       window.location.pathname !== _savedUrl && history.replaceState({}, '', _savedUrl);
-    }
-    // Si on vient de /connexion, remplacer par / pour éviter que _initRouter redirige vers auth
-    if (window.location.pathname === '/connexion') {
-      history.replaceState({}, '', '/');
     }
     _initRouter();
   } else {
