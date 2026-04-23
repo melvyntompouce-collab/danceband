@@ -8747,17 +8747,31 @@ window.filtrerAdminListe = function(type) {
       uList.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">Aucun résultat</div>';
       return;
     }
-    uList.innerHTML = usrs.map(u => `
-      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;gap:12px;">
-        <div style="flex:1;min-width:0;">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${u.prenom || ''} ${u.nom || ''}</div>
-          <div style="font-size:11px;color:var(--muted2);margin-top:2px;">${u.pseudo ? '@' + u.pseudo : ''} ${u.email ? '· ' + u.email : ''}</div>
-        </div>
-        <div style="display:flex;gap:6px;">
-          <button onclick="adminSupprimerCompte('${u.id}')" style="padding:6px 10px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;">Supprimer</button>
+    uList.innerHTML = usrs.map(u => {
+      const p = u.proData || {};
+      const eligible = p.pro_eligible;
+      const nomAffiche = u.nomAffiche || u.nom || u.email || 'Artiste';
+      const metierLabel = (u.metiers || []).slice(0,2).join(', ');
+      const hasPro = !!(p.pro_prenom || p.pro_nom);
+      const badgeColor = eligible ? 'rgba(0,245,155,0.15)' : 'rgba(255,77,109,0.1)';
+      const badgeBorder = eligible ? 'rgba(0,245,155,0.35)' : 'rgba(255,77,109,0.3)';
+      const badgeTextColor = eligible ? 'var(--green)' : 'var(--red)';
+      const badgeLabel = eligible ? '✅ Éligible' : '⚠️ Incomplet';
+      return `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+          <div style="flex:1;min-width:0;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${nomAffiche}</div>
+            ${metierLabel ? `<div style="font-size:11px;color:var(--muted2);margin-top:2px;">${metierLabel}</div>` : ''}
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            ${hasPro ? `<span style="background:${badgeColor};border:1px solid ${badgeBorder};color:${badgeTextColor};font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;">${badgeLabel}</span>` : '<span style="background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;">Sans carte</span>'}
+            <button onclick="voirCarteProAdmin('${u.id}')" style="padding:6px 10px;border-radius:8px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;">💼 Pro</button>
+            <button onclick="adminSupprimerCompte('${u.id}')" style="padding:6px 10px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;">Supprimer</button>
+          </div>
         </div>
       </div>
-    `).join('');
+    `}).join('');
   }
 };
 
@@ -8864,21 +8878,39 @@ async function chargerDashboardAdmin() {
       `).join('');
     }
 
+    // Cache pour la vue carte pro
+    window._adminUsersCache = users;
+
     // Liste utilisateurs
     const uList = document.getElementById('admin-users-list');
     if (users.length === 0) {
       uList.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">Aucun utilisateur</div>';
     } else {
-      uList.innerHTML = users.map(u => `
-        <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;gap:12px;">
-          <div style="flex:1;min-width:0;">
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${u.prenom || ''} ${u.nom || ''}</div>
-          </div>
-          <div style="display:flex;gap:6px;">
-            <button onclick="adminSupprimerCompte('${u.id}')" style="padding:6px 10px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;">Supprimer</button>
+      uList.innerHTML = users.map(u => {
+        const p = u.proData || {};
+        const eligible = p.pro_eligible;
+        const nomAffiche = u.nomAffiche || u.nom || u.email || 'Artiste';
+        const metierLabel = (u.metiers || []).slice(0,2).join(', ');
+        const badgeColor = eligible ? 'rgba(0,245,155,0.15)' : 'rgba(255,77,109,0.1)';
+        const badgeBorder = eligible ? 'rgba(0,245,155,0.35)' : 'rgba(255,77,109,0.3)';
+        const badgeTextColor = eligible ? 'var(--green)' : 'var(--red)';
+        const badgeLabel = eligible ? '✅ Éligible' : '⚠️ Incomplet';
+        const hasPro = !!(p.pro_prenom || p.pro_nom);
+        return `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;gap:8px;display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${nomAffiche}</div>
+              ${metierLabel ? `<div style="font-size:11px;color:var(--muted2);margin-top:2px;">${metierLabel}</div>` : ''}
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              ${hasPro ? `<span style="background:${badgeColor};border:1px solid ${badgeBorder};color:${badgeTextColor};font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;">${badgeLabel}</span>` : '<span style="background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;">Sans carte</span>'}
+              <button onclick="voirCarteProAdmin('${u.id}')" style="padding:6px 10px;border-radius:8px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.25);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;">💼 Pro</button>
+              <button onclick="adminSupprimerCompte('${u.id}')" style="padding:6px 10px;border-radius:8px;background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;">Supprimer</button>
+            </div>
           </div>
         </div>
-      `).join('');
+      `}).join('');
     }
 
   } catch(e) { console.error('Admin dashboard:', e); }
@@ -8899,6 +8931,166 @@ window.adminSupprimerEvent = async function(id) {
     await chargerDashboardAdmin();
   } catch(e) { alert('Erreur : ' + e.message); }
 }
+
+// ── Vue carte pro admin ──
+window.voirCarteProAdmin = function(uid) {
+  const user = window._adminUsersCache?.find(u => u.id === uid);
+  if (!user) return;
+  const p = user.proData || {};
+  const metiers = (user.metiers || []).join(', ') || 'Non renseigné';
+  const eligible = p.pro_eligible;
+  const flagColor = eligible ? 'var(--green)' : 'var(--red)';
+  const flagLabel = eligible ? '✅ Éligible' : '⚠️ Incomplet';
+  const proMetiersLabel = (p.pro_metiers || []).join(', ') || metiers || 'Non renseigné';
+  const bookLink = p.pro_book_url ? '<a href="' + p.pro_book_url + '" target="_blank" style="color:var(--green);word-break:break-all;">' + (p.pro_book_name || 'Voir le book') + '</a>' : '';
+  const bookSection = bookLink ? '<div style="margin-top:16px;padding:12px 16px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.25);border-radius:12px;display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">' + ((p.pro_book_name || '').endsWith('.pdf') ? '📄' : '🖼️') + '</span><div style="flex:1;"><div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:1px;text-transform:uppercase;">Book / Portfolio</div>' + bookLink + '</div></div>' : '';
+
+  // Calcul âge
+  let age = '';
+  if (p.pro_ddn) {
+    const ddn = new Date(p.pro_ddn);
+    const diff = Date.now() - ddn.getTime();
+    age = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25)) + ' ans';
+  }
+
+  const rows = (pairs) => pairs.filter(([,v]) => v && (Array.isArray(v) ? v.length : v))
+    .map(([k,v]) => `<tr><td style="color:var(--muted2);font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);min-width:120px;">${k}</td><td style="font-size:12px;padding:6px 8px;border-bottom:1px solid var(--border);">${Array.isArray(v) ? v.join(', ') : v}</td></tr>`).join('');
+
+  const html = `
+    <div style="position:fixed;inset:0;z-index:1000;background:rgba(8,8,16,0.92);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 16px;">
+      <div style="max-width:600px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <div>
+            <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;">💼 Carte Pro</div>
+            <div style="font-size:13px;color:var(--muted2);margin-top:2px;">${user.nomAffiche || user.nom || 'Artiste'}</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <span style="background:${flagColor}22;border:1px solid ${flagColor};color:${flagColor};font-family:'Syne',sans-serif;font-weight:800;font-size:11px;letter-spacing:1px;padding:4px 12px;border-radius:8px;">${flagLabel}</span>
+            <button onclick="document.getElementById('admin-carte-pro-overlay').remove()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:18px;">✕</button>
+          </div>
+        </div>
+
+        <table style="width:100%;border-collapse:collapse;">
+          ${rows([
+            ['Prénom', p.pro_prenom], ['Nom', p.pro_nom], ['Âge', age],
+            ['Naissance', p.pro_ddn], ['Genre', p.pro_genre],
+            ['Ville', p.pro_ville], ['Nationalité', p.pro_nationalite],
+            ['Email pro', p.pro_email], ['Téléphone', p.pro_tel],
+            ['Métiers pro', proMetiersLabel],
+            ['Disponibilités', p.pro_disponibilites], ['Tarif / jour', p.pro_tarif_jour ? p.pro_tarif_jour + ' €' : ''],
+            ['Tarif / heure', p.pro_tarif_heure ? p.pro_tarif_heure + ' €' : ''],
+            ['Bio pro', p.pro_bio], ['Portfolio', p.pro_portfolio],
+            ['Instagram', p.pro_instagram ? '@' + p.pro_instagram : ''],
+            ['TikTok', p.pro_tiktok ? '@' + p.pro_tiktok : ''],
+            ['YouTube', p.pro_youtube], ['LinkedIn', p.pro_linkedin],
+            ['Behance', p.pro_behance], ['Vimeo', p.pro_vimeo],
+            ['SoundCloud', p.pro_soundcloud_pro], ['Autre lien', p.pro_lien2],
+            ['Boîtier(s)', p.pro_boitier], ['Objectifs', p.pro_objectifs],
+            ['Logiciels photo', p.pro_logiciels_photo], ['Studio photo', p.pro_studio_photo],
+            ['Réfs photo', p.pro_refs_photo],
+            ['Caméra vidéaste', p.pro_camera_videaste], ['Stabilisation', p.pro_stab_videaste],
+            ['Logiciels vidéo', p.pro_logiciels_videaste], ['Réfs vidéo', p.pro_refs_videaste],
+            ['Caméra réal', p.pro_camera_real], ['Logiciels réal', p.pro_logiciels_real],
+            ['Types projets réal', p.pro_types_real], ['Filmographie', p.pro_filmo],
+            ['DAW', p.pro_daw_beat], ['Matériel beat', p.pro_matos_beat],
+            ['Plugins', p.pro_plugins_beat], ['Collabs', p.pro_collabs_beat],
+            ['Platines/Contrôleur', p.pro_platines], ['Logiciels DJ', p.pro_logiciels_dj],
+            ['Résidences', p.pro_residences],
+            ['Instruments', p.pro_instruments], ['Niveau musicien', p.pro_niveau_musicien],
+            ['Studio musicien', p.pro_studio_musicien], ['Projets musicien', p.pro_projets_musicien],
+            ['Tessiture', p.pro_tessiture], ['Micro', p.pro_micro],
+            ['Formations chant', p.pro_formations_chanteur], ['Discographie', p.pro_disco],
+            ['Taille', p.pro_taille ? p.pro_taille + ' cm' : ''],
+            ['Pointure', p.pro_pointure], ['Tour de tête', p.pro_tour_tete ? p.pro_tour_tete + ' cm' : ''],
+            ['Agence mannequin', p.pro_agence], ['Types shoots', p.pro_types_mannequin],
+            ['Logiciels styliste', p.pro_logiciels_styliste], ['Spé styliste', p.pro_spe_styliste],
+            ['Marques styliste', p.pro_marques_styliste],
+            ['Marques maquillage', p.pro_marques_maquilleur], ['Spé maquillage', p.pro_spe_maquilleur],
+            ['Formations maquillage', p.pro_formations_maquilleur],
+            ['Spé coiffure', p.pro_spe_coiffeur], ['Réfs coiffure', p.pro_refs_coiffeur],
+            ['Techniques costumier', p.pro_tech_costumier], ['Types costumes', p.pro_types_costumier],
+            ['Réfs costumier', p.pro_refs_costumier],
+            ['Logiciels graphisme', p.pro_logiciels_graphiste], ['Spé graphisme', p.pro_spe_graphiste],
+            ['Réfs graphisme', p.pro_refs_graphiste],
+            ['Spé design', p.pro_spe_designer], ['Logiciels design', p.pro_logiciels_designer],
+            ['Réfs design', p.pro_refs_designer],
+            ['Logiciels design mode', p.pro_logiciels_designer_mode],
+            ['Collections', p.pro_collections], ['Maisons', p.pro_maisons],
+            ['Formations comédien', p.pro_formations_comedien], ['Registres', p.pro_registres_comedien],
+            ['Agence comédien', p.pro_agence_comedien], ['Filmographie comédien', p.pro_filmo_comedien],
+            ['Types perf.', p.pro_types_perf], ['Contextes perf.', p.pro_contextes_perf],
+            ['Réfs perf.', p.pro_refs_perf],
+            ['Techniques dessin', p.pro_tech_dessin], ['Tablette/logiciels', p.pro_tablette_dessin],
+            ['Réfs dessin', p.pro_refs_dessin],
+            ['Techniques peinture', p.pro_tech_peinture], ['Réfs peinture', p.pro_refs_peinture],
+            ['Style illus.', p.pro_style_illus], ['Logiciels illus.', p.pro_logiciels_illus],
+            ['Réfs illus.', p.pro_refs_illus],
+          ])}
+        </table>
+
+        ${!p.pro_prenom && !p.pro_nom ? '<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune carte pro remplie pour cet artiste.</div>' : ''}
+
+        ${bookSection}
+
+        <button onclick="exportCarteProPDF('${uid}')" style="width:100%;margin-top:16px;padding:14px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;border:none;cursor:pointer;">
+          📄 Exporter PDF
+        </button>
+      </div>
+    </div>
+  `;
+  const overlay = document.createElement('div');
+  overlay.id = 'admin-carte-pro-overlay';
+  overlay.innerHTML = html;
+  document.body.appendChild(overlay);
+};
+
+// Export PDF carte pro (print window)
+window.exportCarteProPDF = function(uid) {
+  const user = window._adminUsersCache?.find(u => u.id === uid);
+  if (!user) return;
+  const p = user.proData || {};
+  const metiers = (user.metiers || []).join(', ') || 'Non renseigné';
+  let age = '';
+  if (p.pro_ddn) {
+    const ddn = new Date(p.pro_ddn);
+    age = Math.floor((Date.now() - ddn.getTime()) / (1000*60*60*24*365.25)) + ' ans';
+  }
+  const row = (k, v) => v && (Array.isArray(v) ? v.length : v) ? `<tr><td style="padding:6px 8px;color:#555;border-bottom:1px solid #eee;width:160px;font-weight:600;">${k}</td><td style="padding:6px 8px;border-bottom:1px solid #eee;">${Array.isArray(v) ? v.join(', ') : v}</td></tr>` : '';
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Carte Pro - ${p.pro_prenom || ''} ${p.pro_nom || ''}</title>
+  <style>body{font-family:Arial,sans-serif;max-width:700px;margin:0 auto;padding:32px;color:#111;}h1{font-size:24px;margin-bottom:4px;}h2{font-size:13px;color:#888;font-weight:400;margin-bottom:20px;}
+  .badge{display:inline-block;padding:3px 12px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:1px;}
+  .eligible{background:#d4fcea;color:#00944a;}.incomplet{background:#fde8e8;color:#c0392b;}
+  table{width:100%;border-collapse:collapse;}td{padding:6px 8px;}
+  .section{font-size:11px;font-weight:700;letter-spacing:1.5px;color:#888;text-transform:uppercase;padding:12px 0 4px;border-top:2px solid #eee;margin-top:12px;}
+  </style></head><body>
+  <h1>${p.pro_prenom || ''} ${p.pro_nom || ''}</h1>
+  <h2>${user.nomAffiche || ''} — HAKO Carte Pro</h2>
+  <span class="badge ${p.pro_eligible ? 'eligible' : 'incomplet'}">${p.pro_eligible ? 'Éligible' : 'Incomplet'}</span>
+  <br><br>
+  <table>
+    ${row('Date de naissance', p.pro_ddn)} ${row('Âge', age)} ${row('Genre', p.pro_genre)}
+    ${row('Ville', p.pro_ville)} ${row('Métiers', metiers)}
+    ${row('Disponibilités', p.pro_disponibilites)} ${row('Tarif / jour', p.pro_tarif_jour ? p.pro_tarif_jour + ' €' : '')}
+    ${row('Tarif / heure', p.pro_tarif_heure ? p.pro_tarif_heure + ' €' : '')}
+    ${row('Bio pro', p.pro_bio)} ${row('Portfolio', p.pro_portfolio)}
+    ${row('Instagram pro', p.pro_instagram)} ${row('Lien 2', p.pro_lien2)}
+    ${row('Boîtier(s)', p.pro_boitier)} ${row('Objectifs', p.pro_objectifs)}
+    ${row('Logiciels photo', p.pro_logiciels_photo)} ${row('Studio', p.pro_studio_photo)} ${row('Réfs photo', p.pro_refs_photo)}
+    ${row('Caméra vidéaste', p.pro_camera_videaste)} ${row('Stabilisation', p.pro_stab_videaste)}
+    ${row('Logiciels vidéo', p.pro_logiciels_videaste)} ${row('Réfs vidéo', p.pro_refs_videaste)}
+    ${row('Caméra réal', p.pro_camera_real)} ${row('Logiciels réal', p.pro_logiciels_real)}
+    ${row('Types projets', p.pro_types_real)} ${row('Filmographie', p.pro_filmo)}
+    ${row('DAW', p.pro_daw_beat)} ${row('Matériel beat', p.pro_matos_beat)} ${row('Plugins', p.pro_plugins_beat)} ${row('Collabs', p.pro_collabs_beat)}
+    ${row('Platines', p.pro_platines)} ${row('Logiciels DJ', p.pro_logiciels_dj)} ${row('Résidences', p.pro_residences)}
+    ${row('Instruments', p.pro_instruments)} ${row('Niveau', p.pro_niveau_musicien)} ${row('Studio', p.pro_studio_musicien)}
+    ${row('Tessiture', p.pro_tessiture)} ${row('Micro', p.pro_micro)} ${row('Formations chant', p.pro_formations_chanteur)} ${row('Disco', p.pro_disco)}
+    ${row('Taille', p.pro_taille ? p.pro_taille + ' cm' : '')} ${row('Pointure', p.pro_pointure)} ${row('Tour de tête', p.pro_tour_tete ? p.pro_tour_tete + ' cm' : '')}
+    ${row('Agence', p.pro_agence)} ${row('Types shoots', p.pro_types_mannequin)}
+  </table>
+  <script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+};
 
 window.adminSupprimerCompte = async function(uid) {
   if (uid === window._currentUid) { alert('Tu ne peux pas supprimer ton propre compte depuis ici.'); return; }
@@ -12168,6 +12360,400 @@ window.motDePasseOublie = async function() {
 }
 
 // ════════════════════════════════
+
+// ════════════════════════════════
+// CARTE PRO
+// ════════════════════════════════
+
+// Toggle genre (sélection unique)
+window.toggleProGenre = function(btn) {
+  document.querySelectorAll('#pro-genre-chips .style-tag').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+};
+
+// Toggle chip multi-sélection
+window.toggleProChip = function(btn, containerId) {
+  btn.classList.toggle('selected');
+};
+
+// Toggle sélection unique dans un conteneur
+window.toggleProSingle = function(btn, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.querySelectorAll('.style-tag').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+};
+
+// Synchroniser les sections pro avec les métiers sélectionnés dans l'édition
+// Toggle métier dans la carte pro (chips indépendants)
+window.toggleProMetier = function(metier, btn) {
+  btn.classList.toggle('selected');
+  syncProSectionsFromMetiers();
+};
+
+function syncProSectionsFromMetiers() {
+  // Utilise les chips pro dédiés (data-pro-metier)
+  const proChips = document.querySelectorAll('[data-pro-metier].selected');
+  const proMetiers = [...proChips].map(b => b.getAttribute('data-pro-metier'));
+  const ALL_PRO_SECTIONS = ['danseur','photographe','videaste','realisateur','beatmaker','dj','musicien','chanteur',
+    'mannequin','styliste','maquilleur','coiffeur_mode','costumier','designer','designer_mode',
+    'comedien','performeur','dessinateur','peintre','illustrateur','graphiste'];
+  ALL_PRO_SECTIONS.forEach(m => {
+    const sec = document.getElementById('pro-section-' + m);
+    if (sec) sec.style.display = proMetiers.includes(m) ? 'block' : 'none';
+  });
+}
+window.syncProSectionsFromMetiers = syncProSectionsFromMetiers;
+
+// Les chips pro sont indépendants des chips profil — pas de hook nécessaire
+
+// Sauvegarder la carte pro en Firestore
+// Prévisualisation fichier book
+window.previewBook = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { alert('Fichier trop lourd (max 5MB)'); input.value = ''; return; }
+  const allowed = ['application/pdf','image/png','image/jpeg'];
+  if (!allowed.includes(file.type)) { alert('Format non supporté (PDF, PNG, JPG uniquement)'); input.value = ''; return; }
+  const prev = document.getElementById('pro-book-preview');
+  const fn = document.getElementById('pro-book-filename');
+  const sz = document.getElementById('pro-book-size');
+  const ico = document.getElementById('pro-book-icon');
+  if (fn) fn.textContent = file.name;
+  if (sz) sz.textContent = (file.size / 1024).toFixed(0) + ' KB';
+  if (ico) ico.textContent = file.type === 'application/pdf' ? '📄' : '🖼️';
+  if (prev) prev.style.display = 'flex';
+  window._proBookFile = file;
+  window._proBookName = file.name;
+};
+window.supprimerBook = function() {
+  window._proBookFile = null;
+  window._proBookUrl = '';
+  window._proBookName = '';
+  const prev = document.getElementById('pro-book-preview');
+  if (prev) prev.style.display = 'none';
+  const input = document.getElementById('pro-book-file');
+  if (input) input.value = '';
+};
+
+window.sauvegarderCartePro = async function() {
+  const user = auth.currentUser;
+  if (!user) { alert('Tu dois être connecté !'); return; }
+  const btn = document.getElementById('pro-save-btn');
+  const msg = document.getElementById('pro-save-msg');
+  if (btn) btn.textContent = 'Enregistrement...';
+
+  const genre = document.querySelector('#pro-genre-chips .style-tag.selected')?.textContent.trim() || '';
+  const disponibilites = [...document.querySelectorAll('#pro-dispo-chips .style-tag.selected')].map(t => t.textContent.trim());
+
+  const proMetiers = [...document.querySelectorAll('[data-pro-metier].selected')].map(b => b.getAttribute('data-pro-metier'));
+
+  const proData = {
+    pro_prenom:      document.getElementById('pro-prenom')?.value.trim() || '',
+    pro_nom:         document.getElementById('pro-nom-famille')?.value.trim() || '',
+    pro_ddn:         document.getElementById('pro-ddn')?.value || '',
+    pro_genre:       genre,
+    pro_ville:       document.getElementById('pro-ville')?.value.trim() || '',
+    pro_nationalite: document.getElementById('pro-nationalite')?.value.trim() || '',
+    pro_email:       document.getElementById('pro-email')?.value.trim() || '',
+    pro_tel:         document.getElementById('pro-tel')?.value.trim() || '',
+    pro_metiers:     proMetiers,
+    pro_disponibilites: disponibilites,
+    pro_tarif_jour:  document.getElementById('pro-tarif-jour')?.value || '',
+    pro_tarif_heure: document.getElementById('pro-tarif-heure')?.value || '',
+    pro_bio:         document.getElementById('pro-bio')?.value.trim() || '',
+    pro_portfolio:   document.getElementById('pro-portfolio')?.value.trim() || '',
+    pro_book_url:    window._proBookUrl || '',
+    pro_book_name:   window._proBookName || '',
+    pro_instagram:   document.getElementById('pro-instagram')?.value.trim().replace('@','') || '',
+    pro_tiktok:      document.getElementById('pro-tiktok')?.value.trim().replace('@','') || '',
+    pro_youtube:     document.getElementById('pro-youtube')?.value.trim() || '',
+    pro_linkedin:    document.getElementById('pro-linkedin')?.value.trim() || '',
+    pro_behance:     document.getElementById('pro-behance')?.value.trim() || '',
+    pro_vimeo:       document.getElementById('pro-vimeo')?.value.trim() || '',
+    pro_soundcloud_pro: document.getElementById('pro-soundcloud-pro')?.value.trim() || '',
+    pro_lien2:       document.getElementById('pro-lien2')?.value.trim() || '',
+    // Danseur
+    pro_niveau_danseur:   document.querySelector('#pro-niveau-danseur .style-tag.selected')?.textContent.trim() || '',
+    pro_formations_danseur: document.getElementById('pro-formations-danseur')?.value.trim() || '',
+    pro_compagnies_danseur: document.getElementById('pro-compagnies-danseur')?.value.trim() || '',
+    // Photographe
+    pro_boitier:      document.getElementById('pro-boitier')?.value.trim() || '',
+    pro_objectifs:    document.getElementById('pro-objectifs-photo')?.value.trim() || '',
+    pro_logiciels_photo: [...document.querySelectorAll('#pro-logiciels-photo .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_studio_photo: document.querySelector('#pro-studio-photo .style-tag.selected')?.textContent.trim() || '',
+    pro_refs_photo:   document.getElementById('pro-refs-photo')?.value.trim() || '',
+    // Vidéaste
+    pro_camera_videaste:    document.getElementById('pro-camera-videaste')?.value.trim() || '',
+    pro_stab_videaste:      [...document.querySelectorAll('#pro-stab-videaste .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_logiciels_videaste: [...document.querySelectorAll('#pro-logiciels-videaste .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_refs_videaste:      document.getElementById('pro-refs-videaste')?.value.trim() || '',
+    // Réalisateur
+    pro_camera_real:    document.getElementById('pro-camera-real')?.value.trim() || '',
+    pro_logiciels_real: [...document.querySelectorAll('#pro-logiciels-real .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_types_real:     [...document.querySelectorAll('#pro-types-real .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_filmo:          document.getElementById('pro-filmo')?.value.trim() || '',
+    // Beatmaker
+    pro_daw_beat:    [...document.querySelectorAll('#pro-daw-beat .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_matos_beat:  document.getElementById('pro-matos-beat')?.value.trim() || '',
+    pro_plugins_beat:document.getElementById('pro-plugins-beat')?.value.trim() || '',
+    pro_collabs_beat:document.getElementById('pro-collabs-beat')?.value.trim() || '',
+    // DJ
+    pro_platines:       document.getElementById('pro-platines')?.value.trim() || '',
+    pro_logiciels_dj:   [...document.querySelectorAll('#pro-logiciels-dj .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_residences:     document.getElementById('pro-residences')?.value.trim() || '',
+    // Musicien
+    pro_instruments:       document.getElementById('pro-instruments')?.value.trim() || '',
+    pro_niveau_musicien:   document.querySelector('#pro-niveau-musicien .style-tag.selected')?.textContent.trim() || '',
+    pro_studio_musicien:   document.querySelector('#pro-studio-musicien .style-tag.selected')?.textContent.trim() || '',
+    pro_projets_musicien:  document.getElementById('pro-projets-musicien')?.value.trim() || '',
+    // Chanteur
+    pro_tessiture:          [...document.querySelectorAll('#pro-tessiture .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_micro:              document.getElementById('pro-micro')?.value.trim() || '',
+    pro_formations_chanteur:document.getElementById('pro-formations-chanteur')?.value.trim() || '',
+    pro_disco:              document.getElementById('pro-disco')?.value.trim() || '',
+    // Mannequin
+    pro_taille:           document.getElementById('pro-taille')?.value || '',
+    pro_pointure:         document.getElementById('pro-pointure')?.value || '',
+    pro_tour_tete:        document.getElementById('pro-tour-tete')?.value || '',
+    pro_agence:           document.getElementById('pro-agence')?.value.trim() || '',
+    pro_types_mannequin:  [...document.querySelectorAll('#pro-types-mannequin .style-tag.selected')].map(t=>t.textContent.trim()),
+    // Styliste
+    pro_logiciels_styliste:[...document.querySelectorAll('#pro-logiciels-styliste .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_spe_styliste:     [...document.querySelectorAll('#pro-spe-styliste .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_marques_styliste: document.getElementById('pro-marques-styliste')?.value.trim() || '',
+    // Maquilleur
+    pro_marques_maquilleur:document.getElementById('pro-marques-maquilleur')?.value.trim() || '',
+    pro_spe_maquilleur:   [...document.querySelectorAll('#pro-spe-maquilleur .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_formations_maquilleur:document.getElementById('pro-formations-maquilleur')?.value.trim() || '',
+    // Coiffeur
+    pro_spe_coiffeur:   [...document.querySelectorAll('#pro-spe-coiffeur .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_refs_coiffeur:  document.getElementById('pro-refs-coiffeur')?.value.trim() || '',
+    // Costumier
+    pro_tech_costumier: [...document.querySelectorAll('#pro-tech-costumier .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_types_costumier:[...document.querySelectorAll('#pro-types-costumier .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_refs_costumier: document.getElementById('pro-refs-costumier')?.value.trim() || '',
+    // Graphiste
+    pro_logiciels_graphiste:[...document.querySelectorAll('#pro-logiciels-graphiste .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_spe_graphiste:      [...document.querySelectorAll('#pro-spe-graphiste .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_refs_graphiste:     document.getElementById('pro-refs-graphiste')?.value.trim() || '',
+    // Designer
+    pro_spe_designer:       [...document.querySelectorAll('#pro-spe-designer .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_logiciels_designer: document.getElementById('pro-logiciels-designer')?.value.trim() || '',
+    pro_refs_designer:      document.getElementById('pro-refs-designer')?.value.trim() || '',
+    // Designer mode
+    pro_logiciels_designer_mode:[...document.querySelectorAll('#pro-logiciels-designer-mode .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_collections:  document.getElementById('pro-collections')?.value.trim() || '',
+    pro_maisons:      document.getElementById('pro-maisons')?.value.trim() || '',
+    // Comédien
+    pro_formations_comedien:document.getElementById('pro-formations-comedien')?.value.trim() || '',
+    pro_registres_comedien: [...document.querySelectorAll('#pro-registres-comedien .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_agence_comedien:    document.getElementById('pro-agence-comedien')?.value.trim() || '',
+    pro_filmo_comedien:     document.getElementById('pro-filmo-comedien')?.value.trim() || '',
+    // Performeur
+    pro_types_perf:    [...document.querySelectorAll('#pro-types-perf .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_contextes_perf:[...document.querySelectorAll('#pro-contextes-perf .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_refs_perf:     document.getElementById('pro-refs-perf')?.value.trim() || '',
+    // Dessinateur
+    pro_tech_dessin:    [...document.querySelectorAll('#pro-tech-dessin .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_tablette_dessin:document.getElementById('pro-tablette-dessin')?.value.trim() || '',
+    pro_refs_dessin:    document.getElementById('pro-refs-dessin')?.value.trim() || '',
+    // Peintre
+    pro_tech_peinture:  [...document.querySelectorAll('#pro-tech-peinture .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_refs_peinture:  document.getElementById('pro-refs-peinture')?.value.trim() || '',
+    // Illustrateur
+    pro_style_illus:    [...document.querySelectorAll('#pro-style-illus .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_logiciels_illus:document.getElementById('pro-logiciels-illus')?.value.trim() || '',
+    pro_refs_illus:     document.getElementById('pro-refs-illus')?.value.trim() || '',
+  };
+
+  // Calcul éligibilité : vérifier les champs obligatoires et métiers actifs
+  const metiers = [...document.querySelectorAll('.edit-metier-chip.selected')].map(b => b.getAttribute('data-metier'));
+  const champsObligatoires = proData.pro_prenom && proData.pro_nom && proData.pro_ddn && proData.pro_genre && proData.pro_ville && proData.pro_email && proMetiers.length > 0;
+  proData.pro_eligible = !!champsObligatoires;
+  proData.pro_updated_at = new Date().toISOString();
+
+  try {
+    // Upload book si nouveau fichier sélectionné
+    if (window._proBookFile) {
+      try {
+        const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'pro_books/' + user.uid + '/' + window._proBookName);
+        const snapshot = await uploadBytes(storageRef, window._proBookFile);
+        proData.pro_book_url = await getDownloadURL(snapshot.ref);
+        proData.pro_book_name = window._proBookName;
+        window._proBookUrl = proData.pro_book_url;
+        window._proBookFile = null;
+      } catch(uploadErr) {
+        console.warn('Upload book échoué, on continue sans:', uploadErr);
+      }
+    }
+    await window._setDoc(window._doc(window._db, 'danseurs', user.uid), { proData }, { merge: true });
+    if (window._monProfil) window._monProfil.proData = proData;
+    if (msg) { msg.style.display = 'block'; }
+    if (btn) btn.textContent = '✅ SAUVEGARDÉ !';
+    setTimeout(() => {
+      if (btn) btn.textContent = 'SAUVEGARDER LA CARTE PRO →';
+      if (msg) msg.style.display = 'none';
+    }, 2000);
+  } catch(e) {
+    console.error('Erreur carte pro:', e);
+    alert('Erreur lors de la sauvegarde');
+    if (btn) btn.textContent = 'SAUVEGARDER LA CARTE PRO →';
+  }
+};
+
+// Charger les données pro dans le formulaire
+function chargerCartePro(d) {
+  const p = d.proData || {};
+  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+  const setChips = (containerId, values) => {
+    if (!Array.isArray(values)) return;
+    document.querySelectorAll('#' + containerId + ' .style-tag').forEach(btn => {
+      btn.classList.toggle('selected', values.includes(btn.textContent.trim()));
+    });
+  };
+  const setSingle = (containerId, value) => {
+    document.querySelectorAll('#' + containerId + ' .style-tag').forEach(btn => {
+      btn.classList.toggle('selected', btn.textContent.trim() === value);
+    });
+  };
+
+  setVal('pro-prenom', p.pro_prenom);
+  setVal('pro-nom-famille', p.pro_nom);
+  setVal('pro-ddn', p.pro_ddn);
+  setVal('pro-ville', p.pro_ville);
+  setVal('pro-nationalite', p.pro_nationalite);
+  setVal('pro-email', p.pro_email);
+  setVal('pro-tel', p.pro_tel);
+  setVal('pro-tarif-jour', p.pro_tarif_jour);
+  setVal('pro-tarif-heure', p.pro_tarif_heure);
+  setVal('pro-bio', p.pro_bio);
+  setVal('pro-portfolio', p.pro_portfolio);
+  setVal('pro-instagram', p.pro_instagram);
+  setVal('pro-tiktok', p.pro_tiktok);
+  setVal('pro-youtube', p.pro_youtube);
+  setVal('pro-linkedin', p.pro_linkedin);
+  setVal('pro-behance', p.pro_behance);
+  setVal('pro-vimeo', p.pro_vimeo);
+  setVal('pro-soundcloud-pro', p.pro_soundcloud_pro);
+  setVal('pro-lien2', p.pro_lien2);
+  // Book : restaurer nom fichier si déjà uploadé
+  if (p.pro_book_url) {
+    window._proBookUrl = p.pro_book_url;
+    window._proBookName = p.pro_book_name || 'book';
+    const prev = document.getElementById('pro-book-preview');
+    const fn = document.getElementById('pro-book-filename');
+    const ico = document.getElementById('pro-book-icon');
+    if (prev) prev.style.display = 'flex';
+    if (fn) fn.textContent = p.pro_book_name || 'book';
+    if (ico) ico.textContent = (p.pro_book_name || '').endsWith('.pdf') ? '📄' : '🖼️';
+  }
+  // Chips métiers pro
+  document.querySelectorAll('[data-pro-metier]').forEach(btn => {
+    btn.classList.toggle('selected', (p.pro_metiers || []).includes(btn.getAttribute('data-pro-metier')));
+  });
+  syncProSectionsFromMetiers();
+  // Genre
+  if (p.pro_genre) setSingle('pro-genre-chips', p.pro_genre);
+  // Disponibilités
+  setChips('pro-dispo-chips', p.pro_disponibilites || []);
+  // Danseur
+  if (p.pro_niveau_danseur) setSingle('pro-niveau-danseur', p.pro_niveau_danseur);
+  setVal('pro-formations-danseur', p.pro_formations_danseur);
+  setVal('pro-compagnies-danseur', p.pro_compagnies_danseur);
+  // Photographe
+  setVal('pro-boitier', p.pro_boitier);
+  setVal('pro-objectifs-photo', p.pro_objectifs);
+  setChips('pro-logiciels-photo', p.pro_logiciels_photo || []);
+  if (p.pro_studio_photo) setSingle('pro-studio-photo', p.pro_studio_photo);
+  setVal('pro-refs-photo', p.pro_refs_photo);
+  // Vidéaste
+  setVal('pro-camera-videaste', p.pro_camera_videaste);
+  setChips('pro-stab-videaste', p.pro_stab_videaste || []);
+  setChips('pro-logiciels-videaste', p.pro_logiciels_videaste || []);
+  setVal('pro-refs-videaste', p.pro_refs_videaste);
+  // Réal
+  setVal('pro-camera-real', p.pro_camera_real);
+  setChips('pro-logiciels-real', p.pro_logiciels_real || []);
+  setChips('pro-types-real', p.pro_types_real || []);
+  setVal('pro-filmo', p.pro_filmo);
+  // Beatmaker
+  setChips('pro-daw-beat', p.pro_daw_beat || []);
+  setVal('pro-matos-beat', p.pro_matos_beat);
+  setVal('pro-plugins-beat', p.pro_plugins_beat);
+  setVal('pro-collabs-beat', p.pro_collabs_beat);
+  // DJ
+  setVal('pro-platines', p.pro_platines);
+  setChips('pro-logiciels-dj', p.pro_logiciels_dj || []);
+  setVal('pro-residences', p.pro_residences);
+  // Musicien
+  setVal('pro-instruments', p.pro_instruments);
+  if (p.pro_niveau_musicien) setSingle('pro-niveau-musicien', p.pro_niveau_musicien);
+  if (p.pro_studio_musicien) setSingle('pro-studio-musicien', p.pro_studio_musicien);
+  setVal('pro-projets-musicien', p.pro_projets_musicien);
+  // Chanteur
+  setChips('pro-tessiture', p.pro_tessiture || []);
+  setVal('pro-micro', p.pro_micro);
+  setVal('pro-formations-chanteur', p.pro_formations_chanteur);
+  setVal('pro-disco', p.pro_disco);
+  // Mannequin
+  setVal('pro-taille', p.pro_taille);
+  setVal('pro-pointure', p.pro_pointure);
+  setVal('pro-tour-tete', p.pro_tour_tete);
+  setVal('pro-agence', p.pro_agence);
+  setChips('pro-types-mannequin', p.pro_types_mannequin || []);
+  // Styliste
+  setChips('pro-logiciels-styliste', p.pro_logiciels_styliste || []);
+  setChips('pro-spe-styliste', p.pro_spe_styliste || []);
+  setVal('pro-marques-styliste', p.pro_marques_styliste);
+  // Maquilleur
+  setVal('pro-marques-maquilleur', p.pro_marques_maquilleur);
+  setChips('pro-spe-maquilleur', p.pro_spe_maquilleur || []);
+  setVal('pro-formations-maquilleur', p.pro_formations_maquilleur);
+  // Coiffeur
+  setChips('pro-spe-coiffeur', p.pro_spe_coiffeur || []);
+  setVal('pro-refs-coiffeur', p.pro_refs_coiffeur);
+  // Costumier
+  setChips('pro-tech-costumier', p.pro_tech_costumier || []);
+  setChips('pro-types-costumier', p.pro_types_costumier || []);
+  setVal('pro-refs-costumier', p.pro_refs_costumier);
+  // Graphiste
+  setChips('pro-logiciels-graphiste', p.pro_logiciels_graphiste || []);
+  setChips('pro-spe-graphiste', p.pro_spe_graphiste || []);
+  setVal('pro-refs-graphiste', p.pro_refs_graphiste);
+  // Designer
+  setChips('pro-spe-designer', p.pro_spe_designer || []);
+  setVal('pro-logiciels-designer', p.pro_logiciels_designer);
+  setVal('pro-refs-designer', p.pro_refs_designer);
+  // Designer mode
+  setChips('pro-logiciels-designer-mode', p.pro_logiciels_designer_mode || []);
+  setVal('pro-collections', p.pro_collections);
+  setVal('pro-maisons', p.pro_maisons);
+  // Comédien
+  setVal('pro-formations-comedien', p.pro_formations_comedien);
+  setChips('pro-registres-comedien', p.pro_registres_comedien || []);
+  setVal('pro-agence-comedien', p.pro_agence_comedien);
+  setVal('pro-filmo-comedien', p.pro_filmo_comedien);
+  // Performeur
+  setChips('pro-types-perf', p.pro_types_perf || []);
+  setChips('pro-contextes-perf', p.pro_contextes_perf || []);
+  setVal('pro-refs-perf', p.pro_refs_perf);
+  // Dessinateur
+  setChips('pro-tech-dessin', p.pro_tech_dessin || []);
+  setVal('pro-tablette-dessin', p.pro_tablette_dessin);
+  setVal('pro-refs-dessin', p.pro_refs_dessin);
+  // Peintre
+  setChips('pro-tech-peinture', p.pro_tech_peinture || []);
+  setVal('pro-refs-peinture', p.pro_refs_peinture);
+  // Illustrateur
+  setChips('pro-style-illus', p.pro_style_illus || []);
+  setVal('pro-logiciels-illus', p.pro_logiciels_illus);
+  setVal('pro-refs-illus', p.pro_refs_illus);
+}
+window.chargerCartePro = chargerCartePro;
+
 // SAUVEGARDER IDENTITÉ
 // ════════════════════════════════
 window.sauvegarderIdentite = async function() {
@@ -12439,6 +13025,8 @@ async function chargerProfil(uid) {
 
     // Pré-sélectionner les chips métier
     window._preselectEditMetiers(metiers);
+    // Charger la carte pro
+    if (typeof chargerCartePro === 'function') chargerCartePro(d);
 
     document.querySelectorAll('#edit-metiers-chips .style-tag').forEach(chip => {
       const m = chip.getAttribute('data-metier');
@@ -14552,6 +15140,849 @@ function _renderDrawerLieux() {
         <div id="edit-section-peintre" style="display:none;"></div>
         <div id="edit-section-graphiste" style="display:none;"></div>
         <div id="edit-section-illustrateur" style="display:none;"></div>
+
+
+        <!-- ═══ CARTE PRO ═══ -->
+        <div style="background:var(--card);border:1.5px solid rgba(0,245,155,0.3);border-radius:20px;padding:24px;margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">💼 Carte Pro</div>
+            <span style="font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.3);border-radius:6px;padding:2px 8px;">Admin only</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:20px;">Ces informations sont visibles uniquement par l'administrateur. Elles permettent ta mise en relation avec des marques ou clients.</div>
+
+          <!-- Infos personnelles -->
+          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+            <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;">Identité</div>
+
+            <div style="display:flex;gap:10px;">
+              <div style="flex:1;">
+                <label class="form-label">Prénom *</label>
+                <input id="pro-prenom" class="form-input" type="text" placeholder="Ex: Sofia" style="background:var(--bg2);">
+              </div>
+              <div style="flex:1;">
+                <label class="form-label">Nom *</label>
+                <input id="pro-nom-famille" class="form-input" type="text" placeholder="Ex: Martinez" style="background:var(--bg2);">
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">Date de naissance *</label>
+              <input id="pro-ddn" class="form-input" type="date" style="background:var(--bg2);color:var(--text);">
+            </div>
+
+            <div>
+              <label class="form-label">Genre *</label>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-genre-chips">
+                <button type="button" class="style-tag" onclick="toggleProGenre(this)">Homme</button>
+                <button type="button" class="style-tag" onclick="toggleProGenre(this)">Femme</button>
+                <button type="button" class="style-tag" onclick="toggleProGenre(this)">Non-binaire</button>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;">
+              <div style="flex:1;">
+                <label class="form-label">Ville de résidence *</label>
+                <input id="pro-ville" class="form-input" type="text" placeholder="Ex: Paris, Lyon..." style="background:var(--bg2);">
+              </div>
+              <div style="flex:1;">
+                <label class="form-label">Nationalité</label>
+                <input id="pro-nationalite" class="form-input" type="text" placeholder="Ex: Française" style="background:var(--bg2);">
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;">
+              <div style="flex:1;">
+                <label class="form-label">Email de contact pro *</label>
+                <input id="pro-email" class="form-input" type="email" placeholder="pro@email.com" style="background:var(--bg2);">
+              </div>
+              <div style="flex:1;">
+                <label class="form-label">Téléphone pro</label>
+                <input id="pro-tel" class="form-input" type="tel" placeholder="+33 6 ..." style="background:var(--bg2);">
+              </div>
+            </div>
+          </div>
+
+          <!-- Métiers (indépendant du profil) -->
+          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+            <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;">Métier(s) pro *</div>
+            <div style="font-size:11px;color:var(--muted2);">Sélectionne un ou plusieurs métiers — les champs correspondants apparaîtront en dessous.</div>
+
+            <div style="display:flex;flex-direction:column;gap:12px;" id="pro-metiers-chips-wrap">
+              <div>
+                <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">🎭 Scène</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                  <button type="button" class="edit-metier-chip" data-pro-metier="danseur" onclick="toggleProMetier('danseur',this)">💃 Danseur·se</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="comedien" onclick="toggleProMetier('comedien',this)">🎭 Comédien·ne</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="performeur" onclick="toggleProMetier('performeur',this)">✨ Performeur·se</button>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">🎵 Musique</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                  <button type="button" class="edit-metier-chip" data-pro-metier="beatmaker" onclick="toggleProMetier('beatmaker',this)">🎧 Beatmaker</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="dj" onclick="toggleProMetier('dj',this)">🎛️ DJ</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="musicien" onclick="toggleProMetier('musicien',this)">🎸 Musicien·ne</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="chanteur" onclick="toggleProMetier('chanteur',this)">🎤 Chanteur·se</button>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">🎬 Audiovisuel</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                  <button type="button" class="edit-metier-chip" data-pro-metier="photographe" onclick="toggleProMetier('photographe',this)">📷 Photographe</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="videaste" onclick="toggleProMetier('videaste',this)">🎥 Vidéaste</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="realisateur" onclick="toggleProMetier('realisateur',this)">🎬 Réalisateur·rice</button>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">🎨 Arts Visuels</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                  <button type="button" class="edit-metier-chip" data-pro-metier="dessinateur" onclick="toggleProMetier('dessinateur',this)">✏️ Dessinateur·rice</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="peintre" onclick="toggleProMetier('peintre',this)">🖌️ Peintre</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="graphiste" onclick="toggleProMetier('graphiste',this)">🖥️ Graphiste</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="illustrateur" onclick="toggleProMetier('illustrateur',this)">🖼️ Illustrateur·rice</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="designer" onclick="toggleProMetier('designer',this)">🎨 Designer</button>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">👗 Mode</div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                  <button type="button" class="edit-metier-chip" data-pro-metier="mannequin" onclick="toggleProMetier('mannequin',this)">🪞 Mannequin</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="styliste" onclick="toggleProMetier('styliste',this)">👗 Styliste</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="maquilleur" onclick="toggleProMetier('maquilleur',this)">💄 Maquilleur·se</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="coiffeur_mode" onclick="toggleProMetier('coiffeur_mode',this)">💈 Coiffeur·se artistique</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="costumier" onclick="toggleProMetier('costumier',this)">🧵 Costumier·ère</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="designer_mode" onclick="toggleProMetier('designer_mode',this)">👔 Designer Mode</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Disponibilités & tarifs -->
+          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+            <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;">Disponibilités & tarifs</div>
+
+            <div>
+              <label class="form-label">Disponibilités</label>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-dispo-chips">
+                <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-dispo-chips')">Semaine</button>
+                <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-dispo-chips')">Week-end</button>
+                <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-dispo-chips')">Soir</button>
+                <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-dispo-chips')">Temps plein</button>
+                <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-dispo-chips')">Ponctuel</button>
+                <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-dispo-chips')">Sur devis</button>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;">
+              <div style="flex:1;">
+                <label class="form-label">Tarif journalier (€)</label>
+                <input id="pro-tarif-jour" class="form-input" type="number" placeholder="Ex: 300" min="0" style="background:var(--bg2);">
+              </div>
+              <div style="flex:1;">
+                <label class="form-label">Tarif horaire (€)</label>
+                <input id="pro-tarif-heure" class="form-input" type="number" placeholder="Ex: 50" min="0" style="background:var(--bg2);">
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">Bio professionnelle</label>
+              <textarea id="pro-bio" class="form-input" rows="3" placeholder="Décris ton expérience, tes projets marquants, ce que tu peux apporter..." style="background:var(--bg2);resize:none;line-height:1.6;"></textarea>
+            </div>
+          </div>
+
+          <!-- Book / Portfolio -->
+          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+            <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;">Book / Portfolio</div>
+
+            <div>
+              <label class="form-label">Lien portfolio / site web</label>
+              <input id="pro-portfolio" class="form-input" type="url" placeholder="https://..." style="background:var(--bg2);">
+            </div>
+
+            <div>
+              <label class="form-label">Fichier book <span style="color:var(--muted);font-weight:400;">(PDF ou image — max 5MB)</span></label>
+              <div id="pro-book-preview" style="display:none;background:var(--bg2);border:1px solid rgba(0,245,155,0.3);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">
+                <span id="pro-book-icon" style="font-size:20px;">📄</span>
+                <div style="flex:1;min-width:0;">
+                  <div id="pro-book-filename" style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+                  <div id="pro-book-size" style="font-size:10px;color:var(--muted2);margin-top:2px;"></div>
+                </div>
+                <button type="button" onclick="supprimerBook()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;flex-shrink:0;">✕</button>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button type="button" onclick="document.getElementById('pro-book-file').click()" style="flex:1;padding:10px;border-radius:12px;background:rgba(0,245,155,0.08);border:1.5px dashed rgba(0,245,155,0.3);color:var(--green);font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer;">
+                  📎 Choisir un fichier
+                </button>
+              </div>
+              <input type="file" id="pro-book-file" accept=".pdf,image/png,image/jpeg" style="display:none;" onchange="previewBook(this)">
+              <div style="font-size:10px;color:var(--muted);margin-top:6px;">PDF, PNG ou JPG — max 5MB</div>
+            </div>
+          </div>
+
+          <!-- Réseaux sociaux pro -->
+          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+            <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;">Réseaux & liens pro</div>
+
+            <div>
+              <label class="form-label">Instagram</label>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:13px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--muted2);">@</span>
+                <input id="pro-instagram" class="form-input" type="text" placeholder="pseudo" style="background:var(--bg2);flex:1;">
+              </div>
+            </div>
+            <div>
+              <label class="form-label">TikTok</label>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:13px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--muted2);">@</span>
+                <input id="pro-tiktok" class="form-input" type="text" placeholder="pseudo" style="background:var(--bg2);flex:1;">
+              </div>
+            </div>
+            <div>
+              <label class="form-label">YouTube</label>
+              <input id="pro-youtube" class="form-input" type="url" placeholder="https://youtube.com/@..." style="background:var(--bg2);">
+            </div>
+            <div>
+              <label class="form-label">LinkedIn</label>
+              <input id="pro-linkedin" class="form-input" type="url" placeholder="https://linkedin.com/in/..." style="background:var(--bg2);">
+            </div>
+            <div>
+              <label class="form-label">Behance</label>
+              <input id="pro-behance" class="form-input" type="url" placeholder="https://behance.net/..." style="background:var(--bg2);">
+            </div>
+            <div>
+              <label class="form-label">Vimeo</label>
+              <input id="pro-vimeo" class="form-input" type="url" placeholder="https://vimeo.com/..." style="background:var(--bg2);">
+            </div>
+            <div>
+              <label class="form-label">SoundCloud</label>
+              <input id="pro-soundcloud-pro" class="form-input" type="url" placeholder="https://soundcloud.com/..." style="background:var(--bg2);">
+            </div>
+            <div>
+              <label class="form-label">Autre lien</label>
+              <input id="pro-lien2" class="form-input" type="url" placeholder="https://..." style="background:var(--bg2);">
+            </div>
+          </div>
+
+          <!-- Sections dynamiques par métier -->
+          <div id="pro-metier-sections">
+
+            <!-- DANSEUR -->
+            <div id="pro-section-danseur" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">💃 Danseur·se</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Niveau</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-niveau-danseur">
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-niveau-danseur')">Débutant</button>
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-niveau-danseur')">Intermédiaire</button>
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-niveau-danseur')">Avancé</button>
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-niveau-danseur')">Professionnel</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Formations / Écoles</label>
+                  <input id="pro-formations-danseur" class="form-input" type="text" placeholder="Ex: Centre Chorégraphique, Studio X..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Compagnies / Projets passés</label>
+                  <input id="pro-compagnies-danseur" class="form-input" type="text" placeholder="Ex: Compagnie Y, Tournée Z..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- PHOTOGRAPHE -->
+            <div id="pro-section-photographe" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">📷 Photographe</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Boîtier(s)</label>
+                  <input id="pro-boitier" class="form-input" type="text" placeholder="Ex: Sony A7IV, Canon R6..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Objectifs clés</label>
+                  <input id="pro-objectifs-photo" class="form-input" type="text" placeholder="Ex: 85mm f/1.4, 24-70mm f/2.8..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Logiciels de retouche</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-logiciels-photo">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-photo')">Lightroom</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-photo')">Photoshop</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-photo')">Capture One</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-photo')">DxO</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-photo')">Darktable</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Studio disponible ?</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-studio-photo">
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-studio-photo')">Oui — mon studio</button>
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-studio-photo')">Location possible</button>
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-studio-photo')">Non</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Références / Clients</label>
+                  <input id="pro-refs-photo" class="form-input" type="text" placeholder="Ex: Nike, Vogue, Festival X..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- VIDÉASTE -->
+            <div id="pro-section-videaste" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🎥 Vidéaste</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Caméra(s)</label>
+                  <input id="pro-camera-videaste" class="form-input" type="text" placeholder="Ex: Sony FX3, Blackmagic 6K..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Stabilisation</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-stab-videaste">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-stab-videaste')">Gimbal</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-stab-videaste')">Steadicam</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-stab-videaste')">Drone</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-stab-videaste')">Slider</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-stab-videaste')">Grue</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Logiciels de montage</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-logiciels-videaste">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-videaste')">Premiere Pro</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-videaste')">DaVinci Resolve</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-videaste')">Final Cut</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-videaste')">After Effects</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Références / Projets</label>
+                  <input id="pro-refs-videaste" class="form-input" type="text" placeholder="Ex: Clip Artiste X, Pub Marque Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- RÉALISATEUR -->
+            <div id="pro-section-realisateur" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🎬 Réalisateur·rice</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Caméra(s) principale(s)</label>
+                  <input id="pro-camera-real" class="form-input" type="text" placeholder="Ex: ARRI Alexa, RED Komodo..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Logiciels</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-logiciels-real">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-real')">Premiere Pro</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-real')">DaVinci Resolve</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-real')">Final Cut</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-real')">After Effects</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-real')">Avid</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Types de projets</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-types-real">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-real')">Clip</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-real')">Documentaire</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-real')">Publicité</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-real')">Court-métrage</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-real')">Série</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-real')">Long-métrage</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Filmographie / Références</label>
+                  <input id="pro-filmo" class="form-input" type="text" placeholder="Ex: Court-métrage X, Clip Artiste Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- BEATMAKER -->
+            <div id="pro-section-beatmaker" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🎧 Beatmaker</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">DAW</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-daw-beat">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-daw-beat')">FL Studio</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-daw-beat')">Ableton</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-daw-beat')">Logic Pro</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-daw-beat')">Pro Tools</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-daw-beat')">Studio One</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-daw-beat')">Reason</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Matériel (pad, claviers, interface...)</label>
+                  <input id="pro-matos-beat" class="form-input" type="text" placeholder="Ex: Maschine, Akai MPK, Focusrite..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Plugins phares</label>
+                  <input id="pro-plugins-beat" class="form-input" type="text" placeholder="Ex: Omnisphere, Kontakt, Serum..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Artistes / Projets collaborés</label>
+                  <input id="pro-collabs-beat" class="form-input" type="text" placeholder="Ex: feat. Artiste X, Album Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- DJ -->
+            <div id="pro-section-dj" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🎛️ DJ</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Platines / Contrôleur</label>
+                  <input id="pro-platines" class="form-input" type="text" placeholder="Ex: Pioneer CDJ-3000, Technics 1210..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Logiciel de mix</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-logiciels-dj">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-dj')">Rekordbox</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-dj')">Serato</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-dj')">Traktor</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-dj')">Virtual DJ</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-dj')">Ableton</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Résidences / Clubs</label>
+                  <input id="pro-residences" class="form-input" type="text" placeholder="Ex: Club X Paris, Soirée Y mensuelle..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- MUSICIEN -->
+            <div id="pro-section-musicien" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🎸 Musicien·ne</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Instrument(s)</label>
+                  <input id="pro-instruments" class="form-input" type="text" placeholder="Ex: Guitare, Piano, Basse..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Niveau</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-niveau-musicien">
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-niveau-musicien')">Amateur</button>
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-niveau-musicien')">Semi-pro</button>
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-niveau-musicien')">Professionnel</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Studio home/pro disponible ?</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-studio-musicien">
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-studio-musicien')">Home studio</button>
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-studio-musicien')">Studio pro</button>
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-studio-musicien')">Non</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Projets / Groupes</label>
+                  <input id="pro-projets-musicien" class="form-input" type="text" placeholder="Ex: Groupe X, Session avec Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- CHANTEUR -->
+            <div id="pro-section-chanteur" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🎤 Chanteur·se / Rappeur·se</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Tessiture / Registre</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-tessiture">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tessiture')">Soprano</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tessiture')">Mezzo</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tessiture')">Alto</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tessiture')">Ténor</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tessiture')">Baryton</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tessiture')">Basse</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tessiture')">Rap</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Micro / Interface audio</label>
+                  <input id="pro-micro" class="form-input" type="text" placeholder="Ex: Neumann U87, Shure SM7B..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Formations vocales</label>
+                  <input id="pro-formations-chanteur" class="form-input" type="text" placeholder="Ex: Cours avec X, École Y..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Projets / Discographie</label>
+                  <input id="pro-disco" class="form-input" type="text" placeholder="Ex: EP X, feat. Y, Scène Z..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- MANNEQUIN -->
+            <div id="pro-section-mannequin" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🪞 Mannequin</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;gap:10px;">
+                  <div style="flex:1;">
+                    <label class="form-label">Taille (cm)</label>
+                    <input id="pro-taille" class="form-input" type="number" placeholder="Ex: 175" style="background:var(--bg2);">
+                  </div>
+                  <div style="flex:1;">
+                    <label class="form-label">Pointure</label>
+                    <input id="pro-pointure" class="form-input" type="number" placeholder="Ex: 40" style="background:var(--bg2);">
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Tour de tête (cm)</label>
+                  <input id="pro-tour-tete" class="form-input" type="number" placeholder="Ex: 56" style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Agence</label>
+                  <input id="pro-agence" class="form-input" type="text" placeholder="Ex: Elite, Ford, indépendant..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Types de défilés / Shoots</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-types-mannequin">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-mannequin')">Prêt-à-porter</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-mannequin')">Haute couture</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-mannequin')">Editorial</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-mannequin')">Commercial</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-mannequin')">Lingerie</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-mannequin')">Fitness</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-mannequin')">Artistique</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- STYLISTE -->
+            <div id="pro-section-styliste" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">👗 Styliste</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Logiciels</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-logiciels-styliste">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-styliste')">Illustrator</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-styliste')">CLO3D</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-styliste')">Photoshop</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-styliste')">Procreate</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Spécialités</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-spe-styliste">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-styliste')">Streetwear</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-styliste')">Haute couture</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-styliste')">Scène / Costume</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-styliste')">Sportswear</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-styliste')">Éditorial</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Marques / Clients</label>
+                  <input id="pro-marques-styliste" class="form-input" type="text" placeholder="Ex: Marque X, Artiste Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- MAQUILLEUR -->
+            <div id="pro-section-maquilleur" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">💄 Maquilleur·se</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Marques utilisées</label>
+                  <input id="pro-marques-maquilleur" class="form-input" type="text" placeholder="Ex: MAC, NARS, Charlotte Tilbury..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Spécialités</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-spe-maquilleur">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-maquilleur')">Scène</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-maquilleur')">Mode</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-maquilleur')">Mariée</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-maquilleur')">SFX</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-maquilleur')">Cinéma / TV</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-maquilleur')">Editorial</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Formations / Certifications</label>
+                  <input id="pro-formations-maquilleur" class="form-input" type="text" placeholder="Ex: École X, Certification Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- COIFFEUR MODE -->
+            <div id="pro-section-coiffeur_mode" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">💈 Coiffeur·se artistique</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Spécialités</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-spe-coiffeur">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-coiffeur')">Dreadlocks</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-coiffeur')">Coloration</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-coiffeur')">Coiffure de scène</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-coiffeur')">Braids / Tresses</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-coiffeur')">Éditorial</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-coiffeur')">Cheveux texturés</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Expériences / Références</label>
+                  <input id="pro-refs-coiffeur" class="form-input" type="text" placeholder="Ex: Fashion Week, Artiste X..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- COSTUMIER -->
+            <div id="pro-section-costumier" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🧵 Costumier·ère</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Techniques</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-tech-costumier">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-costumier')">Couture</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-costumier')">Broderie</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-costumier')">Patron</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-costumier')">Impression 3D</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-costumier')">Latex / Cuir</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Types de projets</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-types-costumier">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-costumier')">Spectacle</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-costumier')">Clip</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-costumier')">Cinéma</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-costumier')">Mode</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-costumier')">Cosplay</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Références</label>
+                  <input id="pro-refs-costumier" class="form-input" type="text" placeholder="Ex: Compagnie X, Film Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- GRAPHISTE -->
+            <div id="pro-section-graphiste" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🖥️ Graphiste</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Logiciels</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-logiciels-graphiste">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-graphiste')">Photoshop</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-graphiste')">Illustrator</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-graphiste')">Figma</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-graphiste')">InDesign</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-graphiste')">After Effects</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-graphiste')">Blender</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Spécialités</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-spe-graphiste">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-graphiste')">Identité visuelle</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-graphiste')">Typographie</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-graphiste')">Motion design</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-graphiste')">UI/UX</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-graphiste')">Print</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-graphiste')">3D</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Clients / Références</label>
+                  <input id="pro-refs-graphiste" class="form-input" type="text" placeholder="Ex: Marque X, Label Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- DESIGNER (générique) -->
+            <div id="pro-section-designer" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🎨 Designer</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Spécialité</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-spe-designer">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-designer')">Produit</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-designer')">UX/UI</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-designer')">Spatial</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-designer')">Scénographie</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-spe-designer')">Packaging</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Logiciels</label>
+                  <input id="pro-logiciels-designer" class="form-input" type="text" placeholder="Ex: Rhino, Figma, SolidWorks..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Références</label>
+                  <input id="pro-refs-designer" class="form-input" type="text" placeholder="Ex: Projet X, Client Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- DESIGNER MODE -->
+            <div id="pro-section-designer_mode" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">👔 Designer Mode</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Logiciels</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-logiciels-designer-mode">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-designer-mode')">CLO3D</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-designer-mode')">Illustrator</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-designer-mode')">Photoshop</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-logiciels-designer-mode')">Modaris</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Collections réalisées</label>
+                  <input id="pro-collections" class="form-input" type="text" placeholder="Ex: Collection Printemps X, Collab Y..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Marques / Maisons</label>
+                  <input id="pro-maisons" class="form-input" type="text" placeholder="Ex: Maison X, Marque Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- COMÉDIEN -->
+            <div id="pro-section-comedien" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🎭 Comédien·ne</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Formations</label>
+                  <input id="pro-formations-comedien" class="form-input" type="text" placeholder="Ex: Cours Florent, Conservatoire..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Registres</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-registres-comedien">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-registres-comedien')">Théâtre</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-registres-comedien')">Cinéma</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-registres-comedien')">Impro</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-registres-comedien')">Stand-up</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-registres-comedien')">Doublage</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-registres-comedien')">Comédie musicale</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Agence</label>
+                  <input id="pro-agence-comedien" class="form-input" type="text" placeholder="Ex: Agence X, indépendant..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Filmographie / Scène</label>
+                  <input id="pro-filmo-comedien" class="form-input" type="text" placeholder="Ex: Pièce X, Film Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- PERFORMEUR -->
+            <div id="pro-section-performeur" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">✨ Performeur·se</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Types de performance</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-types-perf">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-perf')">Performance art</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-perf')">Cirque</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-perf')">Mime / Corps</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-perf')">Acrobatie</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-perf')">Arts de rue</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-perf')">Installation</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Contextes</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-contextes-perf">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-contextes-perf')">Scène</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-contextes-perf')">Festival</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-contextes-perf')">Rue</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-contextes-perf')">Événementiel</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-contextes-perf')">Galerie</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Projets / Références</label>
+                  <input id="pro-refs-perf" class="form-input" type="text" placeholder="Ex: Festival X, Compagnie Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- DESSINATEUR, PEINTRE, ILLUSTRATEUR (Arts visuels simples) -->
+            <div id="pro-section-dessinateur" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">✏️ Dessinateur·rice</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Techniques</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-tech-dessin">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-dessin')">Crayon</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-dessin')">Encre</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-dessin')">Numérique</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-dessin')">Bande dessinée</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-dessin')">Manga</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Tablette / Logiciels</label>
+                  <input id="pro-tablette-dessin" class="form-input" type="text" placeholder="Ex: Wacom, Procreate, Clip Studio..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Publications / Références</label>
+                  <input id="pro-refs-dessin" class="form-input" type="text" placeholder="Ex: BD X, Expo Y, Client Z..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <div id="pro-section-peintre" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🖌️ Peintre</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Techniques</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-tech-peinture">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-peinture')">Huile</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-peinture')">Aquarelle</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-peinture')">Acrylique</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-peinture')">Murale</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-peinture')">Graffiti</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-peinture')">Mixte</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Expositions / Références</label>
+                  <input id="pro-refs-peinture" class="form-input" type="text" placeholder="Ex: Expo X, Galerie Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <div id="pro-section-illustrateur" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🖼️ Illustrateur·rice</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Style</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-style-illus">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-style-illus')">Réaliste</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-style-illus')">Cartoon</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-style-illus')">Abstrait</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-style-illus')">Vectoriel</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-style-illus')">Concept art</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Logiciels</label>
+                  <input id="pro-logiciels-illus" class="form-input" type="text" placeholder="Ex: Procreate, Illustrator, Clip Studio..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Clients types / Références</label>
+                  <input id="pro-refs-illus" class="form-input" type="text" placeholder="Ex: Éditions X, Marque Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /pro-metier-sections -->
+
+          <!-- Bouton sauvegarder la carte pro -->
+          <button onclick="sauvegarderCartePro()" id="pro-save-btn" style="width:100%;padding:14px;border-radius:12px;background:rgba(0,245,155,0.15);border:1.5px solid var(--green);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;letter-spacing:1px;margin-top:8px;">
+            SAUVEGARDER LA CARTE PRO →
+          </button>
+          <div id="pro-save-msg" style="display:none;text-align:center;margin-top:8px;font-size:12px;color:var(--green);font-weight:700;">✅ Carte pro mise à jour !</div>
+        </div>
+        <!-- /CARTE PRO -->
 
         <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:24px;">
           <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:16px;">Affichage du nom</div>
