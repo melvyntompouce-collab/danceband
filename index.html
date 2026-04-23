@@ -501,7 +501,7 @@ body.pwa #agenda-passes-toggle {
   width:100%;padding:14px 16px;border-radius:12px;
   background:var(--bg);border:1.5px solid var(--border);
   color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;
-  transition:border-color 0.2s;outline:none;
+  transition:border-color 0.2s;outline:none;box-sizing:border-box;
 }
 .form-input:focus{border-color:var(--green);}
 .form-input::placeholder{color:var(--muted);}
@@ -16242,7 +16242,7 @@ function _renderDrawerLieux() {
 
             <div>
               <label class="form-label">Date de naissance *</label>
-              <input id="pro-ddn" class="form-input" type="date" style="background:var(--bg2);color:var(--text);">
+              <input id="pro-ddn" class="form-input" type="date" style="background:var(--bg2);color:var(--text);width:100%;box-sizing:border-box;max-width:100%;">
             </div>
 
             <div>
