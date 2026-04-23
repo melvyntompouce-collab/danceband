@@ -14546,8 +14546,36 @@ async function _verifierXPConnexionJournaliere() {
   } catch(e) { console.warn('XP connexion journalière:', e); }
 }
 
+let _authInitialized = false;
+let _wasConnected = false;
 onAuthStateChanged(auth, async (user) => {
+  if (!_authInitialized && !user) {
+    // Premier trigger déconnecté au démarrage — ignorer
+    _authInitialized = true;
+    return;
+  }
+  _authInitialized = true;
+
+  if (!user && _wasConnected) {
+    // Déconnexion en cours de session — laisser passer
+  } else if (!user && !_wasConnected) {
+    // Pas connecté au démarrage — afficher home normalement
+    console.log('👤 Non connecté');
+    afficherBarreLogoDeconnecte(true);
+    mettreAJourNav(null);
+    detecterPairageKima(false);
+    const _pathname = window.location.pathname;
+    if (_pathname !== '/' && _pathname !== '/connexion') {
+      sessionStorage.setItem('hako_redirect_url', _pathname);
+    }
+    window.showPage('home');
+    const loader = document.getElementById('app-loader');
+    if (loader) { loader.classList.add('hidden'); setTimeout(() => loader.remove(), 350); }
+    return;
+  }
+
   if (user) {
+    _wasConnected = true;
     console.log('✅ Connecté :', user.email);
     // Reset bouton login si on venait de se connecter
     const loginBtn = document.getElementById('login-btn');
@@ -14573,11 +14601,13 @@ onAuthStateChanged(auth, async (user) => {
     }
     _initRouter();
   } else {
-    console.log('👤 Non connecté');
+    _wasConnected = false;
+    console.log('👤 Déconnecté');
     afficherBarreLogoDeconnecte(true);
     mettreAJourNav(null);
     detecterPairageKima(false);
-    // Pas connecté : mémoriser l'URL demandée et afficher home
+    window._currentUid = null;
+    window._monProfil = null;
     const _pathname = window.location.pathname;
     if (_pathname !== '/' && _pathname !== '/connexion') {
       sessionStorage.setItem('hako_redirect_url', _pathname);
