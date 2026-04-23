@@ -13091,10 +13091,8 @@ window.connecter = async function() {
   btn.disabled = true;
 
   try {
-    const cred = await signInWithEmailAndPassword(auth, email, password);
-    await chargerProfil(cred.user.uid);
-    window.showPage('profile');
-
+    await signInWithEmailAndPassword(auth, email, password);
+    // onAuthStateChanged prend le relais automatiquement
   } catch(e) {
     btn.textContent = 'Se connecter →';
     btn.disabled = false;
@@ -13102,6 +13100,7 @@ window.connecter = async function() {
       'auth/user-not-found':   '⚠️ Aucun compte avec cet email',
       'auth/wrong-password':   '⚠️ Mot de passe incorrect',
       'auth/invalid-email':    '⚠️ Email invalide',
+      'auth/invalid-credential': '⚠️ Email ou mot de passe incorrect',
       'auth/too-many-requests':'⚠️ Trop de tentatives, réessaie plus tard'
     };
     afficherErreur(errDiv, msgs[e.code] || '❌ Erreur : ' + e.message);
@@ -14545,6 +14544,10 @@ async function _verifierXPConnexionJournaliere() {
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     console.log('✅ Connecté :', user.email);
+    // Reset bouton login si on venait de se connecter
+    const loginBtn = document.getElementById('login-btn');
+    if (loginBtn) { loginBtn.textContent = 'Se connecter →'; loginBtn.disabled = false; }
+
     afficherBarreLogoDeconnecte(false);
     await Promise.allSettled([
       chargerProfil(user.uid).catch(e => console.error('❌ chargerProfil:', e)),
