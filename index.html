@@ -7618,9 +7618,7 @@ window.publierPost = async function() {
   // Upload média si besoin
   if ((_postType === 'photo' || _postType === 'video') && _postMediaFile) {
     try {
-      const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js');
-      const storage = getStorage();
-      const path = `posts/${window._currentUid}/${Date.now()}_${_postMediaFile.name}`;
+      const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
       const storageRef = ref(storage, path);
       const snapshot = await uploadBytes(storageRef, _postMediaFile);
       postData.mediaUrl = await getDownloadURL(snapshot.ref);
@@ -13643,7 +13641,7 @@ window.sauvegarderCartePro = async function() {
     // Upload book si nouveau fichier sélectionné
     if (window._proBookFile) {
       try {
-        const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js');
+        const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
         const storage = getStorage();
         const storageRef = ref(storage, 'pro_books/' + user.uid + '/' + window._proBookName);
         const snapshot = await uploadBytes(storageRef, window._proBookFile);
