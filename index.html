@@ -7111,6 +7111,20 @@ function _renderPostCard(post) {
     ? `<img src="${post.authorPhoto}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:11px;">`
     : `<span>${post.authorEmoji || '🎭'}</span>`;
 
+  const isMyPost = post.authorId === window._currentUid;
+  const menuPost = isMyPost ? `
+    <div style="position:relative;">
+      <button onclick="togglePostMenu('${post.id}')" style="background:none;border:none;color:var(--muted2);cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;" title="Options">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+      </button>
+      <div id="post-menu-${post.id}" style="display:none;position:absolute;right:0;top:28px;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;z-index:100;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+        <button onclick="supprimerPost('${post.id}')" style="width:100%;padding:12px 16px;background:none;border:none;color:var(--red);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(255,77,109,0.08)'" onmouseout="this.style.background='none'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          Supprimer
+        </button>
+      </div>
+    </div>` : '';
+
   return `<div class="feed-card" id="post-card-${post.id}">
     <div class="feed-card-header">
       <div class="feed-card-avatar">${avatarInner}</div>
@@ -7118,6 +7132,7 @@ function _renderPostCard(post) {
         <div class="feed-card-name">${post.authorName || 'Artiste'}</div>
         <div class="feed-card-meta">${post.authorDiscipline || ''}${post.authorDiscipline && post.createdAt ? ' · ' : ''}${_tempsRelatif(post.createdAt)}</div>
       </div>
+      ${menuPost}
     </div>
     ${post.content ? `<div class="feed-card-content">${post.content.replace(/</g,'&lt;')}</div>` : ''}
     ${mediaHtml}
@@ -7362,11 +7377,11 @@ async function envoyerCommentaire(postId) {
 }
 
 // ── Page création de post ──
-window._postType = 'text';
-window._postMediaFile = null;
+let _postType = 'text';
+let _postMediaFile = null;
 
 window.setPostType = function(type, btn) {
-  window._postType = type;
+  _postType = type;
   document.querySelectorAll('.post-type-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   const mediaZone = document.getElementById('post-media-zone');
@@ -7384,7 +7399,7 @@ window.setPostType = function(type, btn) {
 window.previewMedia = function(input) {
   const file = input.files[0];
   if (!file) return;
-  window._postMediaFile = file;
+  _postMediaFile = file;
   const preview = document.getElementById('post-media-preview');
   const img = document.getElementById('post-preview-img');
   const video = document.getElementById('post-preview-video');
@@ -7399,7 +7414,7 @@ window.previewMedia = function(input) {
 };
 
 window.supprimerMedia = function() {
-  window._postMediaFile = null;
+  _postMediaFile = null;
   document.getElementById('post-media-preview').style.display = 'none';
   document.getElementById('post-media-drop').style.display = 'flex';
   document.getElementById('post-preview-img').src = '';
@@ -7428,18 +7443,12 @@ async function _initPostCreatePage() {
   document.getElementById('post-submit-btn').disabled = false;
   document.getElementById('post-submit-btn').textContent = 'Publier';
 
-  // Attacher l'event listener du file input proprement
-  const mediaInput = document.getElementById('post-media-input');
-  if (mediaInput) {
-    mediaInput.onchange = function() { window.previewMedia(this); };
-  }
-
   const preload = window._postCreateEventPreload;
   window._postCreateEventPreload = null;
 
   if (preload) {
     // Mode pré-rempli depuis un événement : verrouiller sur event_share
-    window._postType = 'event_share';
+    _postType = 'event_share';
     document.querySelectorAll('.post-type-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.type === 'event_share');
     });
@@ -7462,7 +7471,7 @@ async function _initPostCreatePage() {
     window._postCreateEventPreload = { ...preload, _locked: true };
   } else {
     // Mode normal
-    window._postType = 'text';
+    _postType = 'text';
     document.querySelectorAll('.post-type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === 'text'));
     document.getElementById('post-media-zone').style.display = 'none';
     document.getElementById('post-link-zone').style.display = 'none';
@@ -7589,6 +7598,35 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+window.togglePostMenu = function(postId) {
+  const menu = document.getElementById('post-menu-' + postId);
+  if (!menu) return;
+  const isOpen = menu.style.display === 'block';
+  // Fermer tous les autres menus
+  document.querySelectorAll('[id^="post-menu-"]').forEach(m => m.style.display = 'none');
+  menu.style.display = isOpen ? 'none' : 'block';
+};
+
+// Fermer les menus post au clic extérieur
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('[id^="post-menu-"]') && !e.target.closest('button[onclick*="togglePostMenu"]')) {
+    document.querySelectorAll('[id^="post-menu-"]').forEach(m => m.style.display = 'none');
+  }
+});
+
+window.supprimerPost = async function(postId) {
+  if (!confirm('Supprimer ce post définitivement ?')) return;
+  try {
+    await window._deleteDoc(window._doc(window._db, 'posts', postId));
+    const card = document.getElementById('post-card-' + postId);
+    if (card) card.remove();
+    _feedPosts = _feedPosts.filter(p => p.id !== postId);
+  } catch(e) {
+    alert('Erreur lors de la suppression.');
+    console.error(e);
+  }
+};
+
 window.publierPost = async function() {
   if (!window._currentUid || !window._db) return;
   const btn = document.getElementById('post-submit-btn');
@@ -7626,7 +7664,7 @@ window.publierPost = async function() {
     try {
       const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
       const storageRef = ref(storage, path);
-      const snapshot = await uploadBytes(storageRef, window._postMediaFile);
+      const snapshot = await uploadBytes(storageRef, _postMediaFile);
       postData.mediaUrl = await getDownloadURL(snapshot.ref);
     } catch(e) { return errMsg('Erreur lors de l\'upload du fichier.'); }
   } else if (_postType === 'link') {
@@ -7652,7 +7690,7 @@ window.publierPost = async function() {
   try {
     await window._addDoc(window._collection(window._db, 'posts'), postData);
     // Reset et retour feed
-    window._postMediaFile = null;
+    _postMediaFile = null;
     _feedLastDoc = null;
     _feedPosts = [];
     btn.textContent = 'Publier';
