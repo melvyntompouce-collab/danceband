@@ -7118,6 +7118,10 @@ function _renderPostCard(post) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
       </button>
       <div id="post-menu-${post.id}" style="display:none;position:absolute;right:0;top:28px;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;z-index:100;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+        <button onclick="modifierPost('${post.id}')" style="width:100%;padding:12px 16px;background:none;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='none'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Modifier
+        </button>
         <button onclick="supprimerPost('${post.id}')" style="width:100%;padding:12px 16px;background:none;border:none;color:var(--red);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(255,77,109,0.08)'" onmouseout="this.style.background='none'">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
           Supprimer
@@ -7613,6 +7617,45 @@ document.addEventListener('click', function(e) {
     document.querySelectorAll('[id^="post-menu-"]').forEach(m => m.style.display = 'none');
   }
 });
+
+window.modifierPost = function(postId) {
+  document.querySelectorAll('[id^="post-menu-"]').forEach(m => m.style.display = 'none');
+  const post = _feedPosts.find(p => p.id === postId);
+  if (!post) return;
+  const contentEl = document.querySelector(`#post-card-${postId} .feed-card-content`);
+  if (!contentEl) return;
+  const texteActuel = post.content || '';
+  contentEl.innerHTML = `
+    <textarea id="edit-post-textarea-${postId}" style="width:100%;background:var(--bg2);border:1.5px solid rgba(0,245,155,0.4);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 12px;box-sizing:border-box;resize:vertical;min-height:80px;outline:none;">${texteActuel}</textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end;">
+      <button onclick="annulerModifPost('${postId}')" style="padding:8px 14px;border-radius:8px;background:transparent;border:1px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;">Annuler</button>
+      <button onclick="sauvegarderModifPost('${postId}')" style="padding:8px 14px;border-radius:8px;background:var(--green);border:none;color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;cursor:pointer;">Sauvegarder</button>
+    </div>`;
+};
+
+window.annulerModifPost = function(postId) {
+  const post = _feedPosts.find(p => p.id === postId);
+  if (!post) return;
+  const contentEl = document.querySelector(`#post-card-${postId} .feed-card-content`);
+  if (contentEl) contentEl.innerHTML = post.content.replace(/</g, '&lt;');
+};
+
+window.sauvegarderModifPost = async function(postId) {
+  const textarea = document.getElementById('edit-post-textarea-' + postId);
+  if (!textarea) return;
+  const newContent = textarea.value.trim();
+  if (!newContent) return;
+  try {
+    await window._updateDoc(window._doc(window._db, 'posts', postId), { content: newContent });
+    const post = _feedPosts.find(p => p.id === postId);
+    if (post) post.content = newContent;
+    const contentEl = document.querySelector(`#post-card-${postId} .feed-card-content`);
+    if (contentEl) contentEl.innerHTML = newContent.replace(/</g, '&lt;');
+  } catch(e) {
+    alert('Erreur lors de la modification.');
+    console.error(e);
+  }
+};
 
 window.supprimerPost = async function(postId) {
   if (!confirm('Supprimer ce post définitivement ?')) return;
