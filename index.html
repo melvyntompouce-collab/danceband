@@ -7125,7 +7125,11 @@ async function chargerFeed() {
     }
 
     // Trier par score mixte
-    nouveaux.sort((a, b) => _scorePost(b) - _scorePost(a));
+    nouveaux.sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      return _scorePost(b) - _scorePost(a);
+    });
 
     if (_feedLastDoc) {
       nouveaux.forEach(p => { _feedPosts.push(p); list.insertAdjacentHTML('beforeend', _renderPostCard(p)); });
@@ -7147,6 +7151,33 @@ async function chargerFeed() {
 }
 
 function chargerPlusPostsFeed() { chargerFeed(); }
+
+// ── Post épinglé d'intro HAKO (créé une seule fois) ──
+async function initPostEpingle() {
+  if (!window._db || !window._currentUid) return;
+  try {
+    const snap = await window._getDocs(
+      window._query(window._collection(window._db, 'posts'), window._where('pinned', '==', true), window._limit(1))
+    );
+    if (!snap.empty) return; // déjà créé
+    await window._addDoc(window._collection(window._db, 'posts'), {
+      authorId: window._currentUid,
+      authorName: 'HAKO',
+      authorEmoji: '🟢',
+      authorPhoto: null,
+      authorDiscipline: '',
+      authorUnivers: [],
+      type: 'text',
+      content: 'Bienvenue sur le feed 👋\n\nCe fil est le vôtre. Partagez vos projets, vos créations, vos dates, vos coups de cœur — une vidéo, une photo, un lien, un événement. Tout ce qui fait partie de votre univers artistique a sa place ici.\n\nSoyez les premiers à poster. 🎭',
+      pinned: true,
+      likesCount: 0,
+      commentsCount: 0,
+      likes: [],
+      createdAt: window._serverTimestamp()
+    });
+    console.log('Post épinglé HAKO créé.');
+  } catch(e) { console.error('initPostEpingle:', e); }
+}
 
 async function toggleLikePost(postId, btn) {
   if (!window._currentUid || !window._db) return;
@@ -14125,6 +14156,7 @@ function mettreAJourNav(user) {
       if (window._monRole === 'admin') {
         if (npmOrgaBtn) npmOrgaBtn.style.display = 'none';
         if (npmAdminBtn) npmAdminBtn.style.display = 'flex';
+        initPostEpingle();
       } else if (window._monRole === 'organisateur') {
         if (npmOrgaBtn) npmOrgaBtn.style.display = 'flex';
         if (npmOrgaLabel) npmOrgaLabel.textContent = 'Organisateur';
