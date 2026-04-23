@@ -4715,36 +4715,7 @@ if (isPWA) {
       </button>
     </div>
 
-    <!-- Widgets dynamiques -->
-    <div id="dash-activite-section" style="display:none;margin-bottom:20px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:12px;letter-spacing:1px;color:var(--muted2);text-transform:uppercase;">Activité récente</div>
-      </div>
-      <div id="dash-activite-list" style="display:flex;flex-direction:column;gap:6px;"></div>
-    </div>
-
-    <div id="dash-events-section" style="display:none;margin-bottom:20px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:12px;letter-spacing:1px;color:var(--muted2);text-transform:uppercase;">Prochains événements</div>
-        <button onclick="showPage('agenda')" style="background:none;border:none;color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">Voir tout →</button>
-      </div>
-      <div id="dash-events-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-    </div>
-
-    <div id="dash-compat-section" style="display:none;margin-bottom:20px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:12px;letter-spacing:1px;color:var(--muted2);text-transform:uppercase;">Compatibles près de toi</div>
-        <button onclick="showPage('network')" style="background:none;border:none;color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">Voir tout →</button>
-      </div>
-      <div id="dash-compat-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-    </div>
-
-    <div id="dash-favoris-section" style="display:none;margin-bottom:20px;">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:12px;letter-spacing:1px;color:var(--muted2);text-transform:uppercase;margin-bottom:10px;">Événements enregistrés</div>
-      <div id="dash-favoris-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-    </div>
-
-    <!-- Posts (stub) -->
+    <!-- Posts -->
     <div id="dash-empty-state" style="text-align:center;padding:60px 20px;color:var(--muted2);">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;opacity:0.4;"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
       <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:8px;">Le feed arrive bientôt</div>
@@ -6411,22 +6382,15 @@ function afficherDashboard(d) {
   if (_isDefaultRoute) showPage('feed');
 
   // Charger les sections enrichies
-  afficherActiviteDashboard();
-  afficherEventsDashboard();
-  afficherCompatiblesDashboard();
   afficherFavorisDashboard();
 
 
 
   // Masquer le stub feed si au moins une section est visible
   setTimeout(() => {
-    const sections = ['dash-activite-section','dash-events-section','dash-compat-section','dash-favoris-section'];
-    const auMoinsUneVisible = sections.some(id => {
-      const el = document.getElementById(id);
-      return el && el.style.display !== 'none';
-    });
+    const favoris = document.getElementById('dash-favoris-section');
     const emptyState = document.getElementById('dash-empty-state');
-    if (emptyState) emptyState.style.display = auMoinsUneVisible ? 'none' : 'block';
+    if (emptyState) emptyState.style.display = (favoris && favoris.style.display !== 'none') ? 'none' : 'block';
   }, 1500);
 }
 
