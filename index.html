@@ -7362,11 +7362,11 @@ async function envoyerCommentaire(postId) {
 }
 
 // ── Page création de post ──
-let _postType = 'text';
-let _postMediaFile = null;
+window._postType = 'text';
+window._postMediaFile = null;
 
 window.setPostType = function(type, btn) {
-  _postType = type;
+  window._postType = type;
   document.querySelectorAll('.post-type-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   const mediaZone = document.getElementById('post-media-zone');
@@ -7384,7 +7384,7 @@ window.setPostType = function(type, btn) {
 window.previewMedia = function(input) {
   const file = input.files[0];
   if (!file) return;
-  _postMediaFile = file;
+  window._postMediaFile = file;
   const preview = document.getElementById('post-media-preview');
   const img = document.getElementById('post-preview-img');
   const video = document.getElementById('post-preview-video');
@@ -7399,7 +7399,7 @@ window.previewMedia = function(input) {
 };
 
 window.supprimerMedia = function() {
-  _postMediaFile = null;
+  window._postMediaFile = null;
   document.getElementById('post-media-preview').style.display = 'none';
   document.getElementById('post-media-drop').style.display = 'flex';
   document.getElementById('post-preview-img').src = '';
@@ -7428,12 +7428,18 @@ async function _initPostCreatePage() {
   document.getElementById('post-submit-btn').disabled = false;
   document.getElementById('post-submit-btn').textContent = 'Publier';
 
+  // Attacher l'event listener du file input proprement
+  const mediaInput = document.getElementById('post-media-input');
+  if (mediaInput) {
+    mediaInput.onchange = function() { window.previewMedia(this); };
+  }
+
   const preload = window._postCreateEventPreload;
   window._postCreateEventPreload = null;
 
   if (preload) {
     // Mode pré-rempli depuis un événement : verrouiller sur event_share
-    _postType = 'event_share';
+    window._postType = 'event_share';
     document.querySelectorAll('.post-type-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.type === 'event_share');
     });
@@ -7456,7 +7462,7 @@ async function _initPostCreatePage() {
     window._postCreateEventPreload = { ...preload, _locked: true };
   } else {
     // Mode normal
-    _postType = 'text';
+    window._postType = 'text';
     document.querySelectorAll('.post-type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === 'text'));
     document.getElementById('post-media-zone').style.display = 'none';
     document.getElementById('post-link-zone').style.display = 'none';
@@ -7620,7 +7626,7 @@ window.publierPost = async function() {
     try {
       const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
       const storageRef = ref(storage, path);
-      const snapshot = await uploadBytes(storageRef, _postMediaFile);
+      const snapshot = await uploadBytes(storageRef, window._postMediaFile);
       postData.mediaUrl = await getDownloadURL(snapshot.ref);
     } catch(e) { return errMsg('Erreur lors de l\'upload du fichier.'); }
   } else if (_postType === 'link') {
@@ -7646,7 +7652,7 @@ window.publierPost = async function() {
   try {
     await window._addDoc(window._collection(window._db, 'posts'), postData);
     // Reset et retour feed
-    _postMediaFile = null;
+    window._postMediaFile = null;
     _feedLastDoc = null;
     _feedPosts = [];
     btn.textContent = 'Publier';
