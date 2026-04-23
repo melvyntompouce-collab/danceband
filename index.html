@@ -11028,17 +11028,14 @@ async function chargerAbonnements() {
     }
   } catch(e) { console.error('Abonnements:', e); }
 
-  // Comptage abonnés en arrière-plan (non bloquant)
-  Promise.race([
-    window._getDocs(window._query(
+  // Comptage abonnés dans un try séparé pour ne pas bloquer
+  try {    const abonnesSnap = await window._getDocs(window._query(
       window._collection(window._db, 'danseurs'),
       window._where('abonnements', 'array-contains', window._currentUid)
-    )),
-    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-  ]).then(abonnesSnap => {
+    ));
     const statAbonnes = document.getElementById('stat-abonnes');
     if (statAbonnes) statAbonnes.textContent = abonnesSnap.size;
-  }).catch(e => console.warn('Comptage abonnés (non bloquant):', e));
+  } catch(e) { console.error('Comptage abonnés:', e); }
 
   // Afficher bouton organisateur
   const orgaBtn = document.getElementById('orga-btn');
@@ -13669,6 +13666,9 @@ window.sauvegarderIdentite = async function() {
   }
 }
 window.deconnecter = async function() {
+  window._currentUid = null;
+  window._monProfil  = null;
+  window._monRole    = null;
   await signOut(auth);
   window.showPage('home');
   mettreAJourNav(null);
@@ -14135,22 +14135,20 @@ async function chargerProfil(uid) {
     const abonnements = d.abonnements || [];
     const statAbos = document.getElementById('stat-abonnements');
     if (statAbos) statAbos.textContent = abonnements.length;
+    // Comptage abonnés (ceux qui nous suivent)
+    try {
+      const abonnesSnap = await window._getDocs(window._query(
+        window._collection(window._db, 'danseurs'),
+        window._where('abonnements', 'array-contains', uid)
+      ));
+      const statAbonnes = document.getElementById('stat-abonnes');
+      if (statAbonnes) statAbonnes.textContent = abonnesSnap.size;
+    } catch(e) { console.error('Comptage abonnés:', e); }
+
     // ── Stocker uid courant EN PREMIER ──
     window._currentUid = uid;
     window._monProfil  = { ...d, uid };
     window._monRole    = d.role || null;
-
-    // Comptage abonnés en arrière-plan (non bloquant)
-    Promise.race([
-      window._getDocs(window._query(
-        window._collection(window._db, 'danseurs'),
-        window._where('abonnements', 'array-contains', uid)
-      )),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-    ]).then(abonnesSnap => {
-      const statAbonnes = document.getElementById('stat-abonnes');
-      if (statAbonnes) statAbonnes.textContent = abonnesSnap.size;
-    }).catch(e => console.warn('Comptage abonnés (non bloquant):', e));
 
     mettreAJourNav(d);
 
@@ -14546,36 +14544,8 @@ async function _verifierXPConnexionJournaliere() {
   } catch(e) { console.warn('XP connexion journalière:', e); }
 }
 
-let _authInitialized = false;
-let _wasConnected = false;
 onAuthStateChanged(auth, async (user) => {
-  if (!_authInitialized && !user) {
-    // Premier trigger déconnecté au démarrage — ignorer
-    _authInitialized = true;
-    return;
-  }
-  _authInitialized = true;
-
-  if (!user && _wasConnected) {
-    // Déconnexion en cours de session — laisser passer
-  } else if (!user && !_wasConnected) {
-    // Pas connecté au démarrage — afficher home normalement
-    console.log('👤 Non connecté');
-    afficherBarreLogoDeconnecte(true);
-    mettreAJourNav(null);
-    detecterPairageKima(false);
-    const _pathname = window.location.pathname;
-    if (_pathname !== '/' && _pathname !== '/connexion') {
-      sessionStorage.setItem('hako_redirect_url', _pathname);
-    }
-    window.showPage('home');
-    const loader = document.getElementById('app-loader');
-    if (loader) { loader.classList.add('hidden'); setTimeout(() => loader.remove(), 350); }
-    return;
-  }
-
   if (user) {
-    _wasConnected = true;
     console.log('✅ Connecté :', user.email);
     // Reset bouton login si on venait de se connecter
     const loginBtn = document.getElementById('login-btn');
@@ -14601,13 +14571,11 @@ onAuthStateChanged(auth, async (user) => {
     }
     _initRouter();
   } else {
-    _wasConnected = false;
-    console.log('👤 Déconnecté');
+    console.log('👤 Non connecté');
     afficherBarreLogoDeconnecte(true);
     mettreAJourNav(null);
     detecterPairageKima(false);
-    window._currentUid = null;
-    window._monProfil = null;
+    // Pas connecté : mémoriser l'URL demandée et afficher home
     const _pathname = window.location.pathname;
     if (_pathname !== '/' && _pathname !== '/connexion') {
       sessionStorage.setItem('hako_redirect_url', _pathname);
