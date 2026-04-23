@@ -13666,9 +13666,6 @@ window.sauvegarderIdentite = async function() {
   }
 }
 window.deconnecter = async function() {
-  window._currentUid = null;
-  window._monProfil  = null;
-  window._monRole    = null;
   await signOut(auth);
   window.showPage('home');
   mettreAJourNav(null);
@@ -14568,6 +14565,10 @@ onAuthStateChanged(auth, async (user) => {
     if (_savedUrl) {
       sessionStorage.removeItem('hako_redirect_url');
       window.location.pathname !== _savedUrl && history.replaceState({}, '', _savedUrl);
+    }
+    // Si on vient de /connexion, remplacer par / pour éviter que _initRouter redirige vers auth
+    if (window.location.pathname === '/connexion') {
+      history.replaceState({}, '', '/');
     }
     _initRouter();
   } else {
