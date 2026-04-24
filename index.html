@@ -6824,8 +6824,10 @@ function goHome() {
 // ════════════════════════════════
 function afficherDashboard(d) {
   if (!d) {
-    // Non connecté — s'assurer que page-home est active
-    showPage('home');
+    // Non connecté — afficher home seulement si pas une route dynamique publique
+    const _path = window.location.pathname;
+    const _isPub = /^\/profil\/|^\/event\/|^\/@/.test(_path);
+    if (!_isPub) showPage('home');
     return;
   }
 
