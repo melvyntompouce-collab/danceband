@@ -13092,15 +13092,21 @@ window.toggleVisibilitePortfolio = async function() {
 };
 
 function _actualiserBoutonVisibilite(visible) {
-  const btns = [
-    document.getElementById('ap-toggle-epingle'),
-    document.getElementById('ap-toggle-portfolio')
-  ];
-  btns.forEach(btn => {
+  const ids = ['ap-toggle-epingle','ap-toggle-portfolio','ph-toggle-epingle','ph-toggle-portfolio'];
+  ids.forEach(id => {
+    const btn = document.getElementById(id);
     if (!btn) return;
-    btn.textContent = visible ? '👁 Visible' : '🚫 Masqué';
-    btn.style.borderColor = visible ? 'rgba(0,245,155,0.3)' : 'var(--border)';
-    btn.style.color = visible ? 'var(--green)' : 'var(--muted2)';
+    if (visible) {
+      btn.innerHTML = '👁 Visible';
+      btn.style.borderColor = 'rgba(0,245,155,0.4)';
+      btn.style.color = 'var(--green)';
+      btn.style.background = 'rgba(0,245,155,0.08)';
+    } else {
+      btn.innerHTML = '🚫 Masqué';
+      btn.style.borderColor = 'rgba(255,77,109,0.4)';
+      btn.style.color = 'var(--red,#f05050)';
+      btn.style.background = 'rgba(255,77,109,0.08)';
+    }
   });
 }
 
