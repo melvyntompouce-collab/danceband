@@ -6002,7 +6002,7 @@ if (isPWA) {
         </div>
       </div>
 
-      <!-- Stats -->
+      <!-- Stats XP/Events/Niveau -->
       <div style="display:flex;gap:0;margin-top:20px;background:rgba(255,255,255,0.04);border-radius:14px;overflow:hidden;">
         <div style="flex:1;padding:12px;text-align:center;border-right:1px solid var(--border);">
           <div id="ph-stat-xp" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
@@ -6015,6 +6015,18 @@ if (isPWA) {
         <div style="flex:1;padding:12px;text-align:center;">
           <div id="ph-stat-niveau" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">1</div>
           <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Niveau</div>
+        </div>
+      </div>
+
+      <!-- Abonnements/Abonnés détachés en blanc -->
+      <div style="display:flex;gap:0;margin-top:10px;border-radius:14px;overflow:hidden;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);">
+        <div onclick="ouvrirListeSociale('abonnements')" style="flex:1;padding:12px;text-align:center;border-right:1px solid rgba(255,255,255,0.1);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background=''">
+          <div id="stat-abonnements" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;color:#fff;">0</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;letter-spacing:1px;text-transform:uppercase;font-weight:700;">Abonnements</div>
+        </div>
+        <div onclick="ouvrirListeSociale('abonnes')" style="flex:1;padding:12px;text-align:center;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background=''">
+          <div id="stat-abonnes" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;color:#fff;">0</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;letter-spacing:1px;text-transform:uppercase;font-weight:700;">Abonnés</div>
         </div>
       </div>
     </div>
@@ -6039,20 +6051,6 @@ if (isPWA) {
         <div style="display:flex;align-items:center;gap:10px;">⚡ Admin HAKO</div>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
-    </div>
-
-    <!-- Stats sociales -->
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:16px;">
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);">
-        <div onclick="ouvrirListeSociale('abonnements')" style="padding:16px;text-align:center;border-right:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background=''">
-          <div id="stat-abonnements" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;color:var(--text);">0</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;font-weight:700;">Abonnements</div>
-        </div>
-        <div onclick="ouvrirListeSociale('abonnes')" style="padding:16px;text-align:center;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background=''">
-          <div id="stat-abonnes" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;color:var(--text);">0</div>
-          <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:2px;text-transform:uppercase;font-weight:700;">Abonnés</div>
-        </div>
-      </div>
     </div>
 
     <!-- Kima -->
@@ -6190,6 +6188,27 @@ if (isPWA) {
         <div class="pc-title">Mes réseaux & liens</div>
       </div>
       <div id="profil-reseaux-list" style="display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;padding-left:8px;"></div>
+    </div>
+
+    <!-- À la une (profil perso) -->
+    <div id="ph-epingle-wrap" style="display:none;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">⭐ À LA UNE</div>
+        <button onclick="toggleVisibilitePortfolio()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" id="ph-toggle-epingle">👁 Visible</button>
+      </div>
+      <div id="ph-epingle-content"></div>
+    </div>
+
+    <!-- Portfolio (profil perso) -->
+    <div id="ph-portfolio-wrap" style="display:none;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">🖼 PORTFOLIO <span id="ph-portfolio-count" style="font-size:11px;color:var(--muted2);font-weight:400;"></span></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button onclick="toggleVisibilitePortfolio()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" id="ph-toggle-portfolio">👁 Visible</button>
+          <div id="ph-portfolio-drag-hint" style="display:none;font-size:11px;color:var(--muted2);">Glisse pour réordonner</div>
+        </div>
+      </div>
+      <div id="ph-portfolio-grid" class="portfolio-grid"></div>
     </div>
 
     <!-- Modal abonnés / abonnements -->
@@ -13093,15 +13112,24 @@ function _actualiserBoutonVisibilite(visible) {
 }
 
 // Charger et afficher le portfolio sur le profil ouvert
-window._afficherPortfolioProfil = async function(uid, estMoi, d) {
-  const epingleWrap = document.getElementById('ap-epingle-wrap');
-  const portfolioWrap = document.getElementById('ap-portfolio-wrap');
-  const epingleContent = document.getElementById('ap-epingle-content');
-  const portfolioGrid = document.getElementById('ap-portfolio-grid');
-  const portfolioCount = document.getElementById('ap-portfolio-count');
-  const toggleEpingle = document.getElementById('ap-toggle-epingle');
-  const togglePortfolio = document.getElementById('ap-toggle-portfolio');
-  const dragHint = document.getElementById('ap-portfolio-drag-hint');
+window._afficherPortfolioProfil = async function(uid, estMoi, _dParam) {
+  // Recharger le doc frais
+  let d = _dParam;
+  try {
+    const freshSnap = await window._getDoc(window._doc(window._db, 'danseurs', uid));
+    if (freshSnap.exists()) d = freshSnap.data();
+  } catch(e) {}
+
+  // Supporte page-profil-public (ap-*) et page-profile perso (ph-*)
+  const prefix = estMoi ? 'ph' : 'ap';
+  const epingleWrap    = document.getElementById(prefix + '-epingle-wrap');
+  const portfolioWrap  = document.getElementById(prefix + '-portfolio-wrap');
+  const epingleContent = document.getElementById(prefix + '-epingle-content');
+  const portfolioGrid  = document.getElementById(prefix + '-portfolio-grid');
+  const portfolioCount = document.getElementById(prefix + '-portfolio-count');
+  const toggleEpingle  = document.getElementById(prefix + '-toggle-epingle');
+  const togglePortfolio= document.getElementById(prefix + '-toggle-portfolio');
+  const dragHint       = document.getElementById(prefix + '-portfolio-drag-hint');
 
   const epingle = d.epingle_profil || null;
   const portfolio = (d.portfolio || []).sort((a,b) => (a.ordre||0) - (b.ordre||0));
@@ -14947,6 +14975,11 @@ async function chargerProfil(uid) {
     });
 
     // Les sections sont gérées par _preselectEditMetiers ci-dessus
+
+    // ── Portfolio & Épingle (profil perso) ──
+    if (window._afficherPortfolioProfil) {
+      window._afficherPortfolioProfil(uid, true, d);
+    }
 
     // Pré-remplir champs métier spécifiques
     if (metiers.includes('photographe')) {
