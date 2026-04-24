@@ -931,13 +931,13 @@ body.pwa #network-mobile-bar {
 .ec-thumb-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
 .ec-thumb-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.0) 60%,rgba(8,8,16,0.5) 100%);}
 .ec-type{
-  position:absolute;bottom:8px;left:8px;z-index:2;
+  position:absolute;bottom:8px;left:8px;z-index:3;
   padding:2px 8px;border-radius:6px;
   font-size:9px;font-weight:700;
   font-family:'Syne',sans-serif;letter-spacing:0.8px;text-transform:uppercase;
-  background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,0.1);white-space:nowrap;
-  max-width:calc(100% - 16px);overflow:hidden;text-overflow:ellipsis;
+  background:rgba(8,8,16,0.85);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.12);white-space:nowrap;
+  max-width:80px;overflow:hidden;text-overflow:ellipsis;
 }
 .ec-body{
   flex:1;padding:12px 12px 12px 12px;
@@ -6140,7 +6140,7 @@ if (isPWA) {
     <!-- Portfolio (profil perso) - masqué -->
     <div id="ph-portfolio-wrap" style="display:none;">
       <div id="ph-portfolio-count" style="display:none;"></div>
-      <button id="ph-toggle-portfolio" style="display:none;"></button>
+      <span id="ph-toggle-portfolio" style="display:none;"></span>
       <div id="ph-portfolio-drag-hint" style="display:none;"></div>
       <div id="ph-portfolio-grid" style="display:none;"></div>
     </div>
