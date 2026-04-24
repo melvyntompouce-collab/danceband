@@ -12998,9 +12998,7 @@ window.ouvrirProfilArtiste = async function(uid) {
     }
 
     // ── Portfolio & Épingle ──
-    if (window._afficherPortfolioProfil) {
-      window._afficherPortfolioProfil(uid, estMoi, d);
-    }
+    if (window._afficherPortfolioProfil) window._afficherPortfolioProfil(uid, estMoi, d);
 
   } catch(e) { console.error('Erreur profil artiste:', e); }
 }
@@ -13082,7 +13080,7 @@ function _actualiserBoutonVisibilite(visible) {
 }
 
 // Charger et afficher le portfolio sur le profil ouvert
-window._afficherPortfolioProfil = async function(uid, estMoi, d) {
+window._afficherPortfolioProfil = async function(uid, estMoi, _d) {
   const epingleWrap = document.getElementById('ap-epingle-wrap');
   const portfolioWrap = document.getElementById('ap-portfolio-wrap');
   const epingleContent = document.getElementById('ap-epingle-content');
@@ -13091,6 +13089,13 @@ window._afficherPortfolioProfil = async function(uid, estMoi, d) {
   const toggleEpingle = document.getElementById('ap-toggle-epingle');
   const togglePortfolio = document.getElementById('ap-toggle-portfolio');
   const dragHint = document.getElementById('ap-portfolio-drag-hint');
+
+  // Recharger le doc frais pour avoir epingle_profil et portfolio à jour
+  let d = _d;
+  try {
+    const freshSnap = await window._getDoc(window._doc(window._db, 'danseurs', uid));
+    if (freshSnap.exists()) d = freshSnap.data();
+  } catch(e) { /* utiliser d passé en paramètre */ }
 
   const epingle = d.epingle_profil || null;
   const portfolio = (d.portfolio || []).sort((a,b) => (a.ordre||0) - (b.ordre||0));
