@@ -5365,7 +5365,7 @@ if (isPWA) {
     <div id="ap-epingle-wrap" style="display:none;margin-top:16px;margin-bottom:16px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">⭐ À LA UNE</div>
-        <button id="ap-toggle-epingle" onclick="toggleVisibilitePortfolio()" style="display:none;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">👁 Visible</button>
+        <button id="ap-toggle-epingle" onclick="toggleVisibiliteEpingle()" style="display:none;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">👁 Visible</button>
       </div>
       <div id="ap-epingle-content"></div>
     </div>
@@ -6136,7 +6136,7 @@ if (isPWA) {
     <div id="ph-epingle-wrap" style="display:none;margin-bottom:16px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">⭐ À LA UNE</div>
-        <button onclick="toggleVisibilitePortfolio()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" id="ph-toggle-epingle">👁 Visible</button>
+        <button onclick="toggleVisibiliteEpingle()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" id="ph-toggle-epingle">👁 Visible</button>
       </div>
       <div id="ph-epingle-content"></div>
     </div>
@@ -13944,16 +13944,46 @@ window.toggleVisibilitePortfolio = async function() {
     const ref = window._doc(window._db, 'danseurs', window._currentUid);
     const snap = await window._getDoc(ref);
     const data = snap.data() || {};
-    const visible = data.portfolioVisible !== false; // défaut visible
+    const visible = data.portfolioVisible !== false;
     await window._updateDoc(ref, { portfolioVisible: !visible });
-    _actualiserBoutonVisibilite(!visible);
+    _actualiserBoutonPortfolio(!visible);
     _showToast(visible ? 'Portfolio masqué aux visiteurs' : 'Portfolio visible par tous');
   } catch(e) { console.error(e); }
 };
 
-function _actualiserBoutonVisibilite(visible) {
-  const ids = ['ap-toggle-epingle','ap-toggle-portfolio','ph-toggle-epingle','ph-toggle-portfolio'];
-  ids.forEach(id => {
+window.toggleVisibiliteEpingle = async function() {
+  if (!window._currentUid || !window._db) return;
+  try {
+    const ref = window._doc(window._db, 'danseurs', window._currentUid);
+    const snap = await window._getDoc(ref);
+    const data = snap.data() || {};
+    const visible = data.epingleVisible !== false;
+    await window._updateDoc(ref, { epingleVisible: !visible });
+    _actualiserBoutonEpingle(!visible);
+    _showToast(visible ? '« À la une » masqué aux visiteurs' : '« À la une » visible par tous');
+  } catch(e) { console.error(e); }
+};
+
+function _actualiserBoutonPortfolio(visible) {
+  ['ap-toggle-portfolio','ph-toggle-portfolio'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    if (visible) {
+      btn.innerHTML = '👁 Visible';
+      btn.style.borderColor = 'rgba(0,245,155,0.4)';
+      btn.style.color = 'var(--green)';
+      btn.style.background = 'rgba(0,245,155,0.08)';
+    } else {
+      btn.innerHTML = '🚫 Masqué';
+      btn.style.borderColor = 'rgba(255,77,109,0.4)';
+      btn.style.color = 'var(--red,#f05050)';
+      btn.style.background = 'rgba(255,77,109,0.08)';
+    }
+  });
+}
+
+function _actualiserBoutonEpingle(visible) {
+  ['ap-toggle-epingle','ph-toggle-epingle'].forEach(id => {
     const btn = document.getElementById(id);
     if (!btn) return;
     if (visible) {
@@ -13993,22 +14023,27 @@ window._afficherPortfolioProfil = async function(uid, estMoi, _dParam) {
   const epingle = d.epingle_profil || null;
   const portfolio = (d.portfolio || []).sort((a,b) => (a.ordre||0) - (b.ordre||0));
   const portfolioVisible = d.portfolioVisible !== false;
-
-  // Vérifier visibilité
-  if (!estMoi && !portfolioVisible) {
-    epingleWrap.style.display = 'none';
-    portfolioWrap.style.display = 'none';
-    return;
-  }
+  const epingleVisible = d.epingleVisible !== false;
 
   // Boutons toggle (seulement pour soi)
   if (toggleEpingle) toggleEpingle.style.display = estMoi ? 'block' : 'none';
   if (togglePortfolio) togglePortfolio.style.display = estMoi ? 'block' : 'none';
   if (dragHint) dragHint.style.display = estMoi && portfolio.length > 1 ? 'block' : 'none';
-  _actualiserBoutonVisibilite(portfolioVisible);
+  _actualiserBoutonEpingle(epingleVisible);
+  _actualiserBoutonPortfolio(portfolioVisible);
+
+  // Vérifier visibilité épingle pour les visiteurs
+  if (!estMoi && !epingleVisible) {
+    if (epingleWrap) epingleWrap.style.display = 'none';
+  }
+  // Vérifier visibilité portfolio pour les visiteurs
+  if (!estMoi && !portfolioVisible) {
+    if (portfolioWrap) portfolioWrap.style.display = 'none';
+    return;
+  }
 
   // ── À la une ──
-  if (epingle) {
+  if (epingle && (estMoi || epingleVisible)) {
     epingleWrap.style.display = 'block';
     epingleContent.innerHTML = '<div style="color:var(--muted);font-size:13px;">Chargement...</div>';
     try {
