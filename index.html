@@ -5383,7 +5383,7 @@ if (isPWA) {
 
     <!-- Actions -->
     <div id="ap-info-conf" style="display:none;padding:10px 14px;border-radius:12px;background:rgba(255,217,61,0.08);border:1px solid rgba(255,217,61,0.2);font-size:12px;color:var(--yellow);margin-bottom:12px;"></div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
       <button id="ap-btn-suivre" onclick="toggleSuivreOverlay()" style="flex:1;padding:14px;border-radius:14px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all 0.2s;">
         + Suivre
       </button>
@@ -5395,6 +5395,14 @@ if (isPWA) {
       </button>
     </div>
 
+    <!-- Disciplines & spécialités (généré dynamiquement par showProfilPublic) -->
+    <div id="ap-metier" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;"></div>
+
+    <!-- Réseaux sociaux (généré dynamiquement) -->
+    <div id="ap-reseaux" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;"></div>
+
+    <!-- Compat score -->
+    <div id="ap-compat" style="margin-bottom:16px;"></div>
 
   </div>
 </div>
@@ -6043,10 +6051,7 @@ if (isPWA) {
         </div>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
-      <button id="ph-admin-btn" onclick="showPage('admin')" style="display:none;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(255,77,109,0.08);border:1.5px solid rgba(255,77,109,0.3);border-radius:14px;color:var(--red);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">
-        <div style="display:flex;align-items:center;gap:10px;">⚡ Admin HAKO</div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
+
     </div>
 
     <!-- À la une (profil perso) -->
@@ -12779,16 +12784,8 @@ window.showProfilPublic = async function(uid) {
       imgEl.style.display = 'none';
     }
 
-    // ── Styles ──
-    const stylesEl = document.getElementById('ap-styles');
-    if (peutVoir('styles')) {
-      const stylesNorm = normaliserStyles(d.styles);
-      stylesEl.innerHTML = stylesNorm.length
-        ? stylesNorm.map(s => `<span style="padding:6px 14px;border-radius:20px;background:rgba(255,255,255,0.05);color:var(--muted2);font-size:12px;font-weight:600;">${s}</span>`).join('')
-        : '<span style="color:var(--muted);font-size:13px;">Non renseigné</span>';
-    } else {
-      stylesEl.innerHTML = masqué('Styles privés');
-    }
+    // ── Styles (intégrés dans la section métier désormais, ap-styles supprimé) ──
+    const stylesEl = null; // plus utilisé en HTML statique
 
     // ── Infos métier ──
     const metiers = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
@@ -12823,7 +12820,7 @@ window.showProfilPublic = async function(uid) {
       metierSection = document.createElement('div');
       metierSection.id = 'ap-metier';
       metierSection.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;';
-      stylesEl.closest('div[style*="border-radius:20px"]')?.after(metierSection);
+      document.getElementById('ap-info-conf')?.before(metierSection);
     }
 
     let metierHtml = '';
@@ -12973,7 +12970,7 @@ window.showProfilPublic = async function(uid) {
       reseauxSection = document.createElement('div');
       reseauxSection.id = 'ap-reseaux';
       reseauxSection.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;';
-      stylesEl.closest('div[style*="border-radius:20px"]')?.after(reseauxSection);
+      document.getElementById('ap-info-conf')?.before(reseauxSection);
     }
     if (reseauxHtml) {
       reseauxSection.style.display = 'block';
@@ -14915,10 +14912,6 @@ async function chargerProfil(uid) {
     if (statAbo) statAbo.textContent = (d.abonnements || []).length;
     if (statAbs) statAbs.textContent = (d.abonnes || []).length;
 
-    // ── Bouton admin ──
-    const phAdminBtn = document.getElementById('ph-admin-btn');
-    if (phAdminBtn) phAdminBtn.style.display = d.role === 'admin' ? 'flex' : 'none';
-
     // ── Badge admin ──
 
     // ── Bouton organisateur ──
@@ -15525,6 +15518,7 @@ function mettreAJourNav(user) {
       orgaBtn.style.display = 'inline-flex';
       if (window._monRole === 'admin') {
         orgaBtn.textContent = '⚙️ Admin';
+        orgaBtn.onclick = function() { showPage('admin'); };
         orgaBtn.style.background = 'rgba(255,77,109,0.1)';
         orgaBtn.style.borderColor = 'var(--red)';
         orgaBtn.style.color = 'var(--red)';
