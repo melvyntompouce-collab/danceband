@@ -9166,7 +9166,7 @@ function ouvrirEvent(id) {
           const estGratuit = !t.prix || t.prix === 0;
           return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
             <span style="font-size:13px;color:var(--muted2);">${t.label || 'Entrée'}</span>
-            <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:${estGratuit ? 'var(--green)' : cfg.couleur};">${estGratuit ? 'Gratuit' : t.prix + (t.devise || '€')}</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:${estGratuit ? 'var(--green)' : cfg.couleur};">${estGratuit ? 'Gratuit' : t.prix + (t.devise || '€')}</span>
           </div>`;
         }).join('');
         tarifBloc = `<div style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;">
@@ -9177,7 +9177,7 @@ function ouvrirEvent(id) {
         const estGratuit = !ev.prix || ev.prix === 0;
         tarifBloc = `<div style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">
           <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);">Tarif</span>
-          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:${estGratuit ? 'var(--green)' : cfg.couleur};line-height:1;">${estGratuit ? 'Gratuit' : ev.prix + (ev.devise||'€')}</span>
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:${estGratuit ? 'var(--green)' : cfg.couleur};line-height:1;">${estGratuit ? 'Gratuit' : ev.prix + (ev.devise||'€')}</span>
         </div>`;
       }
       return tarifBloc;
@@ -13825,18 +13825,41 @@ window.showProfilPublic = async function(uid) {
         const evSnap = await window._getDocs(window._query(
           window._collection(window._db, 'evenements'),
           window._where('organisateurUid', '==', uid),
-          window._orderBy('date', 'asc'),
-          window._limit(10)
+          window._limit(20)
         ));
+        // Tri et filtre côté client pour supporter ancien champ date ET nouveau système dates[]
+        const _getDateMin = ev => {
+          if (ev.dates && ev.dates.length > 0) {
+            const ds = ev.dates.map(d => d.date || d).filter(Boolean).sort();
+            return ds[ds.length - 1]; // date max pour savoir si au moins une date future
+          }
+          return ev.date || '';
+        };
+        const _getDateSort = ev => {
+          if (ev.dates && ev.dates.length > 0) {
+            const ds = ev.dates.map(d => d.date || d).filter(Boolean).sort();
+            return ds[0]; // date min pour le tri
+          }
+          return ev.date || '';
+        };
         const evsFuturs = evSnap.docs
           .map(d => ({ id: d.id, ...d.data() }))
-          .filter(ev => (ev.date || '') >= now);
+          .filter(ev => _getDateMin(ev) >= now)
+          .sort((a, b) => _getDateSort(a).localeCompare(_getDateSort(b)))
+          .slice(0, 10);
         if (evsFuturs.length > 0) {
           evWrap.style.display = 'block';
           evList.innerHTML = evsFuturs.map(ev => {
-            const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'numeric', month:'long' }) : '';
-            const heureStr = ev.heure ? ' · ' + ev.heure : '';
-            const prixStr = ev.prix ? ev.prix + (ev.devise || '€') : 'Gratuit';
+            const _dateAff = (ev.dates && ev.dates.length > 0)
+              ? (ev.dates.map(d => d.date || d).filter(Boolean).sort()[0])
+              : (ev.date || '');
+            const _heureAff = (ev.dates && ev.dates.length > 0 && ev.dates[0].heure)
+              ? ev.dates[0].heure
+              : (ev.heure || '');
+            const dateStr = _dateAff ? new Date(_dateAff).toLocaleDateString('fr-FR', { day:'numeric', month:'long' }) : '';
+            const heureStr = _heureAff ? ' · ' + _heureAff : '';
+            const _prixMin = window._getPrixMin ? window._getPrixMin(ev) : null;
+            const prixStr = _prixMin ? _prixMin.label : (ev.prix ? ev.prix + (ev.devise || '€') : 'Gratuit');
             const bg = ev.photoUrl ? `url('${ev.photoUrl}') center/cover no-repeat` : 'linear-gradient(135deg,#1a0526,#0d2b1e)';
             return `<div onclick="ouvrirShareEvent('${ev.id}')" style="cursor:pointer;border-radius:16px;overflow:hidden;background:var(--card);border:1px solid var(--border);transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
               <div style="height:120px;background:${bg};position:relative;">
