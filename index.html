@@ -6291,7 +6291,7 @@ if (isPWA) {
     <div id="ph-epingle-wrap" style="display:none;margin-bottom:16px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">⭐ À LA UNE</div>
-        <button onclick="toggleVisibiliteEpingle()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" id="ph-toggle-epingle">👁 Visible</button>
+        <span id="ph-toggle-epingle" style="display:none;"></span>
       </div>
       <div id="ph-epingle-content"></div>
     </div>
@@ -14121,7 +14121,7 @@ window.toggleVisibiliteEpingle = async function() {
 };
 
 function _actualiserBoutonPortfolio(visible) {
-  ['ap-toggle-portfolio','ph-toggle-portfolio'].forEach(id => {
+  ['ap-toggle-portfolio'].forEach(id => {
     const btn = document.getElementById(id);
     if (!btn) return;
     if (visible) {
@@ -14139,7 +14139,7 @@ function _actualiserBoutonPortfolio(visible) {
 }
 
 function _actualiserBoutonEpingle(visible) {
-  ['ap-toggle-epingle','ph-toggle-epingle'].forEach(id => {
+  ['ap-toggle-epingle'].forEach(id => {
     const btn = document.getElementById(id);
     if (!btn) return;
     if (visible) {
