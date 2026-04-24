@@ -297,7 +297,7 @@ body.pwa #agenda-passes-toggle {
     linear-gradient(90deg,rgba(0,245,155,0.03) 1px,transparent 1px);
   background-size:60px 60px;
 }
-.hero-content{max-width:700px;position:relative;z-index:1;padding-top:0;}
+.hero-content{max-width:680px;width:100%;position:relative;z-index:1;padding-top:0;margin:0 auto;}
 .hero-badge{
   display:inline-flex;align-items:center;gap:8px;
   padding:8px 16px;border-radius:20px;
@@ -385,7 +385,7 @@ body.pwa #agenda-passes-toggle {
 }
 
 /* FEATURES */
-.features{padding:100px 5%;}
+.features{padding:100px 5%;max-width:1200px;margin:0 auto;box-sizing:border-box;}
 .section-header{text-align:center;margin-bottom:64px;}
 .section-tag{
   display:inline-block;
@@ -432,7 +432,7 @@ body.pwa #agenda-passes-toggle {
 
 /* HOW IT WORKS */
 .how{padding:100px 5%;background:var(--bg2);}
-.steps{display:flex;gap:0;position:relative;flex-wrap:wrap;}
+.steps{display:flex;gap:0;position:relative;flex-wrap:wrap;max-width:1200px;margin:0 auto;width:100%;}
 .steps::before{
   content:'';position:absolute;
   top:32px;left:10%;right:10%;height:1px;
@@ -1404,6 +1404,10 @@ footer{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   gap:40px;
+  max-width:1200px;
+  margin:0 auto;
+  box-sizing:border-box;
+  width:100%;
 }
 .footer-brand .logo{margin-bottom:12px;}
 .footer-desc{font-size:14px;color:var(--muted2);line-height:1.7;max-width:280px;}
@@ -1415,6 +1419,7 @@ footer{
   padding:20px 5%;border-top:1px solid var(--border);
   display:flex;justify-content:space-between;align-items:center;
   flex-wrap:wrap;gap:12px;
+  max-width:1200px;margin:0 auto;box-sizing:border-box;width:100%;
 }
 .footer-copy{font-size:13px;color:var(--muted);}
 
@@ -3059,7 +3064,7 @@ if (isPWA) {
     <div style="position:absolute;top:40%;left:30%;width:40vw;height:40vw;max-width:350px;max-height:350px;border-radius:50%;background:radial-gradient(circle,rgba(0,245,155,0.04) 0%,transparent 70%);filter:blur(60px);"></div>
   </div>
 
-  <section class="hero">
+  <section class="hero" style="justify-content:center;">
     <div class="hero-grid"></div>
     <div class="hero-content fade-in">
       <div class="hero-badge">
@@ -3074,7 +3079,6 @@ if (isPWA) {
       <p class="hero-sub">Le premier réseau social conçu pour les artistes. Trouvez des partenaires, découvrez des événements, échangez via votre bracelet connecté.</p>
       <div class="hero-actions">
         <a class="btn-primary" href="#" onclick="showPage('auth')">Créer mon profil →</a>
-        <a class="btn-secondary" href="#" onclick="showPage('network')">Explorer le réseau</a>
         <a class="btn-secondary" href="#" onclick="showPage('auth')" style="margin-top:8px;">Explorer l'agenda →</a>
       </div>
       <div class="hero-stats">
