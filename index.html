@@ -5099,16 +5099,30 @@ if (isPWA) {
     </div>
 
     <!-- SOUS-FILTRES battle/workshop -->
-    <div id="agenda-subfiltres" style="display:none;margin-top:4px;display:none;flex-direction:column;gap:8px;">
+    <div id="agenda-subfiltres" style="display:none;margin-top:4px;flex-direction:column;gap:8px;">
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
         <button class="agenda-filter on" onclick="setAgendaNiveau('tous',this)">Tous niveaux</button>
         <button class="agenda-filter" onclick="setAgendaNiveau('debutant',this)">Débutant</button>
         <button class="agenda-filter" onclick="setAgendaNiveau('intermediaire',this)">Intermédiaire</button>
         <button class="agenda-filter" onclick="setAgendaNiveau('avance',this)">Avancé</button>
       </div>
-      <input id="agenda-ville-search" type="text" placeholder="🔍 Rechercher une ville..." oninput="setAgendaVille(this.value)"
-        style="padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;max-width:280px;transition:border-color 0.2s;"
-        onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
+    </div>
+
+    <!-- FILTRE VILLE ÉVÉNEMENTS (toujours visible) -->
+    <div id="agenda-ville-wrap" style="display:flex;align-items:center;gap:8px;margin-top:10px;margin-bottom:4px;">
+      <div style="position:relative;flex:1;max-width:300px;">
+        <input id="agenda-ville-search" type="text" placeholder="🔍 Ville..." oninput="setAgendaVille(this.value)"
+          style="padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color 0.2s;box-sizing:border-box;"
+          onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
+      </div>
+      <button onclick="presDeNomMoi('agenda-ville-search', setAgendaVille)"
+        style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;"
+        onmouseover="this.style.borderColor='rgba(0,245,155,0.3)';this.style.color='var(--green)'"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'"
+        id="btn-presdenom-events">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        Près de moi
+      </button>
     </div>
 
     <!-- GRILLE EVENTS À VENIR -->
@@ -5141,9 +5155,20 @@ if (isPWA) {
 
       <!-- Section Cours -->
       <div id="agenda-section-cours" style="padding:0 20px;">
-        <input id="agenda-ecoles-ville-search" type="text" placeholder="🔍 Rechercher une ville..." oninput="filtrerEcolesVille(this.value)"
-          style="margin-bottom:12px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color 0.2s;"
-          onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <div style="position:relative;flex:1;">
+            <input id="agenda-ecoles-ville-search" type="text" placeholder="🔍 Ville..." oninput="filtrerEcolesVille(this.value)"
+              style="padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color 0.2s;box-sizing:border-box;"
+              onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+          <button onclick="presDeNomMoi('agenda-ecoles-ville-search', filtrerEcolesVille)"
+            style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;"
+            onmouseover="this.style.borderColor='rgba(0,245,155,0.3)';this.style.color='var(--green)'"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            Près de moi
+          </button>
+        </div>
         <div class="salles-filters" id="agenda-ecoles-filters" style="margin-bottom:16px;">
           <button class="style-fchip on" onclick="filtrerEcoles('tous',this)">Toutes</button>
           <button class="style-fchip" onclick="filtrerEcoles('niveau-debutant',this)">Débutant</button>
@@ -5157,9 +5182,20 @@ if (isPWA) {
 
       <!-- Section Studios -->
       <div id="agenda-section-studios" style="display:none;padding:0 20px;">
-        <input id="agenda-salles-ville-search" type="text" placeholder="🔍 Rechercher une ville..." oninput="filtrerSallesVille(this.value)"
-          style="margin-bottom:12px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color 0.2s;"
-          onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <div style="position:relative;flex:1;">
+            <input id="agenda-salles-ville-search" type="text" placeholder="🔍 Ville..." oninput="filtrerSallesVille(this.value)"
+              style="padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color 0.2s;box-sizing:border-box;"
+              onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+          <button onclick="presDeNomMoi('agenda-salles-ville-search', filtrerSallesVille)"
+            style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;"
+            onmouseover="this.style.borderColor='rgba(0,245,155,0.3)';this.style.color='var(--green)'"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            Près de moi
+          </button>
+        </div>
         <div class="salles-filters" id="agenda-salles-filters" style="margin-bottom:16px;">
           <button class="style-fchip on" onclick="filtrerSalles('tous',this)">Tous</button>
           <button class="style-fchip" onclick="filtrerSalles('dispo',this)">Disponibles</button>
@@ -7452,7 +7488,7 @@ async function _initPostCreatePage() {
 
   if (preload) {
     // Mode pré-rempli depuis un événement : verrouiller sur event_share
-    window._postType = 'event_share';
+    _postType = 'event_share';
     document.querySelectorAll('.post-type-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.type === 'event_share');
     });
@@ -7475,7 +7511,7 @@ async function _initPostCreatePage() {
     window._postCreateEventPreload = { ...preload, _locked: true };
   } else {
     // Mode normal
-    window._postType = 'text';
+    _postType = 'text';
     document.querySelectorAll('.post-type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === 'text'));
     document.getElementById('post-media-zone').style.display = 'none';
     document.getElementById('post-link-zone').style.display = 'none';
@@ -7677,10 +7713,10 @@ window.publierPost = async function() {
   const content = document.getElementById('post-content').value.trim();
   const errMsg = (msg) => { errEl.textContent = msg; errEl.style.display = 'block'; btn.disabled = false; };
 
-  if (!content && window._postType === 'text') return errMsg('Écris quelque chose avant de publier.');
+  if (!content && _postType === 'text') return errMsg('Écris quelque chose avant de publier.');
   if (content.length > 500) return errMsg('Le texte dépasse 500 caractères.');
   const _preload = window._postCreateEventPreload;
-  if (window._postType === 'event_share' && !_preload && !document.getElementById('post-event-select')?.value) return errMsg('Sélectionne un événement.');
+  if (_postType === 'event_share' && !_preload && !document.getElementById('post-event-select')?.value) return errMsg('Sélectionne un événement.');
 
   btn.disabled = true;
   errEl.style.display = 'none';
@@ -7694,7 +7730,7 @@ window.publierPost = async function() {
     authorPhoto: p?.photo || null,
     authorDiscipline: p?.metiers?.[0] || p?.discipline || '',
     authorUnivers: p?.univers || [],
-    type: window._postType,
+    type: _postType,
     content: content || '',
     likesCount: 0,
     commentsCount: 0,
@@ -7703,21 +7739,19 @@ window.publierPost = async function() {
   };
 
   // Upload média si besoin
-  if ((window._postType === 'photo' || window._postType === 'video') && window._postMediaFile) {
+  if ((_postType === 'photo' || _postType === 'video') && _postMediaFile) {
     try {
       const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
-      const storage = getStorage();
-      const path = `posts/${window._currentUid}/${Date.now()}_${window._postMediaFile.name}`;
       const storageRef = ref(storage, path);
       const snapshot = await uploadBytes(storageRef, window._postMediaFile);
       postData.mediaUrl = await getDownloadURL(snapshot.ref);
-    } catch(e) { console.error('UPLOAD ERROR:', e); return errMsg('Erreur lors de l\'upload du fichier. ' + (e?.message || e)); }
-  } else if (window._postType === 'link') {
+    } catch(e) { return errMsg('Erreur lors de l\'upload du fichier.'); }
+  } else if (_postType === 'link') {
     const url = document.getElementById('post-link-url').value.trim();
     if (!url) return errMsg('Ajoute un lien.');
     postData.linkUrl = url;
     try { postData.linkTitle = document.getElementById('post-link-title').textContent; } catch(e) {}
-  } else if (window._postType === 'event_share') {
+  } else if (_postType === 'event_share') {
     if (_preload) {
       postData.eventRef = _preload.id;
       postData.eventName = _preload.titre;
@@ -8115,6 +8149,55 @@ function setAgendaNiveau(niveau, btn) {
   if (btn) btn.classList.add('on');
   afficherEvents();
 }
+
+// ── Géolocalisation "Près de moi" ──────────────────────────────────────────
+async function presDeNomMoi(inputId, callbackFn) {
+  if (!navigator.geolocation) {
+    alert('La géolocalisation n\'est pas supportée par votre navigateur.');
+    return;
+  }
+  const btn = event && event.currentTarget;
+  const originalHTML = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Localisation...';
+    btn.disabled = true;
+  }
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      const { latitude, longitude } = pos.coords;
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=fr`,
+          { headers: { 'Accept': 'application/json' } }
+        );
+        const data = await res.json();
+        const ville = data.address?.city || data.address?.town || data.address?.village || data.address?.municipality || '';
+        const inp = document.getElementById(inputId);
+        if (inp) {
+          inp.value = ville;
+          inp.style.borderColor = 'rgba(0,245,155,0.5)';
+          setTimeout(() => { inp.style.borderColor = 'var(--border)'; }, 2000);
+        }
+        if (callbackFn) callbackFn(ville);
+      } catch(e) {
+        console.error('Nominatim error', e);
+        alert('Impossible de détecter votre ville. Vérifiez votre connexion.');
+      }
+      if (btn) { btn.innerHTML = originalHTML; btn.disabled = false; }
+    },
+    (err) => {
+      console.warn('Geolocation error', err);
+      if (err.code === 1) {
+        alert('Accès à la localisation refusé. Autorisez-la dans les réglages de votre navigateur.');
+      } else {
+        alert('Impossible d\'obtenir votre position.');
+      }
+      if (btn) { btn.innerHTML = originalHTML; btn.disabled = false; }
+    },
+    { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+  );
+}
+window.presDeNomMoi = presDeNomMoi;
 
 function setAgendaVille(val) {
   agendaVille = val.trim().toLowerCase();
