@@ -5405,6 +5405,12 @@ if (isPWA) {
     <!-- Compat score -->
     <div id="ap-compat" style="margin-bottom:16px;"></div>
 
+    <!-- Événements à venir de l'artiste -->
+    <div id="ap-events-wrap" style="display:none;margin-bottom:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;margin-bottom:10px;">🎉 ÉVÉNEMENTS À VENIR</div>
+      <div id="ap-events-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+
   </div>
   </div>
 </div>
@@ -9361,12 +9367,12 @@ window.sInscrire = async function() {
   try {
 
     await window._updateDoc(window._doc(window._db, 'evenements', eventCourant.id), {
-      inscrits: increment(1),
+      inscrits: window._increment(1),
       participants: window._arrayUnion(window._currentUid)
     });
 
     await window._updateDoc(window._doc(window._db, 'danseurs', window._currentUid), {
-      evenements: increment(1)
+      evenements: window._increment(1)
     });
     await window.gainXP(20, 'inscription_event');
 
@@ -13658,6 +13664,48 @@ window.showProfilPublic = async function(uid) {
     } else {
       btnTel.style.display = 'none';
     }
+
+    // ── Événements à venir de l'artiste ──
+    (async () => {
+      const evWrap = document.getElementById('ap-events-wrap');
+      const evList = document.getElementById('ap-events-list');
+      if (!evWrap || !evList) return;
+      try {
+        const now = new Date().toISOString().slice(0,10);
+        const evSnap = await window._getDocs(window._query(
+          window._collection(window._db, 'evenements'),
+          window._where('organisateurUid', '==', uid),
+          window._orderBy('date', 'asc'),
+          window._limit(10)
+        ));
+        const evsFuturs = evSnap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter(ev => (ev.date || '') >= now);
+        if (evsFuturs.length > 0) {
+          evWrap.style.display = 'block';
+          evList.innerHTML = evsFuturs.map(ev => {
+            const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'numeric', month:'long' }) : '';
+            const heureStr = ev.heure ? ' · ' + ev.heure : '';
+            const prixStr = ev.prix ? ev.prix + (ev.devise || '€') : 'Gratuit';
+            const bg = ev.photoUrl ? `url('${ev.photoUrl}') center/cover no-repeat` : 'linear-gradient(135deg,#1a0526,#0d2b1e)';
+            return `<div onclick="ouvrirShareEvent('${ev.id}')" style="cursor:pointer;border-radius:16px;overflow:hidden;background:var(--card);border:1px solid var(--border);transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="height:120px;background:${bg};position:relative;">
+                <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(0,0,0,0.7));"></div>
+                <div style="position:absolute;bottom:10px;left:12px;right:12px;">
+                  <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#fff;line-height:1.2;">${ev.titre || ''}</div>
+                </div>
+              </div>
+              <div style="padding:10px 12px;display:flex;align-items:center;justify-content:space-between;">
+                <div style="font-size:12px;color:var(--muted2);">${dateStr}${heureStr}${ev.ville ? ' · ' + ev.ville : ''}</div>
+                <div style="font-size:12px;font-weight:700;color:var(--green);">${prixStr}</div>
+              </div>
+            </div>`;
+          }).join('');
+        } else {
+          evWrap.style.display = 'none';
+        }
+      } catch(e) { if(evWrap) evWrap.style.display = 'none'; }
+    })();
 
     // ── Portfolio & Épingle ──
     if (window._afficherPortfolioProfil) {
