@@ -6570,32 +6570,36 @@ function _initRouter() {
   const profileMatch = pathname.match(/^\/profil\/(.+)$/);
   const usernameMatch = pathname.match(/^\/@(.+)$/);
   const eventMatch = pathname.match(/^\/event\/(.+)$/);
+  function _hideLoaderRouter() {
+    const l = document.getElementById('app-loader');
+    if (l) { l.classList.add('hidden'); setTimeout(() => l.remove(), 350); }
+  }
+
   if (usernameMatch) {
-    // Ouvrir profil par @username
     const _uname = usernameMatch[1];
     function _routeUsername() {
       if (!window._db) { setTimeout(_routeUsername, 300); return; }
       _ouvrirProfilParUsername(_uname);
+      _hideLoaderRouter();
     }
-    setTimeout(_routeUsername, 400);
+    _routeUsername();
   } else if (profileMatch) {
-    // Ouvrir le profil par uid
     const _uid = profileMatch[1];
     function _routeProfil() {
       if (!window._db || !window.showProfilPublic) { setTimeout(_routeProfil, 300); return; }
       showProfilPublic(_uid);
+      _hideLoaderRouter();
     }
-    setTimeout(_routeProfil, 400);
+    _routeProfil();
   } else if (eventMatch) {
-    // Ouvrir un événement : charger depuis Firestore et ouvrir
     const _evId = eventMatch[1];
     async function _routeEvent() {
       if (!window._db) { setTimeout(_routeEvent, 300); return; }
       if (!window._currentUid) {
         ouvrirShareEvent(_evId);
+        _hideLoaderRouter();
         return;
       }
-      // Connecté : charger l'event dans tousLesEvents si pas encore là
       if (!tousLesEvents.find(e => e.id === _evId)) {
         try {
           const snap = await window._getDoc(window._doc(window._db, 'evenements', _evId));
@@ -6603,11 +6607,10 @@ function _initRouter() {
         } catch(e) {}
       }
       showPage('agenda', true);
-      setTimeout(() => {
-        if (window.ouvrirEvent) ouvrirEvent(_evId);
-      }, 300);
+      _hideLoaderRouter();
+      setTimeout(() => { if (window.ouvrirEvent) ouvrirEvent(_evId); }, 300);
     }
-    setTimeout(_routeEvent, 400);
+    _routeEvent();
   } else {
     const page = _reverseRouteMap[pathname];
     if (page && page !== 'home' && page !== 'auth') {
@@ -16292,27 +16295,43 @@ onAuthStateChanged(auth, async (user) => {
     const _eventMatch    = _pathname.match(/^\/event\/(.+)$/);
     const _profilMatch   = _pathname.match(/^\/profil\/(.+)$/);
 
+    // Fonction utilitaire pour masquer le loader
+    function _hideLoader() {
+      const loader = document.getElementById('app-loader');
+      if (loader) { loader.classList.add('hidden'); setTimeout(() => loader.remove(), 350); }
+    }
+
     if (_usernameMatch) {
-      window.showPage('home');
       const _un = _usernameMatch[1];
-      (function _retry(){ if(!window._db){setTimeout(_retry,300);return;} _ouvrirProfilParUsername(_un); })();
+      (function _retry(){
+        if(!window._db){setTimeout(_retry,300);return;}
+        _ouvrirProfilParUsername(_un);
+        _hideLoader();
+      })();
     } else if (_eventMatch) {
-      window.showPage('home');
       const _eid = _eventMatch[1];
-      (function _retry(){ if(!window._db){setTimeout(_retry,300);return;} ouvrirShareEvent(_eid); })();
+      (function _retry(){
+        if(!window._db){setTimeout(_retry,300);return;}
+        ouvrirShareEvent(_eid);
+        _hideLoader();
+      })();
     } else if (_profilMatch) {
-      window.showPage('home');
       const _pid = _profilMatch[1];
-      (function _retry(){ if(!window._db||!window.showProfilPublic){setTimeout(_retry,300);return;} showProfilPublic(_pid); })();
+      (function _retry(){
+        if(!window._db||!window.showProfilPublic){setTimeout(_retry,300);return;}
+        showProfilPublic(_pid);
+        _hideLoader();
+      })();
     } else {
       // Toute autre page protégée : mémoriser et rediriger vers home
       if (_pathname !== '/' && _pathname !== '/connexion') {
         sessionStorage.setItem('hako_redirect_url', _pathname);
       }
       window.showPage('home');
+      _hideLoader();
     }
   }
-  // Masquer le splash dans tous les cas
+  // Masquer le splash (cas connecté -- routes dynamiques masquent elles-mêmes)
   const loader = document.getElementById('app-loader');
   if (loader) {
     loader.classList.add('hidden');
