@@ -5303,6 +5303,7 @@ if (isPWA) {
       <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.6) 100%);"></div>
       <button onclick="fermerDetailEvent()" style="position:absolute;top:calc(16px + env(safe-area-inset-top));left:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);color:white;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;line-height:1;">←</button>
       <span id="ev-detail-type" style="position:absolute;bottom:14px;left:16px;z-index:2;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:700;font-family:'Syne',sans-serif;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);"></span>
+      <button id="ev-detail-share-btn" onclick="partagerEvent('','')" style="position:absolute;top:calc(16px + env(safe-area-inset-top));right:60px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
       <button id="ev-detail-fav-btn" onclick="toggleFavoriDetail()" style="position:absolute;top:calc(16px + env(safe-area-inset-top));right:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
     </div>
     <!-- TITRE -->
@@ -5316,12 +5317,20 @@ if (isPWA) {
 
 <!-- ═══ PROFIL ARTISTE (overlay) ═══ -->
 <div class="page" id="page-profil-public">
+  <!-- Header public (visible si non connecté) -->
+  <div id="pp-public-header" style="display:none;position:sticky;top:0;z-index:100;background:rgba(8,8,16,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);align-items:center;justify-content:space-between;padding:12px 20px;padding-top:calc(12px + env(safe-area-inset-top));">
+    <div style="font-family:'Drowner-Free','Syne',sans-serif;font-weight:900;font-size:22px;color:var(--green);letter-spacing:-0.5px;">hako</div>
+    <button onclick="showPage('auth')" style="padding:8px 16px;border-radius:20px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;border:none;cursor:pointer;">Rejoindre HAKO</button>
+  </div>
   <div style="max-width:600px;margin:0 auto;padding:24px 20px 120px;">
 
-    <!-- Header -->
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <!-- Header navigation (visible si connecté) -->
+    <div id="pp-nav-header" style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
       <button onclick="goBack()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
       <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;">PROFIL</div>
+      <button id="pp-share-btn" onclick="partagerProfil(artisteCourant)" style="margin-left:auto;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </button>
     </div>
 
     <!-- Hero -->
@@ -5400,6 +5409,20 @@ if (isPWA) {
     <!-- Compat score -->
     <div id="ap-compat" style="margin-bottom:16px;"></div>
 
+  </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE: SHARE EVENT (publique, sans compte) ═══ -->
+<div class="page" id="page-share-event">
+  <!-- Header minimaliste -->
+  <div style="position:sticky;top:0;z-index:100;background:rgba(8,8,16,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:12px 20px;padding-top:calc(12px + env(safe-area-inset-top));">
+    <div style="font-family:'Drowner-Free','Syne',sans-serif;font-weight:900;font-size:22px;color:var(--green);letter-spacing:-0.5px;">hako</div>
+    <button onclick="showPage('auth')" style="padding:8px 16px;border-radius:20px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;border:none;cursor:pointer;">Rejoindre HAKO</button>
+  </div>
+  <!-- Contenu événement -->
+  <div style="max-width:600px;margin:0 auto;padding:24px 20px 120px;" id="share-event-content">
+    <div style="text-align:center;padding:60px 20px;color:var(--muted);">⏳ Chargement...</div>
   </div>
 </div>
 
@@ -6393,7 +6416,8 @@ function showPage(id, isBack = false) {
     feed: '/feed', orga: '/organisateur', admin: '/admin', ranking: '/classement', salles: '/salles',
     bracelet: '/kima', notifs: '/notifications', privacy: '/confidentialite',
     'form-event': '/creer-evenement', 'form-salle': '/creer-salle', 'form-ecole': '/creer-ecole', 'post-create': '/creer-post',
-    cgu: '/cgu', cgv: '/cgv', mentions: '/mentions'
+    cgu: '/cgu', cgv: '/cgv', mentions: '/mentions',
+    'profil-public': '/profil', 'share-event': '/event'
   };
   const _url = _routeMap[id] || '/';
   if (!isBack && window.location.pathname !== _url) {
@@ -6415,7 +6439,7 @@ function showPage(id, isBack = false) {
   if (!_noSave.includes(id)) localStorage.setItem('hako_last_page', id);
 
   // Pages accessibles sans compte
-  const _pagesPubliques = ['home','auth','network','privacy','cgu','mentions'];
+  const _pagesPubliques = ['home','auth','network','privacy','cgu','mentions','profil-public','share-event'];
   if (!window._currentUid && !_pagesPubliques.includes(id)) {
     showPage('auth');
     return;
@@ -6541,18 +6565,27 @@ function _initRouter() {
   const pathname = window.location.pathname;
   // Gérer les URLs dynamiques
   const profileMatch = pathname.match(/^\/profil\/(.+)$/);
+  const usernameMatch = pathname.match(/^\/@(.+)$/);
   const eventMatch = pathname.match(/^\/event\/(.+)$/);
-  if (profileMatch) {
-    // Ouvrir le profil d'un artiste
+  if (usernameMatch) {
+    // Ouvrir profil par @username (page publique sans compte)
+    setTimeout(() => _ouvrirProfilParUsername(usernameMatch[1]), 500);
+  } else if (profileMatch) {
+    // Ouvrir le profil d'un artiste par uid
     setTimeout(() => {
       if (window.showProfilPublic) showProfilPublic(profileMatch[1]);
       else showPage('network', true);
     }, 800);
   } else if (eventMatch) {
-    // Ouvrir un événement
+    // Ouvrir un événement (page publique si non connecté, overlay si connecté)
     setTimeout(() => {
-      if (window.ouvrirEvent) ouvrirEvent(eventMatch[1]);
-      else showPage('agenda', true);
+      if (!window._currentUid) {
+        ouvrirShareEvent(eventMatch[1]);
+      } else if (window.ouvrirEvent) {
+        ouvrirEvent(eventMatch[1]);
+      } else {
+        showPage('agenda', true);
+      }
     }, 800);
   } else {
     const page = _reverseRouteMap[pathname];
@@ -8969,6 +9002,13 @@ function ouvrirEvent(id) {
   if (typeEl) { typeEl.textContent = cfg.label; typeEl.style.color = cfg.couleur; typeEl.style.bottom = '14px'; typeEl.style.top = ''; }
   const titleEl = document.getElementById('ev-detail-title');
   if (titleEl) titleEl.textContent = ev.titre || '';
+
+  // Bouton partage
+  const shareEvBtn = document.getElementById('ev-detail-share-btn');
+  if (shareEvBtn) {
+    const titre = (ev.titre || '').replace(/'/g, "\'");
+    shareEvBtn.setAttribute('onclick', `partagerEvent('${ev.id}','${titre}')`);
+  }
 
   // Favori
   const favBtn = document.getElementById('ev-detail-fav-btn');
@@ -12951,6 +12991,209 @@ function cacherBarreReseau() {
   if (bar) bar.style.display = 'none';
 }
 
+// ══════════════════════════════════════════════════════════
+// PARTAGE & PAGES PUBLIQUES
+// ══════════════════════════════════════════════════════════
+
+// Lookup uid par username
+async function _ouvrirProfilParUsername(username) {
+  if (!window._db) { setTimeout(() => _ouvrirProfilParUsername(username), 500); return; }
+  try {
+    const snap = await window._getDocs(window._query(
+      window._collection(window._db, 'danseurs'),
+      window._where('username', '==', username.toLowerCase()),
+      window._limit(1)
+    ));
+    if (!snap.empty) {
+      const uid = snap.docs[0].id;
+      showProfilPublic(uid);
+      history.replaceState({ page: 'profil-public', uid }, '', '/@' + username);
+    } else {
+      showPage('home');
+    }
+  } catch(e) { console.error(e); showPage('home'); }
+}
+window._ouvrirProfilParUsername = _ouvrirProfilParUsername;
+
+// Bouton partage profil
+window.partagerProfil = async function(uid, username) {
+  const url = username
+    ? 'https://hakosphere.fr/@' + username
+    : 'https://hakosphere.fr/profil/' + uid;
+  const nom = document.getElementById('ap-name')?.textContent || 'un artiste';
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: nom + ' sur HAKO', text: 'Découvre le profil de ' + nom + ' sur HAKO !', url });
+    } catch(e) { if (e.name !== 'AbortError') _copierLien(url); }
+  } else { _copierLien(url); }
+};
+
+// Bouton partage événement
+window.partagerEvent = async function(eventId, titre) {
+  const url = 'https://hakosphere.fr/event/' + eventId;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: titre || 'Événement HAKO', text: 'Découvre cet événement sur HAKO !', url });
+    } catch(e) { if (e.name !== 'AbortError') _copierLien(url); }
+  } else { _copierLien(url); }
+};
+
+function _copierLien(url) {
+  navigator.clipboard?.writeText(url).then(() => _showToast('🔗 Lien copié !')).catch(() => _showToast('Copie: ' + url));
+}
+
+// Afficher la page share-event (accessible sans compte)
+window.ouvrirShareEvent = async function(eventId) {
+  if (!window._db) { setTimeout(() => ouvrirShareEvent(eventId), 500); return; }
+  showPage('share-event');
+  history.pushState({ page: 'share-event', eventId }, '', '/event/' + eventId);
+  const container = document.getElementById('share-event-content');
+  if (!container) return;
+  container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--muted);">⏳ Chargement...</div>';
+  try {
+    const snap = await window._getDoc(window._doc(window._db, 'evenements', eventId));
+    if (!snap.exists()) { container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--muted);">Événement introuvable.</div>'; return; }
+    const ev = { id: snap.id, ...snap.data() };
+    const TYPE_CONFIG = {
+      soiree:'🎉 Soirée', battle:'🏆 Battle', workshop:'🎓 Workshop', stage:'🏫 Stage',
+      concert:'🎤 Concert', festival:'🎪 Festival', atelier:'🎼 Atelier',
+      shooting:'📸 Shooting', tournage:'🎥 Tournage', projection:'🎞 Projection', exposition:'🖼 Exposition',
+    };
+    const typeLabel = TYPE_CONFIG[ev.type] || ev.type || '';
+    const dateStr = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : '';
+    const heureStr = ev.heure ? ' à ' + ev.heure : '';
+    const prixStr = ev.prix ? ev.prix + (ev.devise || '€') : 'Gratuit';
+    const bannerBg = ev.photoUrl
+      ? `url('${ev.photoUrl}') center/cover no-repeat`
+      : 'linear-gradient(135deg,#1a0526,#0d2b1e)';
+    const isConnected = !!window._currentUid;
+    const btnReserver = ev.lienInscription
+      ? `<a href="${ev.lienInscription}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border-radius:16px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;text-decoration:none;box-sizing:border-box;">🎟 Réserver</a>`
+      : `<button onclick="${isConnected ? `ouvrirPaiementHako('${ev.id}')` : `ouvrirInscriptionRapide('${ev.id}')`}" style="width:100%;padding:16px;border-radius:16px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;">🎟 Réserver</button>`;
+
+    container.innerHTML = `
+      <div style="height:260px;background:${bannerBg};border-radius:20px;margin-bottom:20px;position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.7));border-radius:20px;"></div>
+        <div style="position:absolute;bottom:16px;left:16px;right:16px;">
+          <span style="font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,0.5);padding:3px 10px;border-radius:20px;backdrop-filter:blur(8px);">${typeLabel}</span>
+          <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;color:#fff;margin-top:6px;line-height:1.1;">${ev.titre || ''}</div>
+        </div>
+        <button onclick="partagerEvent('${ev.id}','${(ev.titre||'').replace(/'/g,"\'")}')" style="position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.2);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>${dateStr}${heureStr}</span>
+        </div>
+        ${ev.ville || ev.adresse ? `<div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <span>${[ev.lieu||ev.adresse, ev.ville].filter(Boolean).join(', ')}</span>
+        </div>` : ''}
+        <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+          <span style="font-weight:700;color:var(--green);">${prixStr}</span>
+        </div>
+      </div>
+      ${ev.description ? `<div style="font-size:14px;line-height:1.7;color:var(--muted2);margin-bottom:20px;">${ev.description.replace(/</g,'&lt;')}</div>` : ''}
+      <div style="position:sticky;bottom:calc(20px + env(safe-area-inset-bottom));">${btnReserver}</div>
+    `;
+  } catch(e) { console.error(e); container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">Erreur de chargement.</div>'; }
+};
+
+// Modal inscription rapide (au moment de réserver sans compte)
+window.ouvrirInscriptionRapide = function(eventIdApresInscription) {
+  let modal = document.getElementById('modal-inscription-rapide');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-inscription-rapide';
+    modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);display:flex;align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom);';
+    modal.innerHTML = `<div style="width:100%;max-width:480px;background:var(--bg2);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:28px 24px 32px;box-sizing:border-box;">
+      <div style="font-family:'Syne',sans-serif;font-weight:900;font-size:20px;margin-bottom:6px;">Réserve ta place</div>
+      <div style="font-size:13px;color:var(--muted2);margin-bottom:20px;">Crée ton compte HAKO en 30 secondes</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+        <input id="ir-username" type="text" placeholder="@username" style="padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;width:100%;" onfocus="this.style.borderColor='rgba(0,245,155,0.4)'" onblur="this.style.borderColor='var(--border)'">
+        <input id="ir-email" type="email" placeholder="Email" style="padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;width:100%;" onfocus="this.style.borderColor='rgba(0,245,155,0.4)'" onblur="this.style.borderColor='var(--border)'">
+        <input id="ir-password" type="password" placeholder="Mot de passe" style="padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;width:100%;" onfocus="this.style.borderColor='rgba(0,245,155,0.4)'" onblur="this.style.borderColor='var(--border)'">
+        <div id="ir-err" style="display:none;font-size:12px;color:var(--red);font-weight:600;"></div>
+      </div>
+      <button id="ir-submit" onclick="validerInscriptionRapide()" style="width:100%;padding:14px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-bottom:10px;">Créer mon compte et réserver →</button>
+      <button onclick="document.getElementById('modal-inscription-rapide').style.display='none'" style="width:100%;padding:12px;border-radius:14px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">Annuler</button>
+    </div>`;
+    document.body.appendChild(modal);
+  }
+  modal._eventId = eventIdApresInscription;
+  modal.style.display = 'flex';
+  document.getElementById('ir-username')?.focus();
+};
+
+window.validerInscriptionRapide = async function() {
+  const modal = document.getElementById('modal-inscription-rapide');
+  const username = document.getElementById('ir-username')?.value.trim().toLowerCase().replace(/^@/,'');
+  const email    = document.getElementById('ir-email')?.value.trim();
+  const password = document.getElementById('ir-password')?.value;
+  const errEl    = document.getElementById('ir-err');
+  const btn      = document.getElementById('ir-submit');
+  const showErr  = msg => { if(errEl){errEl.textContent=msg;errEl.style.display='block';} };
+
+  if (!username || username.length < 2) return showErr('Username requis (min. 2 caractères)');
+  if (!email || !email.includes('@')) return showErr('Email invalide');
+  if (!password || password.length < 6) return showErr('Mot de passe trop court (min. 6 caractères)');
+
+  btn.textContent = 'Création...'; btn.disabled = true;
+  if (errEl) errEl.style.display = 'none';
+
+  try {
+    // Vérifier username disponible
+    const taken = await window._getDocs(window._query(
+      window._collection(window._db, 'danseurs'),
+      window._where('username', '==', username), window._limit(1)
+    ));
+    if (!taken.empty) { btn.textContent = 'Créer mon compte et réserver →'; btn.disabled = false; return showErr('Ce username est déjà pris'); }
+
+    // Créer le compte Firebase Auth
+    const { getAuth, createUserWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js');
+    const auth = getAuth();
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = cred.user.uid;
+
+    // Créer le profil minimal
+    await window._setDoc(window._doc(window._db, 'danseurs', uid), {
+      username, email,
+      nomAffiche: username,
+      createdAt: window._serverTimestamp(),
+      xp: 0, evenements: 0,
+    });
+
+    modal.style.display = 'none';
+    _showToast('Compte créé ! Bienvenue sur HAKO 🎉');
+
+    // Déclencher la réservation
+    const eventId = modal._eventId;
+    if (eventId) {
+      setTimeout(() => {
+        if (window.ouvrirPaiementHako) ouvrirPaiementHako(eventId);
+        else if (window.sInscrire) sInscrire();
+      }, 500);
+    }
+  } catch(e) {
+    btn.textContent = 'Créer mon compte et réserver →'; btn.disabled = false;
+    if (e.code === 'auth/email-already-in-use') showErr('Email déjà utilisé');
+    else if (e.code === 'auth/weak-password') showErr('Mot de passe trop faible');
+    else showErr('Erreur : ' + (e.message || 'réessaie'));
+  }
+};
+
+// Afficher/masquer header public selon connexion sur page-profil-public
+function _updateProfilPublicHeader() {
+  const pubHeader = document.getElementById('pp-public-header');
+  const navHeader = document.getElementById('pp-nav-header');
+  const isConnected = !!window._currentUid;
+  if (pubHeader) pubHeader.style.display = isConnected ? 'none' : 'flex';
+  if (navHeader) navHeader.style.display = isConnected ? 'flex' : 'none';
+}
+
 window.showProfilPublic = async function(uid) {
   // Bloquer si non connecté
   if (!window._currentUid) {
@@ -12967,6 +13210,7 @@ window.showProfilPublic = async function(uid) {
   window.scrollTo(0, 0);
   // Routing URL
   history.pushState({ page: 'profil-public', uid: uid }, '', '/profil/' + uid);
+  _updateProfilPublicHeader();
 
   try {
     const snap = await window._getDoc(window._doc(window._db, 'danseurs', uid));
@@ -13014,6 +13258,9 @@ window.showProfilPublic = async function(uid) {
     if (d.username) handleParts.push('@' + d.username);
     if (d.blase && peutVoir('nom')) handleParts.push('🎭 ' + d.blase);
     handleEl.textContent = handleParts.join('  ·  ');
+    // Mettre à jour le bouton partage avec l'username
+    const shareBtn = document.getElementById('pp-share-btn');
+    if (shareBtn) shareBtn.setAttribute('onclick', `partagerProfil('${uid}','${d.username||''}')`);
 
     // ── Zone ──
     document.getElementById('ap-zone').textContent = '📍 ' + (d.zone || 'Zone non définie');
@@ -16007,12 +16254,31 @@ onAuthStateChanged(auth, async (user) => {
     afficherBarreLogoDeconnecte(true);
     mettreAJourNav(null);
     detecterPairageKima(false);
-    // Pas connecté : mémoriser l'URL demandée et afficher home
+    // Pas connecté : vérifier si l'URL est une page publique accessible sans compte
     const _pathname = window.location.pathname;
-    if (_pathname !== '/' && _pathname !== '/connexion') {
-      sessionStorage.setItem('hako_redirect_url', _pathname);
+    const _usernameMatch = _pathname.match(/^\/\@(.+)$/);
+    const _eventMatch    = _pathname.match(/^\/event\/(.+)$/);
+    const _profilMatch   = _pathname.match(/^\/profil\/(.+)$/);
+
+    if (_usernameMatch) {
+      // Profil par @username : accessible sans compte
+      window.showPage('home');
+      setTimeout(() => _ouvrirProfilParUsername(_usernameMatch[1]), 600);
+    } else if (_eventMatch) {
+      // Fiche événement : accessible sans compte
+      window.showPage('home');
+      setTimeout(() => ouvrirShareEvent(_eventMatch[1]), 600);
+    } else if (_profilMatch) {
+      // Profil par uid : accessible sans compte
+      window.showPage('home');
+      setTimeout(() => { if (window.showProfilPublic) showProfilPublic(_profilMatch[1]); }, 600);
+    } else {
+      // Toute autre page protégée : mémoriser et rediriger vers home
+      if (_pathname !== '/' && _pathname !== '/connexion') {
+        sessionStorage.setItem('hako_redirect_url', _pathname);
+      }
+      window.showPage('home');
     }
-    window.showPage('home');
   }
   // Masquer le splash dans tous les cas
   const loader = document.getElementById('app-loader');
