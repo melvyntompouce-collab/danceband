@@ -5254,8 +5254,8 @@ if (isPWA) {
 </div>
 
 <!-- ═══ MODAL CROP POST ═══ -->
-<div id="post-crop-modal" style="display:none;position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,0.92);backdrop-filter:blur(10px);align-items:center;justify-content:center;flex-direction:column;">
-  <div style="width:100%;max-width:480px;padding:16px;box-sizing:border-box;">
+<div id="post-crop-modal" style="display:none;position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,0.92);backdrop-filter:blur(10px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);">
+  <div style="width:100%;max-width:480px;padding:16px;box-sizing:border-box;margin:0 auto;min-height:100%;display:flex;flex-direction:column;justify-content:center;">
     <!-- Titre -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;">Recadrer la photo</div>
@@ -5267,9 +5267,9 @@ if (isPWA) {
       <button class="post-crop-ratio-btn" data-w="16" data-h="9" onclick="setCropRatio(16,9,this)">16:9</button>
       <button class="post-crop-ratio-btn" data-w="9" data-h="16" onclick="setCropRatio(9,16,this)">9:16</button>
     </div>
-    <!-- Zone de crop -->
-    <div id="post-crop-container" style="position:relative;width:100%;background:#111;border-radius:14px;overflow:hidden;touch-action:none;user-select:none;cursor:grab;">
-      <canvas id="post-crop-canvas" style="display:block;width:100%;height:auto;"></canvas>
+    <!-- Zone de crop (hauteur max pour ne jamais déborder) -->
+    <div id="post-crop-container" style="position:relative;width:100%;max-height:55vh;background:#111;border-radius:14px;overflow:hidden;touch-action:none;user-select:none;cursor:grab;">
+      <canvas id="post-crop-canvas" style="display:block;width:100%;height:auto;max-height:55vh;object-fit:contain;"></canvas>
       <!-- Overlay grille -->
       <div id="post-crop-overlay" style="position:absolute;inset:0;pointer-events:none;">
         <div style="position:absolute;left:33.33%;top:0;bottom:0;border-left:1px solid rgba(255,255,255,0.2);"></div>
@@ -7582,10 +7582,17 @@ window._postMediaFile = window._postMediaFile || null;
     const c = getContainer();
     if (!c) return;
     _cropContainerW = c.clientWidth;
-    _cropContainerH = Math.round(_cropContainerW * _cropRatioH / _cropRatioW);
+    const maxH = Math.floor(window.innerHeight * 0.55);
+    const idealH = Math.round(_cropContainerW * _cropRatioH / _cropRatioW);
+    _cropContainerH = Math.min(idealH, maxH);
+    // Si la hauteur est limitée, recalculer la largeur pour maintenir le ratio
+    if (_cropContainerH < idealH) {
+      _cropContainerW = Math.round(_cropContainerH * _cropRatioW / _cropRatioH);
+    }
     const canvas = getCanvas();
     canvas.width = _cropContainerW * window.devicePixelRatio;
     canvas.height = _cropContainerH * window.devicePixelRatio;
+    canvas.style.width = _cropContainerW + 'px';
     canvas.style.height = _cropContainerH + 'px';
     c.style.height = _cropContainerH + 'px';
   }
