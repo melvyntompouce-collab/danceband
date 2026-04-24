@@ -931,12 +931,13 @@ body.pwa #network-mobile-bar {
 .ec-thumb-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
 .ec-thumb-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.0) 60%,rgba(8,8,16,0.5) 100%);}
 .ec-type{
-  position:absolute;bottom:6px;left:6px;z-index:1;
-  padding:2px 7px;border-radius:6px;
+  position:absolute;bottom:8px;left:8px;z-index:2;
+  padding:2px 8px;border-radius:6px;
   font-size:9px;font-weight:700;
   font-family:'Syne',sans-serif;letter-spacing:0.8px;text-transform:uppercase;
-  background:rgba(0,0,0,0.55);backdrop-filter:blur(8px);
+  background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);
   border:1px solid rgba(255,255,255,0.1);white-space:nowrap;
+  max-width:calc(100% - 16px);overflow:hidden;text-overflow:ellipsis;
 }
 .ec-body{
   flex:1;padding:12px 12px 12px 12px;
@@ -2950,7 +2951,7 @@ if (isPWA) {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       Messages
     </button>
-    <button class="drawer-item" onclick="showPage('ranking');closeDrawer();" id="di-ranking">
+    <button class="drawer-item" onclick="showPage('ranking');closeDrawer();" id="di-ranking" style="display:none;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
       Classement
     </button>
@@ -2958,7 +2959,7 @@ if (isPWA) {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       Cours & Studios
     </button>
-    <button class="drawer-item" onclick="closeDrawer();setTimeout(()=>showPage('bracelet'),150);" id="di-bracelet">
+    <button class="drawer-item" onclick="closeDrawer();setTimeout(()=>showPage('bracelet'),150);" id="di-bracelet" style="display:none;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="5"/><circle cx="7" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="17" cy="12" r="1.5" fill="currentColor"/></svg>
       KIMA
     </button>
@@ -6090,15 +6091,9 @@ if (isPWA) {
       </div>
 
       <!-- Stats Events/Classement -->
-      <div style="display:flex;gap:0;margin-top:20px;background:rgba(255,255,255,0.04);border-radius:14px;overflow:hidden;">
-        <div style="flex:1;padding:12px;text-align:center;border-right:1px solid var(--border);">
-          <div id="ph-stat-events" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Events</div>
-        </div>
-        <div onclick="showPage('ranking')" style="flex:1;padding:12px;text-align:center;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background=''">
-          <div id="ph-stat-rank" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">—</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Classement</div>
-        </div>
+      <div style="display:none;">
+        <div id="ph-stat-events"></div>
+        <div id="ph-stat-rank"></div>
       </div>
 
       <!-- Abonnements/Abonnés détachés en blanc -->
@@ -6142,20 +6137,16 @@ if (isPWA) {
       <div id="ph-epingle-content"></div>
     </div>
 
-    <!-- Portfolio (profil perso) -->
-    <div id="ph-portfolio-wrap" style="display:none;margin-bottom:16px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">🖼 PORTFOLIO <span id="ph-portfolio-count" style="font-size:11px;color:var(--muted2);font-weight:400;"></span></div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <button onclick="toggleVisibilitePortfolio()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" id="ph-toggle-portfolio">👁 Visible</button>
-          <div id="ph-portfolio-drag-hint" style="display:none;font-size:11px;color:var(--muted2);">Glisse pour réordonner</div>
-        </div>
-      </div>
-      <div id="ph-portfolio-grid" class="portfolio-grid"></div>
+    <!-- Portfolio (profil perso) - masqué -->
+    <div id="ph-portfolio-wrap" style="display:none;">
+      <div id="ph-portfolio-count" style="display:none;"></div>
+      <button id="ph-toggle-portfolio" style="display:none;"></button>
+      <div id="ph-portfolio-drag-hint" style="display:none;"></div>
+      <div id="ph-portfolio-grid" style="display:none;"></div>
     </div>
 
     <!-- Kima -->
-    <button onclick="showPage('bracelet')" style="width:100%;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:linear-gradient(135deg,rgba(0,245,155,0.06),rgba(123,79,255,0.06));border:1px solid rgba(0,245,155,0.2);border-radius:20px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.4)'" onmouseout="this.style.borderColor='rgba(0,245,155,0.2)'">
+    <button onclick="showPage('bracelet')" style="display:none;">
       <div style="display:flex;align-items:center;gap:14px;">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="7"/><path d="M12 6v4l2 2"/></svg>
         <div style="text-align:left;">
@@ -8938,9 +8929,9 @@ function _renderEventCard(ev, passe) {
       <div class="ec-thumb">
         <div class="ec-thumb-bg" style="${ev.photoUrl ? `background-image:url('${ev.photoUrl}')` : `background:${cfg.bg}`}"></div>
         <div class="ec-thumb-overlay"></div>
-        <span class="ec-type" style="color:${cfg.couleur}">${cfg.label}</span>
         ${passe ? `<span class="ec-passe-tag">Terminé</span>` : ''}
       </div>
+      <span class="ec-type" style="color:${cfg.couleur}">${cfg.label}</span>
       <!-- CORPS -->
       <div class="ec-body">
         <div class="ec-title">${ev.titre || 'Événement'}</div>
