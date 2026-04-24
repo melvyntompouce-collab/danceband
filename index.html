@@ -6937,7 +6937,7 @@ window.updateSignupSpecialites = function(categorie) {
   // Reset sections
   ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
    'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode','designer_mode',
-   'styliste','maquilleur','coiffeur_mode','costumier'].forEach(t => {
+   'styliste','maquilleur','coiffeur_mode','costumier','nail_artiste'].forEach(t => {
     const sec = document.getElementById('signup-section-' + t);
     if (sec) sec.style.display = 'none';
   });
@@ -6954,7 +6954,7 @@ function toggleSignupType(btn, type) {
   // Afficher la section correspondante
   ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
    'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode','designer_mode',
-   'styliste','maquilleur','coiffeur_mode','costumier'].forEach(t => {
+   'styliste','maquilleur','coiffeur_mode','costumier','nail_artiste'].forEach(t => {
     const section = document.getElementById('signup-section-' + t);
     if (section) section.style.display = _signupTypes.has(t) ? 'block' : 'none';
   });
@@ -11017,7 +11017,7 @@ window.exporterCatalogueXLSX = function() {
     'Danseur·se', 'Photographe', 'Vidéaste', 'Réalisateur·rice',
     'Beatmaker', 'DJ', 'Musicien·ne', 'Chanteur·se',
     'Mannequin', 'Styliste', 'Maquilleur·se', 'Coiffeur·se',
-    'Costumier·e', 'Graphiste', 'Designer', 'Designer mode',
+    'Costumier·e', 'Nail Artiste', 'Graphiste', 'Designer', 'Designer mode',
     'Illustrateur·rice', 'Peintre', 'Dessinateur·rice',
     'Comédien·ne', 'Performeur·se'
   ];
@@ -11117,6 +11117,10 @@ window.exporterCatalogueXLSX = function() {
       ['Techniques', p => (p.pro_tech_costumier || []).join(', ')],
       ['Types de costumes', p => (p.pro_types_costumier || []).join(', ')],
       ['Références', p => p.pro_refs_costumier],
+    ],
+    'Nail Artiste': [
+      ['Techniques', p => (p.pro_tech_nail || []).join(', ')],
+      ['Marques', p => p.pro_marques_nail],
     ],
     'Graphiste': [
       ['Logiciels', p => (p.pro_logiciels_graphiste || []).join(', ')],
@@ -13266,7 +13270,7 @@ function afficherListeDanseurs(danseurs) {
     return;
   }
 
-  const METIER_ICONS = { danseur:'💃', photographe:'📷', videaste:'🎥', beatmaker:'🎧', realisateur:'🎬', dj:'🎛️', musicien:'🎸', chanteur:'🎤', comedien:'🎭', performeur:'✨', mannequin:'🪞', styliste:'👗', maquilleur:'💄', coiffeur_mode:'💈', costumier:'🧵', dessinateur:'✏️', peintre:'🖌️', graphiste:'🖥️', illustrateur:'🖼️', designer:'🎨', designer_mode:'👔' };
+  const METIER_ICONS = { danseur:'💃', photographe:'📷', videaste:'🎥', beatmaker:'🎧', realisateur:'🎬', dj:'🎛️', musicien:'🎸', chanteur:'🎤', comedien:'🎭', performeur:'✨', mannequin:'🪞', styliste:'👗', maquilleur:'💄', coiffeur_mode:'💈', costumier:'🧵', nail_artiste:'💅', dessinateur:'✏️', peintre:'🖌️', graphiste:'🖥️', illustrateur:'🖼️', designer:'🎨', designer_mode:'👔' };
   list.innerHTML = danseurs.map(d => {
     const nom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
     const metiers = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
@@ -13752,6 +13756,7 @@ window.showProfilPublic = async function(uid) {
       coiffeur_mode:'💈 Coiffeur·se artistique',
       costumier:    '🧵 Costumier·ère',
       designer_mode:'👔 Designer Mode',
+      nail_artiste:'💅 Nail Artiste',
       dessinateur:  '✏️ Dessinateur·rice',
       peintre:      '🖌️ Peintre',
       graphiste:    '🖥️ Graphiste',
@@ -14459,7 +14464,7 @@ let filtresMetierActifs = new Set();
 
 const CATEGORIES_ARTISTE = {
   scene:       { label:'🎭 Scène',       specialites: ['danseur','comedien','performeur'] },
-  mode:        { label:'👗 Mode',         specialites: ['mannequin','styliste','maquilleur','coiffeur_mode','costumier','designer_mode'] },
+  mode:        { label:'👗 Mode',         specialites: ['mannequin','styliste','maquilleur','coiffeur_mode','costumier','designer_mode','nail_artiste'] },
   musique:     { label:'🎵 Musique',      specialites: ['beatmaker','dj','musicien','chanteur'] },
   audiovisuel: { label:'🎬 Audiovisuel', specialites: ['photographe','videaste','realisateur'] },
   arts_visuels:{ label:'🎨 Arts Visuels',specialites: ['dessinateur','peintre','graphiste','illustrateur','designer'] },
@@ -14470,7 +14475,7 @@ const SPECIALITE_LABELS = {
   beatmaker:'🎧 Beatmaker', dj:'🎛️ DJ', musicien:'🎸 Musicien·ne', chanteur:'🎤 Chanteur·se',
   photographe:'📷 Photographe', videaste:'🎥 Vidéaste', realisateur:'🎬 Réalisateur·rice',
   dessinateur:'✏️ Dessinateur·rice', peintre:'🖌️ Peintre', graphiste:'🖥️ Graphiste', illustrateur:'🖼️ Illustrateur·rice',
-  styliste:'👗 Styliste', maquilleur:'💄 Maquilleur·se', coiffeur_mode:'💈 Coiffeur·se artistique', costumier:'🧵 Costumier·ère',
+  styliste:'👗 Styliste', maquilleur:'💄 Maquilleur·se', coiffeur_mode:'💈 Coiffeur·se artistique', costumier:'🧵 Costumier·ère', nail_artiste:'💅 Nail Artiste',
   designer:'🎨 Designer', designer_mode:'👔 Designer Mode',
 };
 
@@ -14583,7 +14588,7 @@ window.applyEditSpecialite   = function() {}; // conservé pour compatibilité
 
 const ALL_EDIT_METIERS = ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode','designer_mode',
-  'styliste','maquilleur','coiffeur_mode','costumier'];
+  'styliste','maquilleur','coiffeur_mode','costumier','nail_artiste'];
 
 window.toggleEditMetier = function(metier, btn) {
   btn.classList.toggle('selected');
@@ -15344,7 +15349,7 @@ function syncProSectionsFromMetiers() {
   const proChips = document.querySelectorAll('[data-pro-metier].selected');
   const proMetiers = [...proChips].map(b => b.getAttribute('data-pro-metier'));
   const ALL_PRO_SECTIONS = ['danseur','photographe','videaste','realisateur','beatmaker','dj','musicien','chanteur',
-    'mannequin','styliste','maquilleur','coiffeur_mode','costumier','designer','designer_mode',
+    'mannequin','styliste','maquilleur','coiffeur_mode','costumier','nail_artiste','designer','designer_mode',
     'comedien','performeur','dessinateur','peintre','illustrateur','graphiste'];
   ALL_PRO_SECTIONS.forEach(m => {
     const sec = document.getElementById('pro-section-' + m);
@@ -15491,6 +15496,8 @@ window.sauvegarderCartePro = async function() {
     pro_refs_designer:      document.getElementById('pro-refs-designer')?.value.trim() || '',
     // Designer mode
     pro_logiciels_designer_mode:[...document.querySelectorAll('#pro-logiciels-designer-mode .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_tech_nail:    [...document.querySelectorAll('#pro-tech-nail .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_marques_nail: document.getElementById('pro-marques-nail')?.value.trim() || '',
     pro_collections:  document.getElementById('pro-collections')?.value.trim() || '',
     pro_maisons:      document.getElementById('pro-maisons')?.value.trim() || '',
     // Comédien
@@ -16133,6 +16140,7 @@ async function chargerProfil(uid) {
         coiffeur_mode:'💈 Coiffeur·se artistique',
         costumier:    '🧵 Costumier·ère',
         designer_mode:'👔 Designer Mode',
+        nail_artiste:'💅 Nail Artiste',
         dessinateur:  '✏️ Dessinateur·rice',
         peintre:      '🖌️ Peintre',
         graphiste:    '🖥️ Graphiste',
@@ -16175,6 +16183,7 @@ async function chargerProfil(uid) {
         illustrateur: { emoji:'🖼️', label:'Illustrateur·rice' },
         designer:     { emoji:'🎨', label:'Designer' },
         designer_mode:{ emoji:'👔', label:'Designer Mode' },
+        nail_artiste: { emoji:'💅', label:'Nail Artiste' },
       };
       let discHtml = '';
       metiers.forEach(m => {
@@ -16263,7 +16272,7 @@ async function chargerProfil(uid) {
         beatmaker:'Beatmaker', realisateur:'Réalisateur·rice', dj:'DJ',
         musicien:'Musicien·ne', chanteur:'Chanteur·se', comedien:'Comédien·ne',
         performeur:'Performeur·se', mannequin:'Mannequin', styliste:'Styliste',
-        maquilleur:'Maquilleur·se', coiffeur_mode:'Coiffeur·se artistique',
+        maquilleur:'Maquilleur·se', coiffeur_mode:'Coiffeur·se artistique', nail_artiste:'Nail Artiste',
         costumier:'Costumier·ère', dessinateur:'Dessinateur·rice', peintre:'Peintre',
         graphiste:'Graphiste', illustrateur:'Illustrateur·rice', designer:'Designer', designer_mode:'Designer Mode'
       };
@@ -17819,6 +17828,7 @@ function _renderDrawerLieux() {
                 <button type="button" class="edit-metier-chip" data-metier="coiffeur_mode" onclick="toggleEditMetier('coiffeur_mode',this)">💈 Coiffeur·se artistique</button>
                 <button type="button" class="edit-metier-chip" data-metier="costumier" onclick="toggleEditMetier('costumier',this)">🧵 Costumier·ère</button>
                 <button type="button" class="edit-metier-chip" data-metier="designer_mode" onclick="toggleEditMetier('designer_mode',this)">👔 Designer Mode</button>
+                <button type="button" class="edit-metier-chip" data-metier="nail_artiste" onclick="toggleEditMetier('nail_artiste',this)">💅 Nail Artiste</button>
               </div>
             </div>
 
@@ -18281,6 +18291,7 @@ function _renderDrawerLieux() {
                   <button type="button" class="edit-metier-chip" data-pro-metier="coiffeur_mode" onclick="toggleProMetier('coiffeur_mode',this)">💈 Coiffeur·se artistique</button>
                   <button type="button" class="edit-metier-chip" data-pro-metier="costumier" onclick="toggleProMetier('costumier',this)">🧵 Costumier·ère</button>
                   <button type="button" class="edit-metier-chip" data-pro-metier="designer_mode" onclick="toggleProMetier('designer_mode',this)">👔 Designer Mode</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="nail_artiste" onclick="toggleProMetier('nail_artiste',this)">💅 Nail Artiste</button>
                 </div>
               </div>
             </div>
@@ -18867,6 +18878,31 @@ function _renderDrawerLieux() {
                 <div>
                   <label class="form-label">Marques / Maisons</label>
                   <input id="pro-maisons" class="form-input" type="text" placeholder="Ex: Maison X, Marque Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- NAIL ARTISTE -->
+            <div id="pro-section-nail_artiste" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">💅 Nail Artiste</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Techniques</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-tech-nail">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-nail')">Gel</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-nail')">Acrylique</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-nail')">Semi-permanent</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-nail')">Nail art</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-nail')">Capsules</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-nail')">Manucure</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-nail')">3D</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-nail')">Aquarelle</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-tech-nail')">Chromes & poudres</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Marques utilisées</label>
+                  <input id="pro-marques-nail" class="form-input" type="text" placeholder="Ex: CND, OPI, The GelBottle..." style="background:var(--bg2);">
                 </div>
               </div>
             </div>
