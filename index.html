@@ -6349,6 +6349,15 @@ let pageHistory = [];
 let currentPage = 'home';
 let _transitionLock = false;
 
+// Appeler showPage en attendant que le lock de transition soit libéré
+function _showPageWhenReady(id, delay) {
+  if (!_transitionLock) {
+    showPage(id);
+  } else {
+    setTimeout(() => _showPageWhenReady(id, delay), 50);
+  }
+}
+
 // Ordre des pages pour déterminer la direction gauche/droite
 const PAGE_ORDER = ['home', 'network', 'agenda', 'messages', 'profile', 'ranking', 'salles', 'bracelet', 'notifs', 'privacy', 'cgu', 'mentions'];
 
@@ -13078,8 +13087,8 @@ function _copierLien(url) {
 
 // Afficher la page share-event (accessible sans compte)
 window.ouvrirShareEvent = async function(eventId) {
-  if (!window._db) { setTimeout(() => ouvrirShareEvent(eventId), 500); return; }
-  showPage('share-event');
+  if (!window._db) { setTimeout(() => ouvrirShareEvent(eventId), 300); return; }
+  _showPageWhenReady('share-event');
   history.pushState({ page: 'share-event', eventId }, '', '/event/' + eventId);
   const container = document.getElementById('share-event-content');
   if (!container) return;
@@ -13234,7 +13243,7 @@ window.showProfilPublic = async function(uid) {
   if (window._currentUid && window.fermerDrawerReseau) fermerDrawerReseau();
   artisteCourant = uid;
   if (window._currentUid) cacherBarreReseau();
-  showPage('profil-public');
+  _showPageWhenReady('profil-public');
   window.scrollTo(0, 0);
   // Routing URL
   history.pushState({ page: 'profil-public', uid: uid }, '', '/profil/' + uid);
@@ -16331,11 +16340,16 @@ onAuthStateChanged(auth, async (user) => {
       _hideLoader();
     }
   }
-  // Masquer le splash (cas connecté -- routes dynamiques masquent elles-mêmes)
-  const loader = document.getElementById('app-loader');
-  if (loader) {
-    loader.classList.add('hidden');
-    setTimeout(() => loader.remove(), 350);
+  // Masquer le splash seulement si ce n'est pas une route dynamique
+  // (les routes dynamiques masquent elles-mêmes le loader via _hideLoaderRouter)
+  const _loaderPath = window.location.pathname;
+  const _isDynamic = /^\/profil\/|^\/event\/|^\/@/.test(_loaderPath);
+  if (!_isDynamic) {
+    const loader = document.getElementById('app-loader');
+    if (loader) {
+      loader.classList.add('hidden');
+      setTimeout(() => loader.remove(), 350);
+    }
   }
 });
 
