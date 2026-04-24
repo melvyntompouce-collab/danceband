@@ -13557,8 +13557,20 @@ window.showProfilPublic = async function(uid) {
     // ── Stats publiques ──
     const _apAb = document.getElementById('ap-abonnes');
     const _apAbo = document.getElementById('ap-abonnements');
-    if (_apAb) _apAb.textContent = (d.abonnes || []).length;
     if (_apAbo) _apAbo.textContent = (d.abonnements || []).length;
+    // Abonnés : requête réelle (d.abonnes n'est pas fiable)
+    if (_apAb) {
+      _apAb.textContent = '…';
+      (async () => {
+        try {
+          const abSnap = await window._getDocs(window._query(
+            window._collection(window._db, 'danseurs'),
+            window._where('abonnements', 'array-contains', uid)
+          ));
+          if (_apAb) _apAb.textContent = abSnap.size;
+        } catch(e) { if (_apAb) _apAb.textContent = '0'; }
+      })();
+    }
 
     // ── Photo ──
     const emojiEl = document.getElementById('ap-avatar-emoji');
@@ -17052,11 +17064,11 @@ window.gainXP = async function(montant, type, labelOverride) {
     const label = labelOverride || cfg.label;
     const now   = new Date().toISOString();
     const entry = { montant, type, label, date: now };
-    const notif = { type: 'xp', texte: '+' + montant + ' XP · ' + label, date: now, lu: false };
+    // const notif = { type: 'xp', texte: '+' + montant + ' XP · ' + label, date: now, lu: false }; // DÉSACTIVÉ — notifs XP désactivées
     await updateDoc(doc(window._db, 'danseurs', window._currentUid), {
       xp:            increment(montant),
       xpLog:         arrayUnion(entry),
-      notifications: arrayUnion(notif)
+      // notifications: arrayUnion(notif) // DÉSACTIVÉ — notifs XP désactivées
     });
     // Mettre à jour le profil local
     if (window._monProfil) {
@@ -17067,7 +17079,7 @@ window.gainXP = async function(montant, type, labelOverride) {
       window._monProfil.notifications.push(notif);
       mettreAJourBadgeNotif(window._monProfil.notifications);
     }
-    afficherToastXP(montant, type);
+    // afficherToastXP(montant, type); // DÉSACTIVÉ — toasts XP désactivés
   } catch(e) {
     console.error('Erreur gainXP:', e);
   }
