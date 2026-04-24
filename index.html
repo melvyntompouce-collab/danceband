@@ -981,6 +981,47 @@ body.pwa #network-mobile-bar {
 .ec-btn:hover{opacity:0.88;}
 /* passe dimmed */
 .event-card.passe{opacity:0.5;filter:grayscale(0.4);}
+
+/* ── Crop post ── */
+.post-crop-ratio-btn {
+  flex:1;padding:7px;border-radius:10px;border:1.5px solid var(--border);
+  background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;
+  font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;
+}
+.post-crop-ratio-btn.on {
+  border-color:var(--green);background:rgba(0,245,155,0.08);color:var(--green);
+}
+
+/* ── Portfolio grille ── */
+.portfolio-grid {
+  display:grid;grid-template-columns:repeat(3,1fr);gap:3px;
+}
+.portfolio-thumb {
+  aspect-ratio:1;background:var(--card);overflow:hidden;position:relative;cursor:pointer;
+}
+.portfolio-thumb img {
+  width:100%;height:100%;object-fit:cover;transition:transform 0.2s;
+}
+.portfolio-thumb:hover img { transform:scale(1.04); }
+.portfolio-thumb-placeholder {
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:22px;background:var(--card);
+}
+.portfolio-thumb .portfolio-type-badge {
+  position:absolute;top:4px;left:4px;font-size:9px;font-weight:800;
+  background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);border-radius:6px;
+  padding:2px 6px;color:#fff;letter-spacing:0.5px;
+}
+.portfolio-thumb.dragging { opacity:0.4; }
+.portfolio-thumb.drag-over { outline:2px solid var(--green); }
+
+/* ── Épingle haut de profil ── */
+.ap-epingle-card {
+  background:linear-gradient(135deg,rgba(0,245,155,0.06),rgba(155,93,229,0.06));
+  border:1px solid rgba(0,245,155,0.2);border-radius:18px;padding:16px;
+  margin-bottom:16px;cursor:pointer;transition:border-color 0.2s;
+}
+.ap-epingle-card:hover { border-color:rgba(0,245,155,0.4); }
 .ec-passe-tag{
   position:absolute;top:6px;left:6px;z-index:2;
   background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.12);
@@ -4828,6 +4869,7 @@ if (isPWA) {
         <img id="post-preview-img" style="display:none;width:100%;border-radius:14px;max-height:360px;object-fit:cover;">
         <video id="post-preview-video" style="display:none;width:100%;border-radius:14px;max-height:360px;" controls></video>
         <button onclick="supprimerMedia()" style="position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.7);border:none;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+        <button id="post-recadrer-btn" onclick="reouvrirCropPost()" style="display:none;position:absolute;top:8px;left:8px;padding:5px 10px;border-radius:20px;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">✂ Recadrer</button>
       </div>
     </div>
 
@@ -5211,6 +5253,47 @@ if (isPWA) {
   </div>
 </div>
 
+<!-- ═══ MODAL CROP POST ═══ -->
+<div id="post-crop-modal" style="display:none;position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,0.92);backdrop-filter:blur(10px);align-items:center;justify-content:center;flex-direction:column;">
+  <div style="width:100%;max-width:480px;padding:16px;box-sizing:border-box;">
+    <!-- Titre -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;">Recadrer la photo</div>
+      <button onclick="annulerCropPost()" style="background:rgba(255,255,255,0.08);border:1px solid var(--border);border-radius:50%;width:32px;height:32px;color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+    <!-- Sélecteur de ratio -->
+    <div style="display:flex;gap:8px;margin-bottom:14px;" id="post-crop-ratios">
+      <button class="post-crop-ratio-btn on" data-w="4" data-h="5" onclick="setCropRatio(4,5,this)">4:5</button>
+      <button class="post-crop-ratio-btn" data-w="16" data-h="9" onclick="setCropRatio(16,9,this)">16:9</button>
+      <button class="post-crop-ratio-btn" data-w="9" data-h="16" onclick="setCropRatio(9,16,this)">9:16</button>
+    </div>
+    <!-- Zone de crop -->
+    <div id="post-crop-container" style="position:relative;width:100%;background:#111;border-radius:14px;overflow:hidden;touch-action:none;user-select:none;cursor:grab;">
+      <canvas id="post-crop-canvas" style="display:block;width:100%;height:auto;"></canvas>
+      <!-- Overlay grille -->
+      <div id="post-crop-overlay" style="position:absolute;inset:0;pointer-events:none;">
+        <div style="position:absolute;left:33.33%;top:0;bottom:0;border-left:1px solid rgba(255,255,255,0.2);"></div>
+        <div style="position:absolute;left:66.66%;top:0;bottom:0;border-left:1px solid rgba(255,255,255,0.2);"></div>
+        <div style="position:absolute;top:33.33%;left:0;right:0;border-top:1px solid rgba(255,255,255,0.2);"></div>
+        <div style="position:absolute;top:66.66%;left:0;right:0;border-top:1px solid rgba(255,255,255,0.2);"></div>
+        <div style="position:absolute;inset:0;border:2px solid rgba(255,255,255,0.4);border-radius:14px;"></div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--muted2);text-align:center;margin-top:10px;">Glisse pour déplacer · Pince pour zoomer</div>
+    <!-- Slider zoom -->
+    <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted2)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+      <input id="post-crop-zoom" type="range" min="100" max="400" value="100" style="flex:1;accent-color:var(--green);" oninput="setCropZoom(this.value)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted2)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    <!-- Boutons -->
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button onclick="annulerCropPost()" style="flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;">Annuler</button>
+      <button onclick="validerCropPost()" style="flex:2;padding:12px;border-radius:12px;border:none;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer;">Valider le recadrage</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ OVERLAY DÉTAIL ÉVÉNEMENT ═══ -->
 <div id="event-detail-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div style="max-width:600px;margin:0 auto;padding:0 0 calc(120px + env(safe-area-inset-bottom));">
@@ -5295,6 +5378,27 @@ if (isPWA) {
       <button id="ap-btn-tel" onclick="appellerArtiste()" style="display:none;padding:14px 18px;border-radius:14px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;background:rgba(77,159,255,0.1);color:var(--blue);border:1px solid var(--blue);cursor:pointer;">
         📞
       </button>
+    </div>
+
+    <!-- À la une -->
+    <div id="ap-epingle-wrap" style="display:none;margin-top:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">⭐ À LA UNE</div>
+        <button id="ap-toggle-epingle" onclick="toggleVisibilitePortfolio()" style="display:none;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">👁 Visible</button>
+      </div>
+      <div id="ap-epingle-content"></div>
+    </div>
+
+    <!-- Portfolio -->
+    <div id="ap-portfolio-wrap" style="display:none;margin-top:20px;padding-bottom:120px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">🖼 PORTFOLIO <span id="ap-portfolio-count" style="font-size:11px;color:var(--muted2);font-weight:400;"></span></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="ap-toggle-portfolio" onclick="toggleVisibilitePortfolio()" style="display:none;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">👁 Visible</button>
+          <div id="ap-portfolio-drag-hint" style="display:none;font-size:11px;color:var(--muted2);">Glisse pour réordonner</div>
+        </div>
+      </div>
+      <div id="ap-portfolio-grid" class="portfolio-grid"></div>
     </div>
 
   </div>
@@ -7158,6 +7262,14 @@ function _renderPostCard(post) {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           Modifier
         </button>
+        <button onclick="epinglerSurProfil('${post.id}','post')" style="width:100%;padding:12px 16px;background:none;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='none'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Épingler sur mon profil
+        </button>
+        <button onclick="ajouterAuPortfolio('${post.id}','post')" style="width:100%;padding:12px 16px;background:none;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='none'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Ajouter au portfolio
+        </button>
         <button onclick="supprimerPost('${post.id}')" style="width:100%;padding:12px 16px;background:none;border:none;color:var(--red);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='rgba(255,77,109,0.08)'" onmouseout="this.style.background='none'">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
           Supprimer
@@ -7167,10 +7279,10 @@ function _renderPostCard(post) {
 
   return `<div class="feed-card" id="post-card-${post.id}">
     <div class="feed-card-header">
-      <div class="feed-card-avatar">${avatarInner}</div>
+      <div class="feed-card-avatar" style="cursor:pointer;" onclick="ouvrirProfilArtiste('${post.authorId}')">${avatarInner}</div>
       <div style="flex:1;min-width:0;">
-        <div class="feed-card-name">${post.authorName || 'Artiste'}</div>
-        <div class="feed-card-meta">${post.authorDiscipline || ''}${post.authorDiscipline && post.createdAt ? ' · ' : ''}${_tempsRelatif(post.createdAt)}</div>
+        <div class="feed-card-name" style="cursor:pointer;" onclick="ouvrirProfilArtiste('${post.authorId}')">${post.authorName || 'Artiste'}</div>
+        <div class="feed-card-meta">${post.authorUsername ? '<span style="color:var(--muted2);font-size:11px;">@' + post.authorUsername + '</span>' + (post.authorDiscipline || post.createdAt ? ' · ' : '') : ''}${post.authorDiscipline || ''}${post.authorDiscipline && post.createdAt ? ' · ' : ''}${_tempsRelatif(post.createdAt)}</div>
       </div>
       ${menuPost}
     </div>
@@ -7420,6 +7532,194 @@ async function envoyerCommentaire(postId) {
 window._postType = window._postType || 'text';
 window._postMediaFile = window._postMediaFile || null;
 
+// ── Crop post ────────────────────────────────────────────────────────────────
+(function() {
+  let _cropImg = new Image();
+  let _cropRatioW = 4, _cropRatioH = 5;
+  let _cropScale = 1, _cropMinScale = 1;
+  let _cropOffX = 0, _cropOffY = 0;
+  let _cropContainerW = 0, _cropContainerH = 0;
+  let _cropDragging = false;
+  let _cropLastX = 0, _cropLastY = 0;
+  let _cropLastDist = 0;
+  let _cropSourceUrl = null;
+
+  function getCanvas() { return document.getElementById('post-crop-canvas'); }
+  function getContainer() { return document.getElementById('post-crop-container'); }
+
+  function updateContainerSize() {
+    const c = getContainer();
+    if (!c) return;
+    _cropContainerW = c.clientWidth;
+    _cropContainerH = Math.round(_cropContainerW * _cropRatioH / _cropRatioW);
+    const canvas = getCanvas();
+    canvas.width = _cropContainerW * window.devicePixelRatio;
+    canvas.height = _cropContainerH * window.devicePixelRatio;
+    canvas.style.height = _cropContainerH + 'px';
+    c.style.height = _cropContainerH + 'px';
+  }
+
+  function clampOffset() {
+    const imgW = _cropImg.naturalWidth * _cropScale;
+    const imgH = _cropImg.naturalHeight * _cropScale;
+    const maxX = Math.max(0, (imgW - _cropContainerW) / 2);
+    const maxY = Math.max(0, (imgH - _cropContainerH) / 2);
+    _cropOffX = Math.max(-maxX, Math.min(maxX, _cropOffX));
+    _cropOffY = Math.max(-maxY, Math.min(maxY, _cropOffY));
+  }
+
+  function drawCrop() {
+    const canvas = getCanvas();
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio;
+    const cw = _cropContainerW * dpr;
+    const ch = _cropContainerH * dpr;
+    ctx.clearRect(0, 0, cw, ch);
+    const imgW = _cropImg.naturalWidth * _cropScale * dpr;
+    const imgH = _cropImg.naturalHeight * _cropScale * dpr;
+    const dx = (cw - imgW) / 2 + _cropOffX * dpr;
+    const dy = (ch - imgH) / 2 + _cropOffY * dpr;
+    ctx.drawImage(_cropImg, dx, dy, imgW, imgH);
+  }
+
+  window.ouvrirCropPost = function(srcUrl) {
+    _cropSourceUrl = srcUrl;
+    _cropRatioW = 4; _cropRatioH = 5;
+    _cropOffX = 0; _cropOffY = 0; _cropScale = 1;
+    document.querySelectorAll('.post-crop-ratio-btn').forEach((b,i) => b.classList.toggle('on', i===0));
+    const modal = document.getElementById('post-crop-modal');
+    modal.style.display = 'flex';
+    _cropImg = new Image();
+    _cropImg.onload = function() {
+      updateContainerSize();
+      // Calcul scale min pour remplir le cadre
+      const scaleW = _cropContainerW / _cropImg.naturalWidth;
+      const scaleH = _cropContainerH / _cropImg.naturalHeight;
+      _cropMinScale = Math.max(scaleW, scaleH);
+      _cropScale = _cropMinScale;
+      document.getElementById('post-crop-zoom').value = 100;
+      clampOffset();
+      drawCrop();
+    };
+    _cropImg.src = srcUrl;
+  };
+
+  window.reouvrirCropPost = function() {
+    if (_cropSourceUrl) ouvrirCropPost(_cropSourceUrl);
+  };
+
+  window.annulerCropPost = function() {
+    document.getElementById('post-crop-modal').style.display = 'none';
+    // Si aucun fichier déjà validé, reset
+    if (!window._postMediaFile) supprimerMedia();
+  };
+
+  window.setCropRatio = function(w, h, btn) {
+    _cropRatioW = w; _cropRatioH = h;
+    _cropOffX = 0; _cropOffY = 0;
+    document.querySelectorAll('.post-crop-ratio-btn').forEach(b => b.classList.remove('on'));
+    if (btn) btn.classList.add('on');
+    updateContainerSize();
+    const scaleW = _cropContainerW / _cropImg.naturalWidth;
+    const scaleH = _cropContainerH / _cropImg.naturalHeight;
+    _cropMinScale = Math.max(scaleW, scaleH);
+    if (_cropScale < _cropMinScale) _cropScale = _cropMinScale;
+    document.getElementById('post-crop-zoom').value = Math.round((_cropScale / _cropMinScale) * 100);
+    clampOffset();
+    drawCrop();
+  };
+
+  window.setCropZoom = function(val) {
+    _cropScale = _cropMinScale * (val / 100);
+    clampOffset();
+    drawCrop();
+  };
+
+  window.validerCropPost = function() {
+    // Exporter via canvas
+    const exportCanvas = document.createElement('canvas');
+    const dpr = window.devicePixelRatio;
+    exportCanvas.width = _cropContainerW * dpr;
+    exportCanvas.height = _cropContainerH * dpr;
+    const ctx = exportCanvas.getContext('2d');
+    const imgW = _cropImg.naturalWidth * _cropScale * dpr;
+    const imgH = _cropImg.naturalHeight * _cropScale * dpr;
+    const dx = (exportCanvas.width - imgW) / 2 + _cropOffX * dpr;
+    const dy = (exportCanvas.height - imgH) / 2 + _cropOffY * dpr;
+    ctx.drawImage(_cropImg, dx, dy, imgW, imgH);
+    exportCanvas.toBlob(function(blob) {
+      if (!blob) return;
+      window._postMediaFile = new File([blob], 'post-crop.jpg', { type: 'image/jpeg' });
+      // Afficher preview
+      const previewUrl = URL.createObjectURL(blob);
+      const preview = document.getElementById('post-media-preview');
+      const img = document.getElementById('post-preview-img');
+      const video = document.getElementById('post-preview-video');
+      preview.style.display = 'block';
+      img.style.display = 'block'; img.src = previewUrl;
+      video.style.display = 'none';
+      document.getElementById('post-media-drop').style.display = 'none';
+      const recadrerBtn = document.getElementById('post-recadrer-btn');
+      if (recadrerBtn) recadrerBtn.style.display = 'flex';
+      document.getElementById('post-crop-modal').style.display = 'none';
+    }, 'image/jpeg', 0.92);
+  };
+
+  // ── Drag desktop ──
+  function onMouseDown(e) {
+    _cropDragging = true; _cropLastX = e.clientX; _cropLastY = e.clientY;
+    getContainer().style.cursor = 'grabbing';
+  }
+  function onMouseMove(e) {
+    if (!_cropDragging) return;
+    _cropOffX += e.clientX - _cropLastX;
+    _cropOffY += e.clientY - _cropLastY;
+    _cropLastX = e.clientX; _cropLastY = e.clientY;
+    clampOffset(); drawCrop();
+  }
+  function onMouseUp() { _cropDragging = false; getContainer().style.cursor = 'grab'; }
+
+  // ── Touch mobile ──
+  function onTouchStart(e) {
+    if (e.touches.length === 1) {
+      _cropDragging = true; _cropLastX = e.touches[0].clientX; _cropLastY = e.touches[0].clientY;
+    } else if (e.touches.length === 2) {
+      _cropDragging = false;
+      _cropLastDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    }
+  }
+  function onTouchMove(e) {
+    e.preventDefault();
+    if (e.touches.length === 1 && _cropDragging) {
+      _cropOffX += e.touches[0].clientX - _cropLastX;
+      _cropOffY += e.touches[0].clientY - _cropLastY;
+      _cropLastX = e.touches[0].clientX; _cropLastY = e.touches[0].clientY;
+      clampOffset(); drawCrop();
+    } else if (e.touches.length === 2) {
+      const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      const delta = dist / _cropLastDist;
+      _cropLastDist = dist;
+      _cropScale = Math.max(_cropMinScale, Math.min(_cropMinScale * 4, _cropScale * delta));
+      const zoomPct = Math.round((_cropScale / _cropMinScale) * 100);
+      document.getElementById('post-crop-zoom').value = Math.min(400, zoomPct);
+      clampOffset(); drawCrop();
+    }
+  }
+  function onTouchEnd() { _cropDragging = false; }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const c = getContainer();
+    if (!c) return;
+    c.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+    c.addEventListener('touchstart', onTouchStart, { passive: false });
+    c.addEventListener('touchmove', onTouchMove, { passive: false });
+    c.addEventListener('touchend', onTouchEnd);
+  });
+})();
+
 window.setPostType = function(type, btn) {
   window._postType = type;
   document.querySelectorAll('.post-type-btn').forEach(b => b.classList.remove('active'));
@@ -7439,18 +7739,21 @@ window.setPostType = function(type, btn) {
 window.previewMedia = function(input) {
   const file = input.files[0];
   if (!file) return;
-  window._postMediaFile = file;
-  const preview = document.getElementById('post-media-preview');
-  const img = document.getElementById('post-preview-img');
-  const video = document.getElementById('post-preview-video');
   const url = URL.createObjectURL(file);
-  preview.style.display = 'block';
   if (file.type.startsWith('video/')) {
+    // Vidéo : pas de crop, affichage direct
+    window._postMediaFile = file;
+    const preview = document.getElementById('post-media-preview');
+    const img = document.getElementById('post-preview-img');
+    const video = document.getElementById('post-preview-video');
+    preview.style.display = 'block';
     img.style.display = 'none'; video.style.display = 'block'; video.src = url;
+    document.getElementById('post-media-drop').style.display = 'none';
   } else {
-    video.style.display = 'none'; img.style.display = 'block'; img.src = url;
+    // Photo : ouvrir le modal de crop
+    window._postCropSourceFile = file;
+    ouvrirCropPost(url);
   }
-  document.getElementById('post-media-drop').style.display = 'none';
 };
 
 window.supprimerMedia = function() {
@@ -7730,6 +8033,7 @@ window.publierPost = async function() {
     authorPhoto: p?.photo || null,
     authorDiscipline: p?.metiers?.[0] || p?.discipline || '',
     authorUnivers: p?.univers || [],
+    authorUsername: p?.username || null,
     type: _postType,
     content: content || '',
     likesCount: 0,
@@ -10435,6 +10739,8 @@ async function chargerMesEvents() {
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button onclick="voirInscrits('${ev.id}')" style="padding:7px 14px;border-radius:10px;background:rgba(77,159,255,0.1);border:1px solid var(--blue);color:var(--blue);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">👥 Inscrits</button>
             <button onclick="ouvrirCheckin('${ev.id}')" style="padding:7px 14px;border-radius:10px;background:rgba(0,245,155,0.1);border:1px solid var(--green);color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">📱 Check-in</button>
+            <button onclick="epinglerSurProfil('${ev.id}','evenement')" style="padding:7px 14px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">⭐ Épingler</button>
+            <button onclick="ajouterAuPortfolio('${ev.id}','evenement')" style="padding:7px 14px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">🖼 Portfolio</button>
             <button onclick="modifierEvent('${ev.id}')" style="padding:7px 14px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">Modifier</button>
             <button onclick="supprimerEvent('${ev.id}')" style="padding:7px 14px;border-radius:10px;background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.3);color:var(--red);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">🗑️</button>
           </div>
@@ -12691,8 +12997,325 @@ window.ouvrirProfilArtiste = async function(uid) {
       btnTel.style.display = 'none';
     }
 
+    // ── Portfolio & Épingle ──
+    if (window._afficherPortfolioProfil) {
+      window._afficherPortfolioProfil(uid, estMoi, d);
+    }
+
   } catch(e) { console.error('Erreur profil artiste:', e); }
 }
+
+// ══════════════════════════════════════════════════════════════
+// PORTFOLIO & ÉPINGLE PROFIL
+// ══════════════════════════════════════════════════════════════
+
+window.epinglerSurProfil = async function(id, type) {
+  if (!window._currentUid || !window._db) return;
+  // Fermer tous les menus ouverts
+  document.querySelectorAll('[id^="post-menu-"]').forEach(m => m.style.display = 'none');
+  try {
+    const ref = window._doc(window._db, 'danseurs', window._currentUid);
+    const snap = await window._getDoc(ref);
+    const data = snap.data() || {};
+    const epingle = data.epingle_profil || null;
+    // Toggle : si déjà épinglé avec le même, on désépingle
+    if (epingle && epingle.id === id && epingle.type === type) {
+      await window._updateDoc(ref, { epingle_profil: null });
+      _showToast('Épingle retirée du profil');
+    } else {
+      await window._updateDoc(ref, { epingle_profil: { id, type } });
+      _showToast('⭐ Épinglé sur ton profil !');
+    }
+  } catch(e) { console.error(e); _showToast('Erreur lors de l\'épingle'); }
+};
+
+window.ajouterAuPortfolio = async function(id, type) {
+  if (!window._currentUid || !window._db) return;
+  document.querySelectorAll('[id^="post-menu-"]').forEach(m => m.style.display = 'none');
+  try {
+    const ref = window._doc(window._db, 'danseurs', window._currentUid);
+    const snap = await window._getDoc(ref);
+    const data = snap.data() || {};
+    let portfolio = data.portfolio || [];
+    const existingIdx = portfolio.findIndex(p => p.id === id && p.type === type);
+    if (existingIdx !== -1) {
+      // Déjà dans le portfolio : retirer
+      portfolio.splice(existingIdx, 1);
+      await window._updateDoc(ref, { portfolio });
+      _showToast('Retiré du portfolio');
+    } else {
+      if (portfolio.length >= 15) {
+        _showToast('Portfolio plein (15 max). Retire un élément d\'abord.');
+        return;
+      }
+      portfolio.push({ id, type, ordre: portfolio.length });
+      await window._updateDoc(ref, { portfolio });
+      _showToast('🖼 Ajouté au portfolio !');
+    }
+  } catch(e) { console.error(e); _showToast('Erreur portfolio'); }
+};
+
+window.toggleVisibilitePortfolio = async function() {
+  if (!window._currentUid || !window._db) return;
+  try {
+    const ref = window._doc(window._db, 'danseurs', window._currentUid);
+    const snap = await window._getDoc(ref);
+    const data = snap.data() || {};
+    const visible = data.portfolioVisible !== false; // défaut visible
+    await window._updateDoc(ref, { portfolioVisible: !visible });
+    _actualiserBoutonVisibilite(!visible);
+    _showToast(visible ? 'Portfolio masqué aux visiteurs' : 'Portfolio visible par tous');
+  } catch(e) { console.error(e); }
+};
+
+function _actualiserBoutonVisibilite(visible) {
+  const btns = [
+    document.getElementById('ap-toggle-epingle'),
+    document.getElementById('ap-toggle-portfolio')
+  ];
+  btns.forEach(btn => {
+    if (!btn) return;
+    btn.textContent = visible ? '👁 Visible' : '🚫 Masqué';
+    btn.style.borderColor = visible ? 'rgba(0,245,155,0.3)' : 'var(--border)';
+    btn.style.color = visible ? 'var(--green)' : 'var(--muted2)';
+  });
+}
+
+// Charger et afficher le portfolio sur le profil ouvert
+window._afficherPortfolioProfil = async function(uid, estMoi, d) {
+  const epingleWrap = document.getElementById('ap-epingle-wrap');
+  const portfolioWrap = document.getElementById('ap-portfolio-wrap');
+  const epingleContent = document.getElementById('ap-epingle-content');
+  const portfolioGrid = document.getElementById('ap-portfolio-grid');
+  const portfolioCount = document.getElementById('ap-portfolio-count');
+  const toggleEpingle = document.getElementById('ap-toggle-epingle');
+  const togglePortfolio = document.getElementById('ap-toggle-portfolio');
+  const dragHint = document.getElementById('ap-portfolio-drag-hint');
+
+  const epingle = d.epingle_profil || null;
+  const portfolio = (d.portfolio || []).sort((a,b) => (a.ordre||0) - (b.ordre||0));
+  const portfolioVisible = d.portfolioVisible !== false;
+
+  // Vérifier visibilité
+  if (!estMoi && !portfolioVisible) {
+    epingleWrap.style.display = 'none';
+    portfolioWrap.style.display = 'none';
+    return;
+  }
+
+  // Boutons toggle (seulement pour soi)
+  if (toggleEpingle) toggleEpingle.style.display = estMoi ? 'block' : 'none';
+  if (togglePortfolio) togglePortfolio.style.display = estMoi ? 'block' : 'none';
+  if (dragHint) dragHint.style.display = estMoi && portfolio.length > 1 ? 'block' : 'none';
+  _actualiserBoutonVisibilite(portfolioVisible);
+
+  // ── À la une ──
+  if (epingle) {
+    epingleWrap.style.display = 'block';
+    epingleContent.innerHTML = '<div style="color:var(--muted);font-size:13px;">Chargement...</div>';
+    try {
+      let epHtml = '';
+      if (epingle.type === 'post') {
+        const snap = await window._getDoc(window._doc(window._db, 'posts', epingle.id));
+        if (snap.exists()) {
+          const p = { id: snap.id, ...snap.data() };
+          epHtml = _renderEpinglePost(p);
+        }
+      } else if (epingle.type === 'evenement') {
+        const snap = await window._getDoc(window._doc(window._db, 'evenements', epingle.id));
+        if (snap.exists()) {
+          const ev = { id: snap.id, ...snap.data() };
+          epHtml = _renderEpingleEvent(ev);
+        }
+      }
+      epingleContent.innerHTML = epHtml || '<div style="color:var(--muted);font-size:13px;">Élément introuvable</div>';
+    } catch(e) { epingleContent.innerHTML = ''; epingleWrap.style.display = 'none'; }
+  } else {
+    if (estMoi) {
+      epingleWrap.style.display = 'block';
+      epingleContent.innerHTML = '<div style="padding:16px;border:1.5px dashed var(--border);border-radius:14px;text-align:center;color:var(--muted);font-size:13px;">Aucun élément épinglé.<br><span style="font-size:12px;">Utilise le menu ··· d\'un post ou événement</span></div>';
+    } else {
+      epingleWrap.style.display = 'none';
+    }
+  }
+
+  // ── Portfolio ──
+  if (portfolio.length > 0 || estMoi) {
+    portfolioWrap.style.display = 'block';
+    if (portfolioCount) portfolioCount.textContent = portfolio.length > 0 ? `(${portfolio.length}/15)` : '';
+    if (portfolio.length === 0) {
+      portfolioGrid.innerHTML = '<div style="grid-column:1/-1;padding:20px;border:1.5px dashed var(--border);border-radius:14px;text-align:center;color:var(--muted);font-size:13px;">Aucun élément dans le portfolio.<br><span style="font-size:12px;">Utilise le menu ··· d\'un post ou événement</span></div>';
+    } else {
+      // Charger les thumbnails
+      const thumbsHtml = await Promise.all(portfolio.map(async (item, idx) => {
+        try {
+          if (item.type === 'post') {
+            const snap = await window._getDoc(window._doc(window._db, 'posts', item.id));
+            if (!snap.exists()) return '';
+            const p = snap.data();
+            return _renderPortfolioThumb(item.id, item.type, p.mediaUrl || null, p.type, p.content, idx, estMoi);
+          } else if (item.type === 'evenement') {
+            const snap = await window._getDoc(window._doc(window._db, 'evenements', item.id));
+            if (!snap.exists()) return '';
+            const ev = snap.data();
+            return _renderPortfolioThumb(item.id, item.type, ev.photoUrl || null, 'evenement', ev.titre, idx, estMoi);
+          }
+        } catch(e) { return ''; }
+        return '';
+      }));
+      portfolioGrid.innerHTML = thumbsHtml.join('');
+      // Drag & drop si c'est moi
+      if (estMoi) _initPortfolioDragDrop(uid);
+    }
+  } else {
+    portfolioWrap.style.display = 'none';
+  }
+};
+
+function _renderEpinglePost(p) {
+  const TYPE_LABELS = { photo:'📷 PHOTO', video:'🎬 VIDÉO', text:'📝 TEXTE', link:'🔗 LIEN', event_share:'🎉 ÉVÉNEMENT' };
+  let mediaHtml = '';
+  if (p.type === 'photo' && p.mediaUrl) {
+    mediaHtml = `<img src="${p.mediaUrl}" style="width:100%;border-radius:10px;max-height:220px;object-fit:cover;margin-bottom:10px;">`;
+  } else if (p.type === 'video' && p.mediaUrl) {
+    mediaHtml = `<video src="${p.mediaUrl}" controls style="width:100%;border-radius:10px;margin-bottom:10px;max-height:220px;"></video>`;
+  }
+  return `<div class="ap-epingle-card" onclick="void(0)">
+    <div style="font-size:10px;font-weight:800;letter-spacing:1px;color:var(--green);margin-bottom:8px;">${TYPE_LABELS[p.type] || 'POST'}</div>
+    ${mediaHtml}
+    ${p.content ? `<div style="font-size:14px;line-height:1.5;color:var(--text);">${p.content.replace(/</g,'&lt;').slice(0,200)}${p.content.length>200?'...':''}</div>` : ''}
+  </div>`;
+}
+
+function _renderEpingleEvent(ev) {
+  const bg = ev.photoUrl ? `url('${ev.photoUrl}') center/cover no-repeat` : 'linear-gradient(135deg,#1a0526,#0d2b1e)';
+  return `<div class="ap-epingle-card" onclick="ouvrirEvent('${ev.id}')" style="padding:0;overflow:hidden;">
+    <div style="height:160px;background:${bg};position:relative;border-radius:18px 18px 0 0;">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.7));border-radius:18px 18px 0 0;"></div>
+      <div style="position:absolute;bottom:12px;left:14px;right:14px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#fff;">${ev.titre || 'Événement'}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;">🎉 ÉVÉNEMENT · ${ev.ville || ''}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function _renderPortfolioThumb(id, type, imgUrl, subType, label, idx, draggable) {
+  const typeLabel = type === 'evenement' ? '🎉' : (subType === 'video' ? '🎬' : subType === 'photo' ? '' : '📝');
+  const innerHtml = imgUrl
+    ? `<img src="${imgUrl}" alt="" loading="lazy">`
+    : `<div class="portfolio-thumb-placeholder">${typeLabel || '📝'}</div>`;
+  const drag = draggable ? `draggable="true" data-pid="${id}" data-ptype="${type}" data-idx="${idx}"` : '';
+  const clickFn = type === 'evenement'
+    ? `ouvrirEvent('${id}')`
+    : `_ouvrirPostDetail('${id}')`;
+  return `<div class="portfolio-thumb" ${drag} onclick="${clickFn}">
+    ${innerHtml}
+    ${typeLabel ? `<span class="portfolio-type-badge">${typeLabel}</span>` : ''}
+  </div>`;
+}
+
+function _initPortfolioDragDrop(uid) {
+  const grid = document.getElementById('ap-portfolio-grid');
+  if (!grid) return;
+  let dragSrc = null;
+
+  grid.querySelectorAll('.portfolio-thumb[draggable]').forEach(thumb => {
+    thumb.addEventListener('dragstart', function(e) {
+      dragSrc = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    thumb.addEventListener('dragend', function() {
+      this.classList.remove('dragging');
+      grid.querySelectorAll('.portfolio-thumb').forEach(t => t.classList.remove('drag-over'));
+    });
+    thumb.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      grid.querySelectorAll('.portfolio-thumb').forEach(t => t.classList.remove('drag-over'));
+      if (this !== dragSrc) this.classList.add('drag-over');
+    });
+    thumb.addEventListener('drop', async function(e) {
+      e.preventDefault();
+      if (this === dragSrc) return;
+      this.classList.remove('drag-over');
+      // Réordonner dans le DOM
+      const thumbs = [...grid.querySelectorAll('.portfolio-thumb')];
+      const srcIdx = thumbs.indexOf(dragSrc);
+      const dstIdx = thumbs.indexOf(this);
+      if (srcIdx < dstIdx) grid.insertBefore(dragSrc, this.nextSibling);
+      else grid.insertBefore(dragSrc, this);
+      // Sauvegarder le nouvel ordre en Firestore
+      const newOrder = [...grid.querySelectorAll('.portfolio-thumb')].map((t, i) => ({
+        id: t.dataset.pid,
+        type: t.dataset.ptype,
+        ordre: i
+      }));
+      try {
+        await window._updateDoc(window._doc(window._db, 'danseurs', uid), { portfolio: newOrder });
+      } catch(e) { console.error('Erreur sauvegarde ordre portfolio', e); }
+    });
+  });
+}
+
+// Ouvrir un post en détail depuis le portfolio
+window._ouvrirPostDetail = async function(postId) {
+  try {
+    const snap = await window._getDoc(window._doc(window._db, 'posts', postId));
+    if (!snap.exists()) return;
+    const p = { id: snap.id, ...snap.data() };
+    // Créer un overlay simple
+    let overlay = document.getElementById('post-detail-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'post-detail-overlay';
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;align-items:flex-start;justify-content:center;padding:20px 0 100px;';
+      overlay.onclick = function(e) { if (e.target === overlay) overlay.style.display = 'none'; };
+      document.body.appendChild(overlay);
+    }
+    let mediaHtml = '';
+    if (p.type === 'photo' && p.mediaUrl) {
+      mediaHtml = `<img src="${p.mediaUrl}" style="width:100%;border-radius:14px;max-height:400px;object-fit:cover;margin-bottom:14px;">`;
+    } else if (p.type === 'video' && p.mediaUrl) {
+      mediaHtml = `<video src="${p.mediaUrl}" controls style="width:100%;border-radius:14px;margin-bottom:14px;max-height:400px;"></video>`;
+    }
+    overlay.innerHTML = `<div style="width:100%;max-width:520px;padding:0 16px;">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+        <button onclick="document.getElementById('post-detail-overlay').style.display='none'" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid var(--border);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">✕</button>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden;flex-shrink:0;">
+            ${p.authorPhoto ? `<img src="${p.authorPhoto}" style="width:100%;height:100%;object-fit:cover;">` : (p.authorEmoji || '🎭')}
+          </div>
+          <div>
+            <div style="font-weight:700;font-size:14px;">${p.authorName || 'Artiste'}</div>
+            <div style="font-size:12px;color:var(--muted2);">${p.authorUsername ? '@'+p.authorUsername+' · ' : ''}${_tempsRelatif(p.createdAt)}</div>
+          </div>
+        </div>
+        ${mediaHtml}
+        ${p.content ? `<div style="font-size:15px;line-height:1.6;color:var(--text);">${p.content.replace(/</g,'&lt;')}</div>` : ''}
+      </div>
+    </div>`;
+    overlay.style.display = 'flex';
+  } catch(e) { console.error(e); }
+};
+
+function _showToast(msg) {
+  let t = document.getElementById('hako-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'hako-toast';
+    t.style.cssText = 'position:fixed;bottom:calc(80px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:rgba(30,30,40,0.95);border:1px solid var(--border);backdrop-filter:blur(12px);color:var(--text);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;font-family:"DM Sans",sans-serif;z-index:9999;pointer-events:none;transition:opacity 0.3s;white-space:nowrap;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+}
+window._showToast = _showToast;
 
 window.fermerProfilArtiste = function() {
   document.getElementById('artiste-overlay').style.display = 'none';
