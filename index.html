@@ -13227,16 +13227,10 @@ function _updateProfilPublicHeader() {
 
 window.showProfilPublic = async function(uid) {
   // Bloquer si non connecté
-  if (!window._currentUid) {
-    // Afficher modal d'invitation
-    const modal = document.getElementById('hako-join-modal');
-    if (modal) modal.style.display = 'flex';
-    return;
-  }
-  // Fermer le drawer réseau si ouvert
-  if (window.fermerDrawerReseau) fermerDrawerReseau();
+  // Fermer le drawer réseau si ouvert (seulement si connecté)
+  if (window._currentUid && window.fermerDrawerReseau) fermerDrawerReseau();
   artisteCourant = uid;
-  cacherBarreReseau();
+  if (window._currentUid) cacherBarreReseau();
   showPage('profil-public');
   window.scrollTo(0, 0);
   // Routing URL
@@ -13545,7 +13539,14 @@ window.showProfilPublic = async function(uid) {
     // ── Bouton suivre ──
     const btnSuivre = document.getElementById('ap-btn-suivre');
     btnSuivre.style.display = estMoi ? 'none' : 'flex';
-    if (estSuivi) {
+    // Si non connecté, le bouton redirige vers l'inscription
+    if (!window._currentUid) {
+      btnSuivre.textContent = '+ Suivre';
+      btnSuivre.setAttribute('onclick', "showPage('auth')");
+      btnSuivre.style.background = 'transparent';
+      btnSuivre.style.borderColor = 'var(--border)';
+      btnSuivre.style.color = 'var(--muted2)';
+    } else if (estSuivi) {
       btnSuivre.textContent = '✓ Suivi';
       btnSuivre.style.background = 'rgba(0,245,155,0.1)';
       btnSuivre.style.borderColor = 'var(--green)';
