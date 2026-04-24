@@ -6838,7 +6838,9 @@ function afficherDashboard(d) {
   };
   const _currentPath = window.location.pathname;
   const _targetPage = _reverseRouteMap[_currentPath];
-  const _isDefaultRoute = !_targetPage || _targetPage === 'home' || _targetPage === 'auth';
+  // Ne pas rediriger vers le feed si l'URL est une route dynamique (profil, event, @username)
+  const _isDynamicRoute = /^\/profil\/|^\/event\/|^\/@/.test(_currentPath);
+  const _isDefaultRoute = !_isDynamicRoute && (!_targetPage || _targetPage === 'home' || _targetPage === 'auth');
   if (_isDefaultRoute) {
     history.replaceState({}, '', '/');
     showPage('feed');
