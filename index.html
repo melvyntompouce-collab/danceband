@@ -6571,25 +6571,43 @@ function _initRouter() {
   const usernameMatch = pathname.match(/^\/@(.+)$/);
   const eventMatch = pathname.match(/^\/event\/(.+)$/);
   if (usernameMatch) {
-    // Ouvrir profil par @username (page publique sans compte)
-    setTimeout(() => _ouvrirProfilParUsername(usernameMatch[1]), 500);
+    // Ouvrir profil par @username
+    const _uname = usernameMatch[1];
+    function _routeUsername() {
+      if (!window._db) { setTimeout(_routeUsername, 300); return; }
+      _ouvrirProfilParUsername(_uname);
+    }
+    setTimeout(_routeUsername, 400);
   } else if (profileMatch) {
-    // Ouvrir le profil d'un artiste par uid
-    setTimeout(() => {
-      if (window.showProfilPublic) showProfilPublic(profileMatch[1]);
-      else showPage('network', true);
-    }, 800);
+    // Ouvrir le profil par uid
+    const _uid = profileMatch[1];
+    function _routeProfil() {
+      if (!window._db || !window.showProfilPublic) { setTimeout(_routeProfil, 300); return; }
+      showProfilPublic(_uid);
+    }
+    setTimeout(_routeProfil, 400);
   } else if (eventMatch) {
-    // Ouvrir un événement (page publique si non connecté, overlay si connecté)
-    setTimeout(() => {
+    // Ouvrir un événement : charger depuis Firestore et ouvrir
+    const _evId = eventMatch[1];
+    async function _routeEvent() {
+      if (!window._db) { setTimeout(_routeEvent, 300); return; }
       if (!window._currentUid) {
-        ouvrirShareEvent(eventMatch[1]);
-      } else if (window.ouvrirEvent) {
-        ouvrirEvent(eventMatch[1]);
-      } else {
-        showPage('agenda', true);
+        ouvrirShareEvent(_evId);
+        return;
       }
-    }, 800);
+      // Connecté : charger l'event dans tousLesEvents si pas encore là
+      if (!tousLesEvents.find(e => e.id === _evId)) {
+        try {
+          const snap = await window._getDoc(window._doc(window._db, 'evenements', _evId));
+          if (snap.exists()) tousLesEvents.push({ id: snap.id, ...snap.data() });
+        } catch(e) {}
+      }
+      showPage('agenda', true);
+      setTimeout(() => {
+        if (window.ouvrirEvent) ouvrirEvent(_evId);
+      }, 300);
+    }
+    setTimeout(_routeEvent, 400);
   } else {
     const page = _reverseRouteMap[pathname];
     if (page && page !== 'home' && page !== 'auth') {
@@ -13026,7 +13044,7 @@ window.partagerProfil = async function(uid, username) {
   const nom = document.getElementById('ap-name')?.textContent || 'un artiste';
   if (navigator.share) {
     try {
-      await navigator.share({ title: nom + ' sur HAKO', text: 'Découvre le profil de ' + nom + ' sur HAKO !', url });
+      await navigator.share({ title: nom + ' sur HAKO', url });
     } catch(e) { if (e.name !== 'AbortError') _copierLien(url); }
   } else { _copierLien(url); }
 };
@@ -13036,7 +13054,7 @@ window.partagerEvent = async function(eventId, titre) {
   const url = 'https://hakosphere.fr/event/' + eventId;
   if (navigator.share) {
     try {
-      await navigator.share({ title: titre || 'Événement HAKO', text: 'Découvre cet événement sur HAKO !', url });
+      await navigator.share({ title: titre || 'Événement HAKO', url });
     } catch(e) { if (e.name !== 'AbortError') _copierLien(url); }
   } else { _copierLien(url); }
 };
@@ -16272,17 +16290,17 @@ onAuthStateChanged(auth, async (user) => {
     const _profilMatch   = _pathname.match(/^\/profil\/(.+)$/);
 
     if (_usernameMatch) {
-      // Profil par @username : accessible sans compte
       window.showPage('home');
-      setTimeout(() => _ouvrirProfilParUsername(_usernameMatch[1]), 600);
+      const _un = _usernameMatch[1];
+      (function _retry(){ if(!window._db){setTimeout(_retry,300);return;} _ouvrirProfilParUsername(_un); })();
     } else if (_eventMatch) {
-      // Fiche événement : accessible sans compte
       window.showPage('home');
-      setTimeout(() => ouvrirShareEvent(_eventMatch[1]), 600);
+      const _eid = _eventMatch[1];
+      (function _retry(){ if(!window._db){setTimeout(_retry,300);return;} ouvrirShareEvent(_eid); })();
     } else if (_profilMatch) {
-      // Profil par uid : accessible sans compte
       window.showPage('home');
-      setTimeout(() => { if (window.showProfilPublic) showProfilPublic(_profilMatch[1]); }, 600);
+      const _pid = _profilMatch[1];
+      (function _retry(){ if(!window._db||!window.showProfilPublic){setTimeout(_retry,300);return;} showProfilPublic(_pid); })();
     } else {
       // Toute autre page protégée : mémoriser et rediriger vers home
       if (_pathname !== '/' && _pathname !== '/connexion') {
