@@ -11113,19 +11113,23 @@ async function chargerMesEvents() {
       window._where('organisateurUid', '==', window._currentUid)
     ));
 
-    let totalInscrits = 0, totalRevenus = 0;
+    const artistesUniques = new Set();
+    let totalRevenus = 0;
     const events = [];
     snap.forEach(d => {
       const ev = { id: d.id, ...d.data() };
       events.push(ev);
-      totalInscrits += ev.inscrits || 0;
-      const prixRef = ev.tarifs && ev.tarifs.length > 0 ? (ev.tarifs[0].prix || 0) : (ev.prix || 0);
-      totalRevenus  += (ev.inscrits || 0) * prixRef;
+      const checkins = ev.checkins || [];
+      checkins.forEach(c => { const uid = c.uid || c; if (uid) artistesUniques.add(uid); });
+      if (ev.stripeAccountId) {
+        const prixRef = ev.tarifs && ev.tarifs.length > 0 ? (ev.tarifs[0].prix || 0) : (ev.prix || 0);
+        totalRevenus += checkins.length * prixRef;
+      }
     });
 
-    document.getElementById('orga-stat-events').textContent   = events.length;
-    document.getElementById('orga-stat-inscrits').textContent  = totalInscrits;
-    document.getElementById('orga-stat-revenus').textContent   = totalRevenus + '€';
+    document.getElementById('orga-stat-events').textContent    = events.length;
+    document.getElementById('orga-stat-inscrits').textContent  = artistesUniques.size;
+    document.getElementById('orga-stat-revenus').textContent   = totalRevenus > 0 ? '~' + totalRevenus + '€' : '0€';
 
     const list = document.getElementById('orga-events-list');
     if (events.length === 0) {
@@ -11153,8 +11157,7 @@ async function chargerMesEvents() {
               <div style="font-size:12px;color:var(--muted2);margin-top:2px;">📅 ${date} · 📍 ${ev.ville || ''}</div>
             </div>
             <div style="text-align:right;">
-              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:${cfg.couleur};">${ev.inscrits || 0}</div>
-              <div style="font-size:10px;color:var(--muted);">inscrits</div>
+              ${ev.stripeAccountId ? `<div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:${cfg.couleur};">${(ev.checkins||[]).length}</div><div style="font-size:10px;color:var(--muted);">présents</div>` : ''}
             </div>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
