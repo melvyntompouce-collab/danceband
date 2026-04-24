@@ -3074,7 +3074,7 @@ if (isPWA) {
           <button class="mhn-card" onclick="showPage('ranking')">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
             <div class="mhn-card-name">Classement</div>
-            <div class="mhn-card-desc">XP, niveaux & badges</div>
+            <div class="mhn-card-desc" style="display:none;"></div>
           </button>
         </div>
 
@@ -5336,7 +5336,7 @@ if (isPWA) {
           <div id="ap-name" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-0.5px;line-height:1;"></div>
           <div id="ap-handle" style="font-size:13px;color:var(--muted2);margin-top:4px;"></div>
           <div id="ap-zone" style="font-size:12px;color:var(--muted);margin-top:4px;">📍</div>
-          <div id="ap-niveau-badge" style="margin-top:6px;"></div>
+
           <div id="ap-admin-badge" style="display:none;margin-top:8px;">
             <span style="background:rgba(255,77,109,0.15);border:1px solid rgba(255,77,109,0.45);color:#ff4d6d;font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:2px;padding:3px 10px;border-radius:6px;text-transform:uppercase;">⚡ Admin HAKO</span>
           </div>
@@ -5346,16 +5346,12 @@ if (isPWA) {
       <!-- Stats -->
       <div style="display:flex;gap:0;margin-top:20px;background:rgba(255,255,255,0.04);border-radius:14px;overflow:hidden;">
         <div style="flex:1;padding:12px;text-align:center;border-right:1px solid var(--border);">
-          <div id="ap-xp" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">XP</div>
-        </div>
-        <div style="flex:1;padding:12px;text-align:center;border-right:1px solid var(--border);">
           <div id="ap-events" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
           <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Events</div>
         </div>
         <div style="flex:1;padding:12px;text-align:center;">
-          <div id="ap-niveau" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">1</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Niveau</div>
+          <div id="ap-abonnes" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Abonnés</div>
         </div>
       </div>
     </div>
@@ -6042,24 +6038,16 @@ if (isPWA) {
           <div id="ph-name-display" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-0.5px;line-height:1;"></div>
           <div id="ph-handle-display" style="font-size:13px;color:var(--muted2);margin-top:4px;"></div>
           <div id="ph-zone-display" style="font-size:12px;color:var(--muted);margin-top:4px;">📍</div>
-          <div id="ph-niveau-badge" style="margin-top:6px;"></div>
+
           <div id="ph-metiers-badges" style="display:none;flex-wrap:wrap;gap:5px;margin-top:6px;"></div>
         </div>
       </div>
 
-      <!-- Stats XP/Events/Niveau -->
+      <!-- Stats Events/Classement -->
       <div style="display:flex;gap:0;margin-top:20px;background:rgba(255,255,255,0.04);border-radius:14px;overflow:hidden;">
-        <div style="flex:1;padding:12px;text-align:center;border-right:1px solid var(--border);">
-          <div id="ph-stat-xp" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">XP</div>
-        </div>
         <div style="flex:1;padding:12px;text-align:center;border-right:1px solid var(--border);">
           <div id="ph-stat-events" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
           <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Events</div>
-        </div>
-        <div style="flex:1;padding:12px;text-align:center;border-right:1px solid var(--border);">
-          <div id="ph-stat-niveau" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">1</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Niveau</div>
         </div>
         <div onclick="showPage('ranking')" style="flex:1;padding:12px;text-align:center;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background=''">
           <div id="ph-stat-rank" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">—</div>
@@ -6285,7 +6273,7 @@ if (isPWA) {
       <div class="rk-info">
         <div class="rk-name" id="rk-name">—</div>
         <div class="rk-sub" id="rk-sub">Connecte-toi pour voir ton classement</div>
-        <div class="xp-wrap xp-wrap-clickable" onclick="ouvrirHistoriqueXP()" title="Voir l'historique XP">
+        <div class="xp-wrap xp-wrap-clickable" style="display:none;" onclick="ouvrirHistoriqueXP()" title="Voir l'historique XP">
           <div class="xp-label">
             <span id="rk-xp-current">0 XP</span>
             <span id="rk-xp-next">1 000 XP → Niveau 2</span>
@@ -6298,24 +6286,7 @@ if (isPWA) {
       </div>
     </div>
 
-    <!-- NIVEAUX SCROLLABLE -->
-    <div class="niveaux-scroll-wrap" id="niveaux-scroll-section">
-      <div class="niveaux-scroll-label">Niveaux & récompenses</div>
-      <div class="niveaux-scroll" id="niveaux-scroll"></div>
-    </div>
-
-    <!-- COMMENT GAGNER DE L'XP -->
-    <div class="xp-sources-wrap">
-      <div class="xp-sources-title">Comment gagner de l'XP</div>
-      <div class="xp-src-row"><div class="xp-src-ico">🔥</div><div class="xp-src-info"><div class="xp-src-label">Connexion quotidienne</div><div class="xp-src-desc">Une fois par jour</div></div><div class="xp-src-val">+10</div></div>
-      <div class="xp-src-row"><div class="xp-src-ico">🎟️</div><div class="xp-src-info"><div class="xp-src-label">Inscription à un événement</div><div class="xp-src-desc">À chaque participation</div></div><div class="xp-src-val">+20</div></div>
-      <div class="xp-src-row"><div class="xp-src-ico">📸</div><div class="xp-src-info"><div class="xp-src-label">Photo de profil ajoutée</div><div class="xp-src-desc">Une seule fois</div></div><div class="xp-src-val">+20</div></div>
-      <div class="xp-src-row"><div class="xp-src-ico">✅</div><div class="xp-src-info"><div class="xp-src-label">Profil complété</div><div class="xp-src-desc">Photo + identité artistique + ville</div></div><div class="xp-src-val">+50</div></div>
-      <div class="xp-src-row"><div class="xp-src-ico">🔗</div><div class="xp-src-info"><div class="xp-src-label">Réseaux sociaux liés</div><div class="xp-src-desc">Instagram ou TikTok</div></div><div class="xp-src-val">+15</div></div>
-      <div class="xp-src-row"><div class="xp-src-ico">🤝</div><div class="xp-src-info"><div class="xp-src-label">Échange validé</div><div class="xp-src-desc">Via le bracelet Kima</div></div><div class="xp-src-val">+30</div></div>
-      <div class="xp-src-row"><div class="xp-src-ico">🎨</div><div class="xp-src-info"><div class="xp-src-label">Identité artistique définie</div><div class="xp-src-desc">Style de danse ou métier — une seule fois</div></div><div class="xp-src-val">+15</div></div>
-      <div class="xp-src-row"><div class="xp-src-ico">📨</div><div class="xp-src-info"><div class="xp-src-label">Invitation acceptée</div><div class="xp-src-desc">Par un ami</div></div><div class="xp-src-val">+25</div></div>
-    </div>
+    <!-- Niveaux & XP masqués temporairement -->
 
     <!-- MES BADGES -->
     <div class="badges-section">
@@ -13035,24 +13006,7 @@ window.showProfilPublic = async function(uid) {
     }
     document.getElementById('ap-name').textContent = nomAffiche.toUpperCase();
 
-    // ── Badge niveau sur le profil artiste ──
-    const niveauAp = calculerNiveau(d.xp || 0);
-    const apNivBadgeEl = document.getElementById('ap-niveau-badge');
-    if (apNivBadgeEl) {
-      if (niveauAp >= 7) apNivBadgeEl.innerHTML = `<span class="niv-badge-legende">★ LÉGENDE</span>`;
-      else if (niveauAp >= 6) apNivBadgeEl.innerHTML = `<span class="niv-badge-legende">◆ DIAMANT</span>`;
-      else if (niveauAp >= 5) apNivBadgeEl.innerHTML = `<span class="niv-badge-or">◆ PLATINE</span>`;
-      else if (niveauAp >= 3) apNivBadgeEl.innerHTML = `<span class="niv-badge-argent">● ${NIVEAUX_LABELS[niveauAp-1].toUpperCase()}</span>`;
-      else apNivBadgeEl.innerHTML = '';
-    }
-
-    // ── Cadre avatar Diamant / Légende sur le profil artiste ──
-    const apAvatarEl = document.getElementById('ap-avatar');
-    if (apAvatarEl) {
-      apAvatarEl.classList.remove('avatar-diamant','avatar-legende');
-      if (niveauAp >= 7) apAvatarEl.classList.add('avatar-legende');
-      else if (niveauAp >= 6) apAvatarEl.classList.add('avatar-diamant');
-    }
+    // XP/Niveau masqués
 
     // ── Handle (@username) + Blase ──
     const handleEl = document.getElementById('ap-handle');
@@ -13083,10 +13037,11 @@ window.showProfilPublic = async function(uid) {
       compatEl.innerHTML = '';
     }
 
-    // ── Stats (toujours publiques) ──
-    document.getElementById('ap-xp').textContent = (d.xp || 0).toLocaleString();
-    document.getElementById('ap-events').textContent = d.evenements || 0;
-    document.getElementById('ap-niveau').textContent = calculerNiveau(d.xp || 0);
+    // ── Stats publiques ──
+    const _apEv = document.getElementById('ap-events');
+    const _apAb = document.getElementById('ap-abonnes');
+    if (_apEv) _apEv.textContent = d.evenements || 0;
+    if (_apAb) _apAb.textContent = (d.abonnes || []).length;
 
     // ── Photo ──
     const emojiEl = document.getElementById('ap-avatar-emoji');
@@ -15209,24 +15164,10 @@ async function chargerProfil(uid) {
     if (phZone) phZone.textContent = '📍 ' + (d.zone || d.ville || 'Zone non définie');
 
     // ── Stats hero ──
-    const phStatXp = document.getElementById('ph-stat-xp');
     const phStatEv = document.getElementById('ph-stat-events');
-    const phStatNiv = document.getElementById('ph-stat-niveau');
     const phStatRank = document.getElementById('ph-stat-rank');
-    if (phStatXp) phStatXp.textContent = (d.xp || 0).toLocaleString();
     if (phStatEv) phStatEv.textContent = d.evenements || 0;
-    if (phStatNiv) phStatNiv.textContent = calculerNiveau ? calculerNiveau(d.xp || 0) : '—';
     if (phStatRank) phStatRank.textContent = d.rank ? '#' + d.rank : '—';
-
-    // ── Niveau badge ──
-    const phNivBadge = document.getElementById('ph-niveau-badge');
-    if (phNivBadge && calculerNiveau) {
-      const niv = calculerNiveau(d.xp || 0);
-      if (niv >= 7) phNivBadge.innerHTML = '<span class="niv-badge-legende">★ LÉGENDE</span>';
-      else if (niv >= 6) phNivBadge.innerHTML = '<span class="niv-badge-legende">◆ DIAMANT</span>';
-      else if (niv >= 5) phNivBadge.innerHTML = '<span class="niv-badge-or">◆ PLATINE</span>';
-      else phNivBadge.innerHTML = '';
-    }
 
     // ── Stats sociales ──
     const statAbo = document.getElementById('stat-abonnements');
@@ -16677,7 +16618,7 @@ function _renderDrawerLieux() {
 </div>
 
 <!-- Toast XP -->
-<div id="xp-toast">
+<div id="xp-toast" style="display:none!important;">
   <div class="xp-toast-ico" id="xp-toast-ico">⭐</div>
   <div class="xp-toast-txt">
     <span class="xp-toast-amount" id="xp-toast-amount">+20 XP</span>
@@ -16686,7 +16627,7 @@ function _renderDrawerLieux() {
 </div>
 
 <!-- Modal historique XP -->
-<div id="xp-history-modal" onclick="if(event.target===this)fermerHistoriqueXP()">
+<div id="xp-history-modal" style="display:none!important;" onclick="if(event.target===this)fermerHistoriqueXP()">
   <div id="xp-history-panel">
     <div class="xp-hist-header">
       <div class="xp-hist-title">Historique XP</div>
