@@ -2766,7 +2766,7 @@ body.has-bottomnav #nav-login-btn { display: none !important; }
   margin: 6px 0;
 }
 </style>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 <!-- SPLASH LOADER -->
@@ -5351,12 +5351,12 @@ if (isPWA) {
       <!-- Stats -->
       <div style="display:flex;gap:0;margin-top:20px;background:rgba(255,255,255,0.04);border-radius:14px;overflow:hidden;">
         <div style="flex:1;padding:12px;text-align:center;border-right:1px solid var(--border);">
-          <div id="ap-events" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Events</div>
-        </div>
-        <div style="flex:1;padding:12px;text-align:center;">
           <div id="ap-abonnes" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
           <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Abonnés</div>
+        </div>
+        <div style="flex:1;padding:12px;text-align:center;">
+          <div id="ap-abonnements" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Abonnements</div>
         </div>
       </div>
     </div>
@@ -6010,28 +6010,49 @@ if (isPWA) {
       </div>
     </div>
 
-    <!-- Modal inscrits -->
-    <div id="orga-inscrits-modal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;padding:20px;">
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;">INSCRITS</div>
+    <!-- Modal inscrits avec présences -->
+    <div id="orga-inscrits-modal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;padding:20px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:24px;padding:24px;width:100%;max-width:480px;max-height:85vh;display:flex;flex-direction:column;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-shrink:0;">
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;">INSCRITS</div>
+            <div id="inscrits-counts" style="font-size:11px;color:var(--muted2);margin-top:2px;"></div>
+          </div>
           <button onclick="fermerInscrits()" style="width:32px;height:32px;border-radius:8px;background:var(--card2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:16px;">✕</button>
         </div>
-        <div id="inscrits-list"></div>
+        <div id="inscrits-list" style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;"></div>
       </div>
     </div>
 
-    <!-- Modal check-in NFC/QR -->
-    <div id="checkin-modal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.9);flex-direction:column;align-items:center;justify-content:center;padding:20px;">
-      <div style="background:var(--card);border:1px solid var(--green);border-radius:24px;padding:32px;width:100%;max-width:400px;text-align:center;">
-        <div style="font-size:48px;margin-bottom:12px;">📱</div>
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;margin-bottom:8px;">CHECK-IN BRACELET</div>
-        <div style="font-size:13px;color:var(--muted2);margin-bottom:24px;">Approchez le bracelet du téléphone ou entrez l'ID manuellement</div>
-        <input id="checkin-input" class="form-input" type="text" placeholder="ID du bracelet ou email" style="background:var(--bg2);margin-bottom:12px;text-align:center;font-size:16px;">
-        <div id="checkin-result" style="display:none;padding:12px;border-radius:12px;margin-bottom:12px;font-weight:700;font-size:14px;"></div>
-        <div style="display:flex;gap:10px;">
-          <button onclick="fermerCheckin()" style="flex:1;padding:12px;border-radius:12px;background:transparent;border:1px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;">Fermer</button>
-          <button onclick="validerCheckin()" style="flex:2;padding:12px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;border:none;cursor:pointer;">✅ Valider</button>
+    <!-- Modal QR Check-in -->
+    <div id="qr-checkin-modal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.92);flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+      <div style="background:var(--card);border:1px solid var(--green);border-radius:24px;padding:28px;width:100%;max-width:380px;text-align:center;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;">QR CHECK-IN</div>
+          <button onclick="fermerQRCheckin()" style="width:32px;height:32px;border-radius:8px;background:var(--card2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:16px;">✕</button>
+        </div>
+        <div id="qr-event-nom" style="font-size:12px;color:var(--muted2);margin-bottom:16px;"></div>
+        <div id="qr-code-container" style="background:#fff;border-radius:16px;padding:16px;display:inline-block;margin-bottom:16px;"></div>
+        <div style="font-size:12px;color:var(--muted2);margin-bottom:8px;">L'artiste scanne ce QR depuis son téléphone pour valider sa présence</div>
+        <!-- Fallback manuel -->
+        <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px;">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Ou saisir manuellement</div>
+          <input id="qr-checkin-input" class="form-input" type="text" placeholder="Email de l'artiste" style="background:var(--bg2);margin-bottom:10px;text-align:center;font-size:14px;">
+          <div id="qr-checkin-result" style="display:none;padding:10px;border-radius:10px;margin-bottom:10px;font-weight:700;font-size:13px;"></div>
+          <button onclick="validerCheckinManuel()" style="width:100%;padding:12px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;border:none;cursor:pointer;">✅ Valider la présence</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal confirmation check-in artiste (côté artiste après scan QR) -->
+    <div id="artiste-checkin-modal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.95);flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+      <div style="background:var(--card);border:1px solid var(--green);border-radius:24px;padding:32px;width:100%;max-width:360px;text-align:center;">
+        <div style="font-size:48px;margin-bottom:12px;">🎟️</div>
+        <div id="artiste-checkin-titre" style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:8px;"></div>
+        <div id="artiste-checkin-msg" style="font-size:13px;color:var(--muted2);margin-bottom:24px;"></div>
+        <div id="artiste-checkin-actions" style="display:flex;gap:10px;">
+          <button onclick="document.getElementById('artiste-checkin-modal').style.display='none'" style="flex:1;padding:12px;border-radius:12px;background:transparent;border:1px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;">Fermer</button>
+          <button id="artiste-checkin-btn" style="flex:2;padding:12px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;border:none;cursor:pointer;">✅ Confirmer ma présence</button>
         </div>
       </div>
     </div>
@@ -11134,7 +11155,7 @@ async function chargerMesEvents() {
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button onclick="voirInscrits('${ev.id}')" style="padding:7px 14px;border-radius:10px;background:rgba(77,159,255,0.1);border:1px solid var(--blue);color:var(--blue);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">👥 Inscrits</button>
-            <button onclick="ouvrirCheckin('${ev.id}')" style="padding:7px 14px;border-radius:10px;background:rgba(0,245,155,0.1);border:1px solid var(--green);color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">📱 Check-in</button>
+            <button onclick="ouvrirQRCheckin('${ev.id}','${ev.titre||''}')" style="padding:7px 14px;border-radius:10px;background:rgba(0,245,155,0.1);border:1px solid var(--green);color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">📱 QR Check-in</button>
             <button onclick="epinglerSurProfil('${ev.id}','evenement')" style="padding:7px 14px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">⭐ Épingler</button>
             <button onclick="ajouterAuPortfolio('${ev.id}','evenement')" style="padding:7px 14px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">🖼 Portfolio</button>
             <button onclick="modifierEvent('${ev.id}')" style="padding:7px 14px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;">Modifier</button>
@@ -11775,7 +11796,8 @@ window.modifierEvent = async function(id) {
 
     document.getElementById('orga-form-title').textContent = 'MODIFIER L\'ÉVÉNEMENT';
     document.getElementById('ev-submit-btn').textContent = 'Enregistrer les modifications →';
-    document.getElementById('orga-dashboard').style.display = 'none';
+    window._formRetour = currentPage;
+    showPage('form-event');
   } catch(e) { console.error(e); }
 }
 
@@ -11914,8 +11936,11 @@ window.supprimerEvent = async function(id) {
   } catch(e) { console.error(e); }
 }
 
-// ── Inscrits ──
+// ── Inscrits avec présences ──
+let inscritsEventId = null;
+
 window.voirInscrits = async function(eventId) {
+  inscritsEventId = eventId;
   const modal = document.getElementById('orga-inscrits-modal');
   modal.style.display = 'flex';
   const list = document.getElementById('inscrits-list');
@@ -11926,9 +11951,12 @@ window.voirInscrits = async function(eventId) {
     if (!snap.exists()) return;
     const ev = snap.data();
     const participants = ev.participants || [];
+    const checkins = ev.checkins || [];
+    const checkinUids = new Set(checkins.map(c => c.uid || c));
 
     if (participants.length === 0) {
-      list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);">Aucun inscrit pour le moment</div>';
+      document.getElementById('inscrits-counts').textContent = '';
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">Aucun inscrit pour le moment</div>';
       return;
     }
 
@@ -11936,45 +11964,100 @@ window.voirInscrits = async function(eventId) {
       window._getDoc(window._doc(window._db, 'danseurs', uid)).then(s => s.exists() ? { uid, ...s.data() } : { uid, nom: 'Inconnu' })
     ));
 
+    const presents = profils.filter(p => checkinUids.has(p.uid)).length;
+    document.getElementById('inscrits-counts').textContent = presents + ' présent' + (presents > 1 ? 's' : '') + ' / ' + profils.length + ' inscrit' + (profils.length > 1 ? 's' : '');
+
     list.innerHTML = profils.map(p => {
       const nom = p.nomAffiche || p.nom || p.pseudo || 'Artiste';
+      const estPresent = checkinUids.has(p.uid);
       return `
         <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
           <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px;overflow:hidden;position:relative;flex-shrink:0;">
-            ${p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:10px;">` : '💃'}
+            ${p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:10px;">` : '🎭'}
           </div>
-          <div>
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">${nom}</div>
-            <div style="font-size:11px;color:var(--muted2);">${p.zone || ''}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${nom}</div>
+            <div style="font-size:11px;color:var(--muted2);">${p.zone || p.ville || ''}</div>
           </div>
-          <div style="margin-left:auto;font-size:11px;color:var(--green);font-weight:700;">✅ Inscrit</div>
+          <button onclick="togglePresence('${eventId}','${p.uid}',${estPresent})" id="btn-presence-${p.uid}"
+            style="flex-shrink:0;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;border:none;transition:all 0.2s;
+            background:${estPresent ? 'rgba(0,245,155,0.15)' : 'rgba(255,255,255,0.06)'};
+            color:${estPresent ? 'var(--green)' : 'var(--muted2)'};
+            border:1px solid ${estPresent ? 'var(--green)' : 'var(--border)'};">
+            ${estPresent ? '✅ Présent' : 'Absent'}
+          </button>
         </div>`;
     }).join('');
   } catch(e) { console.error(e); }
 }
 
+window.togglePresence = async function(eventId, uid, estPresent) {
+  const btn = document.getElementById('btn-presence-' + uid);
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+  try {
+    const ref = window._doc(window._db, 'evenements', eventId);
+    if (estPresent) {
+      // Retirer la présence
+      const snap = await window._getDoc(ref);
+      const checkins = (snap.data().checkins || []).filter(c => (c.uid || c) !== uid);
+      await window._updateDoc(ref, { checkins });
+    } else {
+      // Ajouter la présence
+      await window._updateDoc(ref, {
+        checkins: window._arrayUnion({ uid, date: new Date().toISOString(), source: 'manuel' })
+      });
+    }
+    // Rafraichir la liste
+    await window.voirInscrits(eventId);
+  } catch(e) {
+    console.error(e);
+    if (btn) { btn.textContent = estPresent ? '✅ Présent' : 'Absent'; btn.disabled = false; }
+  }
+}
+
 window.fermerInscrits = function() {
   document.getElementById('orga-inscrits-modal').style.display = 'none';
+  inscritsEventId = null;
 }
 
-// ── Check-in ──
-let checkinEventId = null;
+// ── QR Check-in ──
+let qrCheckinEventId = null;
+let _qrInstance = null;
 
-window.ouvrirCheckin = function(eventId) {
-  checkinEventId = eventId;
-  document.getElementById('checkin-input').value = '';
-  document.getElementById('checkin-result').style.display = 'none';
-  document.getElementById('checkin-modal').style.display = 'flex';
+window.ouvrirQRCheckin = function(eventId, eventTitre) {
+  qrCheckinEventId = eventId;
+  document.getElementById('qr-checkin-modal').style.display = 'flex';
+  document.getElementById('qr-event-nom').textContent = eventTitre || '';
+  document.getElementById('qr-checkin-input').value = '';
+  document.getElementById('qr-checkin-result').style.display = 'none';
+
+  // Générer le QR code pointant vers l'URL de checkin
+  const container = document.getElementById('qr-code-container');
+  container.innerHTML = '';
+  const url = window.location.origin + window.location.pathname + '?checkin=' + eventId;
+  if (typeof QRCode !== 'undefined') {
+    _qrInstance = new QRCode(container, {
+      text: url,
+      width: 180,
+      height: 180,
+      colorDark: '#080810',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } else {
+    container.innerHTML = '<div style="color:#080810;font-size:12px;padding:8px;">QR indisponible<br><span style="font-size:10px;word-break:break-all;">' + url + '</span></div>';
+  }
 }
 
-window.fermerCheckin = function() {
-  document.getElementById('checkin-modal').style.display = 'none';
-  checkinEventId = null;
+window.fermerQRCheckin = function() {
+  document.getElementById('qr-checkin-modal').style.display = 'none';
+  qrCheckinEventId = null;
+  _qrInstance = null;
 }
 
-window.validerCheckin = async function() {
-  const input = document.getElementById('checkin-input').value.trim();
-  const result = document.getElementById('checkin-result');
+window.validerCheckinManuel = async function() {
+  const input = document.getElementById('qr-checkin-input').value.trim();
+  const result = document.getElementById('qr-checkin-result');
   if (!input) return;
 
   result.style.display = 'block';
@@ -11983,8 +12066,6 @@ window.validerCheckin = async function() {
   result.style.color = 'var(--muted2)';
 
   try {
-
-    // Chercher par email ou par UID
     let danseurUid = null;
     let danseurNom = '';
 
@@ -11994,7 +12075,7 @@ window.validerCheckin = async function() {
       const d = q.docs[0].data();
       danseurNom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
     } else if (input.length > 10) {
-      // Essayer comme UID direct      const snap = await window._getDoc(window._doc(window._db, 'danseurs', input));
+      const snap = await window._getDoc(window._doc(window._db, 'danseurs', input));
       if (snap.exists()) {
         danseurUid = input;
         const d = snap.data();
@@ -12009,21 +12090,77 @@ window.validerCheckin = async function() {
       return;
     }
 
-    // Enregistrer le check-in
-    await window._updateDoc(window._doc(window._db, 'evenements', checkinEventId), {
-      checkins: window._arrayUnion({ uid: danseurUid, date: new Date().toISOString() })
+    await window._updateDoc(window._doc(window._db, 'evenements', qrCheckinEventId), {
+      checkins: window._arrayUnion({ uid: danseurUid, date: new Date().toISOString(), source: 'manuel' })
     });
 
-    result.textContent = '✅ ' + danseurNom + ' — Check-in validé !';
+    result.textContent = '✅ ' + danseurNom + ' — Présence validée !';
     result.style.background = 'rgba(0,245,155,0.1)';
     result.style.color = 'var(--green)';
-    document.getElementById('checkin-input').value = '';
+    document.getElementById('qr-checkin-input').value = '';
 
   } catch(e) {
     result.textContent = '❌ Erreur : ' + e.message;
     result.style.background = 'rgba(255,77,109,0.1)';
     result.style.color = 'var(--red)';
   }
+}
+
+// ── Gestion scan QR côté artiste (détection ?checkin=eventId dans l'URL) ──
+window._gererCheckinURL = async function() {
+  const params = new URLSearchParams(window.location.search);
+  const eventId = params.get('checkin');
+  if (!eventId) return;
+
+  // Nettoyer l'URL sans recharger
+  window.history.replaceState({}, '', window.location.pathname);
+
+  // Attendre que l'utilisateur soit connecté
+  const attendre = (ms) => new Promise(r => setTimeout(r, ms));
+  let tentatives = 0;
+  while (!window._currentUid && tentatives < 20) {
+    await attendre(300);
+    tentatives++;
+  }
+  if (!window._currentUid) return;
+
+  try {
+    const snap = await window._getDoc(window._doc(window._db, 'evenements', eventId));
+    if (!snap.exists()) return;
+    const ev = snap.data();
+    const checkins = ev.checkins || [];
+    const dejaPresent = checkins.some(c => (c.uid || c) === window._currentUid);
+
+    const modal = document.getElementById('artiste-checkin-modal');
+    const titre = document.getElementById('artiste-checkin-titre');
+    const msg = document.getElementById('artiste-checkin-msg');
+    const btn = document.getElementById('artiste-checkin-btn');
+
+    titre.textContent = ev.titre || 'Événement';
+    modal.style.display = 'flex';
+
+    if (dejaPresent) {
+      msg.textContent = 'Ta présence est déjà enregistrée pour cet événement.';
+      btn.style.display = 'none';
+    } else {
+      msg.textContent = 'Valide ta présence à cet événement.';
+      btn.style.display = 'block';
+      btn.onclick = async function() {
+        btn.textContent = '⏳...';
+        btn.disabled = true;
+        try {
+          await window._updateDoc(window._doc(window._db, 'evenements', eventId), {
+            checkins: window._arrayUnion({ uid: window._currentUid, date: new Date().toISOString(), source: 'qr' })
+          });
+          msg.textContent = '🎉 Présence confirmée ! Bonne soirée.';
+          btn.style.display = 'none';
+        } catch(e) {
+          btn.textContent = '✅ Confirmer ma présence';
+          btn.disabled = false;
+        }
+      };
+    }
+  } catch(e) { console.error(e); }
 }
 // ════════════════════════════════
 // LISTE ABONNÉS / ABONNEMENTS
@@ -13405,10 +13542,10 @@ window.showProfilPublic = async function(uid) {
     }
 
     // ── Stats publiques ──
-    const _apEv = document.getElementById('ap-events');
     const _apAb = document.getElementById('ap-abonnes');
-    if (_apEv) _apEv.textContent = d.evenements || 0;
+    const _apAbo = document.getElementById('ap-abonnements');
     if (_apAb) _apAb.textContent = (d.abonnes || []).length;
+    if (_apAbo) _apAbo.textContent = (d.abonnements || []).length;
 
     // ── Photo ──
     const emojiEl = document.getElementById('ap-avatar-emoji');
@@ -16418,6 +16555,8 @@ onAuthStateChanged(auth, async (user) => {
       window.location.pathname !== _savedUrl && history.replaceState({}, '', _savedUrl);
     }
     _initRouter();
+    // Gérer le check-in via QR code si présent dans l'URL
+    if (window._gererCheckinURL) window._gererCheckinURL();
   } else {
     console.log('👤 Non connecté');
     afficherBarreLogoDeconnecte(true);
