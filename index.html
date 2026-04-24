@@ -5317,11 +5317,7 @@ if (isPWA) {
 
 <!-- ═══ PROFIL ARTISTE (overlay) ═══ -->
 <div class="page" id="page-profil-public">
-  <!-- Header public (visible si non connecté) -->
-  <div id="pp-public-header" style="display:none;position:sticky;top:0;z-index:100;background:rgba(8,8,16,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);align-items:center;justify-content:space-between;padding:12px 20px;padding-top:calc(12px + env(safe-area-inset-top));">
-    <div style="font-family:'Drowner-Free','Syne',sans-serif;font-weight:900;font-size:22px;color:var(--green);letter-spacing:-0.5px;">hako</div>
-    <button onclick="showPage('auth')" style="padding:8px 16px;border-radius:20px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;border:none;cursor:pointer;">Rejoindre HAKO</button>
-  </div>
+
   <div style="max-width:600px;margin:0 auto;padding:24px 20px 120px;">
 
     <!-- Header navigation (visible si connecté) -->
@@ -5415,11 +5411,7 @@ if (isPWA) {
 
 <!-- ═══ PAGE: SHARE EVENT (publique, sans compte) ═══ -->
 <div class="page" id="page-share-event">
-  <!-- Header minimaliste -->
-  <div style="position:sticky;top:0;z-index:100;background:rgba(8,8,16,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:12px 20px;padding-top:calc(12px + env(safe-area-inset-top));">
-    <div style="font-family:'Drowner-Free','Syne',sans-serif;font-weight:900;font-size:22px;color:var(--green);letter-spacing:-0.5px;">hako</div>
-    <button onclick="showPage('auth')" style="padding:8px 16px;border-radius:20px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;border:none;cursor:pointer;">Rejoindre HAKO</button>
-  </div>
+
   <!-- Contenu événement -->
   <div style="max-width:600px;margin:0 auto;padding:24px 20px 120px;" id="share-event-content">
     <div style="text-align:center;padding:60px 20px;color:var(--muted);">⏳ Chargement...</div>
@@ -13147,30 +13139,120 @@ window.ouvrirShareEvent = async function(eventId) {
   } catch(e) { console.error(e); container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">Erreur de chargement.</div>'; }
 };
 
-// Modal inscription rapide (au moment de réserver sans compte)
+// Choisir la bonne action de réservation selon le type d'event
+async function _reserverApresAuth(eventId) {
+  if (!window._db) { setTimeout(() => _reserverApresAuth(eventId), 300); return; }
+  try {
+    // Chercher l'event dans tousLesEvents ou Firestore
+    let ev = (typeof tousLesEvents !== 'undefined' && tousLesEvents.find) ? tousLesEvents.find(e => e.id === eventId) : null;
+    if (!ev) {
+      const snap = await window._getDoc(window._doc(window._db, 'evenements', eventId));
+      if (snap.exists()) ev = { id: snap.id, ...snap.data() };
+    }
+    if (!ev) { _showToast('Événement introuvable'); return; }
+    if (ev.lienInscription) {
+      // Lien externe : ouvrir dans un nouvel onglet
+      window.open(ev.lienInscription, '_blank');
+    } else if (ev.prix && ev.prix > 0) {
+      // Paiement Stripe via HAKO
+      if (window.ouvrirPaiementHako) ouvrirPaiementHako(eventId);
+      else _showToast('Paiement non disponible');
+    } else {
+      // Inscription gratuite
+      if (window.sInscrire) {
+        // S'assurer que eventCourant est défini
+        if (typeof eventCourant === 'undefined' || !eventCourant || eventCourant.id !== eventId) {
+          window.eventCourant = ev;
+        }
+        sInscrire();
+      } else {
+        _showToast('Inscription enregistrée !');
+      }
+    }
+  } catch(e) { console.error(e); _showToast('Erreur lors de la réservation'); }
+}
+
+// Modal inscription/connexion rapide (au moment de réserver sans compte)
 window.ouvrirInscriptionRapide = function(eventIdApresInscription) {
   let modal = document.getElementById('modal-inscription-rapide');
   if (!modal) {
     modal = document.createElement('div');
     modal.id = 'modal-inscription-rapide';
     modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);display:flex;align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom);';
-    modal.innerHTML = `<div style="width:100%;max-width:480px;background:var(--bg2);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:28px 24px 32px;box-sizing:border-box;">
-      <div style="font-family:'Syne',sans-serif;font-weight:900;font-size:20px;margin-bottom:6px;">Réserve ta place</div>
-      <div style="font-size:13px;color:var(--muted2);margin-bottom:20px;">Crée ton compte HAKO en 30 secondes</div>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
-        <input id="ir-username" type="text" placeholder="@username" style="padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;width:100%;" onfocus="this.style.borderColor='rgba(0,245,155,0.4)'" onblur="this.style.borderColor='var(--border)'">
-        <input id="ir-email" type="email" placeholder="Email" style="padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;width:100%;" onfocus="this.style.borderColor='rgba(0,245,155,0.4)'" onblur="this.style.borderColor='var(--border)'">
-        <input id="ir-password" type="password" placeholder="Mot de passe" style="padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;width:100%;" onfocus="this.style.borderColor='rgba(0,245,155,0.4)'" onblur="this.style.borderColor='var(--border)'">
-        <div id="ir-err" style="display:none;font-size:12px;color:var(--red);font-weight:600;"></div>
+    modal.innerHTML = `<div style="width:100%;max-width:480px;background:var(--bg2);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:24px 24px 32px;box-sizing:border-box;">
+      <div style="font-family:'Syne',sans-serif;font-weight:900;font-size:20px;margin-bottom:16px;">Réserve ta place 🎟</div>
+      <!-- Onglets -->
+      <div style="display:flex;gap:0;background:rgba(255,255,255,0.04);border-radius:12px;padding:3px;margin-bottom:20px;">
+        <button id="ir-tab-inscription" onclick="irSwitchTab('inscription')" style="flex:1;padding:9px;border-radius:10px;border:none;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all 0.2s;">Créer un compte</button>
+        <button id="ir-tab-connexion" onclick="irSwitchTab('connexion')" style="flex:1;padding:9px;border-radius:10px;border:none;background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;">Se connecter</button>
       </div>
-      <button id="ir-submit" onclick="validerInscriptionRapide()" style="width:100%;padding:14px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-bottom:10px;">Créer mon compte et réserver →</button>
+      <!-- Panneau inscription -->
+      <div id="ir-panel-inscription">
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+          <input id="ir-username" type="text" placeholder="@username" style="padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;width:100%;" onfocus="this.style.borderColor='rgba(0,245,155,0.4)'" onblur="this.style.borderColor='var(--border)'">
+          <input id="ir-email" type="email" placeholder="Email" style="padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;width:100%;" onfocus="this.style.borderColor='rgba(0,245,155,0.4)'" onblur="this.style.borderColor='var(--border)'">
+          <input id="ir-password" type="password" placeholder="Mot de passe" style="padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;width:100%;" onfocus="this.style.borderColor='rgba(0,245,155,0.4)'" onblur="this.style.borderColor='var(--border)'">
+          <div id="ir-err" style="display:none;font-size:12px;color:var(--red);font-weight:600;"></div>
+        </div>
+        <button id="ir-submit" onclick="validerInscriptionRapide()" style="width:100%;padding:14px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-bottom:10px;">Créer mon compte et réserver →</button>
+      </div>
+      <!-- Panneau connexion -->
+      <div id="ir-panel-connexion" style="display:none;">
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+          <input id="ir-login-email" type="email" placeholder="Email" style="padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;width:100%;" onfocus="this.style.borderColor='rgba(0,245,155,0.4)'" onblur="this.style.borderColor='var(--border)'">
+          <input id="ir-login-password" type="password" placeholder="Mot de passe" style="padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;box-sizing:border-box;width:100%;" onfocus="this.style.borderColor='rgba(0,245,155,0.4)'" onblur="this.style.borderColor='var(--border)'">
+          <div id="ir-login-err" style="display:none;font-size:12px;color:var(--red);font-weight:600;"></div>
+        </div>
+        <button id="ir-login-submit" onclick="validerConnexionRapide()" style="width:100%;padding:14px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-bottom:10px;">Se connecter et réserver →</button>
+      </div>
       <button onclick="document.getElementById('modal-inscription-rapide').style.display='none'" style="width:100%;padding:12px;border-radius:14px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">Annuler</button>
     </div>`;
     document.body.appendChild(modal);
   }
   modal._eventId = eventIdApresInscription;
   modal.style.display = 'flex';
+  irSwitchTab('inscription');
   document.getElementById('ir-username')?.focus();
+};
+
+window.irSwitchTab = function(tab) {
+  const isInscription = tab === 'inscription';
+  document.getElementById('ir-panel-inscription').style.display = isInscription ? 'block' : 'none';
+  document.getElementById('ir-panel-connexion').style.display = isInscription ? 'none' : 'block';
+  const btnI = document.getElementById('ir-tab-inscription');
+  const btnC = document.getElementById('ir-tab-connexion');
+  if (btnI) { btnI.style.background = isInscription ? 'var(--green)' : 'transparent'; btnI.style.color = isInscription ? '#080810' : 'var(--muted2)'; }
+  if (btnC) { btnC.style.background = isInscription ? 'transparent' : 'var(--green)'; btnC.style.color = isInscription ? 'var(--muted2)' : '#080810'; }
+};
+
+window.validerConnexionRapide = async function() {
+  const modal = document.getElementById('modal-inscription-rapide');
+  const email    = document.getElementById('ir-login-email')?.value.trim();
+  const password = document.getElementById('ir-login-password')?.value;
+  const errEl    = document.getElementById('ir-login-err');
+  const btn      = document.getElementById('ir-login-submit');
+  const showErr  = msg => { if(errEl){errEl.textContent=msg;errEl.style.display='block';} };
+  if (!email || !email.includes('@')) return showErr('Email invalide');
+  if (!password) return showErr('Mot de passe requis');
+  btn.textContent = 'Connexion...'; btn.disabled = true;
+  if (errEl) errEl.style.display = 'none';
+  try {
+    const { getAuth, signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js');
+    const auth = getAuth();
+    await signInWithEmailAndPassword(auth, email, password);
+    modal.style.display = 'none';
+    _showToast('Connecté ! Réservation en cours...');
+    const eventId = modal._eventId;
+    if (eventId) {
+      setTimeout(() => {
+        _reserverApresAuth(eventId);
+      }, 600);
+    }
+  } catch(e) {
+    btn.textContent = 'Se connecter et réserver →'; btn.disabled = false;
+    if (e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') showErr('Email ou mot de passe incorrect');
+    else showErr('Erreur : ' + (e.message || 'réessaie'));
+  }
 };
 
 window.validerInscriptionRapide = async function() {
@@ -13216,12 +13298,7 @@ window.validerInscriptionRapide = async function() {
 
     // Déclencher la réservation
     const eventId = modal._eventId;
-    if (eventId) {
-      setTimeout(() => {
-        if (window.ouvrirPaiementHako) ouvrirPaiementHako(eventId);
-        else if (window.sInscrire) sInscrire();
-      }, 500);
-    }
+    if (eventId) setTimeout(() => _reserverApresAuth(eventId), 600);
   } catch(e) {
     btn.textContent = 'Créer mon compte et réserver →'; btn.disabled = false;
     if (e.code === 'auth/email-already-in-use') showErr('Email déjà utilisé');
@@ -13230,13 +13307,8 @@ window.validerInscriptionRapide = async function() {
   }
 };
 
-// Afficher/masquer header public selon connexion sur page-profil-public
 function _updateProfilPublicHeader() {
-  const pubHeader = document.getElementById('pp-public-header');
-  const navHeader = document.getElementById('pp-nav-header');
-  const isConnected = !!window._currentUid;
-  if (pubHeader) pubHeader.style.display = isConnected ? 'none' : 'flex';
-  if (navHeader) navHeader.style.display = isConnected ? 'flex' : 'none';
+  // Header public supprimé -- plus de barre minimaliste
 }
 
 window.showProfilPublic = async function(uid) {
