@@ -9109,21 +9109,21 @@ function ouvrirEvent(id) {
   // Bouton action
   let btnHtml = '';
   if (passe) {
-    btnHtml = `<button disabled style="padding:13px 24px;border-radius:14px;background:var(--card2);color:var(--muted);border:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:not-allowed;">Événement terminé</button>`;
+    btnHtml = `<button disabled style="width:100%;padding:14px 24px;border-radius:14px;background:var(--card2);color:var(--muted);border:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:not-allowed;">Événement terminé</button>`;
   } else if (ev.lienResa) {
-    btnHtml = `<a href="${ev.lienResa}" target="_blank" rel="noopener" style="padding:13px 24px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;text-decoration:none;display:inline-block;">Réserver ↗</a>`;
+    btnHtml = `<a href="${ev.lienResa}" target="_blank" rel="noopener" style="width:100%;padding:14px 24px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;text-decoration:none;display:block;text-align:center;box-sizing:border-box;">Réserver ↗</a>`;
   } else if (ev.stripeAccountId) {
     const premierTarif = ev.tarifs && ev.tarifs.length > 0 ? ev.tarifs[0] : null;
     const prix = premierTarif ? premierTarif.prix : (ev.prix || 0);
     btnHtml = prix > 0
-      ? `<button onclick="ouvrirPaiementHako('${ev.id}')" style="padding:13px 24px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;border:none;cursor:pointer;">Payer et s'inscrire</button>`
-      : `<button onclick="sInscrire()" style="padding:13px 24px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;border:none;cursor:pointer;">S'inscrire</button>`;
+      ? `<button onclick="ouvrirPaiementHako('${ev.id}')" style="width:100%;padding:14px 24px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">Payer et s'inscrire</button>`
+      : `<button onclick="sInscrire()" style="width:100%;padding:14px 24px;border-radius:14px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">S'inscrire</button>`;
   } else {
     // Pas de lien externe, pas de Stripe : aucun bouton d'action principal
     btnHtml = '';
   }
   const inscriptionBtnHtml = ev.lienInscription
-    ? `<a href="${ev.lienInscription}" target="_blank" rel="noopener" style="padding:13px 24px;border-radius:14px;background:transparent;border:1.5px solid var(--green);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;text-decoration:none;display:inline-block;">S'inscrire ↗</a>`
+    ? `<a href="${ev.lienInscription}" target="_blank" rel="noopener" style="width:100%;padding:14px 24px;border-radius:14px;background:transparent;border:1.5px solid var(--green);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:14px;text-decoration:none;display:block;text-align:center;box-sizing:border-box;">S'inscrire ↗</a>`
     : '';
 
   // Compteur inscrits uniquement si paiement via HAKO (Stripe)
@@ -9158,32 +9158,38 @@ function ouvrirEvent(id) {
       <div id="ev-detail-avatars-row" style="display:flex;align-items:center;"></div>
     </div>
 
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0 8px;">
-      ${(() => {
-        if (ev.tarifs && ev.tarifs.length > 0) {
-          const tarifsHtml = ev.tarifs.map(t => {
-            const estGratuit = !t.prix || t.prix === 0;
-            return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-              <span style="font-size:13px;color:var(--muted2);">${t.label || 'Entrée'}</span>
-              <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:${estGratuit ? 'var(--green)' : cfg.couleur};">${estGratuit ? 'Gratuit' : t.prix + (t.devise || '€')}</span>
-            </div>`;
-          }).join('');
-          return `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:4px;">
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Tarifs</div>
-            ${tarifsHtml}
+    ${(() => {
+      // --- BLOC TARIF (pleine largeur) ---
+      let tarifBloc = '';
+      if (ev.tarifs && ev.tarifs.length > 0) {
+        const tarifsHtml = ev.tarifs.map(t => {
+          const estGratuit = !t.prix || t.prix === 0;
+          return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:13px;color:var(--muted2);">${t.label || 'Entrée'}</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:${estGratuit ? 'var(--green)' : cfg.couleur};">${estGratuit ? 'Gratuit' : t.prix + (t.devise || '€')}</span>
           </div>`;
-        } else {
-          const estGratuit = !ev.prix || ev.prix === 0;
-          return `<div style="display:inline-block;font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:${estGratuit ? 'var(--green)' : cfg.couleur};">${estGratuit ? 'Gratuit' : ev.prix + (ev.devise||'€')}</div>`;
-        }
-      })()}
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0 8px;">
-        ${inscritsBlocHtml}
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        }).join('');
+        tarifBloc = `<div style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Tarifs</div>
+          ${tarifsHtml}
+        </div>`;
+      } else {
+        const estGratuit = !ev.prix || ev.prix === 0;
+        tarifBloc = `<div style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);">Tarif</span>
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:${estGratuit ? 'var(--green)' : cfg.couleur};line-height:1;">${estGratuit ? 'Gratuit' : ev.prix + (ev.devise||'€')}</span>
+        </div>`;
+      }
+      return tarifBloc;
+    })()}
+
+    ${inscritsBlocHtml}
+
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
       ${btnHtml}
       ${inscriptionBtnHtml}
-      </div>
     </div>
+
     <button onclick="partagerEventDansFeed('${ev.id}')" style="width:100%;margin-top:4px;padding:11px 16px;border-radius:12px;background:transparent;border:1px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.3)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
       Partager dans le feed
