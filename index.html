@@ -6470,13 +6470,6 @@ function showPage(id, isBack = false) {
   const _noSave = ['home','auth','privacy','cgu','mentions'];
   if (!_noSave.includes(id)) localStorage.setItem('hako_last_page', id);
 
-  // Pages accessibles sans compte
-  const _pagesPubliques = ['home','auth','network','privacy','cgu','mentions','profil-public','share-event'];
-  if (!window._currentUid && !_pagesPubliques.includes(id)) {
-    showPage('auth');
-    return;
-  }
-
   // Drawer actif
   document.querySelectorAll('.drawer-item').forEach(i => i.classList.remove('on'));
   const activeItem = document.getElementById('di-' + id);
