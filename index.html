@@ -5360,6 +5360,27 @@ if (isPWA) {
       </div>
     </div>
 
+    <!-- À la une -->
+    <div id="ap-epingle-wrap" style="display:none;margin-top:16px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">⭐ À LA UNE</div>
+        <button id="ap-toggle-epingle" onclick="toggleVisibilitePortfolio()" style="display:none;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">👁 Visible</button>
+      </div>
+      <div id="ap-epingle-content"></div>
+    </div>
+
+    <!-- Portfolio -->
+    <div id="ap-portfolio-wrap" style="display:none;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">🖼 PORTFOLIO <span id="ap-portfolio-count" style="font-size:11px;color:var(--muted2);font-weight:400;"></span></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="ap-toggle-portfolio" onclick="toggleVisibilitePortfolio()" style="display:none;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">👁 Visible</button>
+          <div id="ap-portfolio-drag-hint" style="display:none;font-size:11px;color:var(--muted2);">Glisse pour réordonner</div>
+        </div>
+      </div>
+      <div id="ap-portfolio-grid" class="portfolio-grid"></div>
+    </div>
+
     <!-- Styles -->
     <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;">
       <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:12px;">💃 Styles de danse</div>
@@ -5380,26 +5401,6 @@ if (isPWA) {
       </button>
     </div>
 
-    <!-- À la une -->
-    <div id="ap-epingle-wrap" style="display:none;margin-top:20px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">⭐ À LA UNE</div>
-        <button id="ap-toggle-epingle" onclick="toggleVisibilitePortfolio()" style="display:none;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">👁 Visible</button>
-      </div>
-      <div id="ap-epingle-content"></div>
-    </div>
-
-    <!-- Portfolio -->
-    <div id="ap-portfolio-wrap" style="display:none;margin-top:20px;padding-bottom:120px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">🖼 PORTFOLIO <span id="ap-portfolio-count" style="font-size:11px;color:var(--muted2);font-weight:400;"></span></div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <button id="ap-toggle-portfolio" onclick="toggleVisibilitePortfolio()" style="display:none;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">👁 Visible</button>
-          <div id="ap-portfolio-drag-hint" style="display:none;font-size:11px;color:var(--muted2);">Glisse pour réordonner</div>
-        </div>
-      </div>
-      <div id="ap-portfolio-grid" class="portfolio-grid"></div>
-    </div>
 
   </div>
 </div>
@@ -5995,9 +5996,6 @@ if (isPWA) {
           <div id="ph-handle-display" style="font-size:13px;color:var(--muted2);margin-top:4px;"></div>
           <div id="ph-zone-display" style="font-size:12px;color:var(--muted);margin-top:4px;">📍</div>
           <div id="ph-niveau-badge" style="margin-top:6px;"></div>
-          <div id="ph-admin-badge" style="display:none;margin-top:8px;">
-            <span style="background:rgba(255,77,109,0.15);border:1px solid rgba(255,77,109,0.45);color:#ff4d6d;font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:2px;padding:3px 10px;border-radius:6px;text-transform:uppercase;">⚡ Admin HAKO</span>
-          </div>
           <div id="ph-metiers-badges" style="display:none;flex-wrap:wrap;gap:5px;margin-top:6px;"></div>
         </div>
       </div>
@@ -6012,9 +6010,13 @@ if (isPWA) {
           <div id="ph-stat-events" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
           <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Events</div>
         </div>
-        <div style="flex:1;padding:12px;text-align:center;">
+        <div style="flex:1;padding:12px;text-align:center;border-right:1px solid var(--border);">
           <div id="ph-stat-niveau" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">1</div>
           <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Niveau</div>
+        </div>
+        <div onclick="showPage('ranking')" style="flex:1;padding:12px;text-align:center;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background=''">
+          <div id="ph-stat-rank" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">—</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Classement</div>
         </div>
       </div>
 
@@ -6051,6 +6053,27 @@ if (isPWA) {
         <div style="display:flex;align-items:center;gap:10px;">⚡ Admin HAKO</div>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
+    </div>
+
+    <!-- À la une (profil perso) -->
+    <div id="ph-epingle-wrap" style="display:none;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">⭐ À LA UNE</div>
+        <button onclick="toggleVisibilitePortfolio()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" id="ph-toggle-epingle">👁 Visible</button>
+      </div>
+      <div id="ph-epingle-content"></div>
+    </div>
+
+    <!-- Portfolio (profil perso) -->
+    <div id="ph-portfolio-wrap" style="display:none;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">🖼 PORTFOLIO <span id="ph-portfolio-count" style="font-size:11px;color:var(--muted2);font-weight:400;"></span></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button onclick="toggleVisibilitePortfolio()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" id="ph-toggle-portfolio">👁 Visible</button>
+          <div id="ph-portfolio-drag-hint" style="display:none;font-size:11px;color:var(--muted2);">Glisse pour réordonner</div>
+        </div>
+      </div>
+      <div id="ph-portfolio-grid" class="portfolio-grid"></div>
     </div>
 
     <!-- Kima -->
@@ -6188,27 +6211,6 @@ if (isPWA) {
         <div class="pc-title">Mes réseaux & liens</div>
       </div>
       <div id="profil-reseaux-list" style="display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;padding-left:8px;"></div>
-    </div>
-
-    <!-- À la une (profil perso) -->
-    <div id="ph-epingle-wrap" style="display:none;margin-bottom:16px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">⭐ À LA UNE</div>
-        <button onclick="toggleVisibilitePortfolio()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" id="ph-toggle-epingle">👁 Visible</button>
-      </div>
-      <div id="ph-epingle-content"></div>
-    </div>
-
-    <!-- Portfolio (profil perso) -->
-    <div id="ph-portfolio-wrap" style="display:none;margin-bottom:16px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">🖼 PORTFOLIO <span id="ph-portfolio-count" style="font-size:11px;color:var(--muted2);font-weight:400;"></span></div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <button onclick="toggleVisibilitePortfolio()" style="font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;" id="ph-toggle-portfolio">👁 Visible</button>
-          <div id="ph-portfolio-drag-hint" style="display:none;font-size:11px;color:var(--muted2);">Glisse pour réordonner</div>
-        </div>
-      </div>
-      <div id="ph-portfolio-grid" class="portfolio-grid"></div>
     </div>
 
     <!-- Modal abonnés / abonnements -->
@@ -14897,9 +14899,11 @@ async function chargerProfil(uid) {
     const phStatXp = document.getElementById('ph-stat-xp');
     const phStatEv = document.getElementById('ph-stat-events');
     const phStatNiv = document.getElementById('ph-stat-niveau');
+    const phStatRank = document.getElementById('ph-stat-rank');
     if (phStatXp) phStatXp.textContent = (d.xp || 0).toLocaleString();
     if (phStatEv) phStatEv.textContent = d.evenements || 0;
     if (phStatNiv) phStatNiv.textContent = calculerNiveau ? calculerNiveau(d.xp || 0) : '—';
+    if (phStatRank) phStatRank.textContent = d.rank ? '#' + d.rank : '—';
 
     // ── Niveau badge ──
     const phNivBadge = document.getElementById('ph-niveau-badge');
@@ -14922,8 +14926,6 @@ async function chargerProfil(uid) {
     if (phAdminBtn) phAdminBtn.style.display = d.role === 'admin' ? 'flex' : 'none';
 
     // ── Badge admin ──
-    const phAdminBadge = document.getElementById('ph-admin-badge');
-    if (phAdminBadge) phAdminBadge.style.display = d.role === 'admin' ? 'block' : 'none';
 
     // ── Bouton organisateur ──
     const orgaBtn = document.getElementById('orga-btn');
