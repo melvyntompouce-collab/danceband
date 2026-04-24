@@ -277,18 +277,18 @@ body.pwa #agenda-passes-toggle {
 ══════════════════════════════ */
 .hero{
   min-height:calc(100vh - 44px);
-  display:flex;align-items:flex-start;
-  padding:16px 5% 80px;
+  display:flex;align-items:center;justify-content:center;
+  padding:60px 5% 80px;
   position:relative;overflow:hidden;
 }
+.hero-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:60px;max-width:1200px;width:100%;position:relative;z-index:1;
+}
 @media (max-width:768px) {
-  .hero{
-    padding-top:16px;
-    align-items: flex-start;
-  }
-  .hero-content {
-    padding-top: 0;
-  }
+  .hero{ padding-top:16px; align-items:flex-start; }
+  .hero-inner{ flex-direction:column; gap:0; }
+  .hero-content { padding-top:0; }
 }
 .hero-grid{
   position:absolute;inset:0;
@@ -297,7 +297,7 @@ body.pwa #agenda-passes-toggle {
     linear-gradient(90deg,rgba(0,245,155,0.03) 1px,transparent 1px);
   background-size:60px 60px;
 }
-.hero-content{max-width:680px;width:100%;position:relative;z-index:1;padding-top:0;margin:0 auto;}
+.hero-content{max-width:560px;width:100%;position:relative;z-index:1;padding-top:0;flex-shrink:0;}
 .hero-badge{
   display:inline-flex;align-items:center;gap:8px;
   padding:8px 16px;border-radius:20px;
@@ -357,10 +357,11 @@ body.pwa #agenda-passes-toggle {
 }
 .hero-stat-label{font-size:13px;color:var(--muted);margin-top:4px;letter-spacing:1px;text-transform:uppercase;}
 .hero-visual{
-  position:absolute;right:5%;top:50%;transform:translateY(-50%);
+  position:relative;flex-shrink:0;
   width:420px;height:420px;
   display:flex;align-items:center;justify-content:center;
 }
+@media(max-width:768px){ .hero-visual{ display:none; } }
 .hero-ring{
   position:absolute;border-radius:50%;
   border:1px solid rgba(0,245,155,0.1);
@@ -3064,8 +3065,9 @@ if (isPWA) {
     <div style="position:absolute;top:40%;left:30%;width:40vw;height:40vw;max-width:350px;max-height:350px;border-radius:50%;background:radial-gradient(circle,rgba(0,245,155,0.04) 0%,transparent 70%);filter:blur(60px);"></div>
   </div>
 
-  <section class="hero" style="justify-content:center;">
+  <section class="hero">
     <div class="hero-grid"></div>
+    <div class="hero-inner">
     <div class="hero-content fade-in">
       <div class="hero-badge">
         <div class="logo-dot"></div>
@@ -3135,13 +3137,14 @@ if (isPWA) {
 
       </div>
 
-    </div>
+    </div><!-- /hero-content -->
     <div class="hero-visual">
       <div class="hero-ring"></div>
       <div class="hero-ring"></div>
       <div class="hero-ring"></div>
       <div class="hero-center">💃</div>
     </div>
+    </div><!-- /hero-inner -->
   </section>
 
   <section class="features">
