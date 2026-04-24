@@ -277,17 +277,12 @@ body.pwa #agenda-passes-toggle {
 ══════════════════════════════ */
 .hero{
   min-height:calc(100vh - 44px);
-  display:flex;align-items:center;justify-content:center;
-  padding:60px 5% 80px;
+  display:flex;align-items:flex-start;
+  padding:16px 5% 80px;
   position:relative;overflow:hidden;
-}
-.hero-inner{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:60px;max-width:1200px;width:100%;position:relative;z-index:1;
 }
 @media (max-width:768px) {
   .hero{ padding-top:16px; align-items:flex-start; }
-  .hero-inner{ flex-direction:column; gap:0; }
   .hero-content { padding-top:0; }
 }
 .hero-grid{
@@ -297,7 +292,7 @@ body.pwa #agenda-passes-toggle {
     linear-gradient(90deg,rgba(0,245,155,0.03) 1px,transparent 1px);
   background-size:60px 60px;
 }
-.hero-content{max-width:560px;width:100%;position:relative;z-index:1;padding-top:0;flex-shrink:0;}
+.hero-content{max-width:700px;position:relative;z-index:1;padding-top:0;}
 .hero-badge{
   display:inline-flex;align-items:center;gap:8px;
   padding:8px 16px;border-radius:20px;
@@ -357,11 +352,10 @@ body.pwa #agenda-passes-toggle {
 }
 .hero-stat-label{font-size:13px;color:var(--muted);margin-top:4px;letter-spacing:1px;text-transform:uppercase;}
 .hero-visual{
-  position:relative;flex-shrink:0;
+  position:absolute;right:5%;top:50%;transform:translateY(-50%);
   width:420px;height:420px;
   display:flex;align-items:center;justify-content:center;
 }
-@media(max-width:768px){ .hero-visual{ display:none; } }
 .hero-ring{
   position:absolute;border-radius:50%;
   border:1px solid rgba(0,245,155,0.1);
@@ -386,7 +380,7 @@ body.pwa #agenda-passes-toggle {
 }
 
 /* FEATURES */
-.features{padding:100px 5%;max-width:1200px;margin:0 auto;box-sizing:border-box;}
+.features{padding:100px 5%;}
 .section-header{text-align:center;margin-bottom:64px;}
 .section-tag{
   display:inline-block;
@@ -433,7 +427,7 @@ body.pwa #agenda-passes-toggle {
 
 /* HOW IT WORKS */
 .how{padding:100px 5%;background:var(--bg2);}
-.steps{display:flex;gap:0;position:relative;flex-wrap:wrap;max-width:1200px;margin:0 auto;width:100%;}
+.steps{display:flex;gap:0;position:relative;flex-wrap:wrap;}
 .steps::before{
   content:'';position:absolute;
   top:32px;left:10%;right:10%;height:1px;
@@ -1405,10 +1399,6 @@ footer{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   gap:40px;
-  max-width:1200px;
-  margin:0 auto;
-  box-sizing:border-box;
-  width:100%;
 }
 .footer-brand .logo{margin-bottom:12px;}
 .footer-desc{font-size:14px;color:var(--muted2);line-height:1.7;max-width:280px;}
@@ -1420,7 +1410,6 @@ footer{
   padding:20px 5%;border-top:1px solid var(--border);
   display:flex;justify-content:space-between;align-items:center;
   flex-wrap:wrap;gap:12px;
-  max-width:1200px;margin:0 auto;box-sizing:border-box;width:100%;
 }
 .footer-copy{font-size:13px;color:var(--muted);}
 
@@ -3067,7 +3056,6 @@ if (isPWA) {
 
   <section class="hero">
     <div class="hero-grid"></div>
-    <div class="hero-inner">
     <div class="hero-content fade-in">
       <div class="hero-badge">
         <div class="logo-dot"></div>
@@ -3137,14 +3125,13 @@ if (isPWA) {
 
       </div>
 
-    </div><!-- /hero-content -->
+    </div>
     <div class="hero-visual">
       <div class="hero-ring"></div>
       <div class="hero-ring"></div>
       <div class="hero-ring"></div>
       <div class="hero-center">💃</div>
     </div>
-    </div><!-- /hero-inner -->
   </section>
 
   <section class="features">
