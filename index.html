@@ -15235,7 +15235,7 @@ window.inscrire = async function() {
       profileData.niveauChanteur = niveauChanteur;
     }
 
-    await setDoc(doc(db, 'danseurs', uid), profileData);
+    await window._setDoc(window._doc(window._db, 'danseurs', uid), profileData);
 
     okDiv.textContent = '✅ Compte créé ! Bienvenue sur HAKO !';
     okDiv.style.display = 'block';
@@ -15782,7 +15782,7 @@ window.sauvegarderIdentite = async function() {
       if (taken) { alert('⚠️ Ce nom d\'utilisateur est déjà pris'); return; }
     }
 
-    await setDoc(doc(db, 'danseurs', user.uid), {
+    await window._setDoc(window._doc(window._db, 'danseurs', user.uid), {
       nom, blase, tel,
       ...(usernameEdit && usernameEdit.length >= 3 ? { username: usernameEdit } : {}),
       ...(ville ? { ville, zone: ville } : {}),
@@ -15833,7 +15833,7 @@ window.sauvegarderIdentite = async function() {
     }
     // Sauvegarder les flags en Firestore si besoin
     if (Object.keys(xpUpdates).length > 0) {
-      await setDoc(doc(db, 'danseurs', user.uid), xpUpdates, { merge: true });
+      await window._setDoc(window._doc(window._db, 'danseurs', user.uid), xpUpdates, { merge: true });
       if (window._monProfil) Object.assign(window._monProfil, xpUpdates);
     }
 
@@ -15919,7 +15919,7 @@ window.supprimerCompte = async function() {
 // ════════════════════════════════
 async function chargerProfil(uid) {
   try {
-    const snap = await getDoc(doc(db, 'danseurs', uid));
+    const snap = await window._getDoc(window._doc(window._db, 'danseurs', uid));
     if (!snap.exists()) return;
     const d = snap.data();
 
