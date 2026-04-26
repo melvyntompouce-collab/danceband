@@ -3531,6 +3531,12 @@ if (isPWA) {
           <input id="signup-zone" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon, Montpellier..." autocomplete="off">
           <datalist id="villes-datalist"></datalist>
         </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
+          <input type="checkbox" id="signup-cgu" style="width:18px;height:18px;margin-top:2px;accent-color:var(--green);flex-shrink:0;cursor:pointer;">
+          <label for="signup-cgu" style="font-family:'DM Sans',sans-serif;font-size:13px;color:var(--muted2);line-height:1.5;cursor:pointer;">
+            J'ai lu et j'accepte les <a onclick="showPage('cgu')" style="color:var(--green);text-decoration:underline;cursor:pointer;">Conditions Générales d'Utilisation</a> et la <a onclick="showPage('privacy')" style="color:var(--green);text-decoration:underline;cursor:pointer;">Politique de confidentialité</a> de HAKO. Je certifie avoir au moins 16 ans.
+          </label>
+        </div>
         <button id="signup-btn" class="form-submit" onclick="inscrire()">Créer mon profil →</button>
       </div>
       <!-- CONNEXION -->
@@ -7405,12 +7411,17 @@ function _renderPostCard(post) {
     </div>`;
   }
 
-  const authorDisplayName = post.authorName || post.auteurNom || post.auteurBlase || post.authorUsername || '';
+  const _feedAuthorName = post.authorName || post.auteurNom || post.auteurBlase || (post.authorUsername ? '@' + post.authorUsername : '') || 'Artiste';
+  const _feedInitiales = (function(n) {
+    if (!n || n.startsWith('@')) return null;
+    var parts = n.trim().split(/\s+/);
+    return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : n[0].toUpperCase();
+  })(_feedAuthorName);
   const avatarInner = post.authorPhoto
     ? `<img src="${post.authorPhoto}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:11px;">`
-    : authorDisplayName
-      ? `<span style="font-family:Syne,sans-serif;font-weight:800;font-size:13px;color:#080810;">${_getInitiales(authorDisplayName)}</span>`
-      : `<svg width="18" height="18" viewBox="0 0 24 24" fill="rgba(8,8,16,0.7)" stroke="none"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>`;
+    : _feedInitiales
+      ? `<span style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#080810;">${_feedInitiales}</span>`
+      : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(8,8,16,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
 
   const isMyPost = post.authorId === window._currentUid;
   const isAdmin = window._monRole === 'admin';
@@ -7446,7 +7457,7 @@ function _renderPostCard(post) {
     <div class="feed-card-header">
       <div class="feed-card-avatar" style="cursor:pointer;" onclick="showProfilPublic('${post.authorId}')">${avatarInner}</div>
       <div style="flex:1;min-width:0;">
-        <div class="feed-card-name" style="cursor:pointer;" onclick="showProfilPublic('${post.authorId}')">${post.authorName || post.auteurNom || post.auteurBlase || post.authorUsername || 'Artiste'}</div>
+        <div class="feed-card-name" style="cursor:pointer;" onclick="showProfilPublic('${post.authorId}')">${_feedAuthorName}</div>
         <div class="feed-card-meta">${post.authorUsername ? '<span style="color:var(--muted2);font-size:11px;">@' + post.authorUsername + '</span>' + (post.authorDiscipline || post.createdAt ? ' · ' : '') : ''}${post.authorDiscipline || ''}${post.authorDiscipline && post.createdAt ? ' · ' : ''}${_tempsRelatif(post.createdAt)}</div>
       </div>
       ${menuPost}
@@ -7658,7 +7669,7 @@ async function chargerCommentaires(postId) {
       <div class="feed-comment-item">
         <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">${c.authorEmoji || '🎭'}</div>
         <div class="feed-comment-bubble">
-          <div class="feed-comment-author">${c.authorName || c.auteurNom || c.auteurBlase || c.authorUsername || 'Artiste'}</div>
+          <div class="feed-comment-author">${c.authorName || 'Artiste'}</div>
           <div class="feed-comment-text">${(c.content || '').replace(/</g,'&lt;')}</div>
         </div>
       </div>`).join('');
@@ -14226,16 +14237,11 @@ window._ouvrirPostDetail = async function(postId) {
       </div>
       <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-          <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
-            ${p.authorPhoto
-              ? `<img src="${p.authorPhoto}" style="width:100%;height:100%;object-fit:cover;">`
-              : (_getInitiales(p.authorName||'') !== '?'
-                ? `<span style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;color:#080810;">${_getInitiales(p.authorName||'')}</span>`
-                : `<svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(8,8,16,0.7)" stroke="none"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>`)
-            }
+          <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden;flex-shrink:0;">
+            ${p.authorPhoto ? `<img src="${p.authorPhoto}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;color:#080810;">${_getInitiales(p.authorName||'')}</span>`}
           </div>
           <div>
-            <div style="font-weight:700;font-size:14px;">${p.authorName || p.auteurNom || p.auteurBlase || p.authorUsername || 'Artiste'}</div>
+            <div style="font-weight:700;font-size:14px;">${p.authorName || 'Artiste'}</div>
             <div style="font-size:12px;color:var(--muted2);">${p.authorUsername ? '@'+p.authorUsername+' · ' : ''}${_tempsRelatif(p.createdAt)}</div>
           </div>
         </div>
@@ -14767,7 +14773,9 @@ function _renderProfilCard(p) {
   var initiales = _getInitiales(name);
   var avatar = p.photo
     ? '<img src="' + p.photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">'
-    : (initiales !== '?' ? '<span style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;color:#080810;">' + initiales + '</span>' : '<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"rgba(8,8,16,0.7)\" stroke=\"none\"><path d=\"M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z\"/></svg>');
+    : (initiales
+      ? '<span style="font-size:16px;font-family:Syne,sans-serif;font-weight:800;color:#080810;">' + initiales + '</span>'
+      : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(8,8,16,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>');
   var uname = p.username ? '@' + p.username : '';
   var style = (p.styles || []).slice(0, 2).join(' \u00B7 ');
   var safeId = (p.id || '').replace(/'/g, '');
@@ -14843,7 +14851,7 @@ window.chargerRecommandationsExplore = async function() {
           var username = p.authorUsername ? '@' + p.authorUsername : '';
           var avatar = p.authorPhoto
             ? '<img src="' + p.authorPhoto + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
-            : (_getInitiales(p.authorName || '') !== '?' ? '<span style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;color:#080810;">' + _getInitiales(p.authorName || '') + '</span>' : '<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"rgba(8,8,16,0.7)\" stroke=\"none\"><path d=\"M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z\"/></svg>');
+            : (_getInitiales(p.authorName || '') ? '<span style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;color:#080810;">' + _getInitiales(p.authorName || '') + '</span>' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(8,8,16,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>');
           var safeId = (p.id || '').replace(/'/g, '');
           var h = '<div onclick="window._ouvrirPostDetail(\'' + safeId + '\')" style="padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;cursor:pointer;">';
           h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
@@ -14920,7 +14928,7 @@ window.rechercherExplore = async function(q) {
         var username = p.authorUsername ? '@' + p.authorUsername : '';
         var avatar = p.authorPhoto
           ? '<img src="' + p.authorPhoto + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
-          : '<span style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;color:#080810;">' + _getInitiales(p.authorName || '') + '</span>';
+          : (_getInitiales(p.authorName || '') ? '<span style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;color:#080810;">' + _getInitiales(p.authorName || '') + '</span>' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(8,8,16,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>');
         var safeId = (p.id || '').replace(/'/g, '');
         var h = '<div onclick="window._ouvrirPostDetail(\'' + safeId + '\')" style="padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;cursor:pointer;">';
         h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
@@ -15232,6 +15240,8 @@ window.inscrire = async function() {
 
   // Validation
   errDiv.style.display = 'none';
+  const cguCheck = document.getElementById('signup-cgu');
+  if (cguCheck && !cguCheck.checked) { afficherErreur(errDiv, '⚠️ Tu dois accepter les CGU et la politique de confidentialité pour continuer'); return; }
   if (!email)  { afficherErreur(errDiv, '⚠️ Entre ton email'); return; }
   if (password.length < 6) { afficherErreur(errDiv, '⚠️ Mot de passe trop court (6 caractères min)'); return; }
   if (metiers.length === 0) { afficherErreur(errDiv, '⚠️ Choisis au moins un type de profil'); return; }
