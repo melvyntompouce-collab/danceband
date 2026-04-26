@@ -5346,7 +5346,7 @@ if (isPWA) {
       <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(0,245,155,0.1) 0%,transparent 70%);border-radius:50%;"></div>
       <div style="display:flex;align-items:center;gap:18px;position:relative;">
         <div id="ap-avatar" style="width:80px;height:80px;border-radius:22px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0;overflow:hidden;position:relative;box-shadow:0 8px 24px rgba(0,245,155,0.2);">
-          <span id="ap-avatar-emoji">💃</span>
+          <span id="ap-avatar-emoji"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(8,8,16,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
           <img id="ap-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:22px;">
         </div>
         <div style="flex:1;">
@@ -6975,6 +6975,8 @@ function getNotifConfig(n) {
     favori:          { ico:'♥',  txt:"Quelqu'un t'a ajouté en favori",  bg:'rgba(255,77,109,0.08)' },
     badge:           { ico:'🏆', txt:"Tu as débloqué un nouveau badge", bg:'rgba(255,217,61,0.08)' },
     xp:              { ico:'⭐', txt: n.texte || 'Tu as gagné des XP',  bg:'rgba(0,245,155,0.08)' },
+    like_post:       { ico:'❤️', txt: n.texte || 'Quelqu\'un a aimé ton post', bg:'rgba(255,77,109,0.08)' },
+    commentaire_post:{ ico:'💬', txt: n.texte || 'Quelqu\'un a commenté ton post', bg:'rgba(155,93,229,0.08)' },
   };
   if (n.type === 'broadcast') return { ico:'📣', txt: n.titre || '📣 Message de HAKO', bg:'rgba(0,245,155,0.05)' };
   if (n.type === 'rappel_event') return { ico:'📅', txt: n.titre || 'Rappel événement', bg:'rgba(77,159,255,0.08)' };
@@ -7467,7 +7469,7 @@ function _renderPostCard(post) {
     <div class="feed-card-actions">
       <button class="feed-action-btn${liked ? ' liked' : ''}" onclick="toggleLikePost('${post.id}',this)" id="like-btn-${post.id}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="${liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        <span id="like-count-${post.id}">${post.likesCount || 0}</span>
+        <span id="like-count-${post.id}" onclick="event.stopPropagation();voirLikeurs('${post.id}')" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px;">${post.likesCount || 0}</span>
       </button>
       <button class="feed-action-btn" onclick="toggleCommentaires('${post.id}')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -7622,9 +7624,78 @@ async function toggleLikePost(postId, btn) {
     btn.classList.add('liked');
     btn.querySelector('svg').setAttribute('fill', 'currentColor');
     await window._updateDoc(ref, { likes: window._arrayUnion(window._currentUid), likesCount: post.likesCount });
+    // Envoyer notif au propriétaire du post (pas à soi-même)
+    if (post.authorId && post.authorId !== window._currentUid) {
+      _envoyerNotifPost(post.authorId, 'like_post', window._currentUid, postId, post.content);
+    }
   }
   if (countEl) countEl.textContent = post.likesCount;
 }
+
+// Envoyer une notification au propriétaire d'un post
+async function _envoyerNotifPost(authorId, type, fromUid, postId, postContent) {
+  try {
+    const fromProfil = window._monProfil;
+    const fromName = fromProfil?.blase || fromProfil?.nom || fromProfil?.username || 'Quelqu\'un';
+    const extrait = postContent ? postContent.slice(0, 60) + (postContent.length > 60 ? '...' : '') : '';
+    const notif = {
+      type,
+      date: new Date().toISOString(),
+      lu: false,
+      fromUid,
+      fromName,
+      postId,
+      texte: type === 'like_post'
+        ? `${fromName} a aimé ton post${extrait ? ' : "' + extrait + '"' : ''}`
+        : `${fromName} a commenté ton post${extrait ? ' : "' + extrait + '"' : ''}`,
+    };
+    const authorRef = window._doc(window._db, 'danseurs', authorId);
+    await window._updateDoc(authorRef, { notifications: window._arrayUnion(notif) });
+  } catch(e) { console.error('Notif post:', e); }
+}
+
+// Modal : voir qui a liké un post
+window.voirLikeurs = async function(postId) {
+  const post = _feedPosts.find(p => p.id === postId);
+  if (!post || !post.likes || post.likes.length === 0) { _showToast('Aucun like pour l\'instant'); return; }
+  let overlay = document.getElementById('likeurs-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'likeurs-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;';
+    overlay.onclick = function(e) { if (e.target === overlay) overlay.style.display = 'none'; };
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML = '<div style="width:100%;max-width:520px;background:var(--bg);border-radius:24px 24px 0 0;border-top:1px solid var(--border);padding:20px 20px calc(20px + env(safe-area-inset-bottom));max-height:60vh;overflow-y:auto;-webkit-overflow-scrolling:touch;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><div style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;">❤️ ' + post.likes.length + ' like' + (post.likes.length > 1 ? 's' : '') + '</div><button onclick="document.getElementById(\'likeurs-overlay\').style.display=\'none\'" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;">✕</button></div><div id="likeurs-list"><div style="text-align:center;color:var(--muted);padding:20px;">⏳ Chargement...</div></div></div>';
+  overlay.style.display = 'flex';
+  // Charger les profils des likeurs
+  try {
+    const uids = post.likes.slice(0, 50);
+    const profils = [];
+    for (const uid of uids) {
+      try {
+        const snap = await window._getDoc(window._doc(window._db, 'danseurs', uid));
+        if (snap.exists()) profils.push({ id: uid, ...snap.data() });
+      } catch(e) {}
+    }
+    const list = document.getElementById('likeurs-list');
+    if (!list) return;
+    if (profils.length === 0) { list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;">Aucun profil trouvé</div>'; return; }
+    list.innerHTML = profils.map(function(p) {
+      var name = p.blase || p.nom || p.username || 'Artiste';
+      var uname = p.username ? '@' + p.username : '';
+      var initiales = _getInitiales(name);
+      var avatar = p.photo
+        ? '<img src="' + p.photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
+        : (initiales ? '<span style="font-family:Syne,sans-serif;font-weight:800;font-size:14px;color:#080810;">' + initiales + '</span>' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(8,8,16,0.6)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>');
+      return '<div onclick="document.getElementById(\'likeurs-overlay\').style.display=\'none\';showProfilPublic(\'' + p.id + '\')" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;">'
+        + '<div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">' + avatar + '</div>'
+        + '<div><div style="font-family:Syne,sans-serif;font-weight:700;font-size:14px;">' + name + '</div>'
+        + (uname ? '<div style="font-size:12px;color:var(--muted);">' + uname + '</div>' : '')
+        + '</div></div>';
+    }).join('');
+  } catch(e) { console.error('Likeurs:', e); }
+};
 
 async function toggleSauvegarderPost(postId, btn) {
   if (!window._currentUid || !window._db) return;
@@ -7683,11 +7754,11 @@ async function envoyerCommentaire(postId) {
   if (!content) return;
   input.value = '';
   const p = window._monProfil;
+  const authorName = p?.blase || p?.nom || p?.nomAffiche || p?.pseudo || p?.username || 'Artiste';
   try {
     await window._addDoc(window._collection(window._db, 'posts', postId, 'comments'), {
       authorId: window._currentUid,
-      authorName: p?.nomAffiche || p?.pseudo || 'Artiste',
-      authorEmoji: p?.emoji || '🎭',
+      authorName,
       content,
       createdAt: window._serverTimestamp()
     });
@@ -7696,7 +7767,14 @@ async function envoyerCommentaire(postId) {
     });
     const countEl = document.getElementById('comment-count-' + postId);
     const post = _feedPosts.find(x => x.id === postId);
-    if (post) { post.commentsCount = (post.commentsCount || 0) + 1; if (countEl) countEl.textContent = post.commentsCount; }
+    if (post) {
+      post.commentsCount = (post.commentsCount || 0) + 1;
+      if (countEl) countEl.textContent = post.commentsCount;
+      // Notif au propriétaire du post (pas à soi-même)
+      if (post.authorId && post.authorId !== window._currentUid) {
+        _envoyerNotifPost(post.authorId, 'commentaire_post', window._currentUid, postId, content);
+      }
+    }
     chargerCommentaires(postId);
   } catch(e) { console.error('Comment send:', e); }
 }
@@ -13585,8 +13663,17 @@ window.showProfilPublic = async function(uid) {
       imgEl.src = d.photo;
       imgEl.style.display = 'block';
     } else {
-      emojiEl.style.display = 'block';
       imgEl.style.display = 'none';
+      emojiEl.style.display = 'flex';
+      emojiEl.style.alignItems = 'center';
+      emojiEl.style.justifyContent = 'center';
+      const _apName = d.blase || d.nom || d.username || '';
+      const _apInitiales = _getInitiales ? _getInitiales(_apName) : (_apName ? _apName[0].toUpperCase() : null);
+      if (_apInitiales) {
+        emojiEl.innerHTML = '<span style="font-family:Syne,sans-serif;font-weight:800;font-size:28px;color:#080810;">' + _apInitiales + '</span>';
+      } else {
+        emojiEl.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(8,8,16,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+      }
     }
 
     // ── Styles (intégrés dans la section métier désormais, ap-styles supprimé) ──
