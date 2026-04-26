@@ -248,6 +248,7 @@ body::after{
 /* ── PAGES ── */
 .page{display:none;min-height:100vh;padding-top:44px;position:relative;z-index:1;}
 #page-network{min-height:0;padding-top:0;}
+body.logo-bar-visible #page-network { padding-top: calc(60px + max(10px, env(safe-area-inset-top))) !important; }
 .page.active{display:block;}
 body.logo-bar-visible .page{padding-top:calc(120px + max(20px, env(safe-area-inset-top)));}
 
@@ -14767,8 +14768,15 @@ window.switchExploreTab = function(tab) {
   var rPo = document.getElementById('explore-results-posts');
   if (rP) rP.style.display = tab === 'profils' ? 'block' : 'none';
   if (rPo) rPo.style.display = tab === 'posts' ? 'block' : 'none';
-  var q = (document.getElementById('search-explore-input') || {}).value || '';
-  window.rechercherExplore(q.trim());
+  var q = ((document.getElementById('search-explore-input') || {}).value || '').trim();
+  if (q.length >= 2) {
+    window.rechercherExplore(q);
+  }
+  // Si pas de recherche active et contenu vide, charger les suggestions
+  var activeContainer = tab === 'profils' ? rP : rPo;
+  if (!q && activeContainer && activeContainer.innerHTML.indexOf('Chargement') !== -1) {
+    window.chargerRecommandationsExplore();
+  }
 };
 
 function _renderProfilCard(p) {
