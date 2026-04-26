@@ -248,7 +248,8 @@ body::after{
 /* ── PAGES ── */
 .page{display:none;min-height:100vh;padding-top:44px;position:relative;z-index:1;}
 #page-network{min-height:0;padding-top:0;}
-body.logo-bar-visible #page-network { padding-top: calc(100px + max(10px, env(safe-area-inset-top))) !important; }
+body.logo-bar-visible #page-network { padding-top: calc(50px + 44px + max(20px, env(safe-area-inset-top)) + 15px) !important; }
+body:not(.logo-bar-visible) #page-network { padding-top: calc(44px + max(20px, env(safe-area-inset-top)) + 15px) !important; }
 .page.active{display:block;}
 body.logo-bar-visible .page{padding-top:calc(120px + max(20px, env(safe-area-inset-top)));}
 
@@ -14754,7 +14755,7 @@ function _getInitiales(name) {
 }
 
 function _renderProfilCard(p) {
-  var name = p.blase || p.nom || '';
+  var name = p.blase || p.nom || p.username || '';
   var initiales = _getInitiales(name);
   var avatar = p.photo
     ? '<img src="' + p.photo + '" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">'
@@ -14762,7 +14763,7 @@ function _renderProfilCard(p) {
   var uname = p.username ? '@' + p.username : '';
   var style = (p.styles || []).slice(0, 2).join(' \u00B7 ');
   var safeId = (p.id || '').replace(/'/g, '');
-  var html = '<div onclick="ouvrirProfilUtilisateur(\'' + safeId + '\')" style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;cursor:pointer;">';
+  var html = '<div onclick="showProfilPublic(\'' + safeId + '\')" style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;cursor:pointer;">';
   html += '<div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">' + avatar + '</div>';
   html += '<div style="flex:1;min-width:0;">';
   html += '<div style="font-family:Syne,sans-serif;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (name || 'Artiste') + '</div>';
@@ -14829,7 +14830,7 @@ window.chargerRecommandationsExplore = async function() {
             ? '<img src="' + p.authorPhoto + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
             : '<span style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;color:#080810;">' + _getInitiales(p.authorName || '') + '</span>';
           var safeId = (p.id || '').replace(/'/g, '');
-          var h = '<div onclick="ouvrirPostDetail(\'' + safeId + '\')" style="padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;cursor:pointer;">';
+          var h = '<div onclick="window._ouvrirPostDetail(\'' + safeId + '\')" style="padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;cursor:pointer;">';
           h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
           h += '<div style="width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">' + avatar + '</div>';
           h += '<div>';
@@ -14905,7 +14906,7 @@ window.rechercherExplore = async function(q) {
           ? '<img src="' + p.authorPhoto + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
           : '<span style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;color:#080810;">' + _getInitiales(p.authorName || '') + '</span>';
         var safeId = (p.id || '').replace(/'/g, '');
-        var h = '<div onclick="ouvrirPostDetail(\'' + safeId + '\')" style="padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;cursor:pointer;">';
+        var h = '<div onclick="window._ouvrirPostDetail(\'' + safeId + '\')" style="padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;cursor:pointer;">';
         h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
         h += '<div style="width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">' + avatar + '</div>';
         h += '<div>';
