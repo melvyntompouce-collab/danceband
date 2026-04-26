@@ -13,7 +13,8 @@
 <link rel="apple-touch-icon" href="/icon-192.png">
 <title>HAKO — Le réseau des artistes</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=Big+Shoulders+Display:wght@900&display=swap" rel="stylesheet">
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <style>
@@ -2671,7 +2672,7 @@ body.pwa .page:not(#page-network):not(#page-conv) { padding-bottom: calc(60px + 
   display: none;
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  height: calc(64px + env(safe-area-inset-bottom));
+  height: 62px;
   background: rgba(8,8,16,0.97);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -2679,12 +2680,12 @@ body.pwa .page:not(#page-network):not(#page-conv) { padding-bottom: calc(60px + 
   z-index: 9998;
   padding: 0 8px;
   padding-bottom: env(safe-area-inset-bottom);
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-around;
 }
 /* Afficher quand connecté */
 @media(max-width:768px) { body #bottom-nav { display: flex !important; } }
-body.pwa #bottom-nav { display: flex !important; height: calc(64px + env(safe-area-inset-bottom)); }
+body.pwa #bottom-nav { display: flex !important; height: 87px; }
 body.hide-bottomnav #bottom-nav { display: none !important; }
 /* Conversation : bottom ajusté pour la bottom nav */
 @media(max-width:768px) {
@@ -2711,17 +2712,18 @@ body.pwa #bottom-nav .mn-item.mn-center { padding-top: 8px; }
 
 #bottom-nav .mn-item {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
-  cursor: pointer; padding: 10px 4px 6px; border-radius: 10px;
+  cursor: pointer; padding: 6px 4px; border-radius: 10px;
   border: none; background: transparent; color: var(--muted);
   transition: color 0.15s, transform 0.15s;
   flex: 1; min-width: 0;
   -webkit-tap-highlight-color: transparent;
+  padding-top: 8px;
 }
-#bottom-nav .mn-item.mn-center { padding-top: 8px; }
+#bottom-nav .mn-item.mn-center { padding-top: 6px; }
 #bottom-nav .mn-item.active { color: var(--green); }
 #bottom-nav .mn-item.on { color: var(--green); }
 #bottom-nav .mn-item:active { transform: scale(0.9); }
-#bottom-nav .mn-ico { width: 26px; height: 26px; flex-shrink: 0; }
+#bottom-nav .mn-ico { width: 22px; height: 22px; flex-shrink: 0; }
 #bottom-nav .mn-lbl { font-size: 9px; font-weight: 800; font-family: 'Syne', sans-serif; letter-spacing: 0.3px; text-transform: uppercase; white-space: nowrap; }
 /* Bouton central */
 .mn-center { position: relative; }
@@ -2739,7 +2741,7 @@ body.pwa #bottom-nav .mn-item.mn-center { padding-top: 8px; }
 .mn-center:active .mn-center-ico { transform: scale(0.92); }
 .mn-center.active .mn-center-ico { background: rgba(0,245,155,0.15); }
 /* Quand bottom nav visible : padding bas des pages + cacher hamburger */
-body.has-bottomnav .page:not(#page-network):not(#page-conv) { padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important; }
+body.has-bottomnav .page:not(#page-network):not(#page-conv) { padding-bottom: calc(72px + env(safe-area-inset-bottom)) !important; }
 body.has-bottomnav #hamburger-btn { display: none !important; }
 @media(min-width:769px) { body.has-bottomnav #hamburger-btn { display: flex !important; } }
 body.has-bottomnav #nav-login-btn { display: none !important; }
@@ -5100,42 +5102,158 @@ if (isPWA) {
   </div>
 </div>
 
-<div class="page" id="page-network" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
-  <div style="max-width:680px;margin:0 auto;padding:16px 16px 100px;">
+<div class="page" id="page-network">
 
-    <!-- Header -->
-    <div style="margin-bottom:16px;">
-      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;">Découvrir</div>
-      <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;line-height:1;color:var(--text);">RECHERCHE</span>
+
+  <div class="network-layout">
+
+    <!-- Titre réseau -->
+    <div id="network-titre-mobile" style="flex-shrink:0;padding:0 4px 6px;display:flex;flex-direction:column;">
+      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;">Communauté</div>
+      <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;line-height:1;color:var(--text);">RÉSEAU</span>
     </div>
 
-    <!-- Barre de recherche -->
-    <div style="display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:0 14px;height:48px;margin-bottom:14px;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--muted2);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="search-explore-input" placeholder="Nom, @username, style..." autocomplete="off" oninput="rechercherExplore(this.value)" style="flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;">
-      <button onclick="document.getElementById('search-explore-input').value='';rechercherExplore('');" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0;display:flex;align-items:center;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+    <!-- ONGLETS -->
+    <div id="network-tabs" style="flex-shrink:0;display:flex;gap:6px;padding:0 2px 8px;">
+      <button class="style-fchip on" onclick="switchNetworkTab('artistes',this)">👤 Artistes</button>
+      <button class="style-fchip" onclick="switchNetworkTab('evenements',this)">🎉 Événements</button>
+      <button class="style-fchip" onclick="switchNetworkTab('lieux',this)">📍 Lieux</button>
     </div>
 
-    <!-- Onglets -->
-    <div style="display:flex;gap:6px;margin-bottom:16px;">
-      <button class="style-fchip on" id="explore-tab-profils" onclick="switchExploreTab('profils')">👤 Profils</button>
-      <button class="style-fchip" id="explore-tab-posts" onclick="switchExploreTab('posts')">📸 Posts</button>
+    <!-- CARTE -->
+    <div class="network-map-wrap">
+      <div id="leaflet-map" style="width:100%;height:100%;"></div>
+      <div class="map-badge">
+        <div class="dot"></div>
+        <span id="map-count">0 artistes</span>
+      </div>
+      <div class="map-controls">
+        <div class="map-ctrl-btn" onclick="carte && carte.zoomIn()">＋</div>
+        <div class="map-ctrl-btn" onclick="carte && carte.zoomOut()">－</div>
+        <div class="map-ctrl-btn" id="btn-locate" onclick="centrerSurMoi()" title="Ma position">📍</div>
+        <div class="map-ctrl-btn" onclick="openMapFullscreen()" title="Plein écran" id="btn-map-fs">⛶</div>
+      </div>
     </div>
 
-    <!-- Résultats profils -->
-    <div id="explore-results-profils">
-      <div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Tape un nom ou @username pour rechercher</div>
+    <!-- MAP FULLSCREEN OVERLAY -->
+    <div id="map-fullscreen-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:#080810;">
+      <div id="map-fullscreen-inner" style="width:100%;height:100%;"></div>
+      <div class="map-badge" style="position:fixed;top:16px;left:16px;z-index:10002;">
+        <div class="dot"></div>
+        <span id="map-fs-count">0 artistes</span>
+      </div>
+      <button onclick="closeMapFullscreen()" id="btn-map-fs-close" style="position:fixed;top:calc(44px + env(safe-area-inset-top) + 15px);right:16px;z-index:10002;width:38px;height:38px;border-radius:10px;background:rgba(8,8,16,0.92);backdrop-filter:blur(12px);border:1.5px solid rgba(0,245,155,0.4);color:var(--green);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;box-shadow:0 4px 16px rgba(0,0,0,0.4);">✕</button>
     </div>
 
-    <!-- Résultats posts -->
-    <div id="explore-results-posts" style="display:none;">
-      <div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Tape un mot-clé pour rechercher dans les posts</div>
+    <!-- LISTE (desktop uniquement) -->
+    <div class="network-list-wrap" id="network-list-desktop">
+      <div class="network-list-header">
+        <input class="search-input" type="text" id="search-input" placeholder="🔍 Nom, style, ville..." oninput="filtrerDanseurs()">
+        <div class="filter-row" id="filter-row" style="margin-bottom:6px;">
+          <button class="style-fchip on" onclick="setFiltre('tous',this)">Tous</button>
+          <button class="style-fchip" onclick="setFiltre('enligne',this)"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00f59b;box-shadow:0 0 6px #00f59b;margin-right:5px;flex-shrink:0;"></span>En ligne</button>
+          <button class="style-fchip" onclick="setFiltre('compatible',this)">⚡ Compatible</button>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;">
+          <input id="filtre-zone" type="text" list="villes-datalist" placeholder="📍 Filtrer par ville..." oninput="filtrerDanseurs()" autocomplete="off" style="flex:1;padding:7px 12px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);color:var(--muted2);font-size:12px;font-family:'Syne',sans-serif;font-weight:700;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
+          <button onclick="resetFiltres()" style="height:34px;padding:0 12px;border-radius:8px;background:none;border:1.5px solid var(--border);color:var(--muted2);font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;white-space:nowrap;transition:all 0.2s;flex-shrink:0;" onmouseover="this.style.borderColor='rgba(255,77,109,0.4)';this.style.color='var(--red)';" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)';">✕ Reset</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:4px;">
+          <select id="map-filtre-categorie" class="form-select" style="font-size:12px;padding:7px 10px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);" onchange="setMapCategorieFiltre(this.value)">
+            <option value="">🎭 Toutes catégories</option>
+            <option value="scene">🎭 Scène</option>
+            <option value="musique">🎵 Musique</option>
+            <option value="audiovisuel">🎬 Audiovisuel</option>
+            <option value="arts_visuels">🎨 Arts Visuels</option>
+            <option value="mode">👗 Mode</option>
+          </select>
+          <select id="map-filtre-specialite" class="form-select" style="font-size:12px;padding:7px 10px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);display:none;" onchange="setMapSpecialiteFiltre(this.value)">
+            <option value="">Toutes spécialités</option>
+          </select>
+          <select id="map-filtre-style" class="form-select" style="font-size:12px;padding:7px 10px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);display:none;" onchange="setMapStyleFiltre(this.value)">
+            <option value="">Tous les styles</option>
+            <option>Afro</option><option>Bachata</option><option>Bharata Natyam</option><option>Breakdance</option><option>Capoeira</option><option>Claquettes</option><option>Classique</option><option>Commercial</option><option>Contemporain</option><option>Dancehall</option><option>Danse Orientale</option><option>Electro</option><option>Experimental</option><option>Heels</option><option>Hip-Hop</option><option>House</option><option>K-Pop</option><option>Kizomba</option><option>Krump</option><option>Litefeet</option><option>Locking</option><option>Modern Jazz</option><option>New Style</option><option>Pole Dance</option><option>Popping</option><option>Reggaeton</option><option>Salsa</option><option>Samba</option><option>Street Jazz</option><option>Tango</option><option>Voguing</option><option>Waacking</option><option>Zouk</option>
+          </select>
+        </div>
+      </div>
+      <div class="dancer-list" id="dancer-list">
+        <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">⏳ Chargement des danseurs...</div>
+      </div>
     </div>
 
   </div>
 </div>
+
+<!-- DRAWER MOBILE RÉSEAU (hors page) -->
+<div id="network-mobile-drawer" style="display:none;">
+
+  <!-- Overlay sombre -->
+  <div id="network-drawer-overlay" onclick="fermerDrawerReseau()" style="position:fixed;inset:0;z-index:800;background:rgba(0,0,0,0.5);"></div>
+
+  <!-- Drawer -->
+  <div id="network-drawer-panel" style="position:fixed;left:0;right:0;bottom:calc(62px + env(safe-area-inset-bottom));z-index:801;background:var(--bg);border-radius:24px 24px 0 0;border-top:1px solid var(--border);transform:translateY(100%);transition:transform 0.32s cubic-bezier(0.32,0.72,0,1);height:calc(85vh - 62px - env(safe-area-inset-bottom));display:flex;flex-direction:column;">
+
+    <!-- Handle + barre de recherche -->
+    <div style="padding:10px 16px 0;flex-shrink:0;">
+      <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);margin:0 auto 12px;"></div>
+      <div style="display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:0 12px;height:42px;margin-bottom:12px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--muted2);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input-mobile" placeholder="Rechercher par nom..." oninput="syncSearchMobile(this.value)" onkeydown="if(event.key==='Enter'){syncSearchMobile(this.value);this.blur();}" autocomplete="off" style="flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;">
+        <button onclick="syncSearchMobile(document.getElementById('search-input-mobile').value)" style="background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.25);border-radius:8px;color:var(--green);cursor:pointer;padding:4px 8px;display:flex;align-items:center;margin-right:4px;" title="Rechercher">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <button onclick="syncSearchMobile('');document.getElementById('search-input-mobile').value=''" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0;display:flex;align-items:center;" title="Effacer">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtres (artistes uniquement) -->
+    <div id="drawer-filtres-artistes" style="padding:0 16px 8px;flex-shrink:0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;" id="filter-row-mobile">
+        <button class="style-fchip on" onclick="setFiltre('tous',this);syncFiltresMobile()">Tous</button>
+        <button class="style-fchip" onclick="setFiltre('enligne',this);syncFiltresMobile()"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#00f59b;box-shadow:0 0 6px #00f59b;margin-right:5px;"></span>En ligne</button>
+        <button class="style-fchip" onclick="setFiltre('compatible',this);syncFiltresMobile()">⚡ Compatible</button>
+      </div>
+      <!-- Filtre catégorie + spécialité -->
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">
+        <select id="map-filtre-categorie-mobile" class="form-select" style="font-size:13px;padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);" onchange="setMapCategorieFiltreMobile(this.value)">
+          <option value="">🎭 Toutes catégories</option>
+          <option value="scene">🎭 Scène</option>
+          <option value="musique">🎵 Musique</option>
+          <option value="audiovisuel">🎬 Audiovisuel</option>
+          <option value="arts_visuels">🎨 Arts Visuels</option>
+          <option value="mode">👗 Mode</option>
+        </select>
+        <select id="map-filtre-specialite-mobile" class="form-select" style="font-size:13px;padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);display:none;" onchange="setMapSpecialiteFiltreMobile(this.value)">
+          <option value="">Toutes spécialités</option>
+        </select>
+        <select id="map-filtre-style-mobile" class="form-select" style="font-size:13px;padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);display:none;" onchange="setMapStyleFiltreMobile(this.value)">
+          <option value="">Tous les styles</option>
+          <option>Afro</option><option>Bachata</option><option>Bharata Natyam</option><option>Breakdance</option><option>Capoeira</option><option>Claquettes</option><option>Classique</option><option>Commercial</option><option>Contemporain</option><option>Dancehall</option><option>Danse Orientale</option><option>Electro</option><option>Experimental</option><option>Heels</option><option>Hip-Hop</option><option>House</option><option>K-Pop</option><option>Kizomba</option><option>Krump</option><option>Litefeet</option><option>Locking</option><option>Modern Jazz</option><option>New Style</option><option>Pole Dance</option><option>Popping</option><option>Reggaeton</option><option>Salsa</option><option>Samba</option><option>Street Jazz</option><option>Tango</option><option>Voguing</option><option>Waacking</option><option>Zouk</option>
+        </select>
+      </div>
+      <input id="filtre-zone-mobile" type="text" list="villes-datalist" placeholder="📍 Ville..." oninput="syncVilleMobile(this.value)" autocomplete="off" style="width:100%;box-sizing:border-box;padding:7px 12px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:8px;" onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
+    </div>
+
+    <!-- Liste artistes -->
+    <div id="dancer-list-mobile" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 12px 16px;min-height:0;">
+      <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">⏳ Chargement...</div>
+    </div>
+  </div>
+</div>
+
+<!-- BARRE COMPACTE MOBILE (fixe au-dessus de la nav) -->
+<div id="network-mobile-bar" style="display:none;position:fixed;left:12px;right:12px;z-index:500;bottom:calc(62px + env(safe-area-inset-bottom) + 12px);">
+  <button onclick="ouvrirDrawerReseau()" style="width:100%;height:40px;border-radius:12px;background:rgba(20,20,36,0.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:10px;padding:0 14px;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.3);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--muted2);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <span id="network-bar-label" style="flex:1;text-align:left;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--muted2);">Rechercher par nom...</span>
+    <div id="network-bar-dot" style="display:none;width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+  </button>
+</div>  </div>
+</div>
+
 
 <!-- ═══ PAGE: AGENDA ═══ -->
 <div class="page" id="page-agenda">
@@ -14759,113 +14877,6 @@ function resetFiltres() {
   filtrerDanseurs();
 }
 
-
-// ════════════════════════════════
-// PAGE EXPLORE / RECHERCHE
-// ════════════════════════════════
-let _exploreTab = 'profils';
-
-window.switchExploreTab = function(tab) {
-  _exploreTab = tab;
-  document.getElementById('explore-tab-profils').classList.toggle('on', tab === 'profils');
-  document.getElementById('explore-tab-posts').classList.toggle('on', tab === 'posts');
-  document.getElementById('explore-results-profils').style.display = tab === 'profils' ? 'block' : 'none';
-  document.getElementById('explore-results-posts').style.display = tab === 'posts' ? 'block' : 'none';
-  const q = document.getElementById('search-explore-input')?.value.trim() || '';
-  rechercherExplore(q);
-};
-
-window.rechercherExplore = async function(q) {
-  q = (q || '').trim().toLowerCase();
-  if (_exploreTab === 'profils') {
-    const container = document.getElementById('explore-results-profils');
-    if (!container) return;
-    if (q.length < 2) {
-      container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Tape un nom ou @username pour rechercher</div>';
-      return;
-    }
-    container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">⏳ Recherche...</div>';
-    try {
-      const snap = await window._getDocs(window._collection(window._db, 'danseurs'));
-      const isAt = q.startsWith('@');
-      const term = isAt ? q.slice(1) : q;
-      const results = [];
-      snap.forEach(doc => {
-        const d = doc.data();
-        const nom = (d.nom || '').toLowerCase();
-        const blase = (d.blase || '').toLowerCase();
-        const username = (d.username || '').toLowerCase();
-        const styles = (d.styles || []).join(' ').toLowerCase();
-        if (
-          nom.includes(term) ||
-          blase.includes(term) ||
-          username.includes(term) ||
-          (!isAt && styles.includes(term))
-        ) {
-          results.push({ id: doc.id, ...d });
-        }
-      });
-      if (results.length === 0) {
-        container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Aucun profil trouvé</div>';
-        return;
-      }
-      container.innerHTML = results.map(p => {
-        const avatar = p.photo
-          ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">`
-          : `<span style="font-size:28px;">${p.emoji || '💃'}</span>`;
-        const name = p.blase || p.nom || 'Artiste';
-        const username = p.username ? `@${p.username}` : '';
-        const style = (p.styles || []).slice(0, 2).join(' · ');
-        return `<div onclick="showPage('profile');if(window.chargerProfilPublic)window.chargerProfilPublic('${p.id}')" style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;cursor:pointer;">
-          <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">${avatar}</div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div>
-            ${username ? `<div style="font-size:12px;color:var(--muted);margin-top:1px;">${username}</div>` : ''}
-            ${style ? `<div style="font-size:12px;color:var(--green);margin-top:3px;">${style}</div>` : ''}
-          </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>`;
-      }).join('');
-    } catch(e) {
-      console.error('Erreur recherche profils:', e);
-      document.getElementById('explore-results-profils').innerHTML = '<div style="color:var(--red);font-size:13px;text-align:center;padding:20px 0;">Erreur de recherche</div>';
-    }
-  } else {
-    const container = document.getElementById('explore-results-posts');
-    if (!container) return;
-    if (q.length < 2) {
-      container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Tape un mot-clé pour rechercher dans les posts</div>';
-      return;
-    }
-    container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">⏳ Recherche...</div>';
-    try {
-      const snap = await window._getDocs(window._collection(window._db, 'posts'));
-      const results = [];
-      snap.forEach(doc => {
-        const d = doc.data();
-        const texte = (d.texte || d.content || d.text || '').toLowerCase();
-        if (texte.includes(q)) results.push({ id: doc.id, ...d });
-      });
-      results.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-      if (results.length === 0) {
-        container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Aucun post trouvé</div>';
-        return;
-      }
-      container.innerHTML = results.slice(0, 20).map(p => {
-        const texte = p.texte || p.content || p.text || '';
-        const auteur = p.auteurBlase || p.auteurNom || 'Artiste';
-        return `<div style="padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--green);">${auteur}</div>
-          <div style="font-size:14px;color:var(--text);line-height:1.5;">${texte.slice(0, 200)}${texte.length > 200 ? '...' : ''}</div>
-        </div>`;
-      }).join('');
-    } catch(e) {
-      console.error('Erreur recherche posts:', e);
-      document.getElementById('explore-results-posts').innerHTML = '<div style="color:var(--red);font-size:13px;text-align:center;padding:20px 0;">Erreur de recherche</div>';
-    }
-  }
-};
-
 function filtrerDanseurs() {
   const search = document.getElementById('search-input')?.value.toLowerCase() || '';
   const zone   = document.getElementById('filtre-zone')?.value || '';
@@ -16856,18 +16867,6 @@ console.log('✅ Firebase Auth chargé !');
 window._firebaseReady = true;
 document.dispatchEvent(new Event('firebase-ready'));
 
-// Timeout de sécurité : force la suppression du loader après 8 secondes
-setTimeout(() => {
-  const loader = document.getElementById('app-loader');
-  if (loader) {
-    console.warn('Loader force apres timeout securite');
-    loader.classList.add('hidden');
-    setTimeout(() => loader.remove(), 350);
-  }
-  const anyPageVisible = document.querySelector('.page[style*="display: flex"], .page[style*="display:flex"]');
-  if (!anyPageVisible && window.showPage) window.showPage('home');
-}, 8000);
-
 
 
 // ── Menu profil nav ──
@@ -17575,8 +17574,8 @@ function _renderDrawerLieux() {
   <button class="mn-item" id="bn-messages" onclick="showPage('messages')" aria-label="Messages">
     <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
   </button>
-  <button class="mn-item" id="bn-network" onclick="showPage('network')" aria-label="Recherche">
-    <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  <button class="mn-item" id="bn-network" onclick="showPage('network')" aria-label="Réseau">
+    <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
   </button>
   <button class="mn-item mn-center" id="bn-feed" onclick="showPage('feed')" aria-label="Feed">
     <div class="mn-center-ico">
