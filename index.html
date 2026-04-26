@@ -5104,12 +5104,12 @@ if (isPWA) {
 <div class="page" id="page-network" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div style="max-width:680px;margin:0 auto;padding:16px 16px 100px;">
 
-    <div style="margin-bottom:16px;">
+    <div style="margin-bottom:16px;margin-top:8px;">
       <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;">Découvrir</div>
       <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;line-height:1;color:var(--text);">RECHERCHE</span>
     </div>
 
-    <div style="display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:0 14px;height:48px;margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:0 14px;height:48px;margin-bottom:14px;position:sticky;top:8px;z-index:10;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--muted2);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input type="text" id="search-explore-input" placeholder="Nom, @username, style..." autocomplete="off" oninput="rechercherExplore(this.value)" style="flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;">
       <button onclick="document.getElementById('search-explore-input').value='';rechercherExplore('');" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0;display:flex;align-items:center;">
@@ -5126,7 +5126,7 @@ if (isPWA) {
       <div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">⏳ Chargement...</div>
     </div>
     <div id="explore-results-posts" style="display:none;">
-      <div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Tape un mot-clé pour rechercher dans les posts</div>
+      <div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">⏳ Chargement...</div>
     </div>
 
   </div>
@@ -14810,18 +14810,55 @@ function _melangerTableau(arr) {
 }
 
 window.chargerRecommandationsExplore = async function() {
-  var container = document.getElementById('explore-results-profils');
-  if (!container) return;
-  container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">\u23F3 Chargement...</div>';
-  var profils = await _chargerTousProfils();
-  if (profils.length === 0) {
-    container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Aucun profil pour l\u2019instant</div>';
-    return;
+  var containerP = document.getElementById('explore-results-profils');
+  var containerPo = document.getElementById('explore-results-posts');
+
+  // Suggestions profils
+  if (containerP) {
+    containerP.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">\u23F3 Chargement...</div>';
+    var profils = await _chargerTousProfils();
+    if (profils.length === 0) {
+      containerP.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Aucun profil pour l\u2019instant</div>';
+    } else {
+      var selection = _melangerTableau(profils).slice(0, 15);
+      var html = '<div style="font-family:Syne,sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Suggestions</div>';
+      html += selection.map(_renderProfilCard).join('');
+      containerP.innerHTML = html;
+    }
   }
-  var selection = _melangerTableau(profils).slice(0, 15);
-  var html = '<div style="font-family:Syne,sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Suggestions</div>';
-  html += selection.map(_renderProfilCard).join('');
-  container.innerHTML = html;
+
+  // Suggestions posts aléatoires
+  if (containerPo) {
+    try {
+      var snap = await window._getDocs(window._collection(window._db, 'posts'));
+      var posts = [];
+      snap.forEach(function(doc) { posts.push(Object.assign({ id: doc.id }, doc.data())); });
+      if (posts.length === 0) {
+        containerPo.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Aucun post pour l\u2019instant</div>';
+      } else {
+        var selPosts = _melangerTableau(posts).slice(0, 10);
+        var htmlPo = '<div style="font-family:Syne,sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Suggestions</div>';
+        htmlPo += selPosts.map(function(p) {
+          var texte = p.texte || p.content || p.text || '';
+          var auteur = p.auteurBlase || p.auteurNom || 'Artiste';
+          var avatar = p.auteurPhoto
+            ? '<img src="' + p.auteurPhoto + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
+            : '<span style="font-size:18px;">' + (p.auteurEmoji || '\uD83C\uDFAD') + '</span>';
+          var h = '<div style="padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;">';
+          h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
+          h += '<div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">' + avatar + '</div>';
+          h += '<div style="font-family:Syne,sans-serif;font-weight:700;font-size:13px;color:var(--green);">' + auteur + '</div>';
+          h += '</div>';
+          h += '<div style="font-size:14px;color:var(--text);line-height:1.5;">' + texte.slice(0, 200) + (texte.length > 200 ? '...' : '') + '</div>';
+          h += '</div>';
+          return h;
+        }).join('');
+        containerPo.innerHTML = htmlPo;
+      }
+    } catch(e) {
+      containerPo.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Tape un mot-cl\u00E9 pour rechercher</div>';
+    }
+  }
 };
 
 window.rechercherExplore = async function(q) {
