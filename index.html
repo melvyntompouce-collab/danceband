@@ -14777,6 +14777,13 @@ function _renderProfilCard(p) {
 
 async function _chargerTousProfils() {
   if (_tousProfils.length > 0) return _tousProfils;
+  // Attendre que Firebase soit prêt
+  var attempts = 0;
+  while ((!window._db || !window._getDocs || !window._collection) && attempts < 20) {
+    await new Promise(function(r) { setTimeout(r, 300); });
+    attempts++;
+  }
+  if (!window._db) { console.error('Firebase non disponible'); return []; }
   try {
     var snap = await window._getDocs(window._collection(window._db, 'danseurs'));
     snap.forEach(function(doc) { _tousProfils.push(Object.assign({ id: doc.id }, doc.data())); });
@@ -14812,7 +14819,7 @@ window.chargerRecommandationsExplore = async function() {
   }
 
   // Suggestions posts aléatoires
-  if (containerPo) {
+  if (containerPo && window._db && window._getDocs && window._collection) {
     try {
       var snap = await window._getDocs(window._collection(window._db, 'posts'));
       var posts = [];
@@ -14886,6 +14893,7 @@ window.rechercherExplore = async function(q) {
     }
     container2.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">\u23F3 Recherche...</div>';
     try {
+      if (!window._db || !window._getDocs) throw new Error('Firebase non prêt');
       var snap2 = await window._getDocs(window._collection(window._db, 'posts'));
       var results2 = [];
       snap2.forEach(function(doc) {
