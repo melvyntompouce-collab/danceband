@@ -5327,7 +5327,7 @@ if (isPWA) {
           </div>
           <div id="ap-handle" style="font-size:13px;color:var(--muted2);margin-top:4px;"></div>
           <div id="ap-zone" style="font-size:12px;color:var(--muted);margin-top:4px;">📍</div>
-          <div id="ap-metiers-badges" style="display:none;flex-wrap:wrap;gap:5px;margin-top:8px;"></div>
+          <div id="ap-metiers-badges" style="display:none;grid-template-columns:1fr 1fr;gap:5px;margin-top:8px;"></div>
         </div>
       </div>
 
@@ -13560,19 +13560,23 @@ window.showProfilPublic = async function(uid) {
       designer:     '🎨 Designer',
     };
 
-    // ── Badges métier dans le header ──
+    // ── Badges métier dans le header (grille 2 colonnes, cliquables) ──
     const apMetiersBadges = document.getElementById('ap-metiers-badges');
     if (apMetiersBadges) {
-      if (metiers.length && peutVoir('disciplines')) {
-        apMetiersBadges.innerHTML = metiers.map(m => METIER_LABELS[m]
-          ? `<span style="padding:5px 12px;border-radius:20px;background:rgba(0,245,155,0.15);border:1px solid rgba(0,245,155,0.35);color:var(--green);font-size:12px;font-weight:700;">${METIER_LABELS[m]}</span>`
-          : '').join('');
-        apMetiersBadges.style.display = 'flex';
-        apMetiersBadges.style.flexWrap = 'wrap';
+      const metiersVisibles = metiers.filter(m => METIER_LABELS[m]);
+      if (metiersVisibles.length && peutVoir('disciplines')) {
+        apMetiersBadges.innerHTML = metiersVisibles.map(m => `
+          <button onclick="ouvrirDetailMetier('${m}')" style="padding:6px 10px;border-radius:20px;background:rgba(0,245,155,0.12);border:1px solid rgba(0,245,155,0.3);color:var(--green);font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+            onmouseover="this.style.background='rgba(0,245,155,0.22)'" onmouseout="this.style.background='rgba(0,245,155,0.12)'">
+            ${METIER_LABELS[m]}
+          </button>`).join('');
+        apMetiersBadges.style.display = 'grid';
       } else {
         apMetiersBadges.style.display = 'none';
       }
     }
+    // Stocker les données profil pour le panneau détail
+    window._profilCourantData = d;
 
     // ── Réseaux dans le header ──
     const apReseauxHeader = document.getElementById('ap-reseaux-header');
@@ -16010,15 +16014,21 @@ async function chargerProfil(uid) {
         illustrateur: '🖼️ Illustrateur·rice',
         designer:     '🎨 Designer',
       };
-      if (metiers.length) {
-        phMetiersBadges.innerHTML = metiers.map(m => METIER_BADGES[m]
-          ? `<span style="padding:5px 12px;border-radius:20px;background:rgba(0,245,155,0.15);border:1px solid rgba(0,245,155,0.35);color:var(--green);font-size:12px;font-weight:700;">${METIER_BADGES[m]}</span>`
-          : '').join('');
-        phMetiersBadges.style.display = 'flex';
-        phMetiersBadges.style.flexWrap = 'wrap';
+      const metiersVis = metiers.filter(m => METIER_BADGES[m]);
+      if (metiersVis.length) {
+        phMetiersBadges.innerHTML = metiersVis.map(m => `
+          <button onclick="ouvrirDetailMetier('${m}')" style="padding:6px 10px;border-radius:20px;background:rgba(0,245,155,0.12);border:1px solid rgba(0,245,155,0.3);color:var(--green);font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:background 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+            onmouseover="this.style.background='rgba(0,245,155,0.22)'" onmouseout="this.style.background='rgba(0,245,155,0.12)'">
+            ${METIER_BADGES[m]}
+          </button>`).join('');
+        phMetiersBadges.style.display = 'grid';
+        phMetiersBadges.style.gridTemplateColumns = '1fr 1fr';
+        phMetiersBadges.style.gap = '5px';
       } else {
         phMetiersBadges.style.display = 'none';
       }
+      // Stocker les données pour le panneau détail
+      window._profilCourantData = d;
     }
 
 
@@ -16734,6 +16744,77 @@ async function chargerPageEnregistres() {
   }
 }
 window.chargerPageEnregistres = chargerPageEnregistres;
+
+
+// ════════════════════════════════
+// PANNEAU DÉTAIL MÉTIER
+// ════════════════════════════════
+window.ouvrirDetailMetier = function(metier) {
+  const d = window._profilCourantData;
+  if (!d) return;
+
+  const LABELS = {
+    danseur:      '💃 Danseur·se',      photographe:  '📷 Photographe',
+    videaste:     '🎥 Vidéaste',         beatmaker:    '🎧 Beatmaker',
+    realisateur:  '🎬 Réalisateur·rice', dj:           '🎛️ DJ',
+    musicien:     '🎸 Musicien·ne',      chanteur:     '🎤 Chanteur·se / Rappeur·se',
+    comedien:     '🎭 Comédien·ne',      performeur:   '✨ Performeur·se',
+    mannequin:    '🪞 Mannequin',         styliste:     '👗 Styliste',
+    maquilleur:   '💄 Maquilleur·se',    coiffeur_mode:'💈 Coiffeur·se artistique',
+    costumier:    '🧵 Costumier·ère',    designer_mode:'👔 Designer Mode',
+    nail_artiste: '💅 Nail Artiste',     dessinateur:  '✏️ Dessinateur·rice',
+    peintre:      '🖌️ Peintre',          graphiste:    '🖥️ Graphiste',
+    illustrateur: '🖼️ Illustrateur·rice', designer:    '🎨 Designer',
+  };
+
+  const row = (label, val) => val
+    ? `<div style="margin-bottom:12px;"><div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">${label}</div><div style="font-size:14px;color:var(--text);font-weight:600;">${val}</div></div>`
+    : '';
+
+  const tags = (label, arr) => arr && arr.length
+    ? `<div style="margin-bottom:12px;"><div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">${label}</div><div style="display:flex;flex-wrap:wrap;gap:6px;">${arr.map(s => `<span style="padding:4px 10px;border-radius:12px;background:rgba(255,255,255,0.05);color:var(--muted2);font-size:12px;font-weight:600;">${s}</span>`).join('')}</div></div>`
+    : '';
+
+  let body = '';
+
+  if (metier === 'danseur') {
+    body += tags('Styles', d.styles ? (window.normaliserStyles ? window.normaliserStyles(d.styles) : d.styles) : []);
+    body += row('Niveau', d.niveauDanseur);
+  } else if (metier === 'photographe') {
+    body += tags('Spécialités', d.specialitesPhoto);
+    body += row('Matériel', d.materielPhoto);
+  } else if (metier === 'videaste') {
+    body += tags('Spécialités', d.specialitesVideo);
+    body += row('Matériel', d.materielVideo);
+  } else if (metier === 'beatmaker') {
+    body += tags('Genres', d.genresBeat);
+    body += row('DAW', d.daw);
+  } else if (metier === 'realisateur') {
+    body += tags('Genres / formats', d.genresReal);
+    body += row('Logiciels', d.logicielsReal);
+  } else if (metier === 'dj') {
+    body += tags('Genres', d.genresDJ);
+    body += row('Matériel', d.materielDJ);
+  } else if (metier === 'musicien') {
+    body += tags('Instruments', d.instrumentsMusicien);
+    body += tags('Genres', d.genresMusicien);
+  } else if (metier === 'chanteur') {
+    body += tags('Genres', d.genresChanteur);
+    body += row('Niveau', d.niveauChanteur);
+  }
+
+  if (!body) body = '<div style="color:var(--muted);font-size:13px;">Aucun détail renseigné.</div>';
+
+  document.getElementById('metier-detail-title').textContent = LABELS[metier] || metier;
+  document.getElementById('metier-detail-body').innerHTML = body;
+  document.getElementById('metier-detail-panel').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+};
+
+window.fermerDetailMetier = function() {
+  document.getElementById('metier-detail-panel').style.display = 'none';
+  document.body.style.overflow = '';
+};
 
 // Exposer les fonctions du script classique sur window
 window.normaliserStyles   = normaliserStyles;
@@ -19550,3 +19631,12 @@ window.toggleFaq = function(el) {
   if (!isOpen) el.classList.add('open');
 };
 </script>
+
+  <!-- Panneau détail métier -->
+  <div id="metier-detail-panel" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);" onclick="fermerDetailMetier()">
+    <div id="metier-detail-content" onclick="event.stopPropagation()" style="position:absolute;bottom:0;left:0;right:0;max-height:70vh;background:var(--bg);border-radius:24px 24px 0 0;padding:28px 24px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+      <div style="width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 20px;"></div>
+      <div id="metier-detail-title" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:24px;margin-bottom:16px;"></div>
+      <div id="metier-detail-body" style="color:var(--muted2);font-size:14px;line-height:1.6;"></div>
+    </div>
+  </div>
