@@ -2839,7 +2839,7 @@ if (isPWA) {
         <div style="padding:8px 12px 6px;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:var(--muted2);letter-spacing:1px;text-transform:uppercase;" id="nav-profile-menu-nom">Mon profil</div>
         <div class="npm-separator"></div>
         <!-- Navigation profil -->
-        <button class="npm-item" onclick="closeNavProfileMenu();showPage('profile');ouvrirEdition()">
+        <button class="npm-item" onclick="closeNavProfileMenu();if(window._currentUid){artisteCourant=window._currentUid;showProfilPublic(window._currentUid).then(()=>ouvrirEdition());}">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           Modifier le profil
         </button>
@@ -2924,11 +2924,11 @@ if (isPWA) {
     <!-- Section compte (connecté) — EN HAUT -->
     <div id="drawer-section-compte" style="display:none;">
       <div class="drawer-section-title">Mon compte</div>
-      <button class="drawer-item" onclick="showPage('profile');closeDrawer();" id="di-profile">
+      <button class="drawer-item" onclick="if(window._currentUid){artisteCourant=window._currentUid;showProfilPublic(window._currentUid);}closeDrawer();" id="di-profile">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         Mon profil
       </button>
-      <button class="drawer-item" id="di-edit-profile" onclick="showPage('profile');ouvrirEdition();closeDrawer();">
+      <button class="drawer-item" id="di-edit-profile" onclick="if(window._currentUid){artisteCourant=window._currentUid;showProfilPublic(window._currentUid).then(()=>ouvrirEdition());}closeDrawer();">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         Modifier le profil
       </button>
@@ -3130,7 +3130,7 @@ if (isPWA) {
         <p class="feature-desc">Soirées, battles, workshops — tout est là. Réservez vos places directement depuis la plateforme.</p>
         <div style="margin-top:12px;font-size:12px;color:var(--blue);font-weight:700;display:flex;align-items:center;gap:4px;">Voir l'agenda <span>→</span></div>
       </div>
-      <div class="feature-card" onclick="showPage('profile')" style="cursor:pointer;" title="Voir mon profil">
+      <div class="feature-card" onclick="if(window._currentUid){artisteCourant=window._currentUid;showProfilPublic(window._currentUid);}" style="cursor:pointer;" title="Voir mon profil">
         <div class="feature-icon" style="background:rgba(155,93,229,0.1)">⌚</div>
         <div class="feature-title">Bracelet connecté</div>
         <p class="feature-desc">Échangez vos profils en approchant vos poignets. LED, vibreur, BLE — la tech au service des artistes.</p>
@@ -3142,7 +3142,7 @@ if (isPWA) {
         <p class="feature-desc">Progressez, gagnez des badges, montez dans le classement local et national selon votre style.</p>
         <div style="margin-top:12px;font-size:12px;color:var(--yellow);font-weight:700;display:flex;align-items:center;gap:4px;">Voir le classement <span>→</span></div>
       </div>
-      <div class="feature-card" onclick="showPage('profile')" style="cursor:pointer;" title="Gérer ma confidentialité">
+      <div class="feature-card" onclick="if(window._currentUid){artisteCourant=window._currentUid;showProfilPublic(window._currentUid);}" style="cursor:pointer;" title="Gérer ma confidentialité">
         <div class="feature-icon" style="background:rgba(255,77,109,0.1)">🔐</div>
         <div class="feature-title">Confidentialité totale</div>
         <p class="feature-desc">Chaque info de votre profil a son propre niveau — Public, Amis, ou Privé. Vous contrôlez tout.</p>
@@ -4944,7 +4944,7 @@ if (isPWA) {
   <div style="padding:16px 5% 100px;max-width:680px;margin:0 auto;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
       <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-1px;">FEED</div>
-      <button onclick="showPage('profile')" style="width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;">
+      <button onclick="if(window._currentUid&&window.showProfilPublic){artisteCourant=window._currentUid;window.showProfilPublic(window._currentUid);}" style="width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </button>
     </div>
@@ -5299,13 +5299,12 @@ if (isPWA) {
 
 <!-- ═══ PROFIL ARTISTE (overlay) ═══ -->
 <div class="page" id="page-profil-public">
-
   <div style="max-width:600px;margin:0 auto;padding:24px 20px 120px;">
 
-    <!-- Header navigation (visible si connecté) -->
+    <!-- Header -->
     <div id="pp-nav-header" style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
-      <button onclick="goBack()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
-      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;">PROFIL</div>
+      <button id="pp-back-btn" onclick="goBack()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
+      <div id="pp-header-label" style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;">PROFIL</div>
       <button id="pp-share-btn" onclick="partagerProfil(artisteCourant)" style="margin-left:auto;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
       </button>
@@ -5319,33 +5318,59 @@ if (isPWA) {
           <span id="ap-avatar-emoji"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(8,8,16,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
           <img id="ap-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:22px;">
         </div>
-        <div style="flex:1;">
-          <div id="ap-name" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-0.5px;line-height:1;"></div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <div id="ap-name" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-0.5px;line-height:1;"></div>
+            <div id="ap-admin-badge" style="display:none;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff4d6d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" title="Admin HAKO"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+          </div>
           <div id="ap-handle" style="font-size:13px;color:var(--muted2);margin-top:4px;"></div>
           <div id="ap-zone" style="font-size:12px;color:var(--muted);margin-top:4px;">📍</div>
-
-          <div id="ap-admin-badge" style="display:none;margin-top:8px;">
-            <span style="background:rgba(255,77,109,0.15);border:1px solid rgba(255,77,109,0.45);color:#ff4d6d;font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:2px;padding:3px 10px;border-radius:6px;text-transform:uppercase;">⚡ Admin HAKO</span>
-          </div>
+          <div id="ap-metiers-badges" style="display:none;flex-wrap:wrap;gap:5px;margin-top:8px;"></div>
         </div>
       </div>
 
-      <!-- Stats -->
-      <div style="display:flex;gap:0;margin-top:20px;background:rgba(255,255,255,0.04);border-radius:14px;overflow:hidden;">
-        <div style="flex:1;padding:12px;text-align:center;border-right:1px solid var(--border);">
-          <div id="ap-abonnes" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Abonnés</div>
+      <!-- Stats cliquables (abonnés/abonnements) -->
+      <div style="display:flex;gap:0;margin-top:16px;border-radius:14px;overflow:hidden;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);">
+        <div id="ap-stat-abonnes-wrap" style="flex:1;padding:12px;text-align:center;border-right:1px solid rgba(255,255,255,0.1);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background=''">
+          <div id="ap-abonnements" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;color:#fff;">0</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;letter-spacing:1px;text-transform:uppercase;font-weight:700;">Abonnements</div>
         </div>
-        <div style="flex:1;padding:12px;text-align:center;">
-          <div id="ap-abonnements" style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);">0</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Abonnements</div>
+        <div id="ap-stat-abonnements-wrap" style="flex:1;padding:12px;text-align:center;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background=''">
+          <div id="ap-abonnes" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;color:#fff;">0</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;letter-spacing:1px;text-transform:uppercase;font-weight:700;">Abonnés</div>
         </div>
       </div>
-      <!-- Réseaux sociaux header public -->
+      <!-- Réseaux sociaux header -->
       <div id="ap-reseaux-header" style="display:none;flex-wrap:wrap;gap:6px;margin-top:10px;"></div>
     </div>
 
-
+    <!-- Boutons actions (perso OU public selon estMoi) -->
+    <div id="ap-actions-perso" style="display:none;flex-direction:column;gap:8px;margin-bottom:16px;">
+      <button onclick="ouvrirEdition()" style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(0,245,155,0.08);border:1.5px solid rgba(0,245,155,0.3);border-radius:14px;color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;" onmouseover="this.style.background='rgba(0,245,155,0.14)'" onmouseout="this.style.background='rgba(0,245,155,0.08)'">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Modifier le profil
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <button id="orga-btn" onclick="ouvrirOrganisateur()" style="display:none;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(77,159,255,0.08);border:1.5px solid rgba(77,159,255,0.3);border-radius:14px;color:var(--blue);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          Espace organisateur
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div id="ap-actions-public" style="display:none;">
+      <div id="ap-info-conf" style="display:none;padding:10px 14px;border-radius:12px;background:rgba(255,217,61,0.08);border:1px solid rgba(255,217,61,0.2);font-size:12px;color:var(--yellow);margin-bottom:12px;"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+        <button id="ap-btn-suivre" onclick="toggleSuivreOverlay()" style="flex:1;padding:14px;border-radius:14px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all 0.2s;">+ Suivre</button>
+        <button id="ap-btn-message" onclick="ouvrirMessageDepuisProfil()" style="display:none;flex:1;padding:14px;border-radius:14px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;background:var(--green);color:#080810;border:none;cursor:pointer;">💬 Message</button>
+        <button id="ap-btn-tel" onclick="appellerArtiste()" style="display:none;padding:14px 18px;border-radius:14px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;background:rgba(77,159,255,0.1);color:var(--blue);border:1px solid var(--blue);cursor:pointer;">📞</button>
+      </div>
+    </div>
 
     <!-- Portfolio -->
     <div id="ap-portfolio-wrap" style="display:none;margin-bottom:16px;">
@@ -5359,42 +5384,33 @@ if (isPWA) {
       <div id="ap-portfolio-grid" class="portfolio-grid"></div>
     </div>
 
-    <!-- Actions -->
-    <div id="ap-info-conf" style="display:none;padding:10px 14px;border-radius:12px;background:rgba(255,217,61,0.08);border:1px solid rgba(255,217,61,0.2);font-size:12px;color:var(--yellow);margin-bottom:12px;"></div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
-      <button id="ap-btn-suivre" onclick="toggleSuivreOverlay()" style="flex:1;padding:14px;border-radius:14px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;transition:all 0.2s;">
-        + Suivre
-      </button>
-      <button id="ap-btn-message" onclick="ouvrirMessageDepuisProfil()" style="display:none;flex:1;padding:14px;border-radius:14px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;background:var(--green);color:#080810;border:none;cursor:pointer;">
-        💬 Message
-      </button>
-      <button id="ap-btn-tel" onclick="appellerArtiste()" style="display:none;padding:14px 18px;border-radius:14px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;background:rgba(77,159,255,0.1);color:var(--blue);border:1px solid var(--blue);cursor:pointer;">
-        📞
-      </button>
-    </div>
 
-    <!-- Disciplines & spécialités (généré dynamiquement par showProfilPublic) -->
-    <div id="ap-metier" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;"></div>
 
-    <!-- Réseaux sociaux (généré dynamiquement) -->
-    <div id="ap-reseaux" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;"></div>
-
-    <!-- Grille posts publique -->
+    <!-- Grille posts -->
     <div id="ap-posts-section" style="display:none;margin-bottom:16px;">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;margin-bottom:8px;color:var(--muted2);text-transform:uppercase;">Publications</div>
       <div id="ap-posts-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;border-radius:14px;overflow:hidden;"></div>
+      <div id="ap-posts-empty" style="display:none;text-align:center;padding:24px;color:var(--muted);font-size:13px;">Aucune publication</div>
     </div>
 
     <!-- Compat score -->
     <div id="ap-compat" style="margin-bottom:16px;"></div>
 
-    <!-- Événements à venir de l'artiste -->
+    <!-- Événements à venir -->
     <div id="ap-events-wrap" style="display:none;margin-bottom:16px;">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;margin-bottom:10px;">🎉 ÉVÉNEMENTS À VENIR</div>
       <div id="ap-events-list" style="display:flex;flex-direction:column;gap:10px;"></div>
     </div>
 
-  </div>
+    <!-- Modal abonnés / abonnements (perso) -->
+    <div id="social-modal" style="display:none;position:fixed;inset:0;z-index:300;background:var(--bg);flex-direction:column;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:calc(16px + env(safe-area-inset-top)) 20px 16px;border-bottom:1px solid var(--border);flex-shrink:0;margin-top:52px;">
+        <div id="social-modal-title" style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;"></div>
+        <button onclick="fermerListeSociale()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;">←</button>
+      </div>
+      <div id="social-modal-list" style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;flex:1;scrollbar-width:none;"></div>
+    </div>
+
   </div>
 </div>
 
@@ -6058,115 +6074,6 @@ if (isPWA) {
   </div>
 </div>
 
-<div class="page" id="page-profile">
-  <div style="max-width:600px;margin:0 auto;padding:24px 20px 120px;">
-
-    <!-- Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;">
-      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Mon profil</div>
-      <button id="ph-share-btn" onclick="partagerMonProfil()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-      </button>
-    </div>
-
-    <!-- Hero (même look que profil public) -->
-    <div style="background:linear-gradient(135deg,#0d2b1e,#1a0d2b);border:1px solid var(--border);border-radius:24px;padding:28px;margin-bottom:16px;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(0,245,155,0.1) 0%,transparent 70%);border-radius:50%;"></div>
-      <div style="display:flex;align-items:center;gap:18px;position:relative;">
-        <div id="ph-avatar" style="width:80px;height:80px;border-radius:22px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0;overflow:hidden;position:relative;box-shadow:0 8px 24px rgba(0,245,155,0.2);cursor:pointer;" onclick="ouvrirEdition()">
-          <span id="ph-avatar-emoji">🎭</span>
-          <img id="ph-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:22px;">
-        </div>
-        <div style="flex:1;">
-          <div id="ph-name-display" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-0.5px;line-height:1;"></div>
-          <div id="ph-handle-display" style="font-size:13px;color:var(--muted2);margin-top:4px;"></div>
-          <div id="ph-zone-display" style="font-size:12px;color:var(--muted);margin-top:4px;">📍</div>
-
-          <div id="ph-metiers-badges" style="display:none;flex-wrap:wrap;gap:5px;margin-top:6px;"></div>
-        </div>
-      </div>
-
-      <!-- Stats Events/Classement -->
-      <div style="display:none;">
-        <div id="ph-stat-events"></div>
-        <div id="ph-stat-rank"></div>
-      </div>
-
-      <!-- Abonnements/Abonnés détachés en blanc -->
-      <div style="display:flex;gap:0;margin-top:10px;border-radius:14px;overflow:hidden;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);">
-        <div onclick="ouvrirListeSociale('abonnements')" style="flex:1;padding:12px;text-align:center;border-right:1px solid rgba(255,255,255,0.1);cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background=''">
-          <div id="stat-abonnements" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;color:#fff;">0</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;letter-spacing:1px;text-transform:uppercase;font-weight:700;">Abonnements</div>
-        </div>
-        <div onclick="ouvrirListeSociale('abonnes')" style="flex:1;padding:12px;text-align:center;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background=''">
-          <div id="stat-abonnes" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;color:#fff;">0</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;letter-spacing:1px;text-transform:uppercase;font-weight:700;">Abonnés</div>
-        </div>
-      </div>
-      <!-- Réseaux sociaux header perso -->
-      <div id="ph-reseaux-header" style="display:none;flex-wrap:wrap;gap:6px;margin-top:10px;"></div>
-    </div>
-
-    <!-- Boutons d'action perso -->
-    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
-      <button onclick="ouvrirEdition()" style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(0,245,155,0.08);border:1.5px solid rgba(0,245,155,0.3);border-radius:14px;color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,245,155,0.14)'" onmouseout="this.style.background='rgba(0,245,155,0.08)'">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          Modifier le profil
-        </div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-      <button id="orga-btn" onclick="ouvrirOrganisateur()" style="display:none;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(77,159,255,0.08);border:1.5px solid rgba(77,159,255,0.3);border-radius:14px;color:var(--blue);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-          Espace organisateur
-        </div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-
-    </div>
-
-
-
-    <!-- Portfolio (profil perso) - masqué -->
-    <div id="ph-portfolio-wrap" style="display:none;">
-      <div id="ph-portfolio-count" style="display:none;"></div>
-      <span id="ph-toggle-portfolio" style="display:none;"></span>
-      <div id="ph-portfolio-drag-hint" style="display:none;"></div>
-      <div id="ph-portfolio-grid" style="display:none;"></div>
-    </div>
-
-    <!-- Kima -->
-    <button onclick="showPage('bracelet')" style="display:none;">
-      <div style="display:flex;align-items:center;gap:14px;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="7"/><path d="M12 6v4l2 2"/></svg>
-        <div style="text-align:left;">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--text);">KIMA</div>
-          <div style="font-size:11px;color:var(--muted2);margin-top:2px;">Ton bracelet connecté</div>
-        </div>
-      </div>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
-
-    <!-- Grille posts perso -->
-    <div id="ph-posts-section" style="display:none;margin-bottom:16px;">
-      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;margin-bottom:8px;color:var(--muted2);text-transform:uppercase;">Publications</div>
-      <div id="ph-posts-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;border-radius:14px;overflow:hidden;"></div>
-      <div id="ph-posts-empty" style="display:none;text-align:center;padding:24px;color:var(--muted);font-size:13px;">Aucune publication</div>
-    </div>
-
-    <!-- Réseaux -->
-    <!-- Modal abonnés / abonnements -->
-    <div id="social-modal" style="display:none;position:fixed;inset:0;z-index:300;background:var(--bg);flex-direction:column;">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:calc(16px + env(safe-area-inset-top)) 20px 16px;border-bottom:1px solid var(--border);flex-shrink:0;margin-top:52px;">
-        <div id="social-modal-title" style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;"></div>
-        <button onclick="fermerListeSociale()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;">←</button>
-      </div>
-      <div id="social-modal-list" style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;flex:1;scrollbar-width:none;"></div>
-    </div>
-
-  </div>
-</div>
 
 <!-- ═══ PAGE: ENREGISTRÉS ═══ -->
 <div class="page" id="page-enregistres">
@@ -6273,7 +6180,7 @@ function _showPageWhenReady(id, delay) {
 }
 
 // Ordre des pages pour déterminer la direction gauche/droite
-const PAGE_ORDER = ['home', 'network', 'agenda', 'messages', 'profile', 'ranking', 'salles', 'bracelet', 'notifs', 'privacy', 'cgu', 'mentions', 'faq'];
+const PAGE_ORDER = ['home', 'network', 'agenda', 'messages', 'profil-public', 'ranking', 'salles', 'bracelet', 'notifs', 'privacy', 'cgu', 'mentions', 'faq'];
 
 // Pages "profondes" — arrivent par le bas (slide up)
 const DEEP_PAGES = ['privacy', 'cgu', 'mentions', 'notifs', 'bracelet'];
@@ -6412,7 +6319,7 @@ function showPage(id, isBack = false) {
   if (id === 'admin')     setTimeout(chargerDashboardAdmin, DURATION);
   if (id === 'ranking')   setTimeout(chargerClassement, DURATION);
   if (id === 'salles')    setTimeout(chargerSalles,     DURATION);
-  if (id === 'profile')   { const ep = document.getElementById('edit-profile-page'); if (ep) ep.style.display = 'none'; setTimeout(() => chargerPostsProfil(window._currentUid, 'ph-posts-grid', 'ph-posts-section'), DURATION); }
+  if (id === 'profile')   { if (window._currentUid && window.showProfilPublic) { setTimeout(() => { artisteCourant = window._currentUid; window.showProfilPublic(window._currentUid); }, DURATION); } }
   if (id === 'enregistres') setTimeout(chargerPageEnregistres, DURATION);
   if (id === 'feed')         setTimeout(chargerFeed, DURATION);
   if (id === 'post-create')  setTimeout(_initPostCreatePage, DURATION);
@@ -6429,7 +6336,7 @@ function showPage(id, isBack = false) {
   }
 
   // Sync bottom nav
-  const bnMap = { messages:'bn-messages', network:'bn-network', feed:'bn-feed', agenda:'bn-agenda', profile:'bn-profile', dashboard:'bn-profile' };
+  const bnMap = { messages:'bn-messages', network:'bn-network', feed:'bn-feed', agenda:'bn-agenda', profile:'bn-profile', dashboard:'bn-profile', 'profil-public':'bn-profile' };
   document.querySelectorAll('#bottom-nav .mn-item').forEach(i => { i.classList.remove('on'); i.classList.remove('active'); });
   const bnId = bnMap[id];
   if (bnId) {
@@ -6450,7 +6357,7 @@ function goBack() {
 // ── Gestion bouton retour navigateur ──
 window.addEventListener('popstate', function(e) {
   const _reverseRouteMap = {
-    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profile',
+    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profil-public',
     '/agenda': 'agenda', '/messages': 'messages',
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
@@ -6475,7 +6382,7 @@ window.addEventListener('popstate', function(e) {
 // ── Router au chargement ──
 function _initRouter() {
   const _reverseRouteMap = {
-    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profile',
+    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profil-public',
     '/agenda': 'agenda', '/messages': 'messages',
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
@@ -6751,7 +6658,7 @@ function afficherDashboard(d) {
 
   // Activer feed si aucune URL spécifique n'est demandée
   const _reverseRouteMap = {
-    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profile',
+    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profil-public',
     '/agenda': 'agenda', '/messages': 'messages', '/feed': 'feed',
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
@@ -12341,7 +12248,7 @@ async function chargerAbonnements() {
       const d = snap.data();
       mesAbonnements = new Set(d.abonnements || []);
       mesAbonnements.forEach(uid => mettreAJourBtnSuivre(uid, true));
-      const statAbos = document.getElementById('stat-abonnements');
+      const statAbos = document.getElementById('ap-abonnements');
       if (statAbos) statAbos.textContent = mesAbonnements.size;
     }
   } catch(e) { console.error('Abonnements:', e); }
@@ -12351,7 +12258,7 @@ async function chargerAbonnements() {
       window._collection(window._db, 'danseurs'),
       window._where('abonnements', 'array-contains', window._currentUid)
     ));
-    const statAbonnes = document.getElementById('stat-abonnes');
+    const statAbonnes = document.getElementById('ap-abonnes');
     if (statAbonnes) statAbonnes.textContent = abonnesSnap.size;
   } catch(e) { console.error('Comptage abonnés:', e); }
 
@@ -12409,7 +12316,7 @@ window.toggleSuivre = async function(targetUid) {
       mettreAJourBtnSuivre(targetUid, true);
     }
     // Mettre à jour le compteur abonnements en temps réel
-    const statAbos = document.getElementById('stat-abonnements');
+    const statAbos = document.getElementById('ap-abonnements');
     if (statAbos) statAbos.textContent = mesAbonnements.size;
   } catch(e) { console.error('Erreur abonnement:', e); }
 }
@@ -13467,24 +13374,56 @@ function _updateProfilPublicHeader() {
 }
 
 window.showProfilPublic = async function(uid) {
-  // Bloquer si non connecté
-  // Fermer le drawer réseau si ouvert (seulement si connecté)
+  if (!uid) uid = window._currentUid;
+  if (!uid) return;
   if (window._currentUid && window.fermerDrawerReseau) fermerDrawerReseau();
   artisteCourant = uid;
   if (window._currentUid) cacherBarreReseau();
   _showPageWhenReady('profil-public');
   window.scrollTo(0, 0);
+
+  const estMoi = uid === window._currentUid;
+
+  // ── Header navigation ──
+  const backBtn = document.getElementById('pp-back-btn');
+  const headerLabel = document.getElementById('pp-header-label');
+  if (backBtn) backBtn.style.display = estMoi ? 'none' : 'flex';
+  if (headerLabel) headerLabel.textContent = estMoi ? 'MON PROFIL' : 'PROFIL';
+
+  // ── Avatar cliquable pour édition si perso ──
+  const apAvatar = document.getElementById('ap-avatar');
+  if (apAvatar) {
+    apAvatar.style.cursor = estMoi ? 'pointer' : 'default';
+    apAvatar.onclick = estMoi ? () => ouvrirEdition() : null;
+  }
+
+  // ── Stats cliquables si perso ──
+  const statAbonnésWrap = document.getElementById('ap-stat-abonnes-wrap');
+  const statAbonnementsWrap = document.getElementById('ap-stat-abonnements-wrap');
+  if (statAbonnésWrap) statAbonnésWrap.onclick = estMoi ? () => ouvrirListeSociale('abonnes') : null;
+  if (statAbonnementsWrap) statAbonnementsWrap.onclick = estMoi ? () => ouvrirListeSociale('abonnements') : null;
+
   // Routing URL
-  history.pushState({ page: 'profil-public', uid: uid }, '', '/profil/' + uid);
-  _updateProfilPublicHeader();
+  if (estMoi) {
+    history.pushState({ page: 'profile' }, '', '/profil');
+  } else {
+    history.pushState({ page: 'profil-public', uid }, '', '/profil/' + uid);
+    _updateProfilPublicHeader();
+  }
 
   try {
     const snap = await window._getDoc(window._doc(window._db, 'danseurs', uid));
     if (!snap.exists()) return;
     const d = snap.data();
 
+    // Si c'est moi, mettre à jour window._monProfil
+    if (estMoi) {
+      window._monProfil = { uid, ...d };
+      // Remplir les champs d'édition
+      if (typeof chargerProfil === 'function') chargerProfil(uid);
+    }
+
     // ── Déterminer le niveau de relation ──
-    const estMoi        = uid === window._currentUid;
     const estSuivi      = mesAbonnements.has(uid);
     const amiAbos       = d.abonnements || [];
     const estAmiMutuel  = estSuivi && amiAbos.includes(window._currentUid);
@@ -13533,7 +13472,7 @@ window.showProfilPublic = async function(uid) {
 
     // ── Badge admin ──
     const apAdminBadge = document.getElementById('ap-admin-badge');
-    if (apAdminBadge) apAdminBadge.style.display = d.role === 'admin' ? 'block' : 'none';
+    if (apAdminBadge) apAdminBadge.style.display = d.role === 'admin' ? 'inline-flex' : 'none';
 
     // ── Score de compatibilité ──
     let compatEl = document.getElementById('ap-compat');
@@ -13621,173 +13560,21 @@ window.showProfilPublic = async function(uid) {
       designer:     '🎨 Designer',
     };
 
-    let metierSection = document.getElementById('ap-metier');
-    if (!metierSection) {
-      metierSection = document.createElement('div');
-      metierSection.id = 'ap-metier';
-      metierSection.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;';
-      document.getElementById('ap-info-conf')?.before(metierSection);
-    }
-
-    let metierHtml = '';
-
-    if (peutVoir('disciplines')) {
-
-    // Badges métier
-    const badgesMetier = metiers.map(m => METIER_LABELS[m]).filter(Boolean);
-    if (badgesMetier.length) {
-      metierHtml += `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">${
-        badgesMetier.map(l => `<span style="padding:6px 14px;border-radius:20px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.2);color:var(--green);font-size:12px;font-weight:700;">${l}</span>`).join('')
-      }</div>`;
-    }
-
-    // Danseur — styles + niveau
-    if (metiers.includes('danseur') && d.styles && d.styles.length) {
-      const stylesArr = normaliserStyles(d.styles);
-      metierHtml += `<div style="margin-bottom:12px;">
-        <div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Styles</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;">${stylesArr.map(s => `<span style="padding:4px 10px;border-radius:12px;background:rgba(255,255,255,0.05);color:var(--muted2);font-size:12px;font-weight:600;">${s}</span>`).join('')}</div>
-      </div>`;
-      if (d.niveauDanseur) {
-        metierHtml += `<div style="margin-bottom:12px;"><span style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">Niveau : </span><span style="font-size:13px;color:var(--text);font-weight:600;">${d.niveauDanseur}</span></div>`;
+    // ── Badges métier dans le header ──
+    const apMetiersBadges = document.getElementById('ap-metiers-badges');
+    if (apMetiersBadges) {
+      if (metiers.length && peutVoir('disciplines')) {
+        apMetiersBadges.innerHTML = metiers.map(m => METIER_LABELS[m]
+          ? `<span style="padding:5px 12px;border-radius:20px;background:rgba(0,245,155,0.15);border:1px solid rgba(0,245,155,0.35);color:var(--green);font-size:12px;font-weight:700;">${METIER_LABELS[m]}</span>`
+          : '').join('');
+        apMetiersBadges.style.display = 'flex';
+        apMetiersBadges.style.flexWrap = 'wrap';
+      } else {
+        apMetiersBadges.style.display = 'none';
       }
     }
 
-    // Photographe — spécialités + matériel
-    if (metiers.includes('photographe')) {
-      if (d.specialitesPhoto && d.specialitesPhoto.length) {
-        metierHtml += `<div style="margin-bottom:12px;">
-          <div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Spécialités photo</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;">${d.specialitesPhoto.map(s => `<span style="padding:4px 10px;border-radius:12px;background:rgba(255,255,255,0.05);color:var(--muted2);font-size:12px;font-weight:600;">${s}</span>`).join('')}</div>
-        </div>`;
-      }
-      if (d.materielPhoto) {
-        metierHtml += `<div style="margin-bottom:12px;"><span style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">Matériel : </span><span style="font-size:13px;color:var(--text);font-weight:600;">${d.materielPhoto}</span></div>`;
-      }
-    }
-
-    // Vidéaste — spécialités + matériel
-    if (metiers.includes('videaste')) {
-      if (d.specialitesVideo && d.specialitesVideo.length) {
-        metierHtml += `<div style="margin-bottom:12px;">
-          <div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Spécialités vidéo</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;">${d.specialitesVideo.map(s => `<span style="padding:4px 10px;border-radius:12px;background:rgba(255,255,255,0.05);color:var(--muted2);font-size:12px;font-weight:600;">${s}</span>`).join('')}</div>
-        </div>`;
-      }
-      if (d.materielVideo) {
-        metierHtml += `<div style="margin-bottom:12px;"><span style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">Matériel : </span><span style="font-size:13px;color:var(--text);font-weight:600;">${d.materielVideo}</span></div>`;
-      }
-    }
-
-    // Beatmaker — genres + DAW
-    if (metiers.includes('beatmaker')) {
-      if (d.genresBeat && d.genresBeat.length) {
-        metierHtml += `<div style="margin-bottom:12px;">
-          <div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Genres</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;">${d.genresBeat.map(s => `<span style="padding:4px 10px;border-radius:12px;background:rgba(255,255,255,0.05);color:var(--muted2);font-size:12px;font-weight:600;">${s}</span>`).join('')}</div>
-        </div>`;
-      }
-      if (d.daw) {
-        metierHtml += `<div style="margin-bottom:12px;"><span style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">DAW : </span><span style="font-size:13px;color:var(--text);font-weight:600;">${d.daw}</span></div>`;
-      }
-    }
-
-    // Réalisateur — genres/formats + logiciels
-    if (metiers.includes('realisateur')) {
-      if (d.genresReal && d.genresReal.length) {
-        metierHtml += `<div style="margin-bottom:12px;">
-          <div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Genres / formats</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;">${d.genresReal.map(s => `<span style="padding:4px 10px;border-radius:12px;background:rgba(255,255,255,0.05);color:var(--muted2);font-size:12px;font-weight:600;">${s}</span>`).join('')}</div>
-        </div>`;
-      }
-      if (d.logicielsReal) {
-        metierHtml += `<div style="margin-bottom:12px;"><span style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">Logiciels : </span><span style="font-size:13px;color:var(--text);font-weight:600;">${d.logicielsReal}</span></div>`;
-      }
-    }
-
-    // DJ — genres + matériel
-    if (metiers.includes('dj')) {
-      if (d.genresDj && d.genresDj.length) {
-        metierHtml += `<div style="margin-bottom:12px;"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Genres mixés</div><div style="display:flex;flex-wrap:wrap;gap:6px;">${d.genresDj.map(s => `<span style="padding:4px 10px;border-radius:12px;background:rgba(255,255,255,0.05);color:var(--muted2);font-size:12px;font-weight:600;">${s}</span>`).join('')}</div></div>`;
-      }
-      if (d.matosDj) {
-        metierHtml += `<div style="margin-bottom:12px;"><span style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">Matériel : </span><span style="font-size:13px;color:var(--text);font-weight:600;">${d.matosDj}</span></div>`;
-      }
-    }
-    // Musicien — instruments + genres
-    if (metiers.includes('musicien')) {
-      if (d.instrumentsMusicien && d.instrumentsMusicien.length) {
-        metierHtml += `<div style="margin-bottom:12px;"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Instruments</div><div style="display:flex;flex-wrap:wrap;gap:6px;">${d.instrumentsMusicien.map(s => `<span style="padding:4px 10px;border-radius:12px;background:rgba(255,255,255,0.05);color:var(--muted2);font-size:12px;font-weight:600;">${s}</span>`).join('')}</div></div>`;
-      }
-      if (d.genresMusicien && d.genresMusicien.length) {
-        metierHtml += `<div style="margin-bottom:12px;"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Genres</div><div style="display:flex;flex-wrap:wrap;gap:6px;">${d.genresMusicien.map(s => `<span style="padding:4px 10px;border-radius:12px;background:rgba(255,255,255,0.05);color:var(--muted2);font-size:12px;font-weight:600;">${s}</span>`).join('')}</div></div>`;
-      }
-    }
-    // Chanteur — genres + niveau
-    if (metiers.includes('chanteur')) {
-      if (d.genresChanteur && d.genresChanteur.length) {
-        metierHtml += `<div style="margin-bottom:12px;"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Genres</div><div style="display:flex;flex-wrap:wrap;gap:6px;">${d.genresChanteur.map(s => `<span style="padding:4px 10px;border-radius:12px;background:rgba(255,255,255,0.05);color:var(--muted2);font-size:12px;font-weight:600;">${s}</span>`).join('')}</div></div>`;
-      }
-      if (d.niveauChanteur) {
-        metierHtml += `<div style="margin-bottom:12px;"><span style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">Niveau : </span><span style="font-size:13px;color:var(--text);font-weight:600;">${d.niveauChanteur}</span></div>`;
-      }
-    }
-
-    } // fin peutVoir('disciplines')
-
-    if (metierHtml) {
-      metierSection.style.display = 'block';
-      metierSection.innerHTML = `<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:12px;">Discipline</div>${metierHtml}`;
-    } else {
-      metierSection.style.display = 'none';
-    }
-
-    // ── Réseaux sociaux & lien ──
-    let reseauxHtml = '';
-    if (peutVoir('reseaux')) {
-      if (d.instagram) reseauxHtml += `
-        <a href="https://instagram.com/${d.instagram}" target="_blank"
-          style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:600;text-decoration:none;margin-right:8px;margin-bottom:8px;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
-          @${d.instagram}
-        </a>`;
-      if (d.tiktok) reseauxHtml += `
-        <a href="https://tiktok.com/@${d.tiktok}" target="_blank"
-          style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:600;text-decoration:none;margin-right:8px;margin-bottom:8px;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.02-.06z"/></svg>
-          @${d.tiktok}
-        </a>`;
-      if (d.lien && d.lienVisible !== false) reseauxHtml += `
-        <a href="${d.lien}" target="_blank"
-          style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:rgba(77,159,255,0.08);border:1px solid rgba(77,159,255,0.3);color:var(--blue);font-size:13px;font-weight:600;text-decoration:none;margin-bottom:8px;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-          Mon site
-        </a>`;
-      // Plateformes musicales
-      if (d.spotify    && d.plateformesVisibles?.spotify)    reseauxHtml += `<a href="${d.spotify}" target="_blank" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:12px;background:rgba(29,185,84,0.08);border:1px solid rgba(29,185,84,0.3);color:#1db954;font-size:13px;font-weight:700;text-decoration:none;margin-right:8px;margin-bottom:8px;">Spotify</a>`;
-      if (d.applemusic && d.plateformesVisibles?.applemusic) reseauxHtml += `<a href="${d.applemusic}" target="_blank" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:12px;background:rgba(252,60,68,0.08);border:1px solid rgba(252,60,68,0.3);color:#fc3c44;font-size:13px;font-weight:700;text-decoration:none;margin-right:8px;margin-bottom:8px;">Apple Music</a>`;
-      if (d.deezer     && d.plateformesVisibles?.deezer)     reseauxHtml += `<a href="${d.deezer}" target="_blank" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:12px;background:rgba(162,56,255,0.08);border:1px solid rgba(162,56,255,0.3);color:#a238ff;font-size:13px;font-weight:700;text-decoration:none;margin-right:8px;margin-bottom:8px;">Deezer</a>`;
-      if (d.soundcloud && d.plateformesVisibles?.soundcloud) reseauxHtml += `<a href="${d.soundcloud}" target="_blank" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:12px;background:rgba(255,85,0,0.08);border:1px solid rgba(255,85,0,0.3);color:#ff5500;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:8px;">SoundCloud</a>`;
-    }
-
-    // Ajouter section réseaux si elle n'existe pas encore
-    let reseauxSection = document.getElementById('ap-reseaux');
-    if (!reseauxSection) {
-      reseauxSection = document.createElement('div');
-      reseauxSection.id = 'ap-reseaux';
-      reseauxSection.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;';
-      document.getElementById('ap-info-conf')?.before(reseauxSection);
-    }
-    if (reseauxHtml) {
-      reseauxSection.style.display = 'block';
-      reseauxSection.innerHTML = `
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:12px;">Réseaux & liens</div>
-        <div style="display:flex;flex-wrap:wrap;">${reseauxHtml}</div>`;
-    } else {
-      reseauxSection.style.display = 'none';
-    }
-
-    // ── Réseaux dans le header public ──
+    // ── Réseaux dans le header ──
     const apReseauxHeader = document.getElementById('ap-reseaux-header');
     if (apReseauxHeader && peutVoir('reseaux')) {
       const bsap = 'display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;';
@@ -13814,38 +13601,53 @@ window.showProfilPublic = async function(uid) {
       }
     }
 
-    // ── Bouton suivre ──
+    // ── Afficher les bons boutons selon estMoi ──
+    const actionsPerso = document.getElementById('ap-actions-perso');
+    const actionsPublic = document.getElementById('ap-actions-public');
+    if (actionsPerso) actionsPerso.style.display = estMoi ? 'flex' : 'none';
+    if (actionsPublic) actionsPublic.style.display = estMoi ? 'none' : 'block';
+
+    // ── Bouton organisateur (perso) ──
+    if (estMoi) {
+      const orgaBtn = document.getElementById('orga-btn');
+      if (orgaBtn) orgaBtn.style.display = d.organisateur ? 'flex' : 'none';
+    }
+
+    // ── Bouton suivre (public) ──
     const btnSuivre = document.getElementById('ap-btn-suivre');
-    btnSuivre.style.display = estMoi ? 'none' : 'flex';
-    // Si non connecté, le bouton redirige vers l'inscription
-    if (!window._currentUid) {
-      btnSuivre.textContent = '+ Suivre';
-      btnSuivre.setAttribute('onclick', "showPage('auth')");
-      btnSuivre.style.background = 'transparent';
-      btnSuivre.style.borderColor = 'var(--border)';
-      btnSuivre.style.color = 'var(--muted2)';
-    } else if (estSuivi) {
-      btnSuivre.textContent = '✓ Suivi';
-      btnSuivre.style.background = 'rgba(0,245,155,0.1)';
-      btnSuivre.style.borderColor = 'var(--green)';
-      btnSuivre.style.color = 'var(--green)';
-    } else {
-      btnSuivre.textContent = '+ Suivre';
-      btnSuivre.style.background = 'transparent';
-      btnSuivre.style.borderColor = 'var(--border)';
-      btnSuivre.style.color = 'var(--muted2)';
+    if (btnSuivre) {
+      if (!window._currentUid) {
+        btnSuivre.textContent = '+ Suivre';
+        btnSuivre.setAttribute('onclick', "showPage('auth')");
+        btnSuivre.style.background = 'transparent';
+        btnSuivre.style.borderColor = 'var(--border)';
+        btnSuivre.style.color = 'var(--muted2)';
+      } else if (estSuivi) {
+        btnSuivre.textContent = '✓ Suivi';
+        btnSuivre.style.background = 'rgba(0,245,155,0.1)';
+        btnSuivre.style.borderColor = 'var(--green)';
+        btnSuivre.style.color = 'var(--green)';
+      } else {
+        btnSuivre.textContent = '+ Suivre';
+        btnSuivre.style.background = 'transparent';
+        btnSuivre.style.borderColor = 'var(--border)';
+        btnSuivre.style.color = 'var(--muted2)';
+      }
     }
 
     // ── Bouton message — amis mutuels uniquement ──
-    document.getElementById('ap-btn-message').style.display = (!estMoi && estAmiMutuel) ? 'flex' : 'none';
+    const btnMsg = document.getElementById('ap-btn-message');
+    if (btnMsg) btnMsg.style.display = (!estMoi && estAmiMutuel) ? 'flex' : 'none';
 
-    // ── Bouton téléphone — selon confidentialité "reseaux" ──
+    // ── Bouton téléphone ──
     const btnTel = document.getElementById('ap-btn-tel');
-    if (d.tel && peutVoir('reseaux')) {
-      btnTel.style.display = 'flex';
-      btnTel.setAttribute('data-tel', d.tel);
-    } else {
-      btnTel.style.display = 'none';
+    if (btnTel) {
+      if (!estMoi && d.tel && peutVoir('reseaux')) {
+        btnTel.style.display = 'flex';
+        btnTel.setAttribute('data-tel', d.tel);
+      } else {
+        btnTel.style.display = 'none';
+      }
     }
 
     // ── Événements à venir de l'artiste ──
@@ -15303,7 +15105,7 @@ window.inscrire = async function() {
 
     setTimeout(() => {
       chargerProfil(uid);
-      window.showPage('profile');
+      if(window._currentUid&&window.showProfilPublic){artisteCourant=window._currentUid;window.showProfilPublic(window._currentUid);}else window.showPage('auth');
       if (!username) setTimeout(() => {
         const el = document.getElementById('profil-username');
         if (el) { window.ouvrirEdition && window.ouvrirEdition(); el.focus(); }
@@ -15858,8 +15660,8 @@ window.sauvegarderIdentite = async function() {
     }, { merge: true });
 
     // Mettre à jour l'entête du profil immédiatement
-    const phName   = document.getElementById('ph-name-display');
-    const phHandle = document.getElementById('ph-handle-display');
+    const phName   = document.getElementById('ap-name');
+    const phHandle = document.getElementById('ap-handle');
     if (phName)   phName.textContent   = nomAffiche.toUpperCase() || 'MON PROFIL';
     if (phHandle) phHandle.textContent = ville || document.getElementById('profil-zone')?.value || '';
 
@@ -15999,9 +15801,9 @@ async function chargerProfil(uid) {
 
     // ── Nom affiché ──
     const nomAffiche = d.nomAffiche || d.pseudo || d.nom || 'Mon profil';
-    const phName   = document.getElementById('ph-name-display');
-    const phHandle = document.getElementById('ph-handle-display');
-    const phZone   = document.getElementById('ph-zone-display');
+    const phName   = document.getElementById('ap-name');
+    const phHandle = document.getElementById('ap-handle');
+    const phZone   = document.getElementById('ap-zone');
     if (phName)   phName.textContent   = nomAffiche.toUpperCase();
     if (phHandle) {
       const parts = [];
@@ -16018,8 +15820,8 @@ async function chargerProfil(uid) {
     if (phStatRank) phStatRank.textContent = d.rank ? '#' + d.rank : '—';
 
     // ── Stats sociales ──
-    const statAbo = document.getElementById('stat-abonnements');
-    const statAbs = document.getElementById('stat-abonnes');
+    const statAbo = document.getElementById('ap-abonnements');
+    const statAbs = document.getElementById('ap-abonnes');
     if (statAbo) statAbo.textContent = (d.abonnements || []).length;
     if (statAbs) statAbs.textContent = (d.abonnes || []).length;
 
@@ -16182,7 +15984,7 @@ async function chargerProfil(uid) {
     }
 
     // ── Badges métier dans le header ──
-    const phMetiersBadges = document.getElementById('ph-metiers-badges');
+    const phMetiersBadges = document.getElementById('ap-metiers-badges');
     if (phMetiersBadges) {
       const METIER_BADGES = {
         danseur:      '💃 Danseur·se',
@@ -16210,9 +16012,10 @@ async function chargerProfil(uid) {
       };
       if (metiers.length) {
         phMetiersBadges.innerHTML = metiers.map(m => METIER_BADGES[m]
-          ? `<span style="padding:3px 9px;border-radius:20px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.2);color:var(--green);font-size:11px;font-weight:700;">${METIER_BADGES[m]}</span>`
+          ? `<span style="padding:5px 12px;border-radius:20px;background:rgba(0,245,155,0.15);border:1px solid rgba(0,245,155,0.35);color:var(--green);font-size:12px;font-weight:700;">${METIER_BADGES[m]}</span>`
           : '').join('');
         phMetiersBadges.style.display = 'flex';
+        phMetiersBadges.style.flexWrap = 'wrap';
       } else {
         phMetiersBadges.style.display = 'none';
       }
@@ -16240,7 +16043,7 @@ async function chargerProfil(uid) {
     }
 
     // ── Réseaux dans le header perso ──
-    const phReseauxHeader = document.getElementById('ph-reseaux-header');
+    const phReseauxHeader = document.getElementById('ap-reseaux-header');
     if (phReseauxHeader) {
       const bsh = 'display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;';
       let hhtml = '';
@@ -16347,7 +16150,7 @@ async function chargerProfil(uid) {
 
     // ── Abonnements / Abonnés ──
     const abonnements = d.abonnements || [];
-    const statAbos = document.getElementById('stat-abonnements');
+    const statAbos = document.getElementById('ap-abonnements');
     if (statAbos) statAbos.textContent = abonnements.length;
     // Comptage abonnés (ceux qui nous suivent)
     try {
@@ -16355,7 +16158,7 @@ async function chargerProfil(uid) {
         window._collection(window._db, 'danseurs'),
         window._where('abonnements', 'array-contains', uid)
       ));
-      const statAbonnes = document.getElementById('stat-abonnes');
+      const statAbonnes = document.getElementById('ap-abonnes');
       if (statAbonnes) statAbonnes.textContent = abonnesSnap.size;
     } catch(e) { console.error('Comptage abonnés:', e); }
 
@@ -17772,7 +17575,7 @@ function _renderDrawerLieux() {
   <button class="mn-item" id="bn-agenda" onclick="showPage('agenda')" aria-label="Agenda">
     <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
   </button>
-  <button class="mn-item" id="bn-profile" onclick="showPage('profile')" aria-label="Mon profil">
+  <button class="mn-item" id="bn-profile" onclick="if(window._currentUid){artisteCourant=window._currentUid;showProfilPublic(window._currentUid);}" aria-label="Mon profil">
     <svg class="mn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
   </button>
 </nav>
