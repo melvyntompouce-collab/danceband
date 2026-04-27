@@ -6154,8 +6154,8 @@ if (isPWA) {
         <div class="pc-title">Événements enregistrés</div>
         <div class="pc-badge" style="background:rgba(255,255,255,0.04);color:var(--muted2);border:1px solid var(--border);font-size:10px;padding:3px 8px;border-radius:6px;">Privé</div>
       </div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Visible uniquement par vous</div>
-      <div id="profil-favoris-list"></div>
+      <div style="font-size:11px;color:var(--muted);padding:0 20px;margin-bottom:8px;">Visible uniquement par vous</div>
+      <div id="profil-favoris-list" style="padding:0 20px;"></div>
     </div>
 
     <!-- Disciplines -->
@@ -12280,6 +12280,14 @@ async function afficherFavorisProfile() {
   const list    = document.getElementById('profil-favoris-list');
   if (!section || !list) return;
 
+  // Recharger les favoris depuis Firestore pour garantir la persistance
+  if (window._currentUid && window._db) {
+    try {
+      const snap = await window._getDoc(window._doc(window._db, 'danseurs', window._currentUid));
+      if (snap.exists()) mesFavoris = new Set(snap.data().favoris || []);
+    } catch(e) { console.error(e); }
+  }
+
   if (mesFavoris.size === 0) { section.style.display = 'none'; return; }
 
   // Charger les events si pas encore chargés
@@ -12297,20 +12305,16 @@ async function afficherFavorisProfile() {
   list.innerHTML = favEvents.map(ev => {
     const cfg  = TYPE_CONFIG[ev.type] || TYPE_CONFIG.soiree;
     const date = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'numeric', month:'short' }) : '';
-    const typeLabel = (ev.type || '').toUpperCase();
     return `
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;"
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;"
            onclick="showPage('agenda');setTimeout(()=>ouvrirEvent('${ev.id}'),300)">
-        <div style="width:36px;height:36px;border-radius:10px;background:${cfg.bg};border:1px solid ${cfg.couleur}22;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-          <div style="width:8px;height:8px;border-radius:50%;background:${cfg.couleur};"></div>
-        </div>
         <div style="flex:1;min-width:0;">
           <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ev.titre}</div>
-          <div style="font-size:11px;color:var(--muted2);margin-top:1px;">${date}${ev.ville ? ' · ' + ev.ville : ''}</div>
+          <div style="font-size:11px;color:var(--muted2);margin-top:2px;">${date}${ev.ville ? ' · ' + ev.ville : ''}</div>
         </div>
         <button onclick="event.stopPropagation();toggleFavori('${ev.id}')"
-          style="background:none;border:none;cursor:pointer;color:var(--green);padding:4px;flex-shrink:0;display:flex;align-items:center;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          style="background:none;border:none;cursor:pointer;color:var(--green);padding:4px;flex-shrink:0;display:flex;align-items:center;opacity:0.7;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
         </button>
       </div>`;
   }).join('');
