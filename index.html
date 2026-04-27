@@ -2843,6 +2843,10 @@ if (isPWA) {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           Modifier le profil
         </button>
+        <button class="npm-item" onclick="closeNavProfileMenu();showPage('enregistres')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          Enregistrés
+        </button>
         <div class="npm-separator"></div>
         <!-- Paramètres / Légal -->
         <div style="padding:4px 12px 2px;font-family:'Syne',sans-serif;font-weight:800;font-size:10px;color:var(--muted2);letter-spacing:1px;text-transform:uppercase;">Paramètres</div>
@@ -5345,14 +5349,7 @@ if (isPWA) {
       <div id="ap-reseaux-header" style="display:none;flex-wrap:wrap;gap:6px;margin-top:10px;"></div>
     </div>
 
-    <!-- À la une -->
-    <div id="ap-epingle-wrap" style="display:none;margin-top:16px;margin-bottom:16px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">⭐ À LA UNE</div>
-        <button id="ap-toggle-epingle" onclick="toggleVisibiliteEpingle()" style="display:none;font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">👁 Visible</button>
-      </div>
-      <div id="ap-epingle-content"></div>
-    </div>
+
 
     <!-- Portfolio -->
     <div id="ap-portfolio-wrap" style="display:none;margin-bottom:16px;">
@@ -6133,14 +6130,7 @@ if (isPWA) {
 
     </div>
 
-    <!-- À la une (profil perso) -->
-    <div id="ph-epingle-wrap" style="display:none;margin-bottom:16px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">⭐ À LA UNE</div>
-        <span id="ph-toggle-epingle" style="display:none;"></span>
-      </div>
-      <div id="ph-epingle-content"></div>
-    </div>
+
 
     <!-- Portfolio (profil perso) - masqué -->
     <div id="ph-portfolio-wrap" style="display:none;">
@@ -6170,13 +6160,6 @@ if (isPWA) {
     </div>
 
     <!-- Réseaux -->
-    <div class="profile-card" id="profil-reseaux-section" style="display:none;margin-bottom:16px;">
-      <div class="pc-header">
-        <div class="pc-title">Mes réseaux & liens</div>
-      </div>
-      <div id="profil-reseaux-list" style="display:flex;flex-wrap:wrap;gap:6px;padding-top:8px;padding-left:8px;"></div>
-    </div>
-
     <!-- Modal abonnés / abonnements -->
     <div id="social-modal" style="display:none;position:fixed;inset:0;z-index:300;background:var(--bg);flex-direction:column;">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:calc(16px + env(safe-area-inset-top)) 20px 16px;border-bottom:1px solid var(--border);flex-shrink:0;margin-top:52px;">
@@ -14096,35 +14079,7 @@ window._afficherPortfolioProfil = async function(uid, estMoi, _dParam) {
     return;
   }
 
-  // ── À la une ──
-  if (epingle && (estMoi || epingleVisible)) {
-    epingleWrap.style.display = 'block';
-    epingleContent.innerHTML = '<div style="color:var(--muted);font-size:13px;">Chargement...</div>';
-    try {
-      let epHtml = '';
-      if (epingle.type === 'post') {
-        const snap = await window._getDoc(window._doc(window._db, 'posts', epingle.id));
-        if (snap.exists()) {
-          const p = { id: snap.id, ...snap.data() };
-          epHtml = _renderEpinglePost(p);
-        }
-      } else if (epingle.type === 'evenement') {
-        const snap = await window._getDoc(window._doc(window._db, 'evenements', epingle.id));
-        if (snap.exists()) {
-          const ev = { id: snap.id, ...snap.data() };
-          epHtml = _renderEpingleEvent(ev);
-        }
-      }
-      epingleContent.innerHTML = epHtml || '<div style="color:var(--muted);font-size:13px;">Élément introuvable</div>';
-    } catch(e) { epingleContent.innerHTML = ''; epingleWrap.style.display = 'none'; }
-  } else {
-    if (estMoi) {
-      epingleWrap.style.display = 'block';
-      epingleContent.innerHTML = '<div style="padding:16px;border:1.5px dashed var(--border);border-radius:14px;text-align:center;color:var(--muted);font-size:13px;">Aucun élément épinglé.<br><span style="font-size:12px;">Utilise le menu ··· d\'un post ou événement</span></div>';
-    } else {
-      epingleWrap.style.display = 'none';
-    }
-  }
+
 
   // ── Portfolio ──
   if (portfolio.length > 0 || estMoi) {
@@ -16807,6 +16762,16 @@ async function chargerPostsProfil(uid, gridId, sectionId) {
   if (!grid || !section) return;
 
   try {
+    // Charger le post épinglé sur le profil
+    let epingleId = null;
+    try {
+      const profSnap = await window._getDoc(window._doc(window._db, 'danseurs', uid));
+      if (profSnap.exists()) {
+        const ep = profSnap.data().epingle_profil;
+        if (ep && ep.type === 'post') epingleId = ep.id;
+      }
+    } catch(e) {}
+
     const snap = await window._getDocs(window._query(
       window._collection(window._db, 'posts'),
       window._where('authorId', '==', uid),
@@ -16826,12 +16791,17 @@ async function chargerPostsProfil(uid, gridId, sectionId) {
     section.style.display = 'block';
     if (emptyEl) emptyEl.style.display = 'none';
 
+    const pinIcon = `<div style="position:absolute;top:5px;left:5px;width:20px;height:20px;border-radius:6px;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
+    </div>`;
+
     grid.innerHTML = photoPosts.map(p => `
-      <div onclick="showPage('agenda');setTimeout(()=>showPage('feed'),100);"
+      <div onclick="showPage('feed');"
         style="aspect-ratio:1;overflow:hidden;cursor:pointer;position:relative;background:var(--card);">
         <img src="${p.mediaUrl}" loading="lazy"
           style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.2s;"
           onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform=''">
+        ${p.id === epingleId ? pinIcon : ''}
       </div>`).join('');
   } catch(e) {
     console.error('Posts profil:', e);
