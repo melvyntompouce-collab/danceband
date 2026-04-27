@@ -2940,6 +2940,10 @@ if (isPWA) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
         Admin
       </button>
+      <button class="drawer-item" id="di-enregistres" onclick="showPage('enregistres');closeDrawer();">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Enregistrés
+      </button>
 
     </div>
 
@@ -5337,6 +5341,8 @@ if (isPWA) {
           <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;">Abonnements</div>
         </div>
       </div>
+      <!-- Réseaux sociaux header public -->
+      <div id="ap-reseaux-header" style="display:none;flex-wrap:wrap;gap:6px;margin-top:10px;"></div>
     </div>
 
     <!-- À la une -->
@@ -5379,6 +5385,12 @@ if (isPWA) {
 
     <!-- Réseaux sociaux (généré dynamiquement) -->
     <div id="ap-reseaux" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;"></div>
+
+    <!-- Grille posts publique -->
+    <div id="ap-posts-section" style="display:none;margin-bottom:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;margin-bottom:8px;color:var(--muted2);text-transform:uppercase;">Publications</div>
+      <div id="ap-posts-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;border-radius:14px;overflow:hidden;"></div>
+    </div>
 
     <!-- Compat score -->
     <div id="ap-compat" style="margin-bottom:16px;"></div>
@@ -6098,6 +6110,8 @@ if (isPWA) {
           <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;letter-spacing:1px;text-transform:uppercase;font-weight:700;">Abonnés</div>
         </div>
       </div>
+      <!-- Réseaux sociaux header perso -->
+      <div id="ph-reseaux-header" style="display:none;flex-wrap:wrap;gap:6px;margin-top:10px;"></div>
     </div>
 
     <!-- Boutons d'action perso -->
@@ -6148,22 +6162,11 @@ if (isPWA) {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
 
-    <!-- Favoris -->
-    <div class="profile-card" id="profil-favoris-section" style="display:none;margin-bottom:16px;">
-      <div class="pc-header">
-        <div class="pc-title">Événements enregistrés</div>
-        <div class="pc-badge" style="background:rgba(255,255,255,0.04);color:var(--muted2);border:1px solid var(--border);font-size:10px;padding:3px 8px;border-radius:6px;">Privé</div>
-      </div>
-      <div style="font-size:11px;color:var(--muted);padding:0 20px;margin-bottom:8px;">Visible uniquement par vous</div>
-      <div id="profil-favoris-list" style="padding:0 20px;"></div>
-    </div>
-
-    <!-- Disciplines -->
-    <div class="profile-card" id="profil-disciplines-section" style="display:none;margin-bottom:16px;">
-      <div class="pc-header">
-        <div class="pc-title">Mes disciplines</div>
-      </div>
-      <div id="profil-disciplines-content" style="padding-top:8px;padding-left:4px;padding-right:4px;"></div>
+    <!-- Grille posts perso -->
+    <div id="ph-posts-section" style="display:none;margin-bottom:16px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;margin-bottom:8px;color:var(--muted2);text-transform:uppercase;">Publications</div>
+      <div id="ph-posts-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;border-radius:14px;overflow:hidden;"></div>
+      <div id="ph-posts-empty" style="display:none;text-align:center;padding:24px;color:var(--muted);font-size:13px;">Aucune publication</div>
     </div>
 
     <!-- Réseaux -->
@@ -6181,6 +6184,35 @@ if (isPWA) {
         <button onclick="fermerListeSociale()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;">←</button>
       </div>
       <div id="social-modal-list" style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;flex:1;scrollbar-width:none;"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ PAGE: ENREGISTRÉS ═══ -->
+<div class="page" id="page-enregistres">
+  <div style="max-width:600px;margin:0 auto;padding:24px 20px 120px;">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <button onclick="goBack()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
+      <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:-1px;line-height:1;">ENREGISTRÉS</div>
+    </div>
+
+    <!-- Posts sauvegardés -->
+    <div style="margin-bottom:24px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;margin-bottom:10px;color:var(--muted2);text-transform:uppercase;">Publications</div>
+      <div id="saved-posts-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;border-radius:14px;overflow:hidden;"></div>
+      <div id="saved-posts-empty" style="display:none;text-align:center;padding:32px;color:var(--muted);font-size:13px;">Aucune publication enregistrée</div>
+      <div id="saved-posts-loading" style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Chargement...</div>
+    </div>
+
+    <!-- Événements sauvegardés -->
+    <div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;margin-bottom:10px;color:var(--muted2);text-transform:uppercase;">Événements</div>
+      <div id="saved-events-list"></div>
+      <div id="saved-events-empty" style="display:none;text-align:center;padding:32px;color:var(--muted);font-size:13px;">Aucun événement enregistré</div>
+      <div id="saved-events-loading" style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Chargement...</div>
     </div>
 
   </div>
@@ -6329,7 +6361,7 @@ function showPage(id, isBack = false) {
     home: '/', auth: '/connexion', network: '/reseau', profile: '/profil',
     agenda: '/agenda', messages: '/messages', dashboard: '/profil',
     feed: '/feed', orga: '/organisateur', admin: '/admin', ranking: '/classement', salles: '/salles',
-    bracelet: '/kima', notifs: '/notifications', privacy: '/confidentialite',
+    bracelet: '/kima', notifs: '/notifications', privacy: '/confidentialite', enregistres: '/enregistres',
     'form-event': '/creer-evenement', 'form-salle': '/creer-salle', 'form-ecole': '/creer-ecole', 'post-create': '/creer-post',
     cgu: '/cgu', cgv: '/cgv', mentions: '/mentions',
     'profil-public': '/profil', 'share-event': '/event'
@@ -6401,7 +6433,8 @@ function showPage(id, isBack = false) {
   if (id === 'admin')     setTimeout(chargerDashboardAdmin, DURATION);
   if (id === 'ranking')   setTimeout(chargerClassement, DURATION);
   if (id === 'salles')    setTimeout(chargerSalles,     DURATION);
-  if (id === 'profile')   { const ep = document.getElementById('edit-profile-page'); if (ep) ep.style.display = 'none'; setTimeout(afficherFavorisProfile, DURATION); }
+  if (id === 'profile')   { const ep = document.getElementById('edit-profile-page'); if (ep) ep.style.display = 'none'; setTimeout(() => chargerPostsProfil(window._currentUid, 'ph-posts-grid', 'ph-posts-section'), DURATION); }
+  if (id === 'enregistres') setTimeout(chargerPageEnregistres, DURATION);
   if (id === 'feed')         setTimeout(chargerFeed, DURATION);
   if (id === 'post-create')  setTimeout(_initPostCreatePage, DURATION);
 
@@ -13775,6 +13808,21 @@ window.showProfilPublic = async function(uid) {
       reseauxSection.style.display = 'none';
     }
 
+    // ── Réseaux dans le header public ──
+    const apReseauxHeader = document.getElementById('ap-reseaux-header');
+    if (apReseauxHeader && peutVoir('reseaux')) {
+      const bsap = 'display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;';
+      let apRHtml = '';
+      if (d.instagram) apRHtml += `<a href="https://instagram.com/${d.instagram}" target="_blank" style="${bsap}background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--text);"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>@${d.instagram}</a>`;
+      if (d.tiktok) apRHtml += `<a href="https://tiktok.com/@${d.tiktok}" target="_blank" style="${bsap}background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--text);"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.02-.06z"/></svg>@${d.tiktok}</a>`;
+      if (d.lien && d.lienVisible !== false) apRHtml += `<a href="${d.lien}" target="_blank" style="${bsap}background:rgba(77,159,255,0.1);border:1px solid rgba(77,159,255,0.3);color:var(--blue);">🔗 Site</a>`;
+      apReseauxHeader.style.display = apRHtml ? 'flex' : 'none';
+      apReseauxHeader.innerHTML = apRHtml;
+    }
+
+    // ── Grille posts profil public ──
+    chargerPostsProfil(uid, 'ap-posts-grid', 'ap-posts-section');
+
     // ── Section réseaux sociaux ──
     // Ajout d'une ligne info confidentialité si nécessaire
     const infoConf = document.getElementById('ap-info-conf');
@@ -16219,81 +16267,7 @@ async function chargerProfil(uid) {
       }
     }
 
-    // ── Section disciplines dans le profil perso (lecture seule) ──
-    const disciplinesSection  = document.getElementById('profil-disciplines-section');
-    const disciplinesContent  = document.getElementById('profil-disciplines-content');
-    if (disciplinesSection && disciplinesContent) {
-      const METIER_LABELS_RO = {
-        danseur:      { emoji:'💃', label:'Danseur·se' },
-        photographe:  { emoji:'📷', label:'Photographe' },
-        videaste:     { emoji:'🎥', label:'Vidéaste' },
-        beatmaker:    { emoji:'🎧', label:'Beatmaker' },
-        realisateur:  { emoji:'🎬', label:'Réalisateur·rice' },
-        dj:           { emoji:'🎛️', label:'DJ' },
-        musicien:     { emoji:'🎸', label:'Musicien·ne' },
-        chanteur:     { emoji:'🎤', label:'Chanteur·se / Rappeur·se' },
-        comedien:     { emoji:'🎭', label:'Comédien·ne' },
-        performeur:   { emoji:'✨', label:'Performeur·se' },
-        mannequin:    { emoji:'🪞', label:'Mannequin' },
-        styliste:     { emoji:'👗', label:'Styliste' },
-        maquilleur:   { emoji:'💄', label:'Maquilleur·se' },
-        coiffeur_mode:{ emoji:'💈', label:'Coiffeur·se artistique' },
-        costumier:    { emoji:'🧵', label:'Costumier·ère' },
-        dessinateur:  { emoji:'✏️', label:'Dessinateur·rice' },
-        peintre:      { emoji:'🖌️', label:'Peintre' },
-        graphiste:    { emoji:'🖥️', label:'Graphiste' },
-        illustrateur: { emoji:'🖼️', label:'Illustrateur·rice' },
-        designer:     { emoji:'🎨', label:'Designer' },
-        designer_mode:{ emoji:'👔', label:'Designer Mode' },
-        nail_artiste: { emoji:'💅', label:'Nail Artiste' },
-      };
-      let discHtml = '';
-      metiers.forEach(m => {
-        const info = METIER_LABELS_RO[m];
-        if (!info) return;
-        discHtml += `<div style="margin-bottom:20px;padding:12px 14px;background:rgba(255,255,255,0.02);border-radius:14px;border:1px solid rgba(255,255,255,0.05);">`;
-        discHtml += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">`;
-        discHtml += `<span style="padding:5px 12px;border-radius:20px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.2);color:var(--green);font-size:12px;font-weight:700;">${info.emoji} ${info.label}</span>`;
-        discHtml += `</div>`;
-        // Détails spécifiques par métier
-        const tags = [];
-        if (m === 'danseur') {
-          (window.normaliserStyles(d.styles) || []).forEach(s => tags.push(s));
-          if (d.niveauDanseur) discHtml += `<span style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">Niveau : </span><span style="font-size:12px;color:var(--text);font-weight:600;">${d.niveauDanseur}</span><br style="margin-bottom:6px;">`;
-        } else if (m === 'photographe') {
-          (d.specialitesPhoto || []).forEach(s => tags.push(s));
-          if (d.materielPhoto) discHtml += `<div style="font-size:12px;color:var(--muted2);margin-bottom:4px;">📷 ${d.materielPhoto}</div>`;
-        } else if (m === 'videaste') {
-          (d.specialitesVideo || []).forEach(s => tags.push(s));
-          if (d.materielVideo) discHtml += `<div style="font-size:12px;color:var(--muted2);margin-bottom:4px;">🎥 ${d.materielVideo}</div>`;
-        } else if (m === 'beatmaker') {
-          (d.genresBeat || []).forEach(s => tags.push(s));
-          if (d.daw) discHtml += `<div style="font-size:12px;color:var(--muted2);margin-bottom:4px;">🎛 ${d.daw}</div>`;
-        } else if (m === 'realisateur') {
-          (d.genresReal || []).forEach(s => tags.push(s));
-          if (d.logicielsReal) discHtml += `<div style="font-size:12px;color:var(--muted2);margin-bottom:4px;">💻 ${d.logicielsReal}</div>`;
-        } else if (m === 'dj') {
-          (d.genresDj || []).forEach(s => tags.push(s));
-          if (d.matosDj) discHtml += `<div style="font-size:12px;color:var(--muted2);margin-bottom:4px;">🎛️ ${d.matosDj}</div>`;
-        } else if (m === 'musicien') {
-          (d.instrumentsMusicien || []).forEach(s => tags.push(s));
-          (d.genresMusicien || []).forEach(s => tags.push(s));
-        } else if (m === 'chanteur') {
-          (d.genresChanteur || []).forEach(s => tags.push(s));
-          if (d.niveauChanteur) discHtml += `<span style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">Niveau : </span><span style="font-size:12px;color:var(--text);font-weight:600;">${d.niveauChanteur}</span><br style="margin-bottom:6px;">`;
-        }
-        if (tags.length) {
-          discHtml += `<div style="display:flex;flex-wrap:wrap;gap:6px;">`;
-          tags.forEach(t => {
-            discHtml += `<span style="padding:4px 10px;border-radius:12px;background:rgba(255,255,255,0.05);color:var(--muted2);font-size:12px;font-weight:600;">${t}</span>`;
-          });
-          discHtml += `</div>`;
-        }
-        discHtml += `</div>`;
-      });
-      disciplinesSection.style.display = discHtml ? 'block' : 'none';
-      disciplinesContent.innerHTML = discHtml;
-    }
+
 
     // ── Section réseaux sociaux dans le profil perso ──
     const reseauxSection = document.getElementById('profil-reseaux-section');
@@ -16313,6 +16287,19 @@ async function chargerProfil(uid) {
       reseauxSection.style.display = html ? 'block' : 'none';
       reseauxList.innerHTML = html;
     }
+
+    // ── Réseaux dans le header perso ──
+    const phReseauxHeader = document.getElementById('ph-reseaux-header');
+    if (phReseauxHeader) {
+      const bsh = 'display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;';
+      let hhtml = '';
+      if (d.instagram) hhtml += `<a href="https://instagram.com/${d.instagram}" target="_blank" style="${bsh}background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--text);"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>@${d.instagram}</a>`;
+      if (d.tiktok) hhtml += `<a href="https://tiktok.com/@${d.tiktok}" target="_blank" style="${bsh}background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--text);"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.02-.06z"/></svg>@${d.tiktok}</a>`;
+      if (d.lien && d.lienVisible !== false) hhtml += `<a href="${d.lien}" target="_blank" style="${bsh}background:rgba(77,159,255,0.1);border:1px solid rgba(77,159,255,0.3);color:var(--blue);">🔗 Site</a>`;
+      phReseauxHeader.style.display = hhtml ? 'flex' : 'none';
+      phReseauxHeader.innerHTML = hhtml;
+    }
+
     if (privTel) privTel.textContent = d.tel || 'Non renseigné';
 
     // Sous "Playlists" → afficher les plateformes renseignées
@@ -16807,6 +16794,177 @@ function detecterPairageKima(estConnecte) {
     setTimeout(() => ouvrirModalePairing(kimaId, estConnecte), 800);
   }
 }
+
+
+// ════════════════════════════════
+// GRILLE POSTS PAR AUTEUR
+// ════════════════════════════════
+async function chargerPostsProfil(uid, gridId, sectionId) {
+  if (!uid || !window._db) return;
+  const grid = document.getElementById(gridId);
+  const section = document.getElementById(sectionId);
+  const emptyEl = document.getElementById(gridId.replace('-grid', '-empty'));
+  if (!grid || !section) return;
+
+  try {
+    const snap = await window._getDocs(window._query(
+      window._collection(window._db, 'posts'),
+      window._where('authorId', '==', uid),
+      window._orderBy('createdAt', 'desc'),
+      window._limit(12)
+    ));
+
+    const posts = [];
+    snap.forEach(d => posts.push({ id: d.id, ...d.data() }));
+    const photoPosts = posts.filter(p => p.type === 'photo' && p.mediaUrl);
+
+    if (photoPosts.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = 'block';
+    if (emptyEl) emptyEl.style.display = 'none';
+
+    grid.innerHTML = photoPosts.map(p => `
+      <div onclick="showPage('agenda');setTimeout(()=>showPage('feed'),100);"
+        style="aspect-ratio:1;overflow:hidden;cursor:pointer;position:relative;background:var(--card);">
+        <img src="${p.mediaUrl}" loading="lazy"
+          style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.2s;"
+          onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform=''">
+      </div>`).join('');
+  } catch(e) {
+    console.error('Posts profil:', e);
+  }
+}
+window.chargerPostsProfil = chargerPostsProfil;
+
+// ════════════════════════════════
+// PAGE ENREGISTRÉS
+// ════════════════════════════════
+async function chargerPageEnregistres() {
+  if (!window._currentUid || !window._db) return;
+
+  // ── Posts sauvegardés ──
+  const postsGrid    = document.getElementById('saved-posts-grid');
+  const postsEmpty   = document.getElementById('saved-posts-empty');
+  const postsLoading = document.getElementById('saved-posts-loading');
+  if (postsGrid) {
+    if (postsLoading) postsLoading.style.display = 'block';
+    try {
+      const savedSnap = await window._getDocs(
+        window._collection(window._db, 'users', window._currentUid, 'savedPosts')
+      );
+      const savedIds = [];
+      savedSnap.forEach(d => savedIds.push(d.id));
+
+      if (savedIds.length === 0) {
+        postsGrid.innerHTML = '';
+        if (postsEmpty)   postsEmpty.style.display   = 'block';
+        if (postsLoading) postsLoading.style.display = 'none';
+      } else {
+        // Charger les posts par batch
+        const postDocs = await Promise.all(
+          savedIds.slice(0, 12).map(id => window._getDoc(window._doc(window._db, 'posts', id)))
+        );
+        const posts = postDocs.filter(d => d.exists()).map(d => ({ id: d.id, ...d.data() }));
+        const photoPosts = posts.filter(p => p.type === 'photo' && p.mediaUrl);
+
+        if (postsLoading) postsLoading.style.display = 'none';
+
+        if (photoPosts.length === 0 && posts.length === 0) {
+          if (postsEmpty) postsEmpty.style.display = 'block';
+        } else {
+          if (postsEmpty) postsEmpty.style.display = 'none';
+          // Afficher photos en grille + autres posts en liste sous la grille
+          const photos = posts.filter(p => p.type === 'photo' && p.mediaUrl);
+          const autres = posts.filter(p => p.type !== 'photo' || !p.mediaUrl);
+          let html = photos.map(p => `
+            <div onclick="showPage('feed');"
+              style="aspect-ratio:1;overflow:hidden;cursor:pointer;position:relative;background:var(--card);">
+              <img src="${p.mediaUrl}" loading="lazy"
+                style="width:100%;height:100%;object-fit:cover;display:block;">
+            </div>`).join('');
+          postsGrid.innerHTML = html;
+          postsGrid.style.display = photos.length ? 'grid' : 'none';
+
+          // Posts non-photo sous la grille
+          const autresContainer = document.getElementById('saved-posts-autres');
+          if (!autresContainer && autres.length) {
+            const div = document.createElement('div');
+            div.id = 'saved-posts-autres';
+            div.style.cssText = 'margin-top:8px;';
+            postsGrid.parentElement.appendChild(div);
+            div.innerHTML = autres.map(p => `
+              <div onclick="showPage('feed');" style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;">
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.content || 'Post'}</div>
+                </div>
+              </div>`).join('');
+          }
+        }
+      }
+    } catch(e) {
+      console.error('Saved posts:', e);
+      if (postsLoading) postsLoading.style.display = 'none';
+      if (postsEmpty)   postsEmpty.style.display   = 'block';
+    }
+  }
+
+  // ── Événements sauvegardés ──
+  const eventsList    = document.getElementById('saved-events-list');
+  const eventsEmpty   = document.getElementById('saved-events-empty');
+  const eventsLoading = document.getElementById('saved-events-loading');
+  if (eventsList) {
+    if (eventsLoading) eventsLoading.style.display = 'block';
+    try {
+      // Recharger favoris depuis Firestore
+      const snap = await window._getDoc(window._doc(window._db, 'danseurs', window._currentUid));
+      if (snap.exists()) mesFavoris = new Set(snap.data().favoris || []);
+
+      if (mesFavoris.size === 0) {
+        eventsList.innerHTML = '';
+        if (eventsEmpty)   eventsEmpty.style.display   = 'block';
+        if (eventsLoading) eventsLoading.style.display = 'none';
+      } else {
+        // Charger les events si besoin
+        if (tousLesEvents.length === 0) {
+          const evSnap = await window._getDocs(window._collection(window._db, 'evenements'));
+          evSnap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
+        }
+        const favEvents = tousLesEvents.filter(e => mesFavoris.has(e.id));
+        if (eventsLoading) eventsLoading.style.display = 'none';
+
+        if (favEvents.length === 0) {
+          if (eventsEmpty) eventsEmpty.style.display = 'block';
+        } else {
+          if (eventsEmpty) eventsEmpty.style.display = 'none';
+          eventsList.innerHTML = favEvents.map(ev => {
+            const cfg  = TYPE_CONFIG[ev.type] || TYPE_CONFIG.soiree;
+            const date = ev.date ? new Date(ev.date).toLocaleDateString('fr-FR', { day:'numeric', month:'short' }) : '';
+            return `
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;"
+                   onclick="showPage('agenda');setTimeout(()=>ouvrirEvent('${ev.id}'),300)">
+                <div style="flex:1;min-width:0;">
+                  <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${ev.titre}</div>
+                  <div style="font-size:11px;color:var(--muted2);margin-top:2px;">${date}${ev.ville ? ' · ' + ev.ville : ''}</div>
+                </div>
+                <button onclick="event.stopPropagation();toggleFavori('${ev.id}').then(()=>chargerPageEnregistres())"
+                  style="background:none;border:none;cursor:pointer;color:var(--green);padding:4px;flex-shrink:0;display:flex;align-items:center;opacity:0.7;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                </button>
+              </div>`;
+          }).join('');
+        }
+      }
+    } catch(e) {
+      console.error('Saved events:', e);
+      if (eventsLoading) eventsLoading.style.display = 'none';
+      if (eventsEmpty)   eventsEmpty.style.display   = 'block';
+    }
+  }
+}
+window.chargerPageEnregistres = chargerPageEnregistres;
 
 // Exposer les fonctions du script classique sur window
 window.normaliserStyles   = normaliserStyles;
