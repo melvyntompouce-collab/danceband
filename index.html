@@ -7802,7 +7802,8 @@ window._postMediaFile = window._postMediaFile || null;
   function updateContainerSize() {
     const c = getContainer();
     if (!c) return;
-    _cropContainerW = c.clientWidth;
+    const fullW = c.clientWidth;
+    _cropContainerW = fullW;
     const maxH = Math.floor(window.innerHeight * 0.55);
     const idealH = Math.round(_cropContainerW * _cropRatioH / _cropRatioW);
     _cropContainerH = Math.min(idealH, maxH);
@@ -7815,6 +7816,9 @@ window._postMediaFile = window._postMediaFile || null;
     canvas.height = _cropContainerH * window.devicePixelRatio;
     canvas.style.width = _cropContainerW + 'px';
     canvas.style.height = _cropContainerH + 'px';
+    // Centrer le canvas dans le conteneur si plus étroit (ex: ratio 9:16)
+    const offsetX = Math.round((fullW - _cropContainerW) / 2);
+    canvas.style.marginLeft = offsetX + 'px';
     c.style.height = _cropContainerH + 'px';
   }
 
