@@ -866,7 +866,8 @@ body.pwa #network-mobile-bar {
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:32px;flex-wrap:wrap;gap:16px;
 }
-.agenda-filters{display:flex;gap:8px;flex-wrap:wrap;}
+.agenda-filters{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px;}
+.agenda-filters::-webkit-scrollbar{display:none;}
 .agenda-filter{
   padding:6px 13px;border-radius:20px;font-size:11px;font-weight:700;
   border:1.5px solid var(--border);background:transparent;
@@ -5122,11 +5123,11 @@ if (isPWA) {
       <!-- ONGLETS AGENDA / SALLES (toujours visibles) -->
       <div id="agenda-tabs" style="display:flex;gap:8px;margin-top:8px;">
         <button class="agenda-tab-btn on" id="agenda-tab-events" onclick="switchAgendaTab('events',this)"
-          style="flex:1;padding:10px;border-radius:12px;border:1.5px solid rgba(0,245,155,0.3);background:rgba(0,245,155,0.08);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;">
+          style="flex:1;padding:8px 10px;border-radius:12px;border:1.5px solid rgba(0,245,155,0.3);background:rgba(0,245,155,0.08);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
           Événements
         </button>
         <button class="agenda-tab-btn" id="agenda-tab-salles" onclick="switchAgendaTab('salles',this)"
-          style="flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;">
+          style="flex:1;padding:8px 10px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;transition:all 0.2s;white-space:nowrap;">
           Cours & Studios
         </button>
       </div>
@@ -5135,8 +5136,8 @@ if (isPWA) {
     <!-- CONTENU ÉVÉNEMENTS -->
     <div id="agenda-content-events">
     <div class="agenda-header" style="padding-top:0;">
-      <div style="display:flex;flex-direction:column;gap:10px;width:100%;">
-        <select id="agenda-categorie" class="form-select" style="background:var(--bg2);max-width:220px;font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);color:var(--text);cursor:pointer;" onchange="setAgendaCategorie(this.value)">
+      <div style="display:flex;flex-direction:column;gap:6px;width:100%;">
+        <select id="agenda-categorie" class="form-select" style="background:var(--bg2);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);color:var(--text);cursor:pointer;width:100%;" onchange="setAgendaCategorie(this.value)">
           <option value="toutes">🎭 Toutes les disciplines</option>
           <option value="danse">💃 Danse</option>
           <option value="musique">🎵 Musique</option>
@@ -5163,14 +5164,14 @@ if (isPWA) {
     </div>
 
     <!-- FILTRE VILLE ÉVÉNEMENTS (toujours visible) -->
-    <div id="agenda-ville-wrap" style="display:flex;align-items:center;gap:8px;margin-top:2px;margin-bottom:4px;">
-      <div style="position:relative;flex:1;max-width:300px;">
+    <div id="agenda-ville-wrap" style="display:flex;align-items:center;gap:8px;margin-top:10px;margin-bottom:12px;">
+      <div style="position:relative;flex:1;">
         <input id="agenda-ville-search" type="text" placeholder="🔍 Ville..." oninput="setAgendaVille(this.value)"
           style="padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;width:100%;transition:border-color 0.2s;box-sizing:border-box;"
           onfocus="this.style.borderColor='rgba(0,245,155,0.3)'" onblur="this.style.borderColor='var(--border)'">
       </div>
       <button onclick="presDeNomMoi('agenda-ville-search', setAgendaVille)"
-        style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;"
+        style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;"
         onmouseover="this.style.borderColor='rgba(0,245,155,0.3)';this.style.color='var(--green)'"
         onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'"
         id="btn-presdenom-events">
