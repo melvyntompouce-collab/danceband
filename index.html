@@ -6148,105 +6148,6 @@ if (isPWA) {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
 
-    <!-- Confidentialité -->
-    <div class="profile-card" style="margin-bottom:16px;">
-      <div class="pc-header" style="flex-direction:column;align-items:flex-start;gap:4px;padding-top:13px;padding-bottom:14px;">
-        <div class="pc-title">Confidentialité</div>
-        <div style="font-size:12px;color:var(--muted2);">Choisis qui peut voir chaque info</div>
-      </div>
-      <div class="priv-row" id="privrow-nom">
-        <div class="priv-row-top">
-        <div class="priv-left">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <div><div class="priv-fn">Nom / Pseudo</div><div class="priv-fv" id="priv-val-nom">—</div></div>
-        </div>
-        <div class="tg">
-          <button class="to sp" onclick="setPriv(this,0)">PUB</button>
-          <button class="to" onclick="setPriv(this,1)">COMMU</button>
-          <button class="to" onclick="setPriv(this,2)">AMIS</button>
-          <button class="to" onclick="setPriv(this,3)">PRIV</button>
-        </div>
-        </div>
-        <div class="priv-desc" id="privdesc-nom"></div>
-      </div>
-      <div class="priv-row" id="privrow-reseaux">
-        <div class="priv-row-top">
-        <div class="priv-left">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.16 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/></svg>
-          <div><div class="priv-fn">Réseaux sociaux</div><div class="priv-fv" id="priv-val-reseaux">Non renseigné</div></div>
-        </div>
-        <div class="tg">
-          <button class="to" onclick="setPriv(this,0)">PUB</button>
-          <button class="to" onclick="setPriv(this,1)">COMMU</button>
-          <button class="to sa" onclick="setPriv(this,2)">AMIS</button>
-          <button class="to" onclick="setPriv(this,3)">PRIV</button>
-        </div>
-        </div>
-        <div class="priv-desc" id="privdesc-reseaux"></div>
-      </div>
-      <div class="priv-row" id="privrow-tel">
-        <div class="priv-row-top">
-        <div class="priv-left">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-          <div><div class="priv-fn">Téléphone</div><div class="priv-fv" id="tel-display-priv">Non renseigné</div></div>
-        </div>
-        <div class="tg">
-          <button class="to" onclick="setPriv(this,0)">PUB</button>
-          <button class="to" onclick="setPriv(this,1)">COMMU</button>
-          <button class="to sa" onclick="setPriv(this,2)">AMIS</button>
-          <button class="to" onclick="setPriv(this,3)">PRIV</button>
-        </div>
-        </div>
-        <div class="priv-desc" id="privdesc-tel"></div>
-      </div>
-      <div class="priv-row" id="privrow-playlists">
-        <div class="priv-row-top">
-        <div class="priv-left">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-          <div><div class="priv-fn">Playlists</div><div class="priv-fv" id="priv-val-playlists">Non renseigné</div></div>
-        </div>
-        <div class="tg">
-          <button class="to" onclick="setPriv(this,0)">PUB</button>
-          <button class="to sc" onclick="setPriv(this,1)">COMMU</button>
-          <button class="to" onclick="setPriv(this,2)">AMIS</button>
-          <button class="to" onclick="setPriv(this,3)">PRIV</button>
-        </div>
-        </div>
-        <div class="priv-desc" id="privdesc-playlists"></div>
-      </div>
-      <div class="priv-row" id="privrow-disciplines">
-        <div class="priv-row-top">
-        <div class="priv-left">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <div><div class="priv-fn">Disciplines & spécialités</div><div class="priv-fv" id="priv-val-disciplines">Non renseigné</div></div>
-        </div>
-        <div class="tg">
-          <button class="to" onclick="setPriv(this,0)">PUB</button>
-          <button class="to sc" onclick="setPriv(this,1)">COMMU</button>
-          <button class="to" onclick="setPriv(this,2)">AMIS</button>
-          <button class="to" onclick="setPriv(this,3)">PRIV</button>
-        </div>
-        </div>
-        <div class="priv-desc" id="privdesc-disciplines"></div>
-      </div>
-    </div>
-
-    <!-- Présence aux événements -->
-    <div class="profile-card" style="margin-bottom:16px;">
-      <div class="pc-header" style="flex-direction:column;align-items:flex-start;gap:4px;padding-top:13px;padding-bottom:14px;">
-        <div class="pc-title">Présence aux événements</div>
-        <div style="font-size:12px;color:var(--muted2);">Choisis qui te voit</div>
-      </div>
-      <div style="display:flex;gap:6px;width:100%;padding:14px 20px 0;">
-        <button class="to" id="pe-pub" onclick="setPresenceEvenements('public',this)">PUB</button>
-        <button class="to sc" id="pe-com" onclick="setPresenceEvenements('communaute',this)">COMMU</button>
-        <button class="to" id="pe-ami" onclick="setPresenceEvenements('amis',this)">AMIS</button>
-        <button class="to" id="pe-priv" onclick="setPresenceEvenements('prive',this)">PRIV</button>
-      </div>
-      <div id="pe-desc" style="font-size:11px;color:var(--muted);margin:10px 20px 0;padding:8px 10px;background:var(--bg2);border-radius:8px;line-height:1.5;"></div>
-      <div style="height:16px;"></div>
-    </div>
-
     <!-- Favoris -->
     <div class="profile-card" id="profil-favoris-section" style="display:none;margin-bottom:16px;">
       <div class="pc-header">
@@ -19211,6 +19112,105 @@ function _renderDrawerLieux() {
           <div style="margin-top:12px;padding:12px 14px;background:var(--bg2);border-radius:12px;font-size:13px;color:var(--muted2);">
             Aperçu : <span id="apercu-nom" style="color:var(--text);font-weight:800;font-size:15px;">Sofia Martinez</span>
           </div>
+        </div>
+
+        <!-- CONFIDENTIALITÉ -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;margin-bottom:16px;overflow:hidden;">
+          <div style="padding:16px 20px 12px;border-bottom:1px solid var(--border);">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;letter-spacing:0.3px;">Confidentialité</div>
+            <div style="font-size:12px;color:var(--muted2);margin-top:2px;">Choisis qui peut voir chaque info</div>
+          </div>
+          <div class="priv-row" id="privrow-nom">
+            <div class="priv-row-top">
+            <div class="priv-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <div><div class="priv-fn">Nom / Pseudo</div><div class="priv-fv" id="priv-val-nom">—</div></div>
+            </div>
+            <div class="tg">
+              <button class="to sp" onclick="setPriv(this,0)">PUB</button>
+              <button class="to" onclick="setPriv(this,1)">COMMU</button>
+              <button class="to" onclick="setPriv(this,2)">AMIS</button>
+              <button class="to" onclick="setPriv(this,3)">PRIV</button>
+            </div>
+            </div>
+            <div class="priv-desc" id="privdesc-nom"></div>
+          </div>
+          <div class="priv-row" id="privrow-reseaux">
+            <div class="priv-row-top">
+            <div class="priv-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.16 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/></svg>
+              <div><div class="priv-fn">Réseaux sociaux</div><div class="priv-fv" id="priv-val-reseaux">Non renseigné</div></div>
+            </div>
+            <div class="tg">
+              <button class="to" onclick="setPriv(this,0)">PUB</button>
+              <button class="to" onclick="setPriv(this,1)">COMMU</button>
+              <button class="to sa" onclick="setPriv(this,2)">AMIS</button>
+              <button class="to" onclick="setPriv(this,3)">PRIV</button>
+            </div>
+            </div>
+            <div class="priv-desc" id="privdesc-reseaux"></div>
+          </div>
+          <div class="priv-row" id="privrow-tel">
+            <div class="priv-row-top">
+            <div class="priv-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              <div><div class="priv-fn">Téléphone</div><div class="priv-fv" id="tel-display-priv">Non renseigné</div></div>
+            </div>
+            <div class="tg">
+              <button class="to" onclick="setPriv(this,0)">PUB</button>
+              <button class="to" onclick="setPriv(this,1)">COMMU</button>
+              <button class="to sa" onclick="setPriv(this,2)">AMIS</button>
+              <button class="to" onclick="setPriv(this,3)">PRIV</button>
+            </div>
+            </div>
+            <div class="priv-desc" id="privdesc-tel"></div>
+          </div>
+          <div class="priv-row" id="privrow-playlists">
+            <div class="priv-row-top">
+            <div class="priv-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              <div><div class="priv-fn">Playlists</div><div class="priv-fv" id="priv-val-playlists">Non renseigné</div></div>
+            </div>
+            <div class="tg">
+              <button class="to" onclick="setPriv(this,0)">PUB</button>
+              <button class="to sc" onclick="setPriv(this,1)">COMMU</button>
+              <button class="to" onclick="setPriv(this,2)">AMIS</button>
+              <button class="to" onclick="setPriv(this,3)">PRIV</button>
+            </div>
+            </div>
+            <div class="priv-desc" id="privdesc-playlists"></div>
+          </div>
+          <div class="priv-row" id="privrow-disciplines" style="border-bottom:none;">
+            <div class="priv-row-top">
+            <div class="priv-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:var(--muted2);"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <div><div class="priv-fn">Disciplines & spécialités</div><div class="priv-fv" id="priv-val-disciplines">Non renseigné</div></div>
+            </div>
+            <div class="tg">
+              <button class="to" onclick="setPriv(this,0)">PUB</button>
+              <button class="to sc" onclick="setPriv(this,1)">COMMU</button>
+              <button class="to" onclick="setPriv(this,2)">AMIS</button>
+              <button class="to" onclick="setPriv(this,3)">PRIV</button>
+            </div>
+            </div>
+            <div class="priv-desc" id="privdesc-disciplines"></div>
+          </div>
+        </div>
+
+        <!-- PRÉSENCE AUX ÉVÉNEMENTS -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;margin-bottom:16px;">
+          <div style="padding:16px 20px 12px;border-bottom:1px solid var(--border);">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;letter-spacing:0.3px;">Présence aux événements</div>
+            <div style="font-size:12px;color:var(--muted2);margin-top:2px;">Choisis qui te voit</div>
+          </div>
+          <div style="display:flex;gap:6px;width:100%;padding:14px 20px 0;">
+            <button class="to" id="pe-pub" onclick="setPresenceEvenements('public',this)">PUB</button>
+            <button class="to sc" id="pe-com" onclick="setPresenceEvenements('communaute',this)">COMMU</button>
+            <button class="to" id="pe-ami" onclick="setPresenceEvenements('amis',this)">AMIS</button>
+            <button class="to" id="pe-priv" onclick="setPresenceEvenements('prive',this)">PRIV</button>
+          </div>
+          <div id="pe-desc" style="font-size:11px;color:var(--muted);margin:10px 20px 0;padding:8px 10px;background:var(--bg2);border-radius:8px;line-height:1.5;"></div>
+          <div style="height:16px;"></div>
         </div>
 
         <!-- BOUTON SAUVEGARDER -->
