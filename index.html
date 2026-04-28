@@ -16862,50 +16862,34 @@ window.ouvrirProfilPostViewer = function(startIndex) {
   const nameEl = document.getElementById('ppv-author-name');
   if (!viewer || !list) return;
 
-  // Nom de l'auteur depuis le profil courant
+  // Nom de l'auteur
   const profil = window._profilCourantData;
   nameEl.textContent = profil
     ? ((profil.prenom || '') + ' ' + (profil.blase || profil.nom || '')).trim()
     : '';
 
-  // Rendre tous les posts en liste verticale (style feed)
-  list.innerHTML = posts.map((p, idx) => {
-    const date = p.createdAt
-      ? new Date(p.createdAt.seconds ? p.createdAt.seconds * 1000 : p.createdAt)
-          .toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' })
-      : '';
+  // Injecter les posts dans _feedPosts si absents (requis pour toggleLikePost etc.)
+  posts.forEach(p => {
+    if (!_feedPosts.find(fp => fp.id === p.id)) {
+      // Marquer si déjà liké par l'utilisateur courant
+      _feedPosts.push(p);
+    }
+  });
 
-    return `
-      <div id="ppv-post-${idx}" style="margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;">
-        <img src="${p.mediaUrl}" loading="${idx === startIndex ? 'eager' : 'lazy'}"
-          style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
-        <div style="padding:14px 16px;">
-          ${p.content ? `<div style="font-size:14px;line-height:1.6;margin-bottom:8px;color:var(--text);">${p.content.replace(/</g,'&lt;')}</div>` : ''}
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">${date}</div>
-          <div style="display:flex;align-items:center;gap:16px;margin-top:12px;">
-            <button onclick="window.toggleLike && window.toggleLike('${p.id}',this)" style="display:flex;align-items:center;gap:5px;background:none;border:none;color:var(--muted2);font-size:13px;font-weight:600;cursor:pointer;padding:0;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-              ${(p.likes || []).length || 0}
-            </button>
-            <button onclick="window.toggleSavePost && window.toggleSavePost('${p.id}',this)" style="display:flex;align-items:center;gap:5px;background:none;border:none;color:var(--muted2);font-size:13px;font-weight:600;cursor:pointer;padding:0;margin-left:auto;">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>`;
-  }).join('');
+  // Rendre avec _renderPostCard (like, commentaires, save inclus)
+  list.innerHTML = posts.map((p, idx) =>
+    `<div id="ppv-post-${idx}" style="margin-bottom:16px;">${_renderPostCard(p)}</div>`
+  ).join('');
 
   // Afficher le viewer
   viewer.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 
   // Scroller jusqu'au post cliqué
-  if (startIndex > 0) {
-    requestAnimationFrame(() => {
-      const el = document.getElementById(`ppv-post-${startIndex}`);
-      if (el) el.scrollIntoView({ behavior: 'instant' });
-    });
-  }
+  requestAnimationFrame(() => {
+    const el = document.getElementById(`ppv-post-${startIndex}`);
+    if (el) el.scrollIntoView({ behavior: 'instant' });
+  });
 };
 
 window.fermerProfilPostViewer = function() {
