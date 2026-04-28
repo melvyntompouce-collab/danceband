@@ -7536,14 +7536,35 @@ async function chargerCommentaires(postId) {
     ));
     const comments = [];
     snap.forEach(d => comments.push({ id: d.id, ...d.data() }));
-    list.innerHTML = comments.map(c => `
-      <div class="feed-comment-item">
-        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">${c.authorEmoji || '🎭'}</div>
-        <div class="feed-comment-bubble">
-          <div class="feed-comment-author">${c.authorName || 'Artiste'}</div>
-          <div class="feed-comment-text">${(c.content || '').replace(/</g,'&lt;')}</div>
-        </div>
-      </div>`).join('');
+
+    // Charger les photos manquantes depuis Firestore
+    const authorIds = [...new Set(comments.filter(c => c.authorId && !c.authorPhoto).map(c => c.authorId))];
+    const photosMap = {};
+    await Promise.all(authorIds.map(async uid => {
+      try {
+        const s = await window._getDoc(window._doc(window._db, 'danseurs', uid));
+        if (s.exists()) photosMap[uid] = s.data().photoURL || s.data().photoUrl || null;
+      } catch(e) {}
+    }));
+
+    list.innerHTML = comments.map(c => {
+      const photo = c.authorPhoto || photosMap[c.authorId] || null;
+      const name  = c.authorName || 'Artiste';
+      const initiale = name && !name.startsWith('@') ? name.trim()[0].toUpperCase() : '?';
+      const avatarInner = photo
+        ? `<img src="${photo}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;display:block;">`
+        : `<span style="font-family:'Syne',sans-serif;font-weight:800;font-size:11px;color:#080810;">${initiale}</span>`;
+      return `
+        <div class="feed-comment-item" onclick="window.showProfilPublic && window.showProfilPublic('${c.authorId || ''}')" style="cursor:${c.authorId ? 'pointer' : 'default'};">
+          <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;position:relative;">
+            ${avatarInner}
+          </div>
+          <div class="feed-comment-bubble">
+            <div class="feed-comment-author">${name}</div>
+            <div class="feed-comment-text">${(c.content || '').replace(/</g,'&lt;')}</div>
+          </div>
+        </div>`;
+    }).join('');
   } catch(e) { console.error('Comments:', e); }
 }
 
@@ -7559,6 +7580,7 @@ async function envoyerCommentaire(postId) {
     await window._addDoc(window._collection(window._db, 'posts', postId, 'comments'), {
       authorId: window._currentUid,
       authorName,
+      authorPhoto: p?.photoURL || p?.photoUrl || null,
       content,
       createdAt: window._serverTimestamp()
     });
