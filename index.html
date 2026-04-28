@@ -5680,20 +5680,6 @@ if (isPWA) {
     <div id="orga-form" style="display:block;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;" id="orga-form-title">CRÉER UN ÉVÉNEMENT</div>
 
-      <!-- IMPORT INSTAGRAM -->
-      <div style="background:rgba(0,245,155,0.05);border:1.5px solid rgba(0,245,155,0.2);border-radius:16px;padding:16px;margin-bottom:20px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-          <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--green);">Import depuis Instagram</span>
-        </div>
-        <p style="font-size:12px;color:var(--muted2);margin:0 0 10px;line-height:1.5;">Copie la description de ton post Instagram et colle-la ici. On détecte automatiquement la date, l'heure, la ville et le prix.</p>
-        <textarea id="insta-import-text" rows="4" placeholder="Colle ici la description de ton post Instagram..." style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;outline:none;box-sizing:border-box;line-height:1.5;"></textarea>
-        <button onclick="importerDepuisInsta()" style="margin-top:10px;width:100%;padding:11px;border-radius:10px;background:rgba(0,245,155,0.12);border:1.5px solid var(--green);color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,245,155,0.2)'" onmouseout="this.style.background='rgba(0,245,155,0.12)'">
-          ✨ Remplir automatiquement
-        </button>
-        <div id="insta-import-result" style="display:none;margin-top:10px;font-size:12px;color:var(--green);"></div>
-      </div>
-
       <div style="display:flex;flex-direction:column;gap:14px;">
         <div class="form-group" style="margin:0">
           <label class="form-label">Titre de l'événement</label>
@@ -8686,6 +8672,7 @@ const TYPES_PAR_DISCIPLINE_FORM = {
     { value:'battle',   label:'🏆 Battle' },
     { value:'workshop', label:'🎓 Workshop' },
     { value:'stage',    label:'🏫 Stage' },
+    { value:'festival', label:'🎪 Festival' },
   ],
   musique:     [
     { value:'soiree',   label:'🎉 Soirée' },
@@ -8698,6 +8685,7 @@ const TYPES_PAR_DISCIPLINE_FORM = {
     { value:'tournage',  label:'🎥 Tournage' },
     { value:'projection',label:'🎞 Projection' },
     { value:'exposition',label:'🖼 Exposition' },
+    { value:'festival',  label:'🎪 Festival' },
   ],
 };
 
