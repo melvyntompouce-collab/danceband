@@ -5802,7 +5802,8 @@ if (isPWA) {
           </div>
           <div id="billetterie-externe-fields">
             <input id="ev-lien-resa" class="form-input" type="url" placeholder="https://shotgun.live/..." style="background:var(--bg2);margin-bottom:10px;">
-            <input id="ev-lien-inscription" class="form-input" type="url" placeholder="https://forms.google.com/... (optionnel)" style="background:var(--bg2);">
+            <label class="form-label" style="margin-bottom:6px;">Lien d'inscription <span style="font-size:11px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
+            <input id="ev-lien-inscription" class="form-input" type="url" placeholder="https://forms.google.com/..." style="background:var(--bg2);">
           </div>
           <div id="billetterie-hako-fields" style="display:none;">
             <div style="background:rgba(0,245,155,0.06);border:1px solid rgba(0,245,155,0.2);border-radius:12px;padding:14px;margin-bottom:12px;">
@@ -8853,7 +8854,7 @@ function _renderEventCard(ev, passe) {
       <span class="ec-type" style="color:${cfg.couleur}">${cfg.label}</span>
       <!-- CORPS -->
       <div class="ec-body">
-        <div class="ec-title">${ev.titre || 'Événement'}</div>
+        <div class="ec-title" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')" style="cursor:pointer;">${ev.titre || 'Événement'}</div>
         <div class="ec-meta">
           <div class="ec-mi">${dateLine}</div>
           ${locLine ? `<div class="ec-mi">📍 ${locLine}</div>` : ''}
