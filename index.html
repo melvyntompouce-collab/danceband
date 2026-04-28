@@ -5681,6 +5681,9 @@ if (isPWA) {
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:20px;" id="orga-form-title">CRÉER UN ÉVÉNEMENT</div>
 
       <div style="display:flex;flex-direction:column;gap:14px;">
+
+
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.05);">Identité</div>
         <div class="form-group" style="margin:0">
           <label class="form-label">Titre de l'événement</label>
           <input id="ev-titre" class="form-input" type="text" placeholder="Ex: Nuit Kizomba — Bastille" style="background:var(--bg2)">
@@ -5702,55 +5705,8 @@ if (isPWA) {
             <option value="stage">🏫 Stage</option>
           </select>
         </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Dates</label>
-          <div id="ev-dates-list" style="display:flex;flex-direction:column;gap:10px;"></div>
-          <button type="button" onclick="ajouterDateEvent()" style="margin-top:10px;width:100%;padding:10px;border-radius:10px;background:transparent;border:1.5px dashed var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.4)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">＋ Ajouter une date</button>
-        </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Ville</label>
-          <input id="ev-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon..." autocomplete="off" style="background:var(--bg2)">
-        </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Tarification</label>
-          <div id="ev-tarifs-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
-          <button type="button" onclick="ajouterTarifEvent()" style="width:100%;padding:10px;border-radius:10px;background:transparent;border:1.5px dashed var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.4)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">＋ Ajouter un tarif</button>
-        </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Adresse complète</label>
-          <input id="ev-adresse" class="form-input" type="text" placeholder="Ex: Le Rex Club, Paris 10e" style="background:var(--bg2)">
-        </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Styles de danse</label>
-          <input id="ev-styles" class="form-input" type="text" placeholder="Ex: Kizomba, Semba, Tarraxo" style="background:var(--bg2)">
-        </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Vibe musicale <span style="color:var(--muted);font-weight:400;">(optionnel)</span></label>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;" id="ev-vibe-chips">
-            <button type="button" class="vibe-chip" data-vibe="Afro" onclick="toggleVibeChip(this)">🌍 Afro</button>
-            <button type="button" class="vibe-chip" data-vibe="Afrobeats" onclick="toggleVibeChip(this)">🥁 Afrobeats</button>
-            <button type="button" class="vibe-chip" data-vibe="Amapiano" onclick="toggleVibeChip(this)">🎹 Amapiano</button>
-            <button type="button" class="vibe-chip" data-vibe="R&B" onclick="toggleVibeChip(this)">🎵 R&B</button>
-            <button type="button" class="vibe-chip" data-vibe="Hip-Hop" onclick="toggleVibeChip(this)">🎤 Hip-Hop</button>
-            <button type="button" class="vibe-chip" data-vibe="Rap" onclick="toggleVibeChip(this)">🎙️ Rap</button>
-            <button type="button" class="vibe-chip" data-vibe="Dancehall" onclick="toggleVibeChip(this)">🌴 Dancehall</button>
-            <button type="button" class="vibe-chip" data-vibe="Reggaeton" onclick="toggleVibeChip(this)">🔥 Reggaeton</button>
-            <button type="button" class="vibe-chip" data-vibe="House" onclick="toggleVibeChip(this)">🎧 House</button>
-            <button type="button" class="vibe-chip" data-vibe="Techno" onclick="toggleVibeChip(this)">⚡ Techno</button>
-            <button type="button" class="vibe-chip" data-vibe="UK Garage" onclick="toggleVibeChip(this)">🔊 UK Garage</button>
-            <button type="button" class="vibe-chip" data-vibe="Kuduro" onclick="toggleVibeChip(this)">🇦🇴 Kuduro</button>
-            <button type="button" class="vibe-chip" data-vibe="Latino" onclick="toggleVibeChip(this)">💃 Latino</button>
-          </div>
-        </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Niveau</label>
-          <select id="ev-niveau" class="form-select">
-            <option>Tous niveaux</option>
-            <option>Débutants</option>
-            <option>Intermédiaire</option>
-            <option>Avancé</option>
-          </select>
-        </div>
+
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.05);">Visuel</div>
         <div class="form-group" style="margin:0">
           <label class="form-label">Photo de couverture <span style="color:var(--muted);font-weight:400;">(optionnel)</span></label>
           <div id="ev-photo-preview-wrap" style="display:none;position:relative;margin-bottom:10px;">
@@ -5789,9 +5745,67 @@ if (isPWA) {
           </label>
           <input id="ev-photo" type="file" accept="image/*" style="display:none;" onchange="previewPhotoEvent(this)">
         </div>
+
         <div class="form-group" style="margin:0">
           <label class="form-label">Description</label>
           <textarea id="ev-desc" class="form-input" rows="3" placeholder="Décrivez votre événement..." style="background:var(--bg2);resize:vertical;min-height:80px;"></textarea>
+        </div>
+
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.05);">Quand</div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Dates</label>
+          <div id="ev-dates-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+          <button type="button" onclick="ajouterDateEvent()" style="margin-top:10px;width:100%;padding:10px;border-radius:10px;background:transparent;border:1.5px dashed var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.4)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">＋ Ajouter une date</button>
+        </div>
+
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.05);">Où</div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Ville</label>
+          <input id="ev-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon..." autocomplete="off" style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Adresse complète</label>
+          <input id="ev-adresse" class="form-input" type="text" placeholder="Ex: Le Rex Club, Paris 10e" style="background:var(--bg2)">
+        </div>
+
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.05);">Qui / quoi</div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Styles de danse</label>
+          <input id="ev-styles" class="form-input" type="text" placeholder="Ex: Kizomba, Semba, Tarraxo" style="background:var(--bg2)">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Niveau</label>
+          <select id="ev-niveau" class="form-select">
+            <option>Tous niveaux</option>
+            <option>Débutants</option>
+            <option>Intermédiaire</option>
+            <option>Avancé</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Vibe musicale <span style="color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;" id="ev-vibe-chips">
+            <button type="button" class="vibe-chip" data-vibe="Afro" onclick="toggleVibeChip(this)">🌍 Afro</button>
+            <button type="button" class="vibe-chip" data-vibe="Afrobeats" onclick="toggleVibeChip(this)">🥁 Afrobeats</button>
+            <button type="button" class="vibe-chip" data-vibe="Amapiano" onclick="toggleVibeChip(this)">🎹 Amapiano</button>
+            <button type="button" class="vibe-chip" data-vibe="R&B" onclick="toggleVibeChip(this)">🎵 R&B</button>
+            <button type="button" class="vibe-chip" data-vibe="Hip-Hop" onclick="toggleVibeChip(this)">🎤 Hip-Hop</button>
+            <button type="button" class="vibe-chip" data-vibe="Rap" onclick="toggleVibeChip(this)">🎙️ Rap</button>
+            <button type="button" class="vibe-chip" data-vibe="Dancehall" onclick="toggleVibeChip(this)">🌴 Dancehall</button>
+            <button type="button" class="vibe-chip" data-vibe="Reggaeton" onclick="toggleVibeChip(this)">🔥 Reggaeton</button>
+            <button type="button" class="vibe-chip" data-vibe="House" onclick="toggleVibeChip(this)">🎧 House</button>
+            <button type="button" class="vibe-chip" data-vibe="Techno" onclick="toggleVibeChip(this)">⚡ Techno</button>
+            <button type="button" class="vibe-chip" data-vibe="UK Garage" onclick="toggleVibeChip(this)">🔊 UK Garage</button>
+            <button type="button" class="vibe-chip" data-vibe="Kuduro" onclick="toggleVibeChip(this)">🇦🇴 Kuduro</button>
+            <button type="button" class="vibe-chip" data-vibe="Latino" onclick="toggleVibeChip(this)">💃 Latino</button>
+          </div>
+        </div>
+
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.05);">Pratique</div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Tarification</label>
+          <div id="ev-tarifs-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+          <button type="button" onclick="ajouterTarifEvent()" style="width:100%;padding:10px;border-radius:10px;background:transparent;border:1.5px dashed var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.4)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">＋ Ajouter un tarif</button>
         </div>
         <!-- Mode billetterie -->
         <div class="form-group" style="margin:0">
