@@ -7543,7 +7543,7 @@ async function chargerCommentaires(postId) {
     await Promise.all(authorIds.map(async uid => {
       try {
         const s = await window._getDoc(window._doc(window._db, 'danseurs', uid));
-        if (s.exists()) photosMap[uid] = s.data().photoURL || s.data().photoUrl || null;
+        if (s.exists()) photosMap[uid] = s.data().photo || s.data().photoURL || s.data().photoUrl || null;
       } catch(e) {}
     }));
 
@@ -7580,7 +7580,7 @@ async function envoyerCommentaire(postId) {
     await window._addDoc(window._collection(window._db, 'posts', postId, 'comments'), {
       authorId: window._currentUid,
       authorName,
-      authorPhoto: p?.photoURL || p?.photoUrl || null,
+      authorPhoto: p?.photo || p?.photoURL || p?.photoUrl || null,
       content,
       createdAt: window._serverTimestamp()
     });
