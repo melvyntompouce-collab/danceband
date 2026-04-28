@@ -8838,21 +8838,17 @@ function _renderEventCard(ev, passe) {
 
   const btnHtml = `<button class="ec-btn ec-btn-green" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')">En savoir plus</button>`;
 
-  const vedetteHtml = ev.vedette && !passe
-    ? `<div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:linear-gradient(90deg,rgba(255,217,61,0.15),rgba(255,217,61,0.05));border-bottom:1px solid rgba(255,217,61,0.2);">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="#ffd93d" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;color:#ffd93d;letter-spacing:1px;text-transform:uppercase;">En vedette</span>
-      </div>`
-    : '';
-
   return `
     <div class="event-card${passeClass}" style="${ev.vedette && !passe ? 'border-color:rgba(255,217,61,0.3);' : ''}">
-      ${vedetteHtml}
       <!-- VIGNETTE -->
       <div class="ec-thumb">
         <div class="ec-thumb-bg" style="${ev.photoUrl ? `background-image:url('${ev.photoUrl}')` : `background:${cfg.bg}`}"></div>
         <div class="ec-thumb-overlay"></div>
         ${passe ? `<span class="ec-passe-tag">Terminé</span>` : ''}
+        ${ev.vedette && !passe ? `<div style="position:absolute;top:8px;left:8px;display:flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);border-radius:20px;border:1px solid rgba(255,217,61,0.4);">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="#ffd93d" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:9px;color:#ffd93d;letter-spacing:0.8px;text-transform:uppercase;">Vedette</span>
+        </div>` : ''}
       </div>
       <span class="ec-type" style="color:${cfg.couleur}">${cfg.label}</span>
       <!-- CORPS -->
