@@ -5700,6 +5700,7 @@ if (isPWA) {
             <option value="battle">🏆 Battle</option>
             <option value="workshop">🎓 Workshop</option>
             <option value="stage">🏫 Stage</option>
+            <option value="festival">🎪 Festival</option>
           </select>
         </div>
         <div class="form-group" style="margin:0">
@@ -6307,6 +6308,7 @@ function showPage(id, isBack = false) {
   if (id === 'salles')    setTimeout(chargerSalles,     DURATION);
   if (id === 'profile')   { if (window._currentUid && window.showProfilPublic) { setTimeout(() => { artisteCourant = window._currentUid; window.showProfilPublic(window._currentUid); }, DURATION); } }
   if (id === 'enregistres') setTimeout(chargerPageEnregistres, DURATION);
+  if (id === 'form-event' && !eventEnEdition) setTimeout(() => { document.getElementById('ev-discipline') && updateFormType(document.getElementById('ev-discipline').value || 'danse'); }, DURATION);
   if (id === 'feed')         setTimeout(chargerFeed, DURATION);
   if (id === 'post-create')  setTimeout(_initPostCreatePage, DURATION);
 
