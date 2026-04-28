@@ -16604,11 +16604,14 @@ async function chargerPostsProfil(uid, gridId, sectionId) {
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
     </div>`;
 
-    grid.innerHTML = photoPosts.map(p => `
-      <div onclick="showPage('feed');"
+    // Stocker les posts pour le viewer
+    window._profilGridPosts = photoPosts;
+
+    grid.innerHTML = photoPosts.map((p, idx) => `
+      <div onclick="ouvrirProfilPostViewer(${idx})"
         style="aspect-ratio:1;overflow:hidden;cursor:pointer;position:relative;background:var(--card);">
         <img src="${p.mediaUrl}" loading="lazy"
-          style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.2s;"
+          style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.15s;"
           onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform=''">
         ${p.id === epingleId ? pinIcon : ''}
       </div>`).join('');
@@ -16821,6 +16824,80 @@ if (typeof _origShowPage === 'function') {
   window.showPage = function(id) {
     fermerDetailMetier();
     return _origShowPage(id);
+  };
+}
+
+
+// ════════════════════════════════
+// VIEWER POSTS PROFIL
+// ════════════════════════════════
+window.ouvrirProfilPostViewer = function(startIndex) {
+  const posts = window._profilGridPosts;
+  if (!posts || !posts.length) return;
+
+  const viewer = document.getElementById('profil-post-viewer');
+  const list   = document.getElementById('ppv-list');
+  const nameEl = document.getElementById('ppv-author-name');
+  if (!viewer || !list) return;
+
+  // Nom de l'auteur depuis le profil courant
+  const profil = window._profilCourantData;
+  nameEl.textContent = profil
+    ? ((profil.prenom || '') + ' ' + (profil.blase || profil.nom || '')).trim()
+    : '';
+
+  // Rendre tous les posts en liste verticale (style feed)
+  list.innerHTML = posts.map((p, idx) => {
+    const date = p.createdAt
+      ? new Date(p.createdAt.seconds ? p.createdAt.seconds * 1000 : p.createdAt)
+          .toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' })
+      : '';
+
+    return `
+      <div id="ppv-post-${idx}" style="margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;">
+        <img src="${p.mediaUrl}" loading="${idx === startIndex ? 'eager' : 'lazy'}"
+          style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
+        <div style="padding:14px 16px;">
+          ${p.content ? `<div style="font-size:14px;line-height:1.6;margin-bottom:8px;color:var(--text);">${p.content.replace(/</g,'&lt;')}</div>` : ''}
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">${date}</div>
+          <div style="display:flex;align-items:center;gap:16px;margin-top:12px;">
+            <button onclick="window.toggleLike && window.toggleLike('${p.id}',this)" style="display:flex;align-items:center;gap:5px;background:none;border:none;color:var(--muted2);font-size:13px;font-weight:600;cursor:pointer;padding:0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              ${(p.likes || []).length || 0}
+            </button>
+            <button onclick="window.toggleSavePost && window.toggleSavePost('${p.id}',this)" style="display:flex;align-items:center;gap:5px;background:none;border:none;color:var(--muted2);font-size:13px;font-weight:600;cursor:pointer;padding:0;margin-left:auto;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Afficher le viewer
+  viewer.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  // Scroller jusqu'au post cliqué
+  if (startIndex > 0) {
+    requestAnimationFrame(() => {
+      const el = document.getElementById(`ppv-post-${startIndex}`);
+      if (el) el.scrollIntoView({ behavior: 'instant' });
+    });
+  }
+};
+
+window.fermerProfilPostViewer = function() {
+  const viewer = document.getElementById('profil-post-viewer');
+  if (viewer) viewer.style.display = 'none';
+  document.body.style.overflow = '';
+};
+
+// Fermer le viewer sur navigation
+const _origShowPageV2 = window.showPage;
+if (typeof _origShowPageV2 === 'function') {
+  window.showPage = function(id) {
+    window.fermerProfilPostViewer?.();
+    return _origShowPageV2(id);
   };
 }
 
@@ -19647,4 +19724,15 @@ window.toggleFaq = function(el) {
       <div id="metier-detail-title" style="font-family:'Syne',sans-serif;font-weight:800;font-size:17px;margin-bottom:14px;color:var(--text);"></div>
       <div id="metier-detail-body" style="color:var(--muted2);font-size:13px;line-height:1.6;"></div>
     </div>
+  </div>
+
+  <!-- Viewer posts profil (scroll vertical Instagram) -->
+  <div id="profil-post-viewer" style="display:none;position:fixed;inset:0;z-index:400;background:#080810;flex-direction:column;">
+    <!-- Header viewer -->
+    <div style="display:flex;align-items:center;gap:14px;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;background:#080810;position:relative;z-index:1;">
+      <button onclick="fermerProfilPostViewer()" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
+      <div id="ppv-author-name" style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+    </div>
+    <!-- Liste posts scrollable -->
+    <div id="ppv-list" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px 40px;"></div>
   </div>
