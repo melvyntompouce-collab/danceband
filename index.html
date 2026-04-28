@@ -5700,7 +5700,6 @@ if (isPWA) {
             <option value="battle">🏆 Battle</option>
             <option value="workshop">🎓 Workshop</option>
             <option value="stage">🏫 Stage</option>
-            <option value="festival">🎪 Festival</option>
           </select>
         </div>
         <div class="form-group" style="margin:0">
@@ -6308,7 +6307,6 @@ function showPage(id, isBack = false) {
   if (id === 'salles')    setTimeout(chargerSalles,     DURATION);
   if (id === 'profile')   { if (window._currentUid && window.showProfilPublic) { setTimeout(() => { artisteCourant = window._currentUid; window.showProfilPublic(window._currentUid); }, DURATION); } }
   if (id === 'enregistres') setTimeout(chargerPageEnregistres, DURATION);
-  if (id === 'form-event' && !eventEnEdition) setTimeout(() => { document.getElementById('ev-discipline') && updateFormType(document.getElementById('ev-discipline').value || 'danse'); }, DURATION);
   if (id === 'feed')         setTimeout(chargerFeed, DURATION);
   if (id === 'post-create')  setTimeout(_initPostCreatePage, DURATION);
 
@@ -8840,8 +8838,16 @@ function _renderEventCard(ev, passe) {
 
   const btnHtml = `<button class="ec-btn ec-btn-green" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')">En savoir plus</button>`;
 
+  const vedetteHtml = ev.vedette && !passe
+    ? `<div style="display:flex;align-items:center;gap:5px;padding:4px 10px;background:linear-gradient(90deg,rgba(255,217,61,0.15),rgba(255,217,61,0.05));border-bottom:1px solid rgba(255,217,61,0.2);">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="#ffd93d" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;color:#ffd93d;letter-spacing:1px;text-transform:uppercase;">En vedette</span>
+      </div>`
+    : '';
+
   return `
-    <div class="event-card${passeClass}">
+    <div class="event-card${passeClass}" style="${ev.vedette && !passe ? 'border-color:rgba(255,217,61,0.3);' : ''}">
+      ${vedetteHtml}
       <!-- VIGNETTE -->
       <div class="ec-thumb">
         <div class="ec-thumb-bg" style="${ev.photoUrl ? `background-image:url('${ev.photoUrl}')` : `background:${cfg.bg}`}"></div>
@@ -8912,6 +8918,8 @@ function afficherEvents() {
   if (aVenir.length === 0) {
     grid.innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted);">Aucun événement à venir dans cette catégorie</div>';
   } else {
+    // Vedette en premier
+    aVenir.sort((a, b) => (b.vedette ? 1 : 0) - (a.vedette ? 1 : 0));
     grid.innerHTML = aVenir.map(ev => _renderEventCard(ev, false)).join('');
   }
 
@@ -9096,6 +9104,13 @@ function ouvrirEvent(id) {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
       Partager dans le feed
     </button>
+
+    ${(window._monRole === 'admin' || window._currentUid === ev.organisateurId) ? `
+    <button onclick="toggleVedetteEvent('${ev.id}',${!ev.vedette})"
+      style="width:100%;margin-top:4px;padding:11px 16px;border-radius:12px;background:${ev.vedette ? 'rgba(255,217,61,0.08)' : 'transparent'};border:1px solid ${ev.vedette ? 'rgba(255,217,61,0.4)' : 'var(--border)'};color:${ev.vedette ? '#ffd93d' : 'var(--muted2)'};font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="${ev.vedette ? '#ffd93d' : 'none'}" stroke="${ev.vedette ? '#ffd93d' : 'currentColor'}" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      ${ev.vedette ? 'Retirer de la vedette' : 'Mettre en vedette'}
+    </button>` : ''}
   `;
 
   const overlay = document.getElementById('event-detail-overlay');
@@ -16896,6 +16911,28 @@ if (typeof _origShowPageV2 === 'function') {
     return _origShowPageV2(id);
   };
 }
+
+
+// ════════════════════════════════
+// TOGGLE VEDETTE EVENT
+// ════════════════════════════════
+window.toggleVedetteEvent = async function(eventId, newVal) {
+  if (!window._db || !window._currentUid) return;
+  try {
+    await window._updateDoc(window._doc(window._db, 'evenements', eventId), { vedette: newVal });
+    // Mettre à jour localement
+    const ev = tousLesEvents.find(e => e.id === eventId);
+    if (ev) ev.vedette = newVal;
+    if (eventCourant && eventCourant.id === eventId) eventCourant.vedette = newVal;
+    // Rafraîchir la popup et l'agenda
+    afficherEvents();
+    ouvrirEvent(eventId);
+    _showToast(newVal ? '⭐ Événement mis en vedette' : 'Vedette retirée');
+  } catch(e) {
+    console.error('toggleVedetteEvent:', e);
+    _showToast('Erreur lors de la mise à jour');
+  }
+};
 
 // Exposer les fonctions du script classique sur window
 window.normaliserStyles   = normaliserStyles;
