@@ -10683,9 +10683,21 @@ window.voirCarteProAdmin = function(uid) {
             ['Studio musicien', p.pro_studio_musicien], ['Projets musicien', p.pro_projets_musicien],
             ['Tessiture', p.pro_tessiture], ['Micro', p.pro_micro],
             ['Formations chant', p.pro_formations_chanteur], ['Discographie', p.pro_disco],
-            ['Taille', p.pro_taille ? p.pro_taille + ' cm' : ''],
-            ['Pointure', p.pro_pointure], ['Tour de tête', p.pro_tour_tete ? p.pro_tour_tete + ' cm' : ''],
             ['Agence mannequin', p.pro_agence], ['Types shoots', p.pro_types_mannequin],
+            ['Taille totale', p.pro_taille ? p.pro_taille + ' cm' : ''],
+            ['Pointure', p.pro_pointure],
+            ['Largeur épaules', p.pro_largeur_epaules ? p.pro_largeur_epaules + ' cm' : ''],
+            ['Carrure de dos', p.pro_carrure_dos ? p.pro_carrure_dos + ' cm' : ''],
+            ['Tour de cou', p.pro_tour_cou ? p.pro_tour_cou + ' cm' : ''],
+            ['Tour de poitrine', p.pro_tour_poitrine ? p.pro_tour_poitrine + ' cm' : ''],
+            ['Tour de taille', p.pro_tour_taille ? p.pro_tour_taille + ' cm' : ''],
+            ['Longueur de dos', p.pro_longueur_dos ? p.pro_longueur_dos + ' cm' : ''],
+            ['Tour de hanches', p.pro_tour_hanches ? p.pro_tour_hanches + ' cm' : ''],
+            ['Longueur de jambes', p.pro_longueur_jambes ? p.pro_longueur_jambes + ' cm' : ''],
+            ['Longueur de bras', p.pro_longueur_bras ? p.pro_longueur_bras + ' cm' : ''],
+            ['Tour de bras', p.pro_tour_bras ? p.pro_tour_bras + ' cm' : ''],
+            ['Tour de poignet', p.pro_tour_poignet ? p.pro_tour_poignet + ' cm' : ''],
+            ['Tour de tête', p.pro_tour_tete ? p.pro_tour_tete + ' cm' : ''],
             ['Logiciels styliste', p.pro_logiciels_styliste], ['Spé styliste', p.pro_spe_styliste],
             ['Marques styliste', p.pro_marques_styliste],
             ['Marques maquillage', p.pro_marques_maquilleur], ['Spé maquillage', p.pro_spe_maquilleur],
@@ -10768,8 +10780,14 @@ window.exportCarteProPDF = function(uid) {
     ${row('Platines', p.pro_platines)} ${row('Logiciels DJ', p.pro_logiciels_dj)} ${row('Résidences', p.pro_residences)}
     ${row('Instruments', p.pro_instruments)} ${row('Niveau', p.pro_niveau_musicien)} ${row('Studio', p.pro_studio_musicien)}
     ${row('Tessiture', p.pro_tessiture)} ${row('Micro', p.pro_micro)} ${row('Formations chant', p.pro_formations_chanteur)} ${row('Disco', p.pro_disco)}
-    ${row('Taille', p.pro_taille ? p.pro_taille + ' cm' : '')} ${row('Pointure', p.pro_pointure)} ${row('Tour de tête', p.pro_tour_tete ? p.pro_tour_tete + ' cm' : '')}
     ${row('Agence', p.pro_agence)} ${row('Types shoots', p.pro_types_mannequin)}
+    ${row('Taille totale', p.pro_taille ? p.pro_taille + ' cm' : '')} ${row('Pointure', p.pro_pointure)}
+    ${row('Largeur épaules', p.pro_largeur_epaules ? p.pro_largeur_epaules + ' cm' : '')} ${row('Carrure de dos', p.pro_carrure_dos ? p.pro_carrure_dos + ' cm' : '')}
+    ${row('Tour de cou', p.pro_tour_cou ? p.pro_tour_cou + ' cm' : '')} ${row('Tour de poitrine', p.pro_tour_poitrine ? p.pro_tour_poitrine + ' cm' : '')}
+    ${row('Tour de taille', p.pro_tour_taille ? p.pro_tour_taille + ' cm' : '')} ${row('Longueur de dos', p.pro_longueur_dos ? p.pro_longueur_dos + ' cm' : '')}
+    ${row('Tour de hanches', p.pro_tour_hanches ? p.pro_tour_hanches + ' cm' : '')} ${row('Longueur de jambes', p.pro_longueur_jambes ? p.pro_longueur_jambes + ' cm' : '')}
+    ${row('Longueur de bras', p.pro_longueur_bras ? p.pro_longueur_bras + ' cm' : '')} ${row('Tour de bras', p.pro_tour_bras ? p.pro_tour_bras + ' cm' : '')}
+    ${row('Tour de poignet', p.pro_tour_poignet ? p.pro_tour_poignet + ' cm' : '')} ${row('Tour de tête', p.pro_tour_tete ? p.pro_tour_tete + ' cm' : '')}
   </table>
   <script>window.onload=()=>window.print()<\/script></body></html>`);
   w.document.close();
@@ -10877,11 +10895,22 @@ window.exporterCatalogueXLSX = function() {
       ['Discographie', p => p.pro_disco],
     ],
     'Mannequin': [
-      ['Taille (cm)', p => p.pro_taille],
-      ['Pointure', p => p.pro_pointure],
-      ['Tour de tête (cm)', p => p.pro_tour_tete],
       ['Agence', p => p.pro_agence],
       ['Types de shoots', p => (p.pro_types_mannequin || []).join(', ')],
+      ['Taille totale (cm)', p => p.pro_taille],
+      ['Pointure', p => p.pro_pointure],
+      ['Largeur épaules (cm)', p => p.pro_largeur_epaules],
+      ['Carrure de dos (cm)', p => p.pro_carrure_dos],
+      ['Tour de cou (cm)', p => p.pro_tour_cou],
+      ['Tour de poitrine (cm)', p => p.pro_tour_poitrine],
+      ['Tour de taille (cm)', p => p.pro_tour_taille],
+      ['Longueur de dos (cm)', p => p.pro_longueur_dos],
+      ['Tour de hanches (cm)', p => p.pro_tour_hanches],
+      ['Longueur de jambes (cm)', p => p.pro_longueur_jambes],
+      ['Longueur de bras (cm)', p => p.pro_longueur_bras],
+      ['Tour de bras (cm)', p => p.pro_tour_bras],
+      ['Tour de poignet (cm)', p => p.pro_tour_poignet],
+      ['Tour de tête (cm)', p => p.pro_tour_tete],
     ],
     'Styliste': [
       ['Logiciels', p => (p.pro_logiciels_styliste || []).join(', ')],
@@ -15371,11 +15400,22 @@ window.sauvegarderCartePro = async function() {
     pro_formations_chanteur:document.getElementById('pro-formations-chanteur')?.value.trim() || '',
     pro_disco:              document.getElementById('pro-disco')?.value.trim() || '',
     // Mannequin
-    pro_taille:           document.getElementById('pro-taille')?.value || '',
-    pro_pointure:         document.getElementById('pro-pointure')?.value || '',
-    pro_tour_tete:        document.getElementById('pro-tour-tete')?.value || '',
-    pro_agence:           document.getElementById('pro-agence')?.value.trim() || '',
-    pro_types_mannequin:  [...document.querySelectorAll('#pro-types-mannequin .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_taille:             document.getElementById('pro-taille')?.value || '',
+    pro_pointure:           document.getElementById('pro-pointure')?.value || '',
+    pro_largeur_epaules:    document.getElementById('pro-largeur-epaules')?.value || '',
+    pro_carrure_dos:        document.getElementById('pro-carrure-dos')?.value || '',
+    pro_tour_cou:           document.getElementById('pro-tour-cou')?.value || '',
+    pro_tour_poitrine:      document.getElementById('pro-tour-poitrine')?.value || '',
+    pro_tour_taille:        document.getElementById('pro-tour-taille')?.value || '',
+    pro_longueur_dos:       document.getElementById('pro-longueur-dos')?.value || '',
+    pro_tour_hanches:       document.getElementById('pro-tour-hanches')?.value || '',
+    pro_longueur_jambes:    document.getElementById('pro-longueur-jambes')?.value || '',
+    pro_longueur_bras:      document.getElementById('pro-longueur-bras')?.value || '',
+    pro_tour_bras:          document.getElementById('pro-tour-bras')?.value || '',
+    pro_tour_poignet:       document.getElementById('pro-tour-poignet')?.value || '',
+    pro_tour_tete:          document.getElementById('pro-tour-tete')?.value || '',
+    pro_agence:             document.getElementById('pro-agence')?.value.trim() || '',
+    pro_types_mannequin:    [...document.querySelectorAll('#pro-types-mannequin .style-tag.selected')].map(t=>t.textContent.trim()),
     // Styliste
     pro_logiciels_styliste:[...document.querySelectorAll('#pro-logiciels-styliste .style-tag.selected')].map(t=>t.textContent.trim()),
     pro_spe_styliste:     [...document.querySelectorAll('#pro-spe-styliste .style-tag.selected')].map(t=>t.textContent.trim()),
@@ -15561,6 +15601,17 @@ function chargerCartePro(d) {
   // Mannequin
   setVal('pro-taille', p.pro_taille);
   setVal('pro-pointure', p.pro_pointure);
+  setVal('pro-largeur-epaules', p.pro_largeur_epaules);
+  setVal('pro-carrure-dos', p.pro_carrure_dos);
+  setVal('pro-tour-cou', p.pro_tour_cou);
+  setVal('pro-tour-poitrine', p.pro_tour_poitrine);
+  setVal('pro-tour-taille', p.pro_tour_taille);
+  setVal('pro-longueur-dos', p.pro_longueur_dos);
+  setVal('pro-tour-hanches', p.pro_tour_hanches);
+  setVal('pro-longueur-jambes', p.pro_longueur_jambes);
+  setVal('pro-longueur-bras', p.pro_longueur_bras);
+  setVal('pro-tour-bras', p.pro_tour_bras);
+  setVal('pro-tour-poignet', p.pro_tour_poignet);
   setVal('pro-tour-tete', p.pro_tour_tete);
   setVal('pro-agence', p.pro_agence);
   setChips('pro-types-mannequin', p.pro_types_mannequin || []);
@@ -18857,24 +18908,14 @@ function _renderDrawerLieux() {
             <div id="pro-section-mannequin" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
               <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🪞 Mannequin</div>
               <div style="display:flex;flex-direction:column;gap:10px;">
-                <div style="display:flex;gap:10px;">
-                  <div style="flex:1;">
-                    <label class="form-label">Taille (cm)</label>
-                    <input id="pro-taille" class="form-input" type="number" placeholder="Ex: 175" style="background:var(--bg2);">
-                  </div>
-                  <div style="flex:1;">
-                    <label class="form-label">Pointure</label>
-                    <input id="pro-pointure" class="form-input" type="number" placeholder="Ex: 40" style="background:var(--bg2);">
-                  </div>
-                </div>
-                <div>
-                  <label class="form-label">Tour de tête (cm)</label>
-                  <input id="pro-tour-tete" class="form-input" type="number" placeholder="Ex: 56" style="background:var(--bg2);">
-                </div>
+
+                <!-- Agence -->
                 <div>
                   <label class="form-label">Agence</label>
                   <input id="pro-agence" class="form-input" type="text" placeholder="Ex: Elite, Ford, indépendant..." style="background:var(--bg2);">
                 </div>
+
+                <!-- Types de défilés / Shoots -->
                 <div>
                   <label class="form-label">Types de défilés / Shoots</label>
                   <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-types-mannequin">
@@ -18887,6 +18928,89 @@ function _renderDrawerLieux() {
                     <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-mannequin')">Artistique</button>
                   </div>
                 </div>
+
+                <!-- Mensurations generales -->
+                <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px;margin-bottom:2px;">Mensurations générales</div>
+                <div style="display:flex;gap:10px;">
+                  <div style="flex:1;">
+                    <label class="form-label">Taille totale (cm)</label>
+                    <input id="pro-taille" class="form-input" type="number" placeholder="Ex: 175" style="background:var(--bg2);">
+                  </div>
+                  <div style="flex:1;">
+                    <label class="form-label">Pointure</label>
+                    <input id="pro-pointure" class="form-input" type="number" placeholder="Ex: 40" style="background:var(--bg2);">
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px;">
+                  <div style="flex:1;">
+                    <label class="form-label">Largeur d'épaules (cm)</label>
+                    <input id="pro-largeur-epaules" class="form-input" type="number" placeholder="Ex: 42" style="background:var(--bg2);">
+                  </div>
+                  <div style="flex:1;">
+                    <label class="form-label">Carrure de dos (cm)</label>
+                    <input id="pro-carrure-dos" class="form-input" type="number" placeholder="Ex: 38" style="background:var(--bg2);">
+                  </div>
+                </div>
+
+                <!-- Buste / Haut -->
+                <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px;margin-bottom:2px;">Buste</div>
+                <div style="display:flex;gap:10px;">
+                  <div style="flex:1;">
+                    <label class="form-label">Tour de cou (cm)</label>
+                    <input id="pro-tour-cou" class="form-input" type="number" placeholder="Ex: 36" style="background:var(--bg2);">
+                  </div>
+                  <div style="flex:1;">
+                    <label class="form-label">Tour de poitrine (cm)</label>
+                    <input id="pro-tour-poitrine" class="form-input" type="number" placeholder="Ex: 90" style="background:var(--bg2);">
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px;">
+                  <div style="flex:1;">
+                    <label class="form-label">Tour de taille (cm)</label>
+                    <input id="pro-tour-taille" class="form-input" type="number" placeholder="Ex: 68" style="background:var(--bg2);">
+                  </div>
+                  <div style="flex:1;">
+                    <label class="form-label">Longueur de dos (cm)</label>
+                    <input id="pro-longueur-dos" class="form-input" type="number" placeholder="Ex: 40" style="background:var(--bg2);">
+                  </div>
+                </div>
+
+                <!-- Bas -->
+                <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px;margin-bottom:2px;">Bas</div>
+                <div style="display:flex;gap:10px;">
+                  <div style="flex:1;">
+                    <label class="form-label">Tour de hanches (cm)</label>
+                    <input id="pro-tour-hanches" class="form-input" type="number" placeholder="Ex: 96" style="background:var(--bg2);">
+                  </div>
+                  <div style="flex:1;">
+                    <label class="form-label">Longueur de jambes (cm)</label>
+                    <input id="pro-longueur-jambes" class="form-input" type="number" placeholder="Ex: 84" style="background:var(--bg2);">
+                  </div>
+                </div>
+
+                <!-- Bras -->
+                <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px;margin-bottom:2px;">Bras</div>
+                <div style="display:flex;gap:10px;">
+                  <div style="flex:1;">
+                    <label class="form-label">Longueur de bras (cm)</label>
+                    <input id="pro-longueur-bras" class="form-input" type="number" placeholder="Ex: 62" style="background:var(--bg2);">
+                  </div>
+                  <div style="flex:1;">
+                    <label class="form-label">Tour de bras (cm)</label>
+                    <input id="pro-tour-bras" class="form-input" type="number" placeholder="Ex: 30" style="background:var(--bg2);">
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px;">
+                  <div style="flex:1;">
+                    <label class="form-label">Tour de poignet (cm)</label>
+                    <input id="pro-tour-poignet" class="form-input" type="number" placeholder="Ex: 16" style="background:var(--bg2);">
+                  </div>
+                  <div style="flex:1;">
+                    <label class="form-label">Tour de tête (cm)</label>
+                    <input id="pro-tour-tete" class="form-input" type="number" placeholder="Ex: 56" style="background:var(--bg2);">
+                  </div>
+                </div>
+
               </div>
             </div>
 
