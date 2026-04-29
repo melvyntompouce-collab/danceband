@@ -3432,6 +3432,25 @@ if (isPWA) {
           </div>
         </div>
 
+        <div id="signup-section-scenographe" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">Types de projets</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="signup-types-scenographe">
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Clip musical</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Court-métrage</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Événement</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Exposition</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Publicité</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Théâtre</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Mode / Défilé</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Logiciels <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+            <input id="signup-logiciels-scenographe" class="form-input" type="text" placeholder="Ex: SketchUp, AutoCAD, Blender, Vectorworks...">
+          </div>
+        </div>
+
         <div id="signup-section-beatmaker" style="display:none;">
           <div class="form-group">
             <label class="form-label">Genres musicaux</label>
@@ -6588,7 +6607,7 @@ window.updateSignupSpecialites = function(categorie) {
     cfg.specialites.map(s => `<option value="${s}">${SPECIALITE_LABELS[s] || s}</option>`).join('');
   wrap.style.display = 'block';
   // Reset sections
-  ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
+  ['danseur','photographe','videaste','beatmaker','realisateur','scenographe','dj','musicien','chanteur',
    'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode','designer_mode',
    'styliste','maquilleur','coiffeur_mode','costumier','nail_artiste'].forEach(t => {
     const sec = document.getElementById('signup-section-' + t);
@@ -6605,7 +6624,7 @@ function toggleSignupType(btn, type) {
   if (btn) { document.querySelectorAll('.style-tag[data-type]').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
   _signupTypes.add(type);
   // Afficher la section correspondante
-  ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
+  ['danseur','photographe','videaste','beatmaker','realisateur','scenographe','dj','musicien','chanteur',
    'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode','designer_mode',
    'styliste','maquilleur','coiffeur_mode','costumier','nail_artiste'].forEach(t => {
     const section = document.getElementById('signup-section-' + t);
@@ -10675,6 +10694,9 @@ window.voirCarteProAdmin = function(uid) {
             ['Logiciels vidéo', p.pro_logiciels_videaste], ['Réfs vidéo', p.pro_refs_videaste],
             ['Caméra réal', p.pro_camera_real], ['Logiciels réal', p.pro_logiciels_real],
             ['Types projets réal', p.pro_types_real], ['Filmographie', p.pro_filmo],
+            ['Types projets scéno', p.pro_types_scenographe],
+            ['Logiciels scéno', p.pro_logiciels_scenographe],
+            ['Réfs scéno', p.pro_refs_scenographe],
             ['DAW', p.pro_daw_beat], ['Matériel beat', p.pro_matos_beat],
             ['Plugins', p.pro_plugins_beat], ['Collabs', p.pro_collabs_beat],
             ['Platines/Contrôleur', p.pro_platines], ['Logiciels DJ', p.pro_logiciels_dj],
@@ -10776,6 +10798,7 @@ window.exportCarteProPDF = function(uid) {
     ${row('Logiciels vidéo', p.pro_logiciels_videaste)} ${row('Réfs vidéo', p.pro_refs_videaste)}
     ${row('Caméra réal', p.pro_camera_real)} ${row('Logiciels réal', p.pro_logiciels_real)}
     ${row('Types projets', p.pro_types_real)} ${row('Filmographie', p.pro_filmo)}
+    ${row('Types projets scéno', p.pro_types_scenographe)} ${row('Logiciels scéno', p.pro_logiciels_scenographe)} ${row('Réfs scéno', p.pro_refs_scenographe)}
     ${row('DAW', p.pro_daw_beat)} ${row('Matériel beat', p.pro_matos_beat)} ${row('Plugins', p.pro_plugins_beat)} ${row('Collabs', p.pro_collabs_beat)}
     ${row('Platines', p.pro_platines)} ${row('Logiciels DJ', p.pro_logiciels_dj)} ${row('Résidences', p.pro_residences)}
     ${row('Instruments', p.pro_instruments)} ${row('Niveau', p.pro_niveau_musicien)} ${row('Studio', p.pro_studio_musicien)}
@@ -10816,7 +10839,7 @@ window.exporterCatalogueXLSX = function() {
   btn.textContent = '⏳ Génération en cours...';
 
   const METIERS = [
-    'Danseur·se', 'Photographe', 'Vidéaste', 'Réalisateur·rice',
+    'Danseur·se', 'Photographe', 'Vidéaste', 'Réalisateur·rice', 'Scénographe / Set Designer',
     'Beatmaker', 'DJ', 'Musicien·ne', 'Chanteur·se',
     'Mannequin', 'Styliste', 'Maquilleur·se', 'Coiffeur·se',
     'Costumier·e', 'Nail Artiste', 'Graphiste', 'Designer', 'Designer mode',
@@ -10870,6 +10893,11 @@ window.exporterCatalogueXLSX = function() {
       ['Logiciels réal', p => (p.pro_logiciels_real || []).join(', ')],
       ['Types de projets', p => (p.pro_types_real || []).join(', ')],
       ['Filmographie', p => p.pro_filmo],
+    ],
+    'Scénographe / Set Designer': [
+      ['Types de projets', p => (p.pro_types_scenographe || []).join(', ')],
+      ['Logiciels', p => p.pro_logiciels_scenographe],
+      ['Références', p => p.pro_refs_scenographe],
     ],
     'Beatmaker': [
       ['DAW', p => (p.pro_daw_beat || []).join(', ')],
@@ -13092,7 +13120,7 @@ function afficherListeDanseurs(danseurs) {
     return;
   }
 
-  const METIER_ICONS = { danseur:'💃', photographe:'📷', videaste:'🎥', beatmaker:'🎧', realisateur:'🎬', dj:'🎛️', musicien:'🎸', chanteur:'🎤', comedien:'🎭', performeur:'✨', mannequin:'🪞', styliste:'👗', maquilleur:'💄', coiffeur_mode:'💈', costumier:'🧵', nail_artiste:'💅', dessinateur:'✏️', peintre:'🖌️', graphiste:'🖥️', illustrateur:'🖼️', designer:'🎨', designer_mode:'👔' };
+  const METIER_ICONS = { danseur:'💃', photographe:'📷', videaste:'🎥', beatmaker:'🎧', realisateur:'🎬', scenographe:'🎪', dj:'🎛️', musicien:'🎸', chanteur:'🎤', comedien:'🎭', performeur:'✨', mannequin:'🪞', styliste:'👗', maquilleur:'💄', coiffeur_mode:'💈', costumier:'🧵', nail_artiste:'💅', dessinateur:'✏️', peintre:'🖌️', graphiste:'🖥️', illustrateur:'🖼️', designer:'🎨', designer_mode:'👔' };
   list.innerHTML = danseurs.map(d => {
     const nom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
     const metiers = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
@@ -13608,6 +13636,7 @@ window.showProfilPublic = async function(uid) {
       videaste:     '🎥 Vidéaste',
       beatmaker:    '🎧 Beatmaker',
       realisateur:  '🎬 Réalisateur·rice',
+      scenographe:  '🎪 Scénographe / Set Designer',
       dj:           '🎛️ DJ',
       musicien:     '🎸 Musicien·ne',
       chanteur:     '🎤 Chanteur·se / Rappeur·se',
@@ -14183,14 +14212,14 @@ const CATEGORIES_ARTISTE = {
   scene:       { label:'🎭 Scène',       specialites: ['danseur','comedien','performeur'] },
   mode:        { label:'👗 Mode',         specialites: ['mannequin','styliste','maquilleur','coiffeur_mode','costumier','designer_mode','nail_artiste'] },
   musique:     { label:'🎵 Musique',      specialites: ['beatmaker','dj','musicien','chanteur'] },
-  audiovisuel: { label:'🎬 Audiovisuel', specialites: ['photographe','videaste','realisateur'] },
+  audiovisuel: { label:'🎬 Audiovisuel', specialites: ['photographe','videaste','realisateur','scenographe'] },
   arts_visuels:{ label:'🎨 Arts Visuels',specialites: ['dessinateur','peintre','graphiste','illustrateur','designer'] },
 };
 
 const SPECIALITE_LABELS = {
   danseur:'💃 Danseur·se', comedien:'🎭 Comédien·ne', mannequin:'🪞 Mannequin', performeur:'✨ Performeur·se',
   beatmaker:'🎧 Beatmaker', dj:'🎛️ DJ', musicien:'🎸 Musicien·ne', chanteur:'🎤 Chanteur·se',
-  photographe:'📷 Photographe', videaste:'🎥 Vidéaste', realisateur:'🎬 Réalisateur·rice',
+  photographe:'📷 Photographe', videaste:'🎥 Vidéaste', realisateur:'🎬 Réalisateur·rice', scenographe:'🎪 Scénographe / Set Designer',
   dessinateur:'✏️ Dessinateur·rice', peintre:'🖌️ Peintre', graphiste:'🖥️ Graphiste', illustrateur:'🖼️ Illustrateur·rice',
   styliste:'👗 Styliste', maquilleur:'💄 Maquilleur·se', coiffeur_mode:'💈 Coiffeur·se artistique', costumier:'🧵 Costumier·ère', nail_artiste:'💅 Nail Artiste',
   designer:'🎨 Designer', designer_mode:'👔 Designer Mode',
@@ -14303,7 +14332,7 @@ window.setMapStyleFiltreMobile = function(val) {
 window.updateEditSpecialites = function() {}; // conservé pour compatibilité
 window.applyEditSpecialite   = function() {}; // conservé pour compatibilité
 
-const ALL_EDIT_METIERS = ['danseur','photographe','videaste','beatmaker','realisateur','dj','musicien','chanteur',
+const ALL_EDIT_METIERS = ['danseur','photographe','videaste','beatmaker','realisateur','scenographe','dj','musicien','chanteur',
   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode','designer_mode',
   'styliste','maquilleur','coiffeur_mode','costumier','nail_artiste'];
 
@@ -15282,7 +15311,7 @@ function syncProSectionsFromMetiers() {
   // Utilise les chips pro dédiés (data-pro-metier)
   const proChips = document.querySelectorAll('[data-pro-metier].selected');
   const proMetiers = [...proChips].map(b => b.getAttribute('data-pro-metier'));
-  const ALL_PRO_SECTIONS = ['danseur','photographe','videaste','realisateur','beatmaker','dj','musicien','chanteur',
+  const ALL_PRO_SECTIONS = ['danseur','photographe','videaste','realisateur','scenographe','beatmaker','dj','musicien','chanteur',
     'mannequin','styliste','maquilleur','coiffeur_mode','costumier','nail_artiste','designer','designer_mode',
     'comedien','performeur','dessinateur','peintre','illustrateur','graphiste'];
   ALL_PRO_SECTIONS.forEach(m => {
@@ -15380,6 +15409,10 @@ window.sauvegarderCartePro = async function() {
     pro_logiciels_real: [...document.querySelectorAll('#pro-logiciels-real .style-tag.selected')].map(t=>t.textContent.trim()),
     pro_types_real:     [...document.querySelectorAll('#pro-types-real .style-tag.selected')].map(t=>t.textContent.trim()),
     pro_filmo:          document.getElementById('pro-filmo')?.value.trim() || '',
+    // Scénographe
+    pro_types_scenographe: [...document.querySelectorAll('#pro-types-scenographe .style-tag.selected')].map(t=>t.textContent.trim()),
+    pro_logiciels_scenographe: document.getElementById('pro-logiciels-scenographe')?.value.trim() || '',
+    pro_refs_scenographe: document.getElementById('pro-refs-scenographe')?.value.trim() || '',
     // Beatmaker
     pro_daw_beat:    [...document.querySelectorAll('#pro-daw-beat .style-tag.selected')].map(t=>t.textContent.trim()),
     pro_matos_beat:  document.getElementById('pro-matos-beat')?.value.trim() || '',
@@ -15579,6 +15612,10 @@ function chargerCartePro(d) {
   setChips('pro-logiciels-real', p.pro_logiciels_real || []);
   setChips('pro-types-real', p.pro_types_real || []);
   setVal('pro-filmo', p.pro_filmo);
+  // Scénographe
+  setChips('pro-types-scenographe', p.pro_types_scenographe || []);
+  setVal('pro-logiciels-scenographe', p.pro_logiciels_scenographe);
+  setVal('pro-refs-scenographe', p.pro_refs_scenographe);
   // Beatmaker
   setChips('pro-daw-beat', p.pro_daw_beat || []);
   setVal('pro-matos-beat', p.pro_matos_beat);
@@ -18055,6 +18092,7 @@ function _renderDrawerLieux() {
                 <button type="button" class="edit-metier-chip" data-metier="photographe" onclick="toggleEditMetier('photographe',this)">📷 Photographe</button>
                 <button type="button" class="edit-metier-chip" data-metier="videaste" onclick="toggleEditMetier('videaste',this)">🎥 Vidéaste</button>
                 <button type="button" class="edit-metier-chip" data-metier="realisateur" onclick="toggleEditMetier('realisateur',this)">🎬 Réalisateur·rice</button>
+                <button type="button" class="edit-metier-chip" data-metier="scenographe" onclick="toggleEditMetier('scenographe',this)">🎪 Scénographe / Set Designer</button>
               </div>
             </div>
 
@@ -18231,6 +18269,24 @@ function _renderDrawerLieux() {
             </div>
             <label class="form-label" style="margin-bottom:6px;">Logiciels</label>
             <input id="edit-logiciels-real" class="form-input" type="text" placeholder="Ex: Premiere Pro, DaVinci Resolve, After Effects..." style="background:var(--bg2);">
+          </div>
+        </div>
+
+        <!-- CHAMPS SCENOGRAPHE (édition) -->
+        <div id="edit-section-scenographe" style="display:none;">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;">🎪 Types de projets</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;" id="edit-types-scenographe">
+              <button class="style-tag" onclick="toggleStyle(this)">Clip musical</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Court-métrage</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Événement</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Exposition</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Publicité</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Théâtre</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Mode / Défilé</button>
+            </div>
+            <label class="form-label" style="margin-bottom:6px;">Logiciels</label>
+            <input id="edit-logiciels-scenographe" class="form-input" type="text" placeholder="Ex: SketchUp, AutoCAD, Blender, Vectorworks..." style="background:var(--bg2);">
           </div>
         </div>
 
@@ -18520,6 +18576,7 @@ function _renderDrawerLieux() {
                   <button type="button" class="edit-metier-chip" data-pro-metier="photographe" onclick="toggleProMetier('photographe',this)">📷 Photographe</button>
                   <button type="button" class="edit-metier-chip" data-pro-metier="videaste" onclick="toggleProMetier('videaste',this)">🎥 Vidéaste</button>
                   <button type="button" class="edit-metier-chip" data-pro-metier="realisateur" onclick="toggleProMetier('realisateur',this)">🎬 Réalisateur·rice</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="scenographe" onclick="toggleProMetier('scenographe',this)">🎪 Scénographe / Set Designer</button>
                 </div>
               </div>
               <div>
@@ -18783,6 +18840,34 @@ function _renderDrawerLieux() {
                 <div>
                   <label class="form-label">Filmographie / Références</label>
                   <input id="pro-filmo" class="form-input" type="text" placeholder="Ex: Court-métrage X, Clip Artiste Y..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
+
+            <!-- SCENOGRAPHE -->
+            <div id="pro-section-scenographe" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🎪 Scénographe / Set Designer</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Types de projets</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-types-scenographe">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-scenographe')">Clip musical</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-scenographe')">Court-métrage</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-scenographe')">Événement</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-scenographe')">Exposition</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-scenographe')">Publicité</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-scenographe')">Théâtre</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-scenographe')">Mode / Défilé</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-types-scenographe')">Long-métrage</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Logiciels</label>
+                  <input id="pro-logiciels-scenographe" class="form-input" type="text" placeholder="Ex: SketchUp, AutoCAD, Blender, Vectorworks..." style="background:var(--bg2);">
+                </div>
+                <div>
+                  <label class="form-label">Références / Portfolio</label>
+                  <input id="pro-refs-scenographe" class="form-input" type="text" placeholder="Ex: Clip Artiste X, Film Y, Événement Z..." style="background:var(--bg2);">
                 </div>
               </div>
             </div>
