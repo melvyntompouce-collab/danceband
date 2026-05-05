@@ -13434,6 +13434,9 @@ window.ouvrirShareEvent = async function(eventId) {
       : `<button onclick="${isConnected ? `ouvrirPaiementHako('${ev.id}')` : `ouvrirInscriptionRapide('${ev.id}')`}" style="width:100%;padding:16px;border-radius:16px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;">🎟 Réserver</button>`;
 
     container.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <button onclick="goBack()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
+      </div>
       <div style="height:260px;background:${bannerBg};border-radius:20px;margin-bottom:20px;position:relative;overflow:hidden;">
         <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.7));border-radius:20px;"></div>
         <div style="position:absolute;bottom:16px;left:16px;right:16px;">
