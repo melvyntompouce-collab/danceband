@@ -8930,9 +8930,11 @@ async function chargerLandingCarousel() {
       const dateStr = d ? `${d.getDate()} ${mois[d.getMonth()]} ${d.getFullYear()}` : '';
       const titre = e.titre || e.nom || 'Événement';
       const ville = e.ville || e.lieu || '';
-      const coverBg = e.cover
-        ? `background:url('${e.cover}') center/cover no-repeat;`
-        : `background:linear-gradient(135deg,rgba(0,245,155,0.1),rgba(123,79,255,0.1));`;
+      const coverBg = e.photoUrl
+        ? `background:url('${e.photoUrl}') center/cover no-repeat;`
+        : e.cover
+          ? `background:url('${e.cover}') center/cover no-repeat;`
+          : `background:linear-gradient(135deg,rgba(0,245,155,0.1),rgba(123,79,255,0.1));`;
       return `<div class="event-card-landing" onclick="ouvrirShareEvent('${e.id}')">
         <div class="event-card-landing-img" style="${coverBg}"></div>
         <div class="event-card-landing-body">
