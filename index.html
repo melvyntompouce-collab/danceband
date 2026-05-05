@@ -13404,6 +13404,9 @@ function _copierLien(url) {
 // Afficher la page share-event (accessible sans compte)
 window.ouvrirShareEvent = async function(eventId) {
   if (!window._db) { setTimeout(() => ouvrirShareEvent(eventId), 300); return; }
+  if (currentPage === 'home' && (pageHistory.length === 0 || pageHistory[pageHistory.length-1] !== 'home')) {
+    pageHistory.push('home');
+  }
   _showPageWhenReady('share-event');
   history.pushState({ page: 'share-event', eventId }, '', '/event/' + eventId);
   const container = document.getElementById('share-event-content');
