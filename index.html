@@ -16785,6 +16785,12 @@ function mettreAJourNav(user) {
 function afficherBarreLogoDeconnecte(visible) {
   const logoBar = document.getElementById('logo-bar');
   if (!logoBar) return;
+  const isPWA = navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  if (isPWA) {
+    logoBar.classList.add('hidden');
+    document.body.classList.remove('logo-bar-visible');
+    return;
+  }
   if (visible) {
     logoBar.classList.remove('hidden');
     document.body.classList.add('logo-bar-visible');
