@@ -278,48 +278,6 @@ body.pwa #agenda-passes-toggle {
 ══════════════════════════════ */
 
 /* NAVBAR LANDING */
-.landing-nav{
-  position:fixed;top:0;left:0;right:0;z-index:1000;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 5%;height:64px;
-  background:rgba(8,8,16,0.85);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(255,255,255,0.06);
-}
-.landing-nav-logo{
-  display:flex;align-items:center;gap:8px;
-  font-family:'Syne',sans-serif;font-size:20px;font-weight:800;
-  color:var(--text);text-decoration:none;letter-spacing:1px;
-}
-.landing-nav-links{
-  display:flex;align-items:center;gap:32px;
-}
-.landing-nav-links a{
-  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
-  color:var(--muted2);text-decoration:none;transition:color 0.2s;
-  cursor:pointer;
-}
-.landing-nav-links a:hover{color:var(--text);}
-.landing-nav-cta{display:flex;align-items:center;gap:12px;}
-.landing-nav-cta .nav-login{
-  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
-  color:var(--muted2);cursor:pointer;text-decoration:none;transition:color 0.2s;
-}
-.landing-nav-cta .nav-login:hover{color:var(--text);}
-.landing-nav-cta .nav-join{
-  padding:9px 20px;border-radius:10px;
-  background:var(--green);color:#080810;
-  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;
-  cursor:pointer;text-decoration:none;border:none;
-  transition:all 0.2s;
-}
-.landing-nav-cta .nav-join:hover{background:#00d485;transform:translateY(-1px);}
-@media(max-width:768px){
-  .landing-nav-links{display:none;}
-  .landing-nav{padding:0 20px;}
-}
-
 /* HERO SPLIT */
 .hero{
   min-height:100vh;
@@ -3023,6 +2981,10 @@ if (isPWA) {
       style="height:26px;padding:0 10px;border-radius:6px;background:rgba(0,245,155,0.12);border:1px solid rgba(0,245,155,0.3);color:var(--green);font-weight:700;font-size:11px;text-decoration:none;font-family:'Syne',sans-serif;letter-spacing:0.3px;white-space:nowrap;display:flex;align-items:center;">
       Connexion
     </a>
+    <a id="nav-join-btn" href="#" onclick="showPage('auth')"
+      style="height:26px;padding:0 10px;border-radius:6px;background:var(--green);color:#080810;font-weight:800;font-size:11px;text-decoration:none;font-family:'Syne',sans-serif;letter-spacing:0.3px;white-space:nowrap;display:flex;align-items:center;">
+      Rejoindre
+    </a>
     <!-- Cloche notifs (connecté uniquement) -->
     <div id="nav-notif-btn" style="display:none;position:relative;width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;flex-shrink:0;" onclick="showPage('notifs')" title="Notifications">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -3223,23 +3185,6 @@ if (isPWA) {
 
 <!-- ═══ PAGE: ACCUEIL ═══ -->
 <div class="page active" id="page-home">
-
-  <!-- NAVBAR LANDING -->
-  <nav class="landing-nav" id="landing-nav">
-    <div class="landing-nav-logo">
-      <div class="logo-dot"></div>
-      hako
-    </div>
-    <div class="landing-nav-links">
-      <a onclick="showPage('network')">Réseau</a>
-      <a onclick="showPage('agenda')">Agenda</a>
-      <a onclick="showPage('feed')">Feed</a>
-    </div>
-    <div class="landing-nav-cta">
-      <a class="nav-login" onclick="showPage('auth');setTimeout(()=>document.querySelector('.auth-tab:last-child')?.click(),100)">Connexion</a>
-      <a class="nav-join" onclick="showPage('auth')">Rejoindre →</a>
-    </div>
-  </nav>
 
   <!-- HERO SPLIT -->
   <section class="hero">
@@ -16630,13 +16575,11 @@ document.addEventListener('click', function(e) {
 // ════════════════════════════════
 function mettreAJourNav(user) {
   const loginBtn = document.getElementById('nav-login-btn');
-  const landingNav = document.getElementById('landing-nav');
+  const joinBtn = document.getElementById('nav-join-btn');
 
   if (user) {
-    // Cacher navbar landing quand connecté
-    if (landingNav) landingNav.style.display = 'none';
-    // Cacher bouton Se connecter
     if (loginBtn) loginBtn.style.display = 'none';
+    if (joinBtn) joinBtn.style.display = 'none';
 
     // Drawer — header connecté
     document.getElementById('drawer-header-connected').style.display   = 'flex';
@@ -16781,12 +16724,6 @@ function mettreAJourNav(user) {
 function afficherBarreLogoDeconnecte(visible) {
   const logoBar = document.getElementById('logo-bar');
   if (!logoBar) return;
-  const isPWA = navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-  if (isPWA) {
-    logoBar.classList.add('hidden');
-    document.body.classList.remove('logo-bar-visible');
-    return;
-  }
   if (visible) {
     logoBar.classList.remove('hidden');
     document.body.classList.add('logo-bar-visible');
