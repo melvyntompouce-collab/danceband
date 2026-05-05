@@ -8934,7 +8934,7 @@ async function chargerLandingCarousel() {
       const d = _toDate(_getDatePrincipale(e));
       const dateStr = d ? `${d.getDate()} ${mois[d.getMonth()]} ${d.getFullYear()}` : '';
       const titre = e.titre || e.nom || 'Événement';
-      const ville = e.ville || e.lieu || '';
+      const ville = e.adresse || e.lieu || e.ville || '';
       const coverBg = e.photoUrl
         ? `background:url('${e.photoUrl}') center/cover no-repeat;`
         : e.cover
