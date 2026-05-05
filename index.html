@@ -276,158 +276,342 @@ body.pwa #agenda-passes-toggle {
 /* ══════════════════════════════
    PAGE: ACCUEIL
 ══════════════════════════════ */
+
+/* NAVBAR LANDING */
+.landing-nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;height:64px;
+  background:rgba(8,8,16,0.85);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.landing-nav-logo{
+  display:flex;align-items:center;gap:8px;
+  font-family:'Syne',sans-serif;font-size:20px;font-weight:800;
+  color:var(--text);text-decoration:none;letter-spacing:1px;
+}
+.landing-nav-links{
+  display:flex;align-items:center;gap:32px;
+}
+.landing-nav-links a{
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
+  color:var(--muted2);text-decoration:none;transition:color 0.2s;
+  cursor:pointer;
+}
+.landing-nav-links a:hover{color:var(--text);}
+.landing-nav-cta{display:flex;align-items:center;gap:12px;}
+.landing-nav-cta .nav-login{
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  color:var(--muted2);cursor:pointer;text-decoration:none;transition:color 0.2s;
+}
+.landing-nav-cta .nav-login:hover{color:var(--text);}
+.landing-nav-cta .nav-join{
+  padding:9px 20px;border-radius:10px;
+  background:var(--green);color:#080810;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:800;
+  cursor:pointer;text-decoration:none;border:none;
+  transition:all 0.2s;
+}
+.landing-nav-cta .nav-join:hover{background:#00d485;transform:translateY(-1px);}
+@media(max-width:768px){
+  .landing-nav-links{display:none;}
+  .landing-nav{padding:0 20px;}
+}
+
+/* HERO SPLIT */
 .hero{
-  min-height:calc(100vh - 44px);
-  display:flex;align-items:flex-start;
-  padding:16px 5% 80px;
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  position:relative;overflow:hidden;
+  padding-top:64px;
+}
+@media(max-width:768px){
+  .hero{grid-template-columns:1fr;min-height:100svh;}
+}
+.hero-left{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:80px 5% 80px 6%;
+  position:relative;z-index:1;
+}
+.hero-right{
   position:relative;overflow:hidden;
 }
-@media (max-width:768px) {
-  .hero{ padding-top:16px; align-items:flex-start; }
-  .hero-content { padding-top:0; }
-}
-.hero-grid{
+.hero-right-gradient{
   position:absolute;inset:0;
   background:
-    linear-gradient(rgba(0,245,155,0.03) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,245,155,0.03) 1px,transparent 1px);
-  background-size:60px 60px;
+    radial-gradient(ellipse at 60% 30%, rgba(0,245,155,0.45) 0%, transparent 55%),
+    radial-gradient(ellipse at 20% 70%, rgba(0,100,60,0.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(0,30,20,0.9) 0%, transparent 40%),
+    radial-gradient(ellipse at 40% 50%, rgba(0,180,100,0.2) 0%, transparent 60%),
+    linear-gradient(135deg, #001a10 0%, #003520 40%, #00200f 100%);
+  filter:blur(0px);
 }
-.hero-content{max-width:700px;position:relative;z-index:1;padding-top:0;}
+.hero-right-grain{
+  position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+  opacity:0.4;mix-blend-mode:overlay;
+}
+.hero-right-overlay{
+  position:absolute;left:0;top:0;bottom:0;width:120px;
+  background:linear-gradient(90deg,#080810,transparent);
+}
+@media(max-width:768px){
+  .hero-right{height:40vh;order:-1;}
+  .hero-left{padding:40px 20px 60px;}
+  .hero-right-overlay{
+    left:0;right:0;top:auto;bottom:0;width:auto;height:80px;
+    background:linear-gradient(0deg,#080810,transparent);
+  }
+}
+
 .hero-badge{
   display:inline-flex;align-items:center;gap:8px;
-  padding:8px 16px;border-radius:20px;
+  padding:7px 14px;border-radius:20px;
   background:rgba(0,245,155,0.08);
   border:1px solid rgba(0,245,155,0.2);
-  font-size:12px;font-weight:700;color:var(--green);
+  font-size:11px;font-weight:700;color:var(--green);
   letter-spacing:2px;text-transform:uppercase;
-  margin-bottom:9px;
+  margin-bottom:20px;width:fit-content;
 }
 .hero-title{
   font-family:'Drowner',sans-serif;
   font-weight:normal;
-  font-size:clamp(72px,12vw,140px);
-  line-height:0.7;
-  letter-spacing:6px;
-  margin-bottom:24px;
+  font-size:clamp(64px,9vw,120px);
+  line-height:0.82;
+  letter-spacing:4px;
+  margin-bottom:28px;
 }
-.hero-title span{
-  display:block;
-  color:var(--text);
-}
-.hero-title span.filled{color:#ffffff;-webkit-text-stroke:none;}
-.hero-title span.accent{color:var(--green);-webkit-text-stroke:none;}
+.hero-title span{display:block;color:var(--text);}
+.hero-title span.filled{color:#ffffff;}
+.hero-title span.accent{color:var(--green);}
 .hero-sub{
-  font-size:18px;color:var(--muted2);
-  line-height:1.7;max-width:500px;
+  font-size:16px;color:var(--muted2);
+  line-height:1.75;max-width:420px;
   margin-bottom:40px;font-weight:400;
 }
-.hero-actions{display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
 .btn-primary{
-  padding:16px 36px;border-radius:12px;
+  padding:14px 32px;border-radius:10px;
   background:var(--green);color:#080810;
-  font-weight:800;font-size:16px;
-  text-decoration:none;letter-spacing:0.5px;
+  font-weight:800;font-size:15px;
+  text-decoration:none;letter-spacing:0.3px;
   transition:all 0.2s;border:none;cursor:pointer;
   font-family:'DM Sans',sans-serif;
 }
 .btn-primary:hover{background:#00d485;transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,245,155,0.3);}
 .btn-secondary{
-  padding:16px 36px;border-radius:12px;
+  padding:14px 32px;border-radius:10px;
   background:transparent;color:var(--text);
-  font-weight:700;font-size:16px;
-  text-decoration:none;letter-spacing:0.5px;
+  font-weight:700;font-size:15px;
+  text-decoration:none;letter-spacing:0.3px;
   transition:all 0.2s;
   border:1.5px solid var(--border);cursor:pointer;
   font-family:'DM Sans',sans-serif;
 }
 .btn-secondary:hover{border-color:var(--muted2);background:rgba(255,255,255,0.03);}
 .hero-stats{
-  display:flex;gap:48px;margin-top:60px;
-  padding-top:40px;border-top:1px solid var(--border);
+  display:flex;gap:40px;margin-top:56px;
+  padding-top:32px;border-top:1px solid var(--border);
   flex-wrap:wrap;
 }
 .hero-stat-val{
   font-family:'Syne',sans-serif;
-  font-size:48px;color:var(--green);line-height:1;font-weight:800;
+  font-size:36px;color:var(--green);line-height:1;font-weight:800;
 }
-.hero-stat-label{font-size:13px;color:var(--muted);margin-top:4px;letter-spacing:1px;text-transform:uppercase;}
-.hero-visual{
-  position:absolute;right:5%;top:50%;transform:translateY(-50%);
-  width:420px;height:420px;
+.hero-stat-label{font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:1px;text-transform:uppercase;}
+
+/* SECTION EVENTS CAROUSEL */
+.landing-events{
+  padding:80px 0 80px;
+  background:var(--bg);
+}
+.landing-events-header{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 5% 32px;
+}
+.landing-events-header h2{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(28px,4vw,42px);
+  font-weight:800;letter-spacing:1px;line-height:1;
+}
+.landing-events-header a{
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;
+  color:var(--green);text-decoration:none;cursor:pointer;
+  white-space:nowrap;margin-left:16px;flex-shrink:0;
+}
+.events-carousel{
+  display:flex;gap:16px;overflow-x:auto;
+  padding:0 5% 16px;
+  scrollbar-width:none;-ms-overflow-style:none;
+  scroll-snap-type:x mandatory;
+}
+.events-carousel::-webkit-scrollbar{display:none;}
+.event-card-landing{
+  flex-shrink:0;width:220px;
+  border-radius:18px;overflow:hidden;
+  background:var(--card);border:1px solid var(--border);
+  cursor:pointer;transition:transform 0.2s,border-color 0.2s;
+  scroll-snap-align:start;
+}
+.event-card-landing:hover{transform:translateY(-4px);border-color:rgba(0,245,155,0.2);}
+.event-card-landing-img{
+  width:100%;height:160px;object-fit:cover;
+  background:linear-gradient(135deg,rgba(0,245,155,0.1),rgba(155,93,229,0.1));
   display:flex;align-items:center;justify-content:center;
+  font-size:40px;
 }
-.hero-ring{
-  position:absolute;border-radius:50%;
-  border:1px solid rgba(0,245,155,0.1);
-  animation:rotate 20s linear infinite;
+.event-card-landing-body{padding:14px;}
+.event-card-landing-date{
+  font-size:11px;font-weight:700;color:var(--green);
+  letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;
 }
-.hero-ring:nth-child(1){width:100%;height:100%;}
-.hero-ring:nth-child(2){width:75%;height:75%;animation-direction:reverse;animation-duration:15s;}
-.hero-ring:nth-child(3){width:50%;height:50%;animation-duration:10s;}
-@keyframes rotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.hero-center{
-  width:120px;height:120px;border-radius:30px;
-  background:linear-gradient(135deg,var(--green),var(--purple));
-  display:flex;align-items:center;justify-content:center;
-  font-size:48px;position:relative;z-index:1;
-  box-shadow:0 0 80px rgba(0,245,155,0.3);
+.event-card-landing-title{
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+  line-height:1.3;margin-bottom:6px;
 }
-.hero-dot{
-  position:absolute;
-  width:40px;height:40px;border-radius:12px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;
+.event-card-landing-city{font-size:12px;color:var(--muted2);}
+.events-carousel-empty{
+  padding:0 5%;font-size:14px;color:var(--muted2);
 }
 
-/* FEATURES */
-.features{padding:100px 5%;}
-.section-header{text-align:center;margin-bottom:64px;}
-.section-tag{
+/* FEATURES 3 GRANDES CARDS */
+.features{padding:80px 5%;}
+.features-heading{
+  margin-bottom:48px;
+}
+.features-heading .section-tag{
   display:inline-block;
   font-family:'Syne',sans-serif;
-  font-size:12px;font-weight:700;
+  font-size:11px;font-weight:700;
   letter-spacing:3px;text-transform:uppercase;
-  color:var(--muted);margin-bottom:16px;
+  color:var(--muted);margin-bottom:12px;
 }
-.section-title{
+.features-heading h2{
   font-family:'Syne',sans-serif;
-  font-size:clamp(40px,6vw,72px);
-  letter-spacing:2px;line-height:1;
+  font-size:clamp(32px,5vw,56px);
+  font-weight:800;letter-spacing:1px;line-height:1.05;
+}
+.features-big-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+@media(max-width:900px){
+  .features-big-grid{grid-template-columns:1fr;}
+}
+.feature-big-card{
+  border-radius:24px;overflow:hidden;
+  position:relative;min-height:420px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  cursor:pointer;
+  background:var(--card);border:1px solid var(--border);
+  transition:transform 0.3s,border-color 0.3s;
+}
+.feature-big-card:hover{transform:translateY(-4px);border-color:rgba(0,245,155,0.25);}
+.feature-big-bg{
+  position:absolute;inset:0;
+  transition:transform 0.4s ease;
+}
+.feature-big-card:hover .feature-big-bg{transform:scale(1.04);}
+.feature-big-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(0deg, rgba(8,8,16,0.95) 0%, rgba(8,8,16,0.5) 50%, transparent 100%);
+}
+.feature-big-body{
+  position:relative;z-index:1;
+  padding:28px;
+}
+.feature-big-tag{
+  font-size:10px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:10px;
+}
+.feature-big-title{
+  font-family:'Syne',sans-serif;
+  font-size:22px;font-weight:800;
+  line-height:1.2;margin-bottom:10px;
+}
+.feature-big-desc{
+  font-size:13px;color:var(--muted2);line-height:1.6;
   margin-bottom:16px;
 }
-.section-sub{font-size:16px;color:var(--muted2);max-width:500px;margin:0 auto;}
-.features-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-  gap:24px;
+.feature-big-link{
+  font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:4px;
 }
-.feature-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:24px;padding:32px;
-  transition:all 0.3s;position:relative;overflow:hidden;
-}
-.feature-card::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(circle at 0% 0%,rgba(0,245,155,0.05) 0%,transparent 60%);
-  opacity:0;transition:opacity 0.3s;
-}
-.feature-card:hover{border-color:rgba(0,245,155,0.2);transform:translateY(-4px);}
-.feature-card:hover::before{opacity:1;}
-.feature-icon{
-  width:56px;height:56px;border-radius:16px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:24px;margin-bottom:20px;
-}
-.feature-title{
-  font-family:'Syne',sans-serif;
-  font-size:22px;font-weight:700;margin-bottom:10px;
-  letter-spacing:0.5px;
-}
-.feature-desc{font-size:14px;color:var(--muted2);line-height:1.7;}
 
-/* HOW IT WORKS */
-.how{padding:100px 5%;background:var(--bg2);}
+/* CTA FINAL */
+.landing-cta-final{
+  margin:80px 5%;
+  border-radius:28px;
+  padding:80px 60px;
+  background:linear-gradient(135deg,rgba(0,245,155,0.08) 0%,rgba(0,245,155,0.02) 100%);
+  border:1px solid rgba(0,245,155,0.2);
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.landing-cta-final::before{
+  content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,245,155,0.08) 0%,transparent 70%);
+}
+.landing-cta-final h2{
+  font-family:'Drowner',sans-serif;font-weight:normal;
+  font-size:clamp(48px,7vw,90px);
+  line-height:0.85;letter-spacing:4px;
+  margin-bottom:24px;position:relative;
+}
+.landing-cta-final p{
+  font-size:16px;color:var(--muted2);max-width:400px;
+  margin:0 auto 40px;line-height:1.7;position:relative;
+}
+.landing-cta-final .btn-primary{position:relative;font-size:16px;padding:16px 48px;}
+@media(max-width:768px){
+  .landing-cta-final{margin:60px 20px;padding:60px 24px;}
+  .features{padding:60px 20px;}
+  .landing-events{padding:60px 0;}
+}
+
+/* FOOTER */
+.landing-footer{
+  border-top:1px solid var(--border);
+  padding:48px 5% 32px;
+  display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:40px;
+}
+@media(max-width:768px){
+  .landing-footer{grid-template-columns:1fr;gap:32px;padding:40px 20px 24px;}
+}
+.footer-brand .logo{
+  display:flex;align-items:center;gap:8px;
+  font-family:'Syne',sans-serif;font-size:20px;font-weight:800;
+  color:var(--text);margin-bottom:10px;
+}
+.footer-desc{font-size:13px;color:var(--muted2);line-height:1.6;max-width:260px;}
+.footer-col-title{
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;color:var(--muted);
+  margin-bottom:16px;
+}
+.footer-col-links{display:flex;flex-direction:column;gap:10px;}
+.footer-col-links a{
+  font-size:13px;color:var(--muted2);text-decoration:none;
+  cursor:pointer;transition:color 0.2s;
+}
+.footer-col-links a:hover{color:var(--text);}
+.footer-bottom-bar{
+  border-top:1px solid var(--border);
+  padding:20px 5%;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;
+}
+@media(max-width:768px){
+  .footer-bottom-bar{flex-direction:column;text-align:center;padding:20px;padding-bottom:80px;}
+}
+.footer-copy{font-size:12px;color:var(--muted);}
+
+/* HOW IT WORKS conservé pour compatibilité éventuelle */
+.how{padding:80px 5%;background:var(--bg2);}
 .steps{display:flex;gap:0;position:relative;flex-wrap:wrap;}
 .steps::before{
   content:'';position:absolute;
@@ -444,6 +628,35 @@ body.pwa #agenda-passes-toggle {
 }
 .step-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;}
 .step-desc{font-size:14px;color:var(--muted2);line-height:1.6;}
+
+/* section-header conservé pour compatibilité */
+.section-header{text-align:center;margin-bottom:64px;}
+.section-tag{
+  display:inline-block;font-family:'Syne',sans-serif;
+  font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:16px;
+}
+.section-title{
+  font-family:'Syne',sans-serif;font-size:clamp(40px,6vw,72px);
+  letter-spacing:2px;line-height:1;margin-bottom:16px;
+}
+.section-sub{font-size:16px;color:var(--muted2);max-width:500px;margin:0 auto;}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;}
+.feature-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:24px;padding:32px;
+  transition:all 0.3s;position:relative;overflow:hidden;
+}
+.feature-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 0% 0%,rgba(0,245,155,0.05) 0%,transparent 60%);
+  opacity:0;transition:opacity 0.3s;
+}
+.feature-card:hover{border-color:rgba(0,245,155,0.2);transform:translateY(-4px);}
+.feature-card:hover::before{opacity:1;}
+.feature-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:20px;}
+.feature-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:10px;letter-spacing:0.5px;}
+.feature-desc{font-size:14px;color:var(--muted2);line-height:1.7;}
 
 /* ══════════════════════════════
    PAGE: INSCRIPTION / CONNEXION
@@ -3024,16 +3237,26 @@ if (isPWA) {
 <!-- ═══ PAGE: ACCUEIL ═══ -->
 <div class="page active" id="page-home">
 
-  <!-- Halos d'arrière-plan subtils -->
-  <div style="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;">
-    <div style="position:absolute;top:-20%;left:-10%;width:60vw;height:60vw;max-width:500px;max-height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,245,155,0.07) 0%,transparent 70%);filter:blur(40px);"></div>
-    <div style="position:absolute;bottom:10%;right:-15%;width:55vw;height:55vw;max-width:450px;max-height:450px;border-radius:50%;background:radial-gradient(circle,rgba(155,93,229,0.08) 0%,transparent 70%);filter:blur(50px);"></div>
-    <div style="position:absolute;top:40%;left:30%;width:40vw;height:40vw;max-width:350px;max-height:350px;border-radius:50%;background:radial-gradient(circle,rgba(0,245,155,0.04) 0%,transparent 70%);filter:blur(60px);"></div>
-  </div>
+  <!-- NAVBAR LANDING -->
+  <nav class="landing-nav" id="landing-nav">
+    <div class="landing-nav-logo">
+      <div class="logo-dot"></div>
+      hako
+    </div>
+    <div class="landing-nav-links">
+      <a onclick="showPage('network')">Réseau</a>
+      <a onclick="showPage('agenda')">Agenda</a>
+      <a onclick="showPage('feed')">Feed</a>
+    </div>
+    <div class="landing-nav-cta">
+      <a class="nav-login" onclick="showPage('auth');setTimeout(()=>document.querySelector('.auth-tab:last-child')?.click(),100)">Connexion</a>
+      <a class="nav-join" onclick="showPage('auth')">Rejoindre →</a>
+    </div>
+  </nav>
 
+  <!-- HERO SPLIT -->
   <section class="hero">
-    <div class="hero-grid"></div>
-    <div class="hero-content fade-in">
+    <div class="hero-left fade-in">
       <div class="hero-badge">
         <div class="logo-dot"></div>
         Le réseau des artistes
@@ -3043,10 +3266,10 @@ if (isPWA) {
         <span class="accent">create</span>
         <span class="filled">connect</span>
       </h1>
-      <p class="hero-sub">Le premier réseau social conçu pour les artistes. Trouvez des partenaires, découvrez des événements, échangez via votre bracelet connecté.</p>
+      <p class="hero-sub">La plateforme conçue pour les artistes. Trouvez des partenaires, découvrez des événements, construisez votre présence.</p>
       <div class="hero-actions">
         <a class="btn-primary" href="#" onclick="showPage('auth')">Créer mon profil →</a>
-        <a class="btn-secondary" href="#" onclick="showPage('auth')" style="margin-top:8px;">Explorer l'agenda →</a>
+        <a class="btn-secondary" href="#" onclick="showPage('agenda')">Voir l'agenda</a>
       </div>
       <div class="hero-stats">
         <div>
@@ -3055,208 +3278,131 @@ if (isPWA) {
         </div>
         <div>
           <div class="hero-stat-val">5</div>
-          <div class="hero-stat-label">Disciplines artistiques</div>
+          <div class="hero-stat-label">Disciplines</div>
         </div>
         <div>
           <div class="hero-stat-val">8</div>
           <div class="hero-stat-label">Villes actives</div>
         </div>
-        <div>
-          <div class="hero-stat-val">13</div>
-          <div class="hero-stat-label">Badges à débloquer</div>
-        </div>
       </div>
-      <!-- SECTION MOBILE UNIQUEMENT : boutons de navigation -->
-      <div class="mobile-home-nav">
-        <div class="mhn-title">Explorer HAKO</div>
-        <div class="mhn-grid">
-          <button class="mhn-card" onclick="showPage('network')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            <div class="mhn-card-name">Réseau</div>
-            <div class="mhn-card-desc">Trouve des artistes près de toi</div>
-          </button>
-          <button class="mhn-card" onclick="showPage('agenda')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <div class="mhn-card-name">Agenda</div>
-            <div class="mhn-card-desc">Soirées & battles</div>
-          </button>
-          <button class="mhn-card" onclick="showPage('auth')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            <div class="mhn-card-name">Messages</div>
-            <div class="mhn-card-desc">Connecte-toi pour accéder</div>
-          </button>
-          <button class="mhn-card" onclick="showPage('ranking')">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            <div class="mhn-card-name">Classement</div>
-            <div class="mhn-card-desc" style="display:none;"></div>
-          </button>
-        </div>
-
-        <!-- Bouton créer un profil -->
-        <button onclick="showPage('auth')" style="width:100%;padding:16px;border-radius:16px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-top:8px;">
-          Créer mon profil →
-        </button>
-        <button onclick="showPage('auth');document.querySelector('.auth-tab:last-child').click()" style="width:100%;padding:14px;border-radius:16px;background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:14px;border:1px solid var(--border);cursor:pointer;margin-top:8px;">
-          Déjà un compte ? Se connecter
-        </button>
-
-      </div>
-
     </div>
-    <div class="hero-visual">
-      <div class="hero-ring"></div>
-      <div class="hero-ring"></div>
-      <div class="hero-ring"></div>
-      <div class="hero-center">💃</div>
+    <div class="hero-right">
+      <div class="hero-right-gradient"></div>
+      <div class="hero-right-grain"></div>
+      <div class="hero-right-overlay"></div>
     </div>
   </section>
 
+  <!-- PROCHAINS ÉVÉNEMENTS -->
+  <section class="landing-events">
+    <div class="landing-events-header">
+      <h2>Prochains événements</h2>
+      <a onclick="showPage('agenda')">Voir tout →</a>
+    </div>
+    <div class="events-carousel" id="landing-events-carousel">
+      <div class="events-carousel-empty">Chargement des événements...</div>
+    </div>
+  </section>
+
+  <!-- FEATURES 3 GRANDES CARDS -->
   <section class="features">
-    <div class="section-header">
-      <div class="section-tag">Fonctionnalités</div>
-      <h2 class="section-title">TOUT CE DONT<br>TU AS BESOIN</h2>
-      <p class="section-sub">Une plateforme complète pensée pour la communauté artistique</p>
+    <div class="features-heading">
+      <div class="section-tag">La plateforme</div>
+      <h2>Tout ce dont<br>tu as besoin</h2>
     </div>
-    <div class="features-grid">
-      <div class="feature-card" onclick="showPage('network')" style="cursor:pointer;" title="Voir le réseau">
-        <div class="feature-icon" style="background:rgba(0,245,155,0.1)">🗺️</div>
-        <div class="feature-title">Carte des artistes</div>
-        <p class="feature-desc">Trouvez des artistes près de chez vous par zone — sans géolocalisation précise. Vous choisissez ce que vous partagez.</p>
-        <div style="margin-top:12px;font-size:12px;color:var(--green);font-weight:700;display:flex;align-items:center;gap:4px;">Explorer le réseau <span>→</span></div>
-      </div>
-      <div class="feature-card" onclick="showPage('agenda')" style="cursor:pointer;" title="Voir l'agenda">
-        <div class="feature-icon" style="background:rgba(77,159,255,0.1)">📅</div>
-        <div class="feature-title">Agenda & billetterie</div>
-        <p class="feature-desc">Soirées, battles, workshops — tout est là. Réservez vos places directement depuis la plateforme.</p>
-        <div style="margin-top:12px;font-size:12px;color:var(--blue);font-weight:700;display:flex;align-items:center;gap:4px;">Voir l'agenda <span>→</span></div>
-      </div>
-      <div class="feature-card" onclick="if(window._currentUid){artisteCourant=window._currentUid;showProfilPublic(window._currentUid);}" style="cursor:pointer;" title="Voir mon profil">
-        <div class="feature-icon" style="background:rgba(155,93,229,0.1)">⌚</div>
-        <div class="feature-title">Bracelet connecté</div>
-        <p class="feature-desc">Échangez vos profils en approchant vos poignets. LED, vibreur, BLE — la tech au service des artistes.</p>
-        <div style="margin-top:12px;font-size:12px;color:var(--purple);font-weight:700;display:flex;align-items:center;gap:4px;">Mon profil <span>→</span></div>
-      </div>
-      <div class="feature-card" onclick="showPage('ranking')" style="cursor:pointer;" title="Voir le classement">
-        <div class="feature-icon" style="background:rgba(255,217,61,0.1)">🏆</div>
-        <div class="feature-title">Classements & niveaux</div>
-        <p class="feature-desc">Progressez, gagnez des badges, montez dans le classement local et national selon votre style.</p>
-        <div style="margin-top:12px;font-size:12px;color:var(--yellow);font-weight:700;display:flex;align-items:center;gap:4px;">Voir le classement <span>→</span></div>
-      </div>
-      <div class="feature-card" onclick="if(window._currentUid){artisteCourant=window._currentUid;showProfilPublic(window._currentUid);}" style="cursor:pointer;" title="Gérer ma confidentialité">
-        <div class="feature-icon" style="background:rgba(255,77,109,0.1)">🔐</div>
-        <div class="feature-title">Confidentialité totale</div>
-        <p class="feature-desc">Chaque info de votre profil a son propre niveau — Public, Amis, ou Privé. Vous contrôlez tout.</p>
-        <div style="margin-top:12px;font-size:12px;color:var(--red);font-weight:700;display:flex;align-items:center;gap:4px;">Mon profil <span>→</span></div>
-      </div>
-      <div class="feature-card" onclick="showPage('messages')" style="cursor:pointer;" title="Voir les messages">
-        <div class="feature-icon" style="background:rgba(0,245,155,0.1)">🎵</div>
-        <div class="feature-title">Playlists & styles</div>
-        <p class="feature-desc">Partagez vos playlists Spotify, affichez vos disciplines, trouvez des partenaires compatibles.</p>
-        <div style="margin-top:12px;font-size:12px;color:var(--green);font-weight:700;display:flex;align-items:center;gap:4px;">Mes messages <span>→</span></div>
-      </div>
-    </div>
+    <div class="features-big-grid">
 
-    <!-- SECTION COMPATIBILITÉ -->
-    <div style="margin-top:60px;background:linear-gradient(135deg,rgba(0,245,155,0.06),rgba(155,93,229,0.06));border:1px solid rgba(0,245,155,0.15);border-radius:28px;padding:40px;">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-        <div style="width:44px;height:44px;border-radius:14px;background:rgba(0,245,155,0.1);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">⚡</div>
-        <div>
-          <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--green);letter-spacing:2px;text-transform:uppercase;">Nouveau</div>
-          <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-0.5px;line-height:1;">Score de compatibilité</div>
+      <!-- Card 1 : Réseau -->
+      <div class="feature-big-card" onclick="showPage('network')">
+        <div class="feature-big-bg" style="background:radial-gradient(ellipse at 30% 40%,rgba(0,245,155,0.18) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(0,100,60,0.3) 0%,transparent 50%),linear-gradient(135deg,#080c10 0%,#0a1a12 100%);"></div>
+        <div class="feature-big-overlay"></div>
+        <div style="position:absolute;top:32px;left:28px;z-index:1;opacity:0.15;">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#00F59B" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div class="feature-big-body">
+          <div class="feature-big-tag" style="color:var(--green);">Réseau</div>
+          <div class="feature-big-title">Carte des artistes</div>
+          <div class="feature-big-desc">Trouvez des artistes près de chez vous par zone, sans géolocalisation précise.</div>
+          <div class="feature-big-link" style="color:var(--green);">Explorer le réseau <span>→</span></div>
         </div>
       </div>
-      <p style="font-size:15px;color:var(--muted2);line-height:1.7;margin-bottom:24px;max-width:600px;">HAKO calcule automatiquement votre compatibilité avec chaque artiste du réseau. Plus le score est élevé, plus vous partagez de points communs.</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
-        <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--text);margin-bottom:4px;">🌐 Univers artistique</div>
-          <div style="font-size:12px;color:var(--muted2);">Culture urbaine, scène, audiovisuel, studio... plus vous partagez d'univers, plus le score monte</div>
-          <div style="font-size:11px;color:var(--green);font-weight:700;margin-top:8px;">Jusqu'à 35 pts</div>
-        </div>
-        <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--text);margin-bottom:4px;">📍 Même ville</div>
-          <div style="font-size:12px;color:var(--muted2);">Bonus si vous êtes dans la même ville</div>
-          <div style="font-size:11px;color:var(--green);font-weight:700;margin-top:8px;">Jusqu'à 20 pts</div>
-        </div>
-        <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--text);margin-bottom:4px;">🎉 Événements</div>
-          <div style="font-size:12px;color:var(--muted2);">Événements auxquels vous vous êtes inscrits</div>
-          <div style="font-size:11px;color:var(--green);font-weight:700;margin-top:8px;">Jusqu'à 20 pts</div>
-        </div>
-        <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--text);margin-bottom:4px;">🎯 Même métier</div>
-          <div style="font-size:12px;color:var(--muted2);">Bonus si vous exercez la même discipline artistique</div>
-          <div style="font-size:11px;color:var(--green);font-weight:700;margin-top:8px;">Jusqu'à 15 pts</div>
-        </div>
-        <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:16px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--text);margin-bottom:4px;">🎵 Musique</div>
-          <div style="font-size:12px;color:var(--muted2);">Genres musicaux que vous écoutez et partagez</div>
-          <div style="font-size:11px;color:var(--green);font-weight:700;margin-top:8px;">Jusqu'à 10 pts</div>
-        </div>
-      </div>
-      <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <span style="padding:5px 12px;border-radius:8px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.3);font-size:12px;font-weight:800;color:#00f59b;">⚡ 75%+ Excellent</span>
-        <span style="padding:5px 12px;border-radius:8px;background:rgba(255,217,61,0.1);border:1px solid rgba(255,217,61,0.3);font-size:12px;font-weight:800;color:#ffd93d;">⚡ 50% Bonne affinité</span>
-        <span style="padding:5px 12px;border-radius:8px;background:rgba(255,149,0,0.1);border:1px solid rgba(255,149,0,0.3);font-size:12px;font-weight:800;color:#ff9500;">⚡ 25% À découvrir</span>
-      </div>
-    </div>
 
-  </section>
+      <!-- Card 2 : Agenda -->
+      <div class="feature-big-card" onclick="showPage('agenda')">
+        <div class="feature-big-bg" style="background:radial-gradient(ellipse at 70% 30%,rgba(79,159,255,0.2) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(30,60,120,0.3) 0%,transparent 50%),linear-gradient(135deg,#080c14 0%,#0a101a 100%);"></div>
+        <div class="feature-big-overlay"></div>
+        <div style="position:absolute;top:32px;left:28px;z-index:1;opacity:0.15;">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#4F9FFF" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="feature-big-body">
+          <div class="feature-big-tag" style="color:#4F9FFF;">Agenda</div>
+          <div class="feature-big-title">Battles, soirées, workshops</div>
+          <div class="feature-big-desc">Tous les événements de la scène, avec réservation directe depuis la plateforme.</div>
+          <div class="feature-big-link" style="color:#4F9FFF;">Voir l'agenda <span>→</span></div>
+        </div>
+      </div>
 
-  <section class="how">
-    <div class="section-header">
-      <div class="section-tag">Comment ça marche</div>
-      <h2 class="section-title">3 ÉTAPES<br>POUR COMMENCER</h2>
-    </div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-title">Créez votre profil</div>
-        <p class="step-desc">Inscrivez-vous, ajoutez vos disciplines, votre zone et vos disponibilités.</p>
+      <!-- Card 3 : Profil -->
+      <div class="feature-big-card" onclick="showPage('auth')">
+        <div class="feature-big-bg" style="background:radial-gradient(ellipse at 50% 30%,rgba(123,79,255,0.2) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(60,20,120,0.3) 0%,transparent 50%),linear-gradient(135deg,#0a0814 0%,#0c0a18 100%);"></div>
+        <div class="feature-big-overlay"></div>
+        <div style="position:absolute;top:32px;left:28px;z-index:1;opacity:0.15;">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#7B4FFF" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="feature-big-body">
+          <div class="feature-big-tag" style="color:#7B4FFF;">Profil</div>
+          <div class="feature-big-title">Ton identité artistique</div>
+          <div class="feature-big-desc">Disciplines, playlists, portfolio, disponibilités. Tout ce qui te définit en un seul endroit.</div>
+          <div class="feature-big-link" style="color:#7B4FFF;">Créer mon profil <span>→</span></div>
+        </div>
       </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-title">Explorez le réseau</div>
-        <p class="step-desc">Trouvez des artistes, découvrez des événements près de chez vous.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-title">Connectez-vous</div>
-        <p class="step-desc">Échangez vos profils via le bracelet ou le site — et créez ensemble !</p>
-      </div>
+
     </div>
   </section>
 
-  <footer>
+  <!-- CTA FINAL -->
+  <div class="landing-cta-final">
+    <h2>
+      <span style="color:#fff;">rejoins</span><br>
+      <span style="color:var(--green);">hako</span>
+    </h2>
+    <p>La communauté des artistes qui bougent, créent et se connectent.</p>
+    <a class="btn-primary" href="#" onclick="showPage('auth')">Créer mon profil gratuitement →</a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="landing-footer">
     <div class="footer-brand">
       <div class="logo">
         <div class="logo-dot"></div>
         hako
       </div>
-      <p class="footer-desc">Le premier réseau social conçu pour les artistes.</p>
+      <p class="footer-desc">La plateforme des artistes qui créent, bougent et se connectent.</p>
     </div>
     <div>
-      <div class="footer-title">Navigation</div>
-      <div class="footer-links">
-        <a class="footer-link" href="#" onclick="showPage('feed')">Feed</a>
-        <a class="footer-link" href="#" onclick="showPage('network')">Réseau</a>
-        <a class="footer-link" href="#" onclick="showPage('agenda')">Agenda</a>
-        <a class="footer-link" href="#" onclick="showPage('faq')">FAQ</a>
+      <div class="footer-col-title">Navigation</div>
+      <div class="footer-col-links">
+        <a onclick="showPage('feed')">Feed</a>
+        <a onclick="showPage('network')">Réseau</a>
+        <a onclick="showPage('agenda')">Agenda</a>
+        <a onclick="showPage('faq')">FAQ</a>
       </div>
     </div>
     <div>
-      <div class="footer-title">Légal</div>
-      <div class="footer-links">
-        <a class="footer-link" href="#" onclick="showPage('privacy')">Confidentialité</a>
-        <a class="footer-link" href="#" onclick="showPage('cgu')">CGU</a>
-        <a class="footer-link" href="#" onclick="showPage('cgv')">CGV</a>
-        <a class="footer-link" href="#" onclick="showPage('mentions')">Mentions légales</a>
+      <div class="footer-col-title">Légal</div>
+      <div class="footer-col-links">
+        <a onclick="showPage('privacy')">Confidentialité</a>
+        <a onclick="showPage('cgu')">CGU</a>
+        <a onclick="showPage('cgv')">CGV</a>
+        <a onclick="showPage('mentions')">Mentions légales</a>
       </div>
     </div>
   </footer>
-  <div class="footer-bottom">
-    <span class="footer-copy">© 2026 HAKO — Tous droits réservés</span>
+  <div class="footer-bottom-bar">
+    <span class="footer-copy">© 2026 HAKO. Tous droits réservés.</span>
     <span class="footer-copy">Made with 💚 by HAKO</span>
   </div>
+
 </div>
 
 <!-- ═══ PAGE: AUTH ═══ -->
@@ -6333,6 +6479,7 @@ function showPage(id, isBack = false) {
   if (id === 'notifs')    setTimeout(afficherPageNotifs, DURATION);
   if (id === 'messages')  setTimeout(chargerMessages,   DURATION);
   if (id === 'agenda')    setTimeout(chargerAgenda,     DURATION);
+  if (id === 'home')      setTimeout(() => { if (window.chargerLandingCarousel) window.chargerLandingCarousel(); }, DURATION);
   if (id === 'orga')      setTimeout(chargerDashboardOrga, DURATION);
   if (id === 'network')   setTimeout(() => { if (window.chargerRecommandationsExplore) window.chargerRecommandationsExplore(); }, DURATION);
   if (id === 'bracelet')  setTimeout(initPageBracelet,  DURATION);
@@ -8803,6 +8950,56 @@ async function chargerAgenda() {
     console.error('Erreur agenda:', e);
   }
 }
+
+/* ── Carousel événements page d'accueil ── */
+async function chargerLandingCarousel() {
+  const carousel = document.getElementById('landing-events-carousel');
+  if (!carousel) return;
+  if (!window._db) { setTimeout(chargerLandingCarousel, 600); return; }
+  try {
+    const snap = await window._getDocs(window._collection(window._db, 'evenements'));
+    const now = new Date();
+    let events = [];
+    snap.forEach(d => events.push({ id: d.id, ...d.data() }));
+    // Garder uniquement les événements futurs, triés par date
+    events = events.filter(e => {
+      const d = _toDate(_getDatePrincipale(e));
+      return d && d >= now;
+    }).sort((a, b) => {
+      const da = _toDate(_getDatePrincipale(a));
+      const db2 = _toDate(_getDatePrincipale(b));
+      return da - db2;
+    }).slice(0, 10);
+
+    if (events.length === 0) {
+      carousel.innerHTML = '<div class="events-carousel-empty">Aucun événement à venir pour le moment.</div>';
+      return;
+    }
+
+    const mois = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+    carousel.innerHTML = events.map(e => {
+      const d = _toDate(_getDatePrincipale(e));
+      const dateStr = d ? `${d.getDate()} ${mois[d.getMonth()]} ${d.getFullYear()}` : '';
+      const titre = e.titre || e.nom || 'Événement';
+      const ville = e.ville || e.lieu || '';
+      const coverBg = e.cover
+        ? `background:url('${e.cover}') center/cover no-repeat;`
+        : `background:linear-gradient(135deg,rgba(0,245,155,0.1),rgba(123,79,255,0.1));`;
+      return `<div class="event-card-landing" onclick="ouvrirShareEvent('${e.id}')">
+        <div class="event-card-landing-img" style="${coverBg}"></div>
+        <div class="event-card-landing-body">
+          <div class="event-card-landing-date">${dateStr}</div>
+          <div class="event-card-landing-title">${titre}</div>
+          ${ville ? `<div class="event-card-landing-city">${ville}</div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    console.error('Erreur carousel landing:', e);
+    carousel.innerHTML = '<div class="events-carousel-empty">Impossible de charger les événements.</div>';
+  }
+}
+window.chargerLandingCarousel = chargerLandingCarousel;
 
 function _toDate(val) {
   if (!val) return null;
@@ -16427,8 +16624,11 @@ document.addEventListener('click', function(e) {
 // ════════════════════════════════
 function mettreAJourNav(user) {
   const loginBtn = document.getElementById('nav-login-btn');
+  const landingNav = document.getElementById('landing-nav');
 
   if (user) {
+    // Cacher navbar landing quand connecté
+    if (landingNav) landingNav.style.display = 'none';
     // Cacher bouton Se connecter
     if (loginBtn) loginBtn.style.display = 'none';
 
@@ -17085,6 +17285,8 @@ onAuthStateChanged(auth, async (user) => {
     afficherBarreLogoDeconnecte(true);
     mettreAJourNav(null);
     detecterPairageKima(false);
+    // Charger le carousel d'événements sur la landing
+    setTimeout(() => { if (window.chargerLandingCarousel) window.chargerLandingCarousel(); }, 800);
     // Pas connecté : vérifier si l'URL est une page publique accessible sans compte
     const _pathname = window.location.pathname;
     const _usernameMatch = _pathname.match(/^\/\@(.+)$/);
