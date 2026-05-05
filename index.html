@@ -381,7 +381,7 @@ body.pwa #agenda-passes-toggle {
 }
 .landing-events-header h2{
   font-family:'Syne',sans-serif;
-  font-size:clamp(18px,3.2vw,32px);
+  font-size:clamp(8px,2.4vw,22px);
   font-weight:800;letter-spacing:1px;line-height:1;
   text-transform:uppercase;
 }
@@ -392,11 +392,14 @@ body.pwa #agenda-passes-toggle {
 }
 .events-carousel{
   display:flex;gap:16px;overflow-x:auto;
-  padding:0 5% 16px 15px;
+  padding:0 5% 16px 0;
+  padding-left:15px;
+  scroll-padding-left:15px;
   scrollbar-width:none;-ms-overflow-style:none;
   scroll-snap-type:x mandatory;
 }
 .events-carousel::-webkit-scrollbar{display:none;}
+.event-card-landing:first-child{margin-left:0;}
 .event-card-landing{
   flex-shrink:0;width:220px;
   border-radius:18px;overflow:hidden;
@@ -8927,7 +8930,7 @@ async function chargerLandingCarousel() {
     }
 
     const mois = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
-    carousel.innerHTML = events.map(e => {
+    carousel.innerHTML = events.map((e, i) => {
       const d = _toDate(_getDatePrincipale(e));
       const dateStr = d ? `${d.getDate()} ${mois[d.getMonth()]} ${d.getFullYear()}` : '';
       const titre = e.titre || e.nom || 'Événement';
@@ -8937,7 +8940,8 @@ async function chargerLandingCarousel() {
         : e.cover
           ? `background:url('${e.cover}') center/cover no-repeat;`
           : `background:linear-gradient(135deg,rgba(0,245,155,0.1),rgba(123,79,255,0.1));`;
-      return `<div class="event-card-landing" onclick="ouvrirShareEvent('${e.id}')">
+      const firstStyle = i === 0 ? ' style="margin-left:15px;"' : '';
+      return `<div class="event-card-landing"${firstStyle} onclick="ouvrirShareEvent('${e.id}')">
         <div class="event-card-landing-img" style="${coverBg}"></div>
         <div class="event-card-landing-body">
           <div class="event-card-landing-date">${dateStr}</div>
