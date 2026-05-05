@@ -20199,6 +20199,9 @@ window.toggleFaq = function(el) {
 (function(){
   const canvas = document.getElementById('hero-network-canvas');
   if (!canvas) return;
+  const isPWA = navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  const isMobile = window.innerWidth <= 768;
+  if (isPWA || isMobile) { canvas.style.display = 'none'; return; }
   const ctx = canvas.getContext('2d');
 
   const COLORS = ['#00F59B','#7B4FFF','#4F9FFF','#dce48e','#FFFFFF'];
