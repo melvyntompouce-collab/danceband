@@ -21102,7 +21102,7 @@ window.toggleFaq = function(el) {
 
 <!-- Detail billet (bottom sheet) -->
 <div id="billet-detail-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);" onclick="fermerDetailBillet()">
-  <div id="billet-detail-sheet" onclick="event.stopPropagation()" style="position:absolute;bottom:0;left:0;right:0;max-height:88vh;background:var(--card);border-radius:24px 24px 0 0;border:1px solid var(--border);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 24px calc(32px + env(safe-area-inset-bottom));">
+  <div id="billet-detail-sheet" onclick="event.stopPropagation()" style="position:absolute;bottom:0;left:0;right:0;max-height:95vh;background:var(--card);border-radius:24px 24px 0 0;border:1px solid var(--border);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 24px calc(48px + env(safe-area-inset-bottom));">
     <div style="width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 20px;"></div>
     <div id="billet-detail-content"></div>
   </div>
@@ -21168,15 +21168,13 @@ window.toggleFaq = function(el) {
         <button onclick="arreterScan()" style="position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">✕</button>
       </div>
       <div id="gestion-scan-result" style="display:none;border-radius:12px;padding:14px;margin-bottom:12px;text-align:center;"></div>
-      <div style="display:flex;gap:10px;">
-        <button id="btn-demarrer-scan" onclick="demarrerScan()" style="flex:1;padding:12px;border-radius:12px;background:rgba(0,245,155,0.1);border:1.5px solid rgba(0,245,155,0.3);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3"/><path d="M17 20h3"/><path d="M20 17v3"/></svg>
-          Scanner caméra
-        </button>
-        <div style="flex:1;display:flex;gap:8px;">
-          <input id="gestion-scan-input" type="text" placeholder="ID billet" style="flex:1;min-width:0;padding:12px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;" onkeydown="if(event.key==='Enter')validerScanManuel()">
-          <button onclick="validerScanManuel()" style="padding:12px 14px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;">OK</button>
-        </div>
+      <button id="btn-demarrer-scan" onclick="demarrerScan()" style="width:100%;padding:12px;border-radius:12px;background:rgba(0,245,155,0.1);border:1.5px solid rgba(0,245,155,0.3);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3"/><path d="M17 20h3"/><path d="M20 17v3"/></svg>
+        Scanner caméra
+      </button>
+      <div style="display:flex;gap:8px;">
+        <input id="gestion-scan-input" type="text" placeholder="ID billet" style="flex:1;min-width:0;padding:12px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;" onkeydown="if(event.key==='Enter')validerScanManuel()">
+        <button onclick="validerScanManuel()" style="flex-shrink:0;padding:12px 18px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;">OK</button>
       </div>
     </div>
 
