@@ -12149,7 +12149,7 @@ window.chargerInscritsGestion = async function() {
     loadEl.style.display = 'none';
     const inscrits = [];
     snap.forEach(d => inscrits.push({ id: d.id, ...d.data() }));
-    // Mettre à jour les stats
+    // Mettre à jour les stats de base
     const total = inscrits.length;
     const presents = inscrits.filter(i => i.presence === true).length;
     document.getElementById('gestion-stat-inscrits').textContent = total;
@@ -12160,6 +12160,83 @@ window.chargerInscritsGestion = async function() {
       el.textContent = Math.max(0, restantes);
       el.style.color = restantes <= 0 ? 'var(--red)' : restantes <= 10 ? 'var(--orange)' : 'var(--text)';
     }
+
+    // Taux de présence
+    const taux = total > 0 ? Math.round((presents / total) * 100) : 0;
+    const tauxLabel = document.getElementById('gestion-taux-label');
+    const tauxBar = document.getElementById('gestion-taux-bar');
+    if (tauxLabel) tauxLabel.textContent = taux + '%';
+    if (tauxBar) { tauxBar.style.width = taux + '%'; tauxBar.style.background = taux >= 70 ? 'var(--green)' : taux >= 40 ? 'var(--orange)' : 'var(--red)'; }
+
+    // Revenus
+    const actifs = inscrits.filter(i => i.statut !== 'annulé' && i.statut !== 'remboursé');
+    const totalEncaisse = inscrits.reduce((s, i) => s + (parseFloat(i.montant) || 0), 0);
+    const revAttendu = actifs.reduce((s, i) => s + (parseFloat(i.montant) || 0), 0);
+    const commission = revAttendu * 0.12;
+    const net = revAttendu - commission;
+    const fmt = v => v % 1 === 0 ? v + '€' : v.toFixed(2) + '€';
+    const elTotal = document.getElementById('gestion-rev-total');
+    const elAttendu = document.getElementById('gestion-rev-attendu');
+    const elComm = document.getElementById('gestion-rev-commission');
+    const elNet = document.getElementById('gestion-rev-net');
+    if (elTotal) elTotal.textContent = fmt(totalEncaisse);
+    if (elAttendu) elAttendu.textContent = fmt(revAttendu);
+    if (elComm) elComm.textContent = fmt(commission);
+    if (elNet) elNet.textContent = fmt(net);
+
+    // Répartition par type de billet
+    const repartEl = document.getElementById('gestion-repartition');
+    if (repartEl && inscrits.length > 0) {
+      const groupes = {};
+      inscrits.forEach(i => {
+        const label = i.montant && parseFloat(i.montant) > 0 ? (parseFloat(i.montant) + '€') : 'Gratuit';
+        groupes[label] = (groupes[label] || 0) + (i.quantite || 1);
+      });
+      repartEl.innerHTML = Object.entries(groupes).map(([label, count]) =>
+        `<div style="display:flex;justify-content:space-between;"><span style="color:var(--muted2);">${label}</span><span style="font-weight:700;">${count} billet${count>1?'s':''}</span></div>`
+      ).join('');
+    }
+
+    // Courbe des ventes par jour
+    const chartCanvas = document.getElementById('gestion-chart-ventes');
+    const chartEmpty = document.getElementById('gestion-chart-empty');
+    if (chartCanvas) {
+      const ventesParJour = {};
+      inscrits.forEach(i => {
+        if (i.createdAt) {
+          const jour = i.createdAt.slice(0, 10);
+          ventesParJour[jour] = (ventesParJour[jour] || 0) + (i.quantite || 1);
+        }
+      });
+      const jours = Object.keys(ventesParJour).sort();
+      if (jours.length === 0) {
+        chartCanvas.style.display = 'none';
+        if (chartEmpty) chartEmpty.style.display = 'block';
+      } else {
+        if (chartEmpty) chartEmpty.style.display = 'none';
+        chartCanvas.style.display = 'block';
+        const vals = jours.map(j => ventesParJour[j]);
+        const maxVal = Math.max(...vals, 1);
+        const ctx = chartCanvas.getContext('2d');
+        const w = chartCanvas.offsetWidth || 120;
+        const h = 80;
+        chartCanvas.width = w;
+        chartCanvas.height = h;
+        ctx.clearRect(0, 0, w, h);
+        const barW = Math.max(4, Math.floor((w - (jours.length - 1) * 4) / jours.length));
+        const gap = jours.length > 1 ? (w - barW * jours.length) / (jours.length - 1) : 0;
+        jours.forEach((j, idx) => {
+          const barH = Math.round((vals[idx] / maxVal) * (h - 16));
+          const x = idx * (barW + gap);
+          const y = h - barH - 4;
+          ctx.fillStyle = 'rgba(0,245,155,0.7)';
+          ctx.beginPath();
+          ctx.roundRect(x, y, barW, barH, 3);
+          ctx.fill();
+        });
+      }
+    }
+
     if (inscrits.length === 0) { emptyEl.style.display = 'block'; return; }
     inscrits.forEach(inscrit => {
       const isPresent = inscrit.presence === true;
@@ -12339,10 +12416,28 @@ window.validerBillet = async function(billetId) {
 };
 
 window.ouvrirFormEventPublic = function() {
-  if (!window._currentUid || !window._db) {
+  if (!window._currentUid) {
     _showToast('Connecte-toi pour créer un événement.');
     return;
   }
+  // Utilise les données déjà en mémoire si disponibles
+  const d = window._monProfil;
+  if (d) {
+    const manque = [];
+    if (!d.photo) manque.push('photo de profil');
+    if (!d.nom && !d.nomAffiche && !d.pseudo) manque.push('nom');
+    if (!d.styles || d.styles.length === 0) manque.push('discipline');
+    if (!d.ville) manque.push('ville');
+    if (manque.length > 0) {
+      _showToast('Complete ton profil d\'abord : ' + manque.join(', ') + '.');
+      showPage('profile');
+      return;
+    }
+    window.ouvrirFormEvent();
+    return;
+  }
+  // Fallback : requête Firestore si profil pas encore chargé
+  if (!window._db) { _showToast('Connecte-toi pour créer un événement.'); return; }
   window._getDoc(window._doc(window._db, 'danseurs', window._currentUid)).then(snap => {
     if (!snap.exists()) return;
     const d = snap.data();
@@ -12379,6 +12474,12 @@ window.ouvrirFormEvent = function() {
   document.getElementById('ev-photo-label-text').textContent = 'Choisir une image JPG ou PNG';
   window._evPhotoUrl = null;
   setVibeChips('');
+  // Lien externe réservé aux admins et organisateurs
+  const isPrivileged = window._monRole === 'admin' || window._monRole === 'organisateur';
+  const btnExterne = document.getElementById('btn-billetterie-externe');
+  if (btnExterne) btnExterne.style.display = isPrivileged ? '' : 'none';
+  // Forcer HAKO par défaut pour les artistes lambda
+  if (!isPrivileged) setBilletterieMode('hako');
   window._formRetour = currentPage;
   showPage('form-event');
 }
@@ -21141,7 +21242,7 @@ window.toggleFaq = function(el) {
     </div>
 
     <!-- Stats -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;">
       <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
         <div id="gestion-stat-inscrits" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;color:var(--green);line-height:1;">0</div>
         <div style="font-size:10px;color:var(--muted2);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Inscrits</div>
@@ -21153,6 +21254,54 @@ window.toggleFaq = function(el) {
       <div id="gestion-stat-places-wrap" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;display:none;">
         <div id="gestion-stat-places" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;line-height:1;">0</div>
         <div style="font-size:10px;color:var(--muted2);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Restantes</div>
+      </div>
+    </div>
+
+    <!-- Taux de présence -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="font-size:12px;color:var(--muted2);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Taux de présence</div>
+        <div id="gestion-taux-label" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:20px;color:var(--green);">0%</div>
+      </div>
+      <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+        <div id="gestion-taux-bar" style="height:100%;background:var(--green);border-radius:3px;width:0%;transition:width 0.5s ease;"></div>
+      </div>
+    </div>
+
+    <!-- Revenus -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;">
+      <div style="font-size:12px;color:var(--muted2);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Revenus</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;color:var(--muted2);">Total encaissé</span>
+          <span id="gestion-rev-total" style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--text);">0€</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;color:var(--muted2);">Revenu attendu</span>
+          <span id="gestion-rev-attendu" style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--green);">0€</span>
+        </div>
+        <div style="height:1px;background:rgba(255,255,255,0.06);"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;color:var(--muted2);">Commission HAKO (12%)</span>
+          <span id="gestion-rev-commission" style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--muted2);">0€</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;font-weight:700;">Net à percevoir</span>
+          <span id="gestion-rev-net" style="font-family:'Syne',sans-serif;font-weight:900;font-size:16px;color:var(--green);">0€</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Répartition billets + courbe ventes -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;">
+        <div style="font-size:11px;color:var(--muted2);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Billets</div>
+        <div id="gestion-repartition" style="display:flex;flex-direction:column;gap:6px;font-size:12px;"></div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;">
+        <div style="font-size:11px;color:var(--muted2);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Ventes / jour</div>
+        <canvas id="gestion-chart-ventes" style="width:100%;height:80px;"></canvas>
+        <div id="gestion-chart-empty" style="display:none;font-size:11px;color:var(--muted2);text-align:center;padding:20px 0;">Aucune donnée</div>
       </div>
     </div>
 
