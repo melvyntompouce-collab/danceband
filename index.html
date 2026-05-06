@@ -15131,6 +15131,14 @@ function resetFiltres() {
 // ════════════════════════════════
 var _exploreTab = 'profils';
 var _tousProfils = [];
+// Pagination profils (affichage côté client)
+var _exploreProfils_results = [];
+var _exploreProfils_offset = 0;
+var _EXPLORE_PROFILS_PAGE = 12;
+// Pagination posts (Firestore cursor)
+var _explorePosts_lastDoc = null;
+var _explorePosts_query = '';
+var _EXPLORE_POSTS_PAGE = 10;
 
 window.switchExploreTab = function(tab) {
   _exploreTab = tab;
@@ -15229,40 +15237,112 @@ window.chargerRecommandationsExplore = async function() {
   // Suggestions posts aléatoires
   if (containerPo && window._db && window._getDocs && window._collection) {
     try {
-      var snap = await window._getDocs(window._collection(window._db, 'posts'));
+      var qSugg = window._query(window._collection(window._db, 'posts'), window._orderBy('createdAt','desc'), window._limit(_EXPLORE_POSTS_PAGE));
+      var snap = await window._getDocs(qSugg);
       var posts = [];
       snap.forEach(function(doc) { posts.push(Object.assign({ id: doc.id }, doc.data())); });
       if (posts.length === 0) {
         containerPo.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Aucun post pour l\u2019instant</div>';
       } else {
-        var selPosts = _melangerTableau(posts).slice(0, 10);
         var htmlPo = '<div style="font-family:Syne,sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Suggestions</div>';
-        htmlPo += selPosts.map(function(p) {
-          var texte = p.content || p.texte || p.text || '';
-          var auteur = p.authorName || p.auteurBlase || 'Artiste';
-          var username = p.authorUsername ? '@' + p.authorUsername : '';
-          var avatar = p.authorPhoto
-            ? '<img src="' + p.authorPhoto + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
-            : (_getInitiales(p.authorName || '') ? '<span style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;color:#080810;">' + _getInitiales(p.authorName || '') + '</span>' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(8,8,16,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>');
-          var safeId = (p.id || '').replace(/'/g, '');
-          var h = '<div onclick="window._ouvrirPostDetail(\'' + safeId + '\')" style="padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;cursor:pointer;">';
-          h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
-          h += '<div style="width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">' + avatar + '</div>';
-          h += '<div>';
-          h += '<div style="font-family:Syne,sans-serif;font-weight:700;font-size:13px;color:var(--text);">' + auteur + '</div>';
-          if (username) h += '<div style="font-size:11px;color:var(--muted);">' + username + '</div>';
-          h += '</div>';
-          h += '</div>';
-          if (p.mediaUrl) h += '<img src="' + p.mediaUrl + '" style="width:100%;border-radius:10px;margin-bottom:8px;object-fit:cover;max-height:200px;">';
-          h += '<div style="font-size:14px;color:var(--text);line-height:1.5;">' + texte.slice(0, 200) + (texte.length > 200 ? '...' : '') + '</div>';
-          h += '</div>';
-          return h;
-        }).join('');
+        htmlPo += posts.map(_renderPostCard).join('');
         containerPo.innerHTML = htmlPo;
       }
     } catch(e) {
       containerPo.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Tape un mot-cl\u00E9 pour rechercher</div>';
     }
+  }
+};
+
+// ── Rendu d'un post card explore (partagé recherche + suggestions) ──
+function _renderPostCard(p) {
+  var texte = p.content || p.texte || p.text || '';
+  var auteur = p.authorName || p.auteurBlase || 'Artiste';
+  var username = p.authorUsername ? '@' + p.authorUsername : '';
+  var avatar = p.authorPhoto
+    ? '<img src="' + p.authorPhoto + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
+    : (_getInitiales(p.authorName || '') ? '<span style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;color:#080810;">' + _getInitiales(p.authorName || '') + '</span>' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(8,8,16,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>');
+  var safeId = (p.id || '').replace(/'/g, '');
+  var h = '<div onclick="window._ouvrirPostDetail(\'' + safeId + '\')" style="padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;cursor:pointer;">';
+  h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
+  h += '<div style="width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">' + avatar + '</div>';
+  h += '<div>';
+  h += '<div style="font-family:Syne,sans-serif;font-weight:700;font-size:13px;color:var(--text);">' + auteur + '</div>';
+  if (username) h += '<div style="font-size:11px;color:var(--muted);">' + username + '</div>';
+  h += '</div></div>';
+  if (p.mediaUrl) h += '<img src="' + p.mediaUrl + '" style="width:100%;border-radius:10px;margin-bottom:8px;object-fit:cover;max-height:200px;" loading="lazy">';
+  h += '<div style="font-size:14px;color:var(--text);line-height:1.5;">' + texte.slice(0, 200) + (texte.length > 200 ? '...' : '') + '</div>';
+  h += '</div>';
+  return h;
+}
+
+function _renderVoirPlusProfils() {
+  return '<div id="explore-load-more-profils" style="text-align:center;padding:16px;">'
+    + '<button onclick="window._exploreProfilsVoirPlus()" style="background:var(--card);border:1px solid var(--border);color:var(--text);font-family:Syne,sans-serif;font-weight:700;font-size:13px;padding:10px 24px;border-radius:20px;cursor:pointer;">Voir plus</button>'
+    + '</div>';
+}
+
+function _renderVoirPlusPosts() {
+  return '<div id="explore-load-more-posts" style="text-align:center;padding:16px;">'
+    + '<button onclick="window._explorePostsVoirPlus()" style="background:var(--card);border:1px solid var(--border);color:var(--text);font-family:Syne,sans-serif;font-weight:700;font-size:13px;padding:10px 24px;border-radius:20px;cursor:pointer;">Voir plus</button>'
+    + '</div>';
+}
+
+window._exploreProfilsVoirPlus = function() {
+  var container = document.getElementById('explore-results-profils');
+  if (!container) return;
+  _exploreProfils_offset += _EXPLORE_PROFILS_PAGE;
+  var slice = _exploreProfils_results.slice(_exploreProfils_offset, _exploreProfils_offset + _EXPLORE_PROFILS_PAGE);
+  // Retirer l'ancien bouton
+  var btn = document.getElementById('explore-load-more-profils');
+  if (btn) btn.remove();
+  // Ajouter les nouvelles cartes
+  var frag = document.createElement('div');
+  frag.innerHTML = slice.map(_renderProfilCard).join('');
+  while (frag.firstChild) container.appendChild(frag.firstChild);
+  // Remettre un bouton si encore des résultats
+  if (_exploreProfils_offset + _EXPLORE_PROFILS_PAGE < _exploreProfils_results.length) {
+    var btnEl = document.createElement('div');
+    btnEl.innerHTML = _renderVoirPlusProfils();
+    container.appendChild(btnEl.firstChild);
+  }
+};
+
+window._explorePostsVoirPlus = async function() {
+  if (!_explorePosts_lastDoc) return;
+  var container2 = document.getElementById('explore-results-posts');
+  if (!container2) return;
+  var btn = document.getElementById('explore-load-more-posts');
+  if (btn) btn.innerHTML = '\u23F3';
+  try {
+    var q = _explorePosts_query;
+    var snap2 = await window._getDocs(
+      window._query(window._collection(window._db, 'posts'),
+        window._orderBy('createdAt','desc'),
+        window._startAfter(_explorePosts_lastDoc),
+        window._limit(_EXPLORE_POSTS_PAGE)
+      )
+    );
+    var results2 = [];
+    snap2.forEach(function(doc) {
+      var d = doc.data();
+      var texte = (d.texte || d.content || d.text || '').toLowerCase();
+      if (!q || texte.includes(q)) results2.push(Object.assign({ id: doc.id }, d));
+    });
+    if (snap2.size > 0) _explorePosts_lastDoc = snap2.docs[snap2.docs.length - 1];
+    else _explorePosts_lastDoc = null;
+    if (btn) btn.remove();
+    var frag = document.createElement('div');
+    frag.innerHTML = results2.map(_renderPostCard).join('');
+    while (frag.firstChild) container2.appendChild(frag.firstChild);
+    if (_explorePosts_lastDoc && snap2.size === _EXPLORE_POSTS_PAGE) {
+      var btnEl = document.createElement('div');
+      btnEl.innerHTML = _renderVoirPlusPosts();
+      container2.appendChild(btnEl.firstChild);
+    }
+  } catch(e) {
+    console.error('Erreur voir plus posts:', e);
+    if (btn) btn.remove();
   }
 };
 
@@ -15277,17 +15357,21 @@ window.rechercherExplore = async function(q) {
       var profils = await _chargerTousProfils();
       var isAt = q.startsWith('@');
       var term = isAt ? q.slice(1) : q;
-      var results = profils.filter(function(p) {
+      _exploreProfils_results = profils.filter(function(p) {
         return (p.nom||'').toLowerCase().includes(term)
           || (p.blase||'').toLowerCase().includes(term)
           || (p.username||'').toLowerCase().includes(term)
           || (!isAt && (p.styles||[]).join(' ').toLowerCase().includes(term));
       });
-      if (results.length === 0) {
+      _exploreProfils_offset = 0;
+      if (_exploreProfils_results.length === 0) {
         container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Aucun profil trouv\u00E9</div>';
         return;
       }
-      container.innerHTML = results.map(_renderProfilCard).join('');
+      var slice = _exploreProfils_results.slice(0, _EXPLORE_PROFILS_PAGE);
+      var html = slice.map(_renderProfilCard).join('');
+      if (_exploreProfils_results.length > _EXPLORE_PROFILS_PAGE) html += _renderVoirPlusProfils();
+      container.innerHTML = html;
     } catch(e) {
       console.error('Erreur recherche profils:', e);
       container.innerHTML = '<div style="color:var(--red);font-size:13px;text-align:center;padding:20px 0;">Erreur de recherche</div>';
@@ -15301,39 +15385,29 @@ window.rechercherExplore = async function(q) {
     }
     container2.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">\u23F3 Recherche...</div>';
     try {
-      if (!window._db || !window._getDocs) throw new Error('Firebase non prêt');
-      var snap2 = await window._getDocs(window._collection(window._db, 'posts'));
+      if (!window._db || !window._getDocs) throw new Error('Firebase non pr\u00EAt');
+      _explorePosts_query = q;
+      _explorePosts_lastDoc = null;
+      var snap2 = await window._getDocs(
+        window._query(window._collection(window._db, 'posts'),
+          window._orderBy('createdAt','desc'),
+          window._limit(_EXPLORE_POSTS_PAGE)
+        )
+      );
       var results2 = [];
       snap2.forEach(function(doc) {
         var d = doc.data();
         var texte = (d.texte || d.content || d.text || '').toLowerCase();
         if (texte.includes(q)) results2.push(Object.assign({ id: doc.id }, d));
       });
-      results2.sort(function(a, b) { return ((b.createdAt&&b.createdAt.seconds)||0) - ((a.createdAt&&a.createdAt.seconds)||0); });
+      if (snap2.size > 0) _explorePosts_lastDoc = snap2.docs[snap2.docs.length - 1];
       if (results2.length === 0) {
         container2.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Aucun post trouv\u00E9</div>';
         return;
       }
-      container2.innerHTML = results2.slice(0, 20).map(function(p) {
-        var texte = p.content || p.texte || p.text || '';
-        var auteur = p.authorName || p.auteurBlase || 'Artiste';
-        var username = p.authorUsername ? '@' + p.authorUsername : '';
-        var avatar = p.authorPhoto
-          ? '<img src="' + p.authorPhoto + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
-          : (_getInitiales(p.authorName || '') ? '<span style="font-family:Syne,sans-serif;font-weight:800;font-size:16px;color:#080810;">' + _getInitiales(p.authorName || '') + '</span>' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(8,8,16,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>');
-        var safeId = (p.id || '').replace(/'/g, '');
-        var h = '<div onclick="window._ouvrirPostDetail(\'' + safeId + '\')" style="padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;cursor:pointer;">';
-        h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
-        h += '<div style="width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">' + avatar + '</div>';
-        h += '<div>';
-        h += '<div style="font-family:Syne,sans-serif;font-weight:700;font-size:13px;color:var(--text);">' + auteur + '</div>';
-        if (username) h += '<div style="font-size:11px;color:var(--muted);">' + username + '</div>';
-        h += '</div></div>';
-        if (p.mediaUrl) h += '<img src="' + p.mediaUrl + '" style="width:100%;border-radius:10px;margin-bottom:8px;object-fit:cover;max-height:200px;">';
-        h += '<div style="font-size:14px;color:var(--text);line-height:1.5;">' + texte.slice(0, 200) + (texte.length > 200 ? '...' : '') + '</div>';
-        h += '</div>';
-        return h;
-      }).join('');
+      var html2 = results2.map(_renderPostCard).join('');
+      if (_explorePosts_lastDoc && snap2.size === _EXPLORE_POSTS_PAGE) html2 += _renderVoirPlusPosts();
+      container2.innerHTML = html2;
     } catch(e) {
       console.error('Erreur recherche posts:', e);
       container2.innerHTML = '<div style="color:var(--red);font-size:13px;text-align:center;padding:20px 0;">Erreur de recherche</div>';
