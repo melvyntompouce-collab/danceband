@@ -3017,6 +3017,7 @@ body.has-bottomnav #nav-login-btn { display: none !important; }
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 </head>
 <body>
 <!-- SPLASH LOADER -->
@@ -6550,7 +6551,8 @@ function showPage(id, isBack = false) {
     'form-event': '/creer-evenement', 'form-salle': '/creer-salle', 'form-ecole': '/creer-ecole', 'post-create': '/creer-post',
     cgu: '/cgu', cgv: '/cgv', mentions: '/mentions',
     'profil-public': '/profil', 'share-event': '/event',
-    'mes-reservations': '/mes-reservations', 'mes-evenements': '/mes-evenements'
+    'mes-reservations': '/mes-reservations', 'mes-evenements': '/mes-evenements',
+    'gestion-event': '/mes-evenements'
   };
   const _url = _routeMap[id] || '/';
   if (!isBack && window.location.pathname !== _url) {
@@ -6697,6 +6699,7 @@ function _initRouter() {
   const profileMatch = pathname.match(/^\/profil\/(.+)$/);
   const usernameMatch = pathname.match(/^\/@(.+)$/);
   const eventMatch = pathname.match(/^\/event\/(.+)$/);
+  const gestionEventMatch = pathname.match(/^\/mes-evenements\/(.+)$/);
   function _hideLoaderRouter() {
     const l = document.getElementById('app-loader');
     if (l) { l.classList.add('hidden'); setTimeout(() => l.remove(), 350); }
@@ -6738,6 +6741,26 @@ function _initRouter() {
       setTimeout(() => { if (window.ouvrirEvent) ouvrirEvent(_evId); }, 300);
     }
     _routeEvent();
+  } else if (gestionEventMatch) {
+    const _evId = gestionEventMatch[1];
+    async function _routeGestionEvent() {
+      if (!window._db || !window._currentUid) { setTimeout(_routeGestionEvent, 300); return; }
+      try {
+        const snap = await window._getDoc(window._doc(window._db, 'evenements', _evId));
+        if (snap.exists()) {
+          const ev = { id: snap.id, ...snap.data() };
+          window.ouvrirGestionEvent(ev);
+        } else {
+          showPage('mes-evenements', true);
+          chargerMesEvenements();
+        }
+      } catch(e) {
+        showPage('mes-evenements', true);
+        chargerMesEvenements();
+      }
+      _hideLoaderRouter();
+    }
+    _routeGestionEvent();
   } else {
     const page = _reverseRouteMap[pathname];
     if (page === 'mes-reservations') {
@@ -12043,7 +12066,7 @@ window.chargerMesEvenements = async function() {
       card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:border-color 0.2s;';
       card.onmouseover = () => card.style.borderColor = 'rgba(0,245,155,0.3)';
       card.onmouseout = () => card.style.borderColor = 'var(--border)';
-      card.onclick = () => window.ouvrirInscritsEvent(ev);
+      card.onclick = () => window.ouvrirGestionEvent(ev);
       card.innerHTML = `
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;">
           <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;flex:1;">${ev.titre || 'Événement'}</div>
@@ -12067,48 +12090,88 @@ window.chargerMesEvenements = async function() {
   }
 };
 
-window.ouvrirInscritsEvent = async function(ev) {
-  const overlay = document.getElementById('event-inscrits-overlay');
-  const listEl = document.getElementById('event-inscrits-list');
-  const titreEl = document.getElementById('event-inscrits-titre');
-  const statsEl = document.getElementById('event-inscrits-stats');
-  titreEl.textContent = ev.titre || 'Événement';
-  statsEl.textContent = 'Chargement des inscrits...';
+// ══════════════════════════════════════════
+// PAGE GESTION EVENT
+// ══════════════════════════════════════════
+let _gestionEventCourant = null;
+let _gestionScanInterval = null;
+let _gestionScanStream = null;
+
+window.ouvrirGestionEvent = function(ev) {
+  _gestionEventCourant = ev;
+  // Mettre à jour le header
+  document.getElementById('gestion-event-titre').textContent = ev.titre || 'Événement';
+  const dateStr = ev.dates && ev.dates.length > 0
+    ? new Date(ev.dates[0].date).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' })
+    : '';
+  document.getElementById('gestion-event-date').textContent = dateStr + (ev.ville ? ' · ' + ev.ville : '');
+  // Places restantes
+  if (ev.capacite) {
+    document.getElementById('gestion-stat-places-wrap').style.display = 'block';
+  } else {
+    document.getElementById('gestion-stat-places-wrap').style.display = 'none';
+  }
+  // Reset scan
+  document.getElementById('gestion-scan-area').style.display = 'none';
+  document.getElementById('gestion-scan-result').style.display = 'none';
+  document.getElementById('gestion-scan-input').value = '';
+  // Naviguer vers la page
+  history.pushState({ page: 'gestion-event', eventId: ev.id }, '', '/mes-evenements/' + ev.id);
+  showPage('gestion-event', true);
+  chargerInscritsGestion();
+};
+
+window.chargerInscritsGestion = async function() {
+  if (!_gestionEventCourant || !window._db) return;
+  const listEl = document.getElementById('gestion-inscrits-list');
+  const loadEl = document.getElementById('gestion-inscrits-loading');
+  const emptyEl = document.getElementById('gestion-inscrits-empty');
   listEl.innerHTML = '';
-  overlay.style.display = 'block';
+  loadEl.style.display = 'block';
+  emptyEl.style.display = 'none';
   try {
     const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const q = query(collection(window._db, 'reservations'), where('eventId', '==', ev.id));
+    const q = query(collection(window._db, 'reservations'), where('eventId', '==', _gestionEventCourant.id));
     const snap = await getDocs(q);
+    loadEl.style.display = 'none';
     const inscrits = [];
     snap.forEach(d => inscrits.push({ id: d.id, ...d.data() }));
+    // Mettre à jour les stats
     const total = inscrits.length;
     const presents = inscrits.filter(i => i.presence === true).length;
-    const capacite = ev.capacite || null;
-    statsEl.textContent = `${total} inscrit${total>1?'s':''} · ${presents} présent${presents>1?'s':''}${capacite ? ' · ' + (capacite - total) + ' place' + (capacite-total>1?'s':'') + ' restante' + (capacite-total>1?'s':'') : ''}`;
-    if (inscrits.length === 0) {
-      listEl.innerHTML = '<div style="text-align:center;padding:32px 0;color:var(--muted2);font-size:13px;">Aucun inscrit pour l\'instant.</div>';
-      return;
+    document.getElementById('gestion-stat-inscrits').textContent = total;
+    document.getElementById('gestion-stat-presents').textContent = presents;
+    if (_gestionEventCourant.capacite) {
+      const restantes = _gestionEventCourant.capacite - total;
+      const el = document.getElementById('gestion-stat-places');
+      el.textContent = Math.max(0, restantes);
+      el.style.color = restantes <= 0 ? 'var(--red)' : restantes <= 10 ? 'var(--orange)' : 'var(--text)';
     }
+    if (inscrits.length === 0) { emptyEl.style.display = 'block'; return; }
     inscrits.forEach(inscrit => {
-      const row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);';
       const isPresent = inscrit.presence === true;
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:14px;';
+      row.id = 'inscrit-row-' + inscrit.id;
       row.innerHTML = `
-        <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;overflow:hidden;">
+        <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;overflow:hidden;">
           ${inscrit.acheteurPhoto ? `<img src="${inscrit.acheteurPhoto}" style="width:100%;height:100%;object-fit:cover;">` : '🎭'}
         </div>
         <div style="flex:1;min-width:0;">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${inscrit.acheteurNom || 'Participant'}</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${inscrit.acheteurNom || 'Participant'}</div>
           <div style="font-size:11px;color:var(--muted2);">${inscrit.quantite||1} billet${(inscrit.quantite||1)>1?'s':''} · ${inscrit.montant ? inscrit.montant+'€' : 'Gratuit'}</div>
         </div>
-        <button onclick="togglePresence('${inscrit.id}', ${isPresent}, this)" style="flex-shrink:0;padding:6px 12px;border-radius:20px;border:1.5px solid ${isPresent ? 'var(--green)' : 'var(--border)'};background:${isPresent ? 'rgba(0,245,155,0.12)' : 'transparent'};color:${isPresent ? 'var(--green)' : 'var(--muted2)'};font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;transition:all 0.2s;">
+        <button id="btn-presence-${inscrit.id}" onclick="togglePresence('${inscrit.id}', ${isPresent}, this)" style="flex-shrink:0;padding:8px 14px;border-radius:20px;border:1.5px solid ${isPresent ? 'var(--green)' : 'var(--border)'};background:${isPresent ? 'rgba(0,245,155,0.12)' : 'transparent'};color:${isPresent ? 'var(--green)' : 'var(--muted2)'};font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;transition:all 0.2s;">
           ${isPresent ? '✓ Présent' : 'Absent'}
         </button>
       `;
       listEl.appendChild(row);
     });
-  } catch(e) { console.error(e); statsEl.textContent = 'Erreur de chargement.'; }
+  } catch(e) {
+    console.error(e);
+    loadEl.textContent = 'Erreur de chargement.';
+    loadEl.style.display = 'block';
+  }
 };
 
 window.togglePresence = async function(reservationId, estPresent, btn) {
@@ -12121,11 +12184,145 @@ window.togglePresence = async function(reservationId, estPresent, btn) {
     btn.style.background = newVal ? 'rgba(0,245,155,0.12)' : 'transparent';
     btn.style.color = newVal ? 'var(--green)' : 'var(--muted2)';
     btn.onclick = () => togglePresence(reservationId, newVal, btn);
+    // Mise à jour du compteur présents
+    const allBtns = document.querySelectorAll('[id^="btn-presence-"]');
+    let presents = 0;
+    allBtns.forEach(b => { if (b.textContent.includes('✓')) presents++; });
+    document.getElementById('gestion-stat-presents').textContent = presents;
+    _showToast(newVal ? 'Présence confirmée.' : 'Marqué absent.');
   } catch(e) { console.error(e); _showToast('Erreur, réessaie.'); }
 };
 
-window.fermerInscritsEvent = function() {
-  document.getElementById('event-inscrits-overlay').style.display = 'none';
+// ── Scan QR caméra ──
+window.demarrerScan = async function() {
+  const area = document.getElementById('gestion-scan-area');
+  const video = document.getElementById('gestion-scan-video');
+  area.style.display = 'block';
+  document.getElementById('btn-demarrer-scan').style.display = 'none';
+  try {
+    _gestionScanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    video.srcObject = _gestionScanStream;
+    await video.play();
+    _lancerDetectionQR();
+  } catch(e) {
+    area.style.display = 'none';
+    document.getElementById('btn-demarrer-scan').style.display = 'flex';
+    _showToast('Accès caméra refusé ou non disponible.');
+  }
+};
+
+window.arreterScan = function() {
+  if (_gestionScanStream) {
+    _gestionScanStream.getTracks().forEach(t => t.stop());
+    _gestionScanStream = null;
+  }
+  if (_gestionScanInterval) { clearInterval(_gestionScanInterval); _gestionScanInterval = null; }
+  document.getElementById('gestion-scan-area').style.display = 'none';
+  document.getElementById('btn-demarrer-scan').style.display = 'flex';
+};
+
+function _lancerDetectionQR() {
+  const video = document.getElementById('gestion-scan-video');
+  const canvas = document.getElementById('gestion-scan-canvas');
+  const ctx = canvas.getContext('2d');
+  _gestionScanInterval = setInterval(() => {
+    if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    if (window.jsQR) {
+      const code = jsQR(imageData.data, imageData.width, imageData.height);
+      if (code && code.data.startsWith('HAKO-BILLET-')) {
+        const billetId = code.data.replace('HAKO-BILLET-', '');
+        arreterScan();
+        validerBillet(billetId);
+      }
+    }
+  }, 300);
+}
+
+window.validerScanManuel = function() {
+  const input = document.getElementById('gestion-scan-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const billetId = val.startsWith('HAKO-BILLET-') ? val.replace('HAKO-BILLET-', '') : val;
+  input.value = '';
+  validerBillet(billetId);
+};
+
+window.validerBillet = async function(billetId) {
+  if (!_gestionEventCourant || !window._db) return;
+  const resultEl = document.getElementById('gestion-scan-result');
+  resultEl.style.display = 'block';
+  resultEl.style.background = 'rgba(255,255,255,0.04)';
+  resultEl.style.border = '1px solid var(--border)';
+  resultEl.innerHTML = '<div style="color:var(--muted2);font-size:13px;">Vérification...</div>';
+  try {
+    const { getDoc, doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const snap = await getDoc(doc(window._db, 'reservations', billetId));
+    if (!snap.exists()) {
+      resultEl.style.background = 'rgba(255,77,109,0.1)';
+      resultEl.style.border = '1px solid var(--red)';
+      resultEl.innerHTML = '<div style="font-size:24px;margin-bottom:8px;">❌</div><div style="font-family:\'Syne\',sans-serif;font-weight:800;font-size:14px;color:var(--red);">Billet invalide</div>';
+      return;
+    }
+    const r = snap.data();
+    if (r.eventId !== _gestionEventCourant.id) {
+      resultEl.style.background = 'rgba(255,77,109,0.1)';
+      resultEl.style.border = '1px solid var(--red)';
+      resultEl.innerHTML = '<div style="font-size:24px;margin-bottom:8px;">⛔</div><div style="font-family:\'Syne\',sans-serif;font-weight:800;font-size:14px;color:var(--red);">Billet d\'un autre événement</div>';
+      return;
+    }
+    if (r.statut === 'annulé') {
+      resultEl.style.background = 'rgba(255,77,109,0.1)';
+      resultEl.style.border = '1px solid var(--red)';
+      resultEl.innerHTML = '<div style="font-size:24px;margin-bottom:8px;">🚫</div><div style="font-family:\'Syne\',sans-serif;font-weight:800;font-size:14px;color:var(--red);">Billet annulé</div>';
+      return;
+    }
+    if (r.presence === true) {
+      resultEl.style.background = 'rgba(255,170,0,0.1)';
+      resultEl.style.border = '1px solid var(--orange)';
+      resultEl.innerHTML = `
+        <div style="font-size:24px;margin-bottom:8px;">⚠️</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:var(--orange);margin-bottom:4px;">Déjà scanné</div>
+        <div style="font-size:12px;color:var(--muted2);">${r.acheteurNom || 'Participant'} est déjà marqué présent.</div>
+      `;
+      return;
+    }
+    // Valider la présence
+    await updateDoc(doc(window._db, 'reservations', billetId), { presence: true });
+    resultEl.style.background = 'rgba(0,245,155,0.08)';
+    resultEl.style.border = '1px solid rgba(0,245,155,0.4)';
+    resultEl.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        ${r.acheteurPhoto ? `<img src="${r.acheteurPhoto}" style="width:56px;height:56px;border-radius:14px;object-fit:cover;">` : '<div style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:24px;">🎭</div>'}
+        <div style="font-family:'Syne',sans-serif;font-weight:900;font-size:18px;color:var(--green);">✓ Présence validée</div>
+        <div style="font-size:14px;font-weight:700;">${r.acheteurNom || 'Participant'}</div>
+        <div style="font-size:12px;color:var(--muted2);">${r.quantite||1} billet${(r.quantite||1)>1?'s':''}</div>
+      </div>
+    `;
+    // Mettre à jour le bouton dans la liste
+    const btn = document.getElementById('btn-presence-' + billetId);
+    if (btn) {
+      btn.textContent = '✓ Présent';
+      btn.style.borderColor = 'var(--green)';
+      btn.style.background = 'rgba(0,245,155,0.12)';
+      btn.style.color = 'var(--green)';
+      btn.onclick = () => togglePresence(billetId, true, btn);
+    }
+    // Mettre à jour le compteur
+    const allBtns = document.querySelectorAll('[id^="btn-presence-"]');
+    let presents = 0;
+    allBtns.forEach(b => { if (b.textContent.includes('✓')) presents++; });
+    document.getElementById('gestion-stat-presents').textContent = presents;
+    setTimeout(() => { resultEl.style.display = 'none'; }, 4000);
+  } catch(e) {
+    console.error(e);
+    resultEl.style.background = 'rgba(255,77,109,0.1)';
+    resultEl.style.border = '1px solid var(--red)';
+    resultEl.innerHTML = '<div style="color:var(--red);font-size:13px;">Erreur, réessaie.</div>';
+  }
 };
 
 window.ouvrirFormEventPublic = function() {
@@ -20917,14 +21114,65 @@ window.toggleFaq = function(el) {
 </div>
 
 <!-- Detail inscrits event (bottom sheet) -->
-<div id="event-inscrits-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);" onclick="fermerInscritsEvent()">
-  <div id="event-inscrits-sheet" onclick="event.stopPropagation()" style="position:absolute;bottom:0;left:0;right:0;max-height:90vh;background:var(--card);border-radius:24px 24px 0 0;border:1px solid var(--border);display:flex;flex-direction:column;">
-    <div style="padding:20px 24px 0;flex-shrink:0;">
-      <div style="width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 16px;"></div>
-      <div id="event-inscrits-titre" style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-bottom:4px;"></div>
-      <div id="event-inscrits-stats" style="font-size:12px;color:var(--muted2);margin-bottom:16px;"></div>
+<!-- ═══ PAGE: GESTION EVENT ═══ -->
+<div class="page" id="page-gestion-event" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div style="max-width:680px;margin:0 auto;padding:24px 20px calc(100px + env(safe-area-inset-bottom));">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+      <button onclick="showPage('mes-evenements');chargerMesEvenements();" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
+      <div>
+        <div id="gestion-event-titre" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:24px;letter-spacing:-0.5px;line-height:1.1;"></div>
+        <div id="gestion-event-date" style="font-size:12px;color:var(--muted2);margin-top:2px;"></div>
+      </div>
     </div>
-    <div id="event-inscrits-list" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 24px calc(32px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;"></div>
+
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+        <div id="gestion-stat-inscrits" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;color:var(--green);line-height:1;">0</div>
+        <div style="font-size:10px;color:var(--muted2);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Inscrits</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+        <div id="gestion-stat-presents" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;color:var(--blue);line-height:1;">0</div>
+        <div style="font-size:10px;color:var(--muted2);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Présents</div>
+      </div>
+      <div id="gestion-stat-places-wrap" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;display:none;">
+        <div id="gestion-stat-places" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;line-height:1;">0</div>
+        <div style="font-size:10px;color:var(--muted2);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Restantes</div>
+      </div>
+    </div>
+
+    <!-- Section scan QR -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:24px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted2);margin-bottom:14px;">Scanner un billet</div>
+      <div id="gestion-scan-area" style="display:none;position:relative;width:100%;background:#000;border-radius:12px;overflow:hidden;margin-bottom:12px;">
+        <video id="gestion-scan-video" autoplay playsinline muted style="width:100%;display:block;border-radius:12px;"></video>
+        <canvas id="gestion-scan-canvas" style="display:none;"></canvas>
+        <div style="position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;">
+          <div style="width:200px;height:200px;border:2px solid var(--green);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,0.5);"></div>
+        </div>
+        <button onclick="arreterScan()" style="position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">✕</button>
+      </div>
+      <div id="gestion-scan-result" style="display:none;border-radius:12px;padding:14px;margin-bottom:12px;text-align:center;"></div>
+      <div style="display:flex;gap:10px;">
+        <button id="btn-demarrer-scan" onclick="demarrerScan()" style="flex:1;padding:12px;border-radius:12px;background:rgba(0,245,155,0.1);border:1.5px solid rgba(0,245,155,0.3);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3"/><path d="M17 20h3"/><path d="M20 17v3"/></svg>
+          Scanner caméra
+        </button>
+        <div style="flex:1;display:flex;gap:8px;">
+          <input id="gestion-scan-input" type="text" placeholder="ID billet" style="flex:1;min-width:0;padding:12px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;" onkeydown="if(event.key==='Enter')validerScanManuel()">
+          <button onclick="validerScanManuel()" style="padding:12px 14px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liste inscrits -->
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted2);margin-bottom:12px;">Liste des inscrits</div>
+    <div id="gestion-inscrits-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+    <div id="gestion-inscrits-loading" style="text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px;">Chargement...</div>
+    <div id="gestion-inscrits-empty" style="display:none;text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px;">Aucun inscrit pour l'instant.</div>
+
   </div>
 </div>
 
