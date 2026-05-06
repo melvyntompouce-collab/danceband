@@ -15177,7 +15177,8 @@ function _renderProfilCard(p) {
       ? '<span style="font-size:16px;font-family:Syne,sans-serif;font-weight:800;color:#080810;">' + initiales + '</span>'
       : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(8,8,16,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>');
   var uname = p.username ? '@' + p.username : '';
-  var style = (p.styles || []).slice(0, 2).join(' \u00B7 ');
+  var stylesArr = Array.isArray(p.styles) ? p.styles : (p.styles ? [p.styles] : []);
+  var style = stylesArr.slice(0, 2).join(' \u00B7 ');
   var safeId = (p.id || '').replace(/'/g, '');
   var html = '<div onclick="showProfilPublic(\'' + safeId + '\')" style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;cursor:pointer;">';
   html += '<div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">' + avatar + '</div>';
@@ -15220,17 +15221,24 @@ window.chargerRecommandationsExplore = async function() {
   var containerP = document.getElementById('explore-results-profils');
   var containerPo = document.getElementById('explore-results-posts');
 
-  // Suggestions profils
-  if (containerP) {
+  // Suggestions profils : limit(20) direct, pas de fetch complet
+  if (containerP && window._db && window._getDocs && window._collection) {
     containerP.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">\u23F3 Chargement...</div>';
-    var profils = await _chargerTousProfils();
-    if (profils.length === 0) {
+    try {
+      var qP = window._query(window._collection(window._db, 'danseurs'), window._limit(20));
+      var snapP = await window._getDocs(qP);
+      var profilsSugg = [];
+      snapP.forEach(function(doc) { profilsSugg.push(Object.assign({ id: doc.id }, doc.data())); });
+      if (profilsSugg.length === 0) {
+        containerP.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Aucun profil pour l\u2019instant</div>';
+      } else {
+        var selection = _melangerTableau(profilsSugg).slice(0, 15);
+        var html = '<div style="font-family:Syne,sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Suggestions</div>';
+        html += selection.map(_renderProfilCard).join('');
+        containerP.innerHTML = html;
+      }
+    } catch(e) {
       containerP.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Aucun profil pour l\u2019instant</div>';
-    } else {
-      var selection = _melangerTableau(profils).slice(0, 15);
-      var html = '<div style="font-family:Syne,sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Suggestions</div>';
-      html += selection.map(_renderProfilCard).join('');
-      containerP.innerHTML = html;
     }
   }
 
@@ -15358,10 +15366,11 @@ window.rechercherExplore = async function(q) {
       var isAt = q.startsWith('@');
       var term = isAt ? q.slice(1) : q;
       _exploreProfils_results = profils.filter(function(p) {
+        var stylesArr = Array.isArray(p.styles) ? p.styles : (p.styles ? [p.styles] : []);
         return (p.nom||'').toLowerCase().includes(term)
           || (p.blase||'').toLowerCase().includes(term)
           || (p.username||'').toLowerCase().includes(term)
-          || (!isAt && (p.styles||[]).join(' ').toLowerCase().includes(term));
+          || (!isAt && stylesArr.join(' ').toLowerCase().includes(term));
       });
       _exploreProfils_offset = 0;
       if (_exploreProfils_results.length === 0) {
