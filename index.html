@@ -17682,6 +17682,9 @@ window.closeNavProfileMenu = function() {
   document.getElementById('nav-profile-menu')?.classList.remove('open');
 };
 
+
+
+
 // Charger le vrai nombre d'artistes pour la page d'accueil
 (async () => {
   try {
@@ -17692,12 +17695,10 @@ window.closeNavProfileMenu = function() {
     if (el) el.textContent = count > 0 ? count : '—';
     if (elMobile) elMobile.textContent = count > 0 ? count : '—';
   } catch(e) {
-    // Silencieux si getCountFromServer non supporté
     const el = document.getElementById('stat-artistes');
     if (el) el.textContent = '—';
   }
 })();
-
 
 // ════════════════════════════════
 // BRACELET PAGE
