@@ -6199,7 +6199,44 @@ if (isPWA) {
         <!-- Styles de danse -->
         <div class="form-group" style="margin:0">
           <label class="form-label">Styles enseignés</label>
-          <input id="ecole-styles" class="form-input" type="text" placeholder="Ex: Kizomba, Salsa, Bachata" style="background:var(--bg2)">
+          <div style="overflow-x:auto;padding-bottom:6px;scrollbar-width:none;-webkit-overflow-scrolling:touch;" id="ecole-styles-scroll">
+            <div style="display:flex;gap:8px;width:max-content;padding:2px 0;">
+              <button type="button" class="style-tag" id="ecole-style-all" onclick="toggleEcoleStyleAll(this)">Tous les styles</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Breaking</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Popping</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Locking</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">House</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Krump</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Hip-Hop</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">New Style</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Afro</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Dancehall</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Waacking</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Voguing</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Heels</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Commercial</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Salsa</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Bachata</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Kizomba</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Zouk</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Tango</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Modern Jazz</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Street Jazz</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Classique</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Contemporain</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Litefeet</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Electro</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">K-Pop</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Samba</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Capoeira</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Pole Dance</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Danse Orientale</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Claquettes</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Bharata Natyam</button>
+              <button type="button" class="style-tag" onclick="toggleEcoleStyle(this)">Expérimental</button>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:6px;">Scroll pour voir tous les styles. Sélection multiple possible.</div>
         </div>
 
         <!-- Niveaux -->
@@ -10105,7 +10142,9 @@ function afficherEcoles(ecoles) {
       ? `background-image:url('${e.photoUrl}')`
       : `background:linear-gradient(135deg,#0d2b3e,#1a0a2e)`;
     const niveauxTags = (e.niveaux || []).map(n => `<span class="ec-tag" style="color:var(--muted2)">${n}</span>`).join('');
-    const styleTag = e.styles ? `<span class="ec-tag" style="color:var(--blue)">${e.styles}</span>` : '';
+    const _stylesArr = Array.isArray(e.styles) ? e.styles : (e.styles ? e.styles.split(',').map(s => s.trim()).filter(Boolean) : []);
+    const _stylesToShow = _stylesArr.length === 0 ? ['Tous styles'] : _stylesArr.slice(0, 2);
+    const styleTag = _stylesToShow.map(s => `<span class="ec-tag" style="color:var(--blue)">${s}</span>`).join('');
     return `<div class="lieu-card" onclick="ouvrirDetailSalle('ecole', ${i})">
       <div class="lieu-card-thumb">
         <div class="lieu-card-thumb-bg" style="${thumbBg}"></div>
@@ -11573,6 +11612,19 @@ function _initCropModal(initialCrop) {
   area.ontouchend = onUp;
 }
 
+window.toggleEcoleStyle = function(btn) {
+  // Désélectionner "Tous les styles"
+  const allBtn = document.getElementById('ecole-style-all');
+  if (allBtn) allBtn.classList.remove('selected');
+  btn.classList.toggle('selected');
+};
+
+window.toggleEcoleStyleAll = function(btn) {
+  // Désélectionner tous les autres
+  document.querySelectorAll('#ecole-styles-scroll .style-tag').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+};
+
 window.previewPhotoSalle = function(input) {
   const file = input.files[0];
   if (!file) return;
@@ -12014,6 +12066,10 @@ window.ouvrirFormEcole = function(ecoleId) {
   document.getElementById('ecole-horaires-list').innerHTML = '';
   document.getElementById('ecole-abos-list').innerHTML = '';
   _horaireCount = 0; _aboCount = 0;
+  // Reset chips styles
+  document.querySelectorAll('#ecole-styles-scroll .style-tag').forEach(btn => btn.classList.remove('selected'));
+  const _allStyleBtn = document.getElementById('ecole-style-all');
+  if (_allStyleBtn) _allStyleBtn.classList.add('selected');
   // Reset photo
   window._ecolePhotoUrl = null;
   document.getElementById('ecole-photo').value = '';
@@ -12038,7 +12094,16 @@ window.ouvrirFormEcole = function(ecoleId) {
         document.getElementById('ecole-lien').value   = e.lien       || '';
         document.getElementById('ecole-lien-inscription').value = e.lienInscription || '';
         document.getElementById('ecole-desc').value   = e.description|| '';
-        document.getElementById('ecole-styles').value = e.styles     || '';
+        // Charger styles (tableau ou string legacy)
+        const _stylesArr = Array.isArray(e.styles) ? e.styles : (e.styles ? e.styles.split(',').map(s => s.trim()).filter(Boolean) : []);
+        document.querySelectorAll('#ecole-styles-scroll .style-tag').forEach(btn => {
+          btn.classList.remove('selected');
+          if (btn.id === 'ecole-style-all') {
+            if (_stylesArr.length === 0) btn.classList.add('selected');
+          } else if (_stylesArr.includes(btn.textContent.trim())) {
+            btn.classList.add('selected');
+          }
+        });
         // Charger photo existante
         if (e.photoUrl) {
           window._ecolePhotoUrl = e.photoUrl;
@@ -12140,7 +12205,7 @@ window.sauvegarderEcole = async function() {
     lien:        document.getElementById('ecole-lien').value.trim() || null,
     lienInscription: document.getElementById('ecole-lien-inscription').value.trim() || null,
     description: document.getElementById('ecole-desc').value.trim(),
-    styles:      document.getElementById('ecole-styles').value.trim(),
+    styles:      Array.from(document.querySelectorAll('#ecole-styles-scroll .style-tag.selected')).map(b => b.textContent.trim()).filter(s => s !== 'Tous les styles'),
     niveaux, horaires, abonnements,
     photoUrl:    ecolePhotoUrl || null,
     updatedAt: Date.now(),
