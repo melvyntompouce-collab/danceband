@@ -10141,7 +10141,11 @@ function afficherEcoles(ecoles) {
     const thumbBg = e.photoUrl
       ? `background-image:url('${e.photoUrl}')`
       : `background:linear-gradient(135deg,#0d2b3e,#1a0a2e)`;
-    const niveauxTags = (e.niveaux || []).map(n => `<span class="ec-tag" style="color:var(--muted2)">${n}</span>`).join('');
+    const _niveauxRaw = e.niveaux || [];
+    const _tousNiveaux = _niveauxRaw.includes('Tous niveaux');
+    const niveauxTags = _tousNiveaux
+      ? `<span class="ec-tag" style="color:var(--muted2)">Tous niveaux</span>`
+      : _niveauxRaw.map(n => `<span class="ec-tag" style="color:var(--muted2)">${n}</span>`).join('');
     const _stylesArr = Array.isArray(e.styles) ? e.styles : (e.styles ? e.styles.split(',').map(s => s.trim()).filter(Boolean) : []);
     const _stylesToShow = _stylesArr.length === 0 ? ['Tous styles'] : _stylesArr.slice(0, 2);
     const styleTag = _stylesToShow.map(s => `<span class="ec-tag" style="color:var(--blue)">${s}</span>`).join('');
@@ -10160,7 +10164,7 @@ function afficherEcoles(ecoles) {
           ${e.horaires && e.horaires.length ? `<span>🕐 ${e.horaires[0].jour} ${e.horaires[0].heure}</span>` : ''}
         </div>
         <div class="lieu-card-foot">
-          ${e.abonnements && e.abonnements.length ? `<span class="lieu-card-price">${e.abonnements[0].prix}${e.abonnements[0].devise||'€'}<span style="font-size:11px;font-weight:400;color:var(--muted);font-family:'DM Sans',sans-serif;"> / mois</span></span>` : '<span></span>'}
+          ${e.abonnements && e.abonnements.length ? `<span class="lieu-card-price">${e.abonnements[0].prix}${e.abonnements[0].devise||'€'}<span style="font-size:11px;font-weight:400;color:var(--muted);font-family:'DM Sans',sans-serif;"> ${e.abonnements[0].nom ? '/ ' + e.abonnements[0].nom.toLowerCase() : ''}</span></span>` : '<span></span>'}
           <button style="padding:7px 14px;border-radius:9px;background:rgba(77,159,255,0.1);color:var(--blue);border:1px solid var(--blue);font-weight:700;font-size:11px;font-family:'Syne',sans-serif;cursor:pointer;white-space:nowrap;" onclick="event.stopPropagation();ouvrirDetailSalle('ecole', ${i})">Voir</button>
         </div>
       </div>
