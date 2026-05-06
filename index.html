@@ -5287,9 +5287,19 @@ if (isPWA) {
       </button>
     </div>
 
-    <div style="display:flex;gap:6px;margin-bottom:16px;">
+    <div style="display:flex;gap:6px;margin-bottom:12px;">
       <button class="style-fchip on" id="explore-tab-profils" onclick="switchExploreTab('profils')">👤 Profils</button>
       <button class="style-fchip" id="explore-tab-posts" onclick="switchExploreTab('posts')">📸 Posts</button>
+    </div>
+
+    <div id="explore-filtre-cats" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;">
+      <button class="style-fchip on" id="efc-tous" onclick="setExploreCatFiltre('')">Tous</button>
+      <button class="style-fchip" id="efc-scene" onclick="setExploreCatFiltre('scene')">🎭 Scène</button>
+      <button class="style-fchip" id="efc-musique" onclick="setExploreCatFiltre('musique')">🎵 Musique</button>
+      <button class="style-fchip" id="efc-audiovisuel" onclick="setExploreCatFiltre('audiovisuel')">🎬 Audiovisuel</button>
+      <button class="style-fchip" id="efc-arts_visuels" onclick="setExploreCatFiltre('arts_visuels')">🎨 Arts Visuels</button>
+      <button class="style-fchip" id="efc-mode" onclick="setExploreCatFiltre('mode')">👗 Mode</button>
+      <button class="style-fchip" id="efc-artisanat" onclick="setExploreCatFiltre('artisanat')">🪡 Artisanat</button>
     </div>
 
     <div id="explore-results-profils">
@@ -15130,7 +15140,7 @@ function resetFiltres() {
 // PAGE EXPLORE / RECHERCHE
 // ════════════════════════════════
 var _exploreTab = 'profils';
-var _tousProfils = [];
+var _tousProfils = []; // conservé pour compat mais plus utilisé pour la recherche
 // Pagination profils (affichage côté client)
 var _exploreProfils_results = [];
 var _exploreProfils_offset = 0;
@@ -15139,6 +15149,8 @@ var _EXPLORE_PROFILS_PAGE = 12;
 var _explorePosts_lastDoc = null;
 var _explorePosts_query = '';
 var _EXPLORE_POSTS_PAGE = 10;
+// Filtre catégorie explore
+var _exploreCatFiltre = '';
 
 window.switchExploreTab = function(tab) {
   _exploreTab = tab;
@@ -15150,6 +15162,8 @@ window.switchExploreTab = function(tab) {
   var rPo = document.getElementById('explore-results-posts');
   if (rP) rP.style.display = tab === 'profils' ? 'block' : 'none';
   if (rPo) rPo.style.display = tab === 'posts' ? 'block' : 'none';
+  var chips = document.getElementById('explore-filtre-cats');
+  if (chips) chips.style.display = tab === 'profils' ? 'flex' : 'none';
   var q = ((document.getElementById('search-explore-input') || {}).value || '').trim();
   if (q.length >= 2) {
     window.rechercherExplore(q);
@@ -15192,9 +15206,59 @@ function _renderProfilCard(p) {
   return html;
 }
 
+// Recherche profils par prefix sur nom/username + filtre catégorie Firestore
+async function _rechercherProfilsFirestore(term, catFiltre) {
+  if (!window._db || !window._getDocs || !window._collection || !window._query) return [];
+  term = (term || '').toLowerCase().trim();
+  var results = {};
+
+  try {
+    if (term.length >= 2) {
+      var termEnd = term.slice(0, -1) + String.fromCharCode(term.charCodeAt(term.length - 1) + 1);
+      var queries = [
+        window._query(window._collection(window._db, 'danseurs'),
+          window._orderBy('username'), window._where('username', '>=', term), window._where('username', '<', termEnd), window._limit(20)),
+        window._query(window._collection(window._db, 'danseurs'),
+          window._orderBy('nom'), window._where('nom', '>=', term), window._where('nom', '<', termEnd), window._limit(20)),
+        window._query(window._collection(window._db, 'danseurs'),
+          window._orderBy('blase'), window._where('blase', '>=', term), window._where('blase', '<', termEnd), window._limit(20)),
+      ];
+      var snaps = await Promise.all(queries.map(function(q) { return window._getDocs(q); }));
+      snaps.forEach(function(snap) {
+        snap.forEach(function(doc) { if (!results[doc.id]) results[doc.id] = Object.assign({ id: doc.id }, doc.data()); });
+      });
+    } else if (catFiltre) {
+      // Pas de terme mais filtre catégorie : charger les 40 premiers de la catégorie
+      var specialites = (CATEGORIES_ARTISTE[catFiltre] || {}).specialites || [];
+      if (specialites.length > 0) {
+        var qCat = window._query(window._collection(window._db, 'danseurs'),
+          window._where('metiers', 'array-contains-any', specialites.slice(0, 10)),
+          window._limit(40));
+        var snapCat = await window._getDocs(qCat);
+        snapCat.forEach(function(doc) { results[doc.id] = Object.assign({ id: doc.id }, doc.data()); });
+      }
+    }
+  } catch(e) { console.error('Erreur recherche Firestore:', e); }
+
+  var arr = Object.values(results);
+
+  // Filtrer par catégorie côté client si terme + filtre
+  if (catFiltre && term.length >= 2) {
+    var specialites = (CATEGORIES_ARTISTE[catFiltre] || {}).specialites || [];
+    arr = arr.filter(function(p) {
+      var metiers = Array.isArray(p.metiers) ? p.metiers : [];
+      var stylesArr = Array.isArray(p.styles) ? p.styles : (p.styles ? [p.styles] : []);
+      return metiers.some(function(m) { return specialites.includes(m); })
+        || stylesArr.some(function(s) { return specialites.includes(s); });
+    });
+  }
+
+  return arr;
+}
+
+// Conserver pour compat (suggestions initiales)
 async function _chargerTousProfils() {
   if (_tousProfils.length > 0) return _tousProfils;
-  // Attendre que Firebase soit prêt
   var attempts = 0;
   while ((!window._db || !window._getDocs || !window._collection) && attempts < 20) {
     await new Promise(function(r) { setTimeout(r, 300); });
@@ -15354,24 +15418,29 @@ window._explorePostsVoirPlus = async function() {
   }
 };
 
+window.setExploreCatFiltre = function(cat) {
+  _exploreCatFiltre = cat;
+  // Mettre à jour les chips
+  ['tous','scene','musique','audiovisuel','arts_visuels','mode','artisanat'].forEach(function(k) {
+    var btn = document.getElementById('efc-' + k);
+    if (btn) btn.classList.toggle('on', (cat === '' && k === 'tous') || cat === k);
+  });
+  // Relancer la recherche
+  var q = (document.getElementById('search-explore-input') || {}).value || '';
+  window.rechercherExplore(q);
+};
+
 window.rechercherExplore = async function(q) {
   q = (q || '').trim().toLowerCase();
   if (_exploreTab === 'profils') {
     var container = document.getElementById('explore-results-profils');
     if (!container) return;
-    if (q.length < 2) { window.chargerRecommandationsExplore(); return; }
+    if (q.length < 2 && !_exploreCatFiltre) { window.chargerRecommandationsExplore(); return; }
     container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">\u23F3 Recherche...</div>';
     try {
-      var profils = await _chargerTousProfils();
       var isAt = q.startsWith('@');
-      var term = isAt ? q.slice(1) : q;
-      _exploreProfils_results = profils.filter(function(p) {
-        var stylesArr = Array.isArray(p.styles) ? p.styles : (p.styles ? [p.styles] : []);
-        return (p.nom||'').toLowerCase().includes(term)
-          || (p.blase||'').toLowerCase().includes(term)
-          || (p.username||'').toLowerCase().includes(term)
-          || (!isAt && stylesArr.join(' ').toLowerCase().includes(term));
-      });
+      var term = (isAt ? q.slice(1) : q).toLowerCase();
+      _exploreProfils_results = await _rechercherProfilsFirestore(term, _exploreCatFiltre);
       _exploreProfils_offset = 0;
       if (_exploreProfils_results.length === 0) {
         container.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Aucun profil trouv\u00E9</div>';
