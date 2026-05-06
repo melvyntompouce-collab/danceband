@@ -15217,11 +15217,11 @@ async function _rechercherProfilsFirestore(term, catFiltre) {
       var termEnd = term.slice(0, -1) + String.fromCharCode(term.charCodeAt(term.length - 1) + 1);
       var queries = [
         window._query(window._collection(window._db, 'danseurs'),
-          window._orderBy('username'), window._where('username', '>=', term), window._where('username', '<', termEnd), window._limit(20)),
+          window._orderBy('usernameLower'), window._where('usernameLower', '>=', term), window._where('usernameLower', '<', termEnd), window._limit(20)),
         window._query(window._collection(window._db, 'danseurs'),
-          window._orderBy('nom'), window._where('nom', '>=', term), window._where('nom', '<', termEnd), window._limit(20)),
+          window._orderBy('nomLower'), window._where('nomLower', '>=', term), window._where('nomLower', '<', termEnd), window._limit(20)),
         window._query(window._collection(window._db, 'danseurs'),
-          window._orderBy('blase'), window._where('blase', '>=', term), window._where('blase', '<', termEnd), window._limit(20)),
+          window._orderBy('blaseLower'), window._where('blaseLower', '>=', term), window._where('blaseLower', '<', termEnd), window._limit(20)),
       ];
       var snaps = await Promise.all(queries.map(function(q) { return window._getDocs(q); }));
       snaps.forEach(function(snap) {
@@ -15816,7 +15816,10 @@ window.inscrire = async function() {
       niveau: 1,
       echanges: 0,
       evenements: 0,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      nomLower: (nom || '').toLowerCase(),
+      usernameLower: (username || '').toLowerCase(),
+      blaseLower: (pseudo || '').toLowerCase()
     };
 
     // Champs spécifiques par métier
@@ -16432,7 +16435,9 @@ window.sauvegarderIdentite = async function() {
 
     await window._setDoc(window._doc(window._db, 'danseurs', user.uid), {
       nom, blase, tel,
-      ...(usernameEdit && usernameEdit.length >= 3 ? { username: usernameEdit } : {}),
+      nomLower: (nom || '').toLowerCase(),
+      blaseLower: (blase || '').toLowerCase(),
+      ...(usernameEdit && usernameEdit.length >= 3 ? { username: usernameEdit, usernameLower: usernameEdit.toLowerCase() } : {}),
       ...(ville ? { ville, zone: ville } : {}),
       instagram, tiktok, lien, lienVisible,
       spotify, applemusic, deezer, soundcloud,
