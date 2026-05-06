@@ -1606,17 +1606,18 @@ footer{
   /* Stats sous les cards sur mobile */
   .hero-stats {
     display: flex;
-    order: 10;
-    margin-top: 16px;
-    padding: 16px 8px;
+    flex-wrap: nowrap;
+    order: 2;
+    margin-top: 8px;
+    padding: 10px 4px;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 16px;
     gap: 0;
   }
-  .hero-stats > div { flex: 1; text-align: center; padding: 0 4px; }
-  .hero-stat-val { font-size: 20px; }
-  .hero-stat-label { font-size: 8px; }
+  .hero-stats > div { flex: 1; text-align: center; padding: 0 2px; min-width: 0; }
+  .hero-stat-val { font-size: 16px; }
+  .hero-stat-label { font-size: 7px; }
   .hero-content { display: flex; flex-direction: column; }
   .mobile-home-nav { order: 5; }
 }
