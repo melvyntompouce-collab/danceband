@@ -1616,8 +1616,8 @@ footer{
     gap: 0;
   }
   .hero-stats > div { flex: 1; text-align: center; padding: 0 2px; min-width: 0; }
-  .hero-stat-val { font-size: 16px; }
-  .hero-stat-label { font-size: 7px; }
+  .hero-stat-val { font-size: clamp(14px, 4.5vw, 20px) !important; white-space: nowrap; }
+  .hero-stat-label { font-size: clamp(6px, 1.8vw, 9px) !important; white-space: nowrap; }
   .hero-content { display: flex; flex-direction: column; }
   .mobile-home-nav { order: 5; }
 }
