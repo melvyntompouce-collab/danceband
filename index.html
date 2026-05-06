@@ -11910,13 +11910,15 @@ window.chargerMesReservations = async function() {
   loadEl.style.display = 'block';
   emptyEl.style.display = 'none';
   try {
-    const { getDocs, collection, query, where, orderBy } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const q = query(collection(window._db, 'reservations'), where('acheteurUid', '==', window._currentUid), orderBy('createdAt', 'desc'));
+    const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const q = query(collection(window._db, 'reservations'), where('acheteurUid', '==', window._currentUid));
     const snap = await getDocs(q);
     loadEl.style.display = 'none';
     if (snap.empty) { emptyEl.style.display = 'block'; return; }
-    snap.forEach(docSnap => {
-      const r = { id: docSnap.id, ...docSnap.data() };
+    const reservations = [];
+    snap.forEach(docSnap => reservations.push({ id: docSnap.id, ...docSnap.data() }));
+    reservations.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+    reservations.forEach(r => {
       const dateEvent = r.dateEvent ? new Date(r.dateEvent).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
       const statut = r.statut || 'confirmé';
       const statutColor = statut === 'annulé' ? 'var(--red)' : statut === 'présent' ? 'var(--green)' : 'var(--blue)';
@@ -12024,13 +12026,15 @@ window.chargerMesEvenements = async function() {
   loadEl.style.display = 'block';
   emptyEl.style.display = 'none';
   try {
-    const { getDocs, collection, query, where, orderBy } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const q = query(collection(window._db, 'evenements'), where('organisateurUid', '==', window._currentUid), orderBy('createdAt', 'desc'));
+    const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const q = query(collection(window._db, 'evenements'), where('organisateurUid', '==', window._currentUid));
     const snap = await getDocs(q);
     loadEl.style.display = 'none';
     if (snap.empty) { emptyEl.style.display = 'block'; return; }
-    snap.forEach(docSnap => {
-      const ev = { id: docSnap.id, ...docSnap.data() };
+    const evenements = [];
+    snap.forEach(docSnap => evenements.push({ id: docSnap.id, ...docSnap.data() }));
+    evenements.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+    evenements.forEach(ev => {
       const dateStr = ev.dates && ev.dates.length > 0 ? new Date(ev.dates[0].date).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' }) : '';
       const inscrits = ev.inscrits || 0;
       const capacite = ev.capacite || null;
