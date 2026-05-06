@@ -13392,15 +13392,9 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// ════════════════════════════════
-// CARTE LEAFLET + FIREBASE
-// ════════════════════════════════
-let carte = null;
-let markersMap = {};
+// ── Normaliser styles (string ou array) ──
 let tousLesDanseurs = [];
 let filtreActif = 'tous';
-
-// ── Normaliser styles (string ou array) ──
 function normaliserStyles(styles) {
   if (!styles) return [];
   if (Array.isArray(styles)) return styles;
@@ -13450,25 +13444,8 @@ const VILLES_COORDS = {
 };
 
 function initCarte() {
-  if (carte) return;
-  // Pré-remplir le datalist avec les villes connues
+  // Carte supprimée
   mettreAJourDatalistVilles();
-  carte = L.map('leaflet-map', {
-    center: [46.8, 2.3],
-    zoom: 6,
-    zoomControl: false,
-    attributionControl: false
-  });
-
-  // Tuiles OpenStreetMap
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 18,
-    attribution: '© OpenStreetMap'
-  }).addTo(carte);
-
-  // Attribution discrète
-  L.control.attribution({ position: 'bottomright', prefix: false })
-    .addTo(carte);
 }
 
 // Cache geocodage pour éviter requêtes répétées
@@ -13528,92 +13505,9 @@ function mettreAJourDatalistVilles() {
   dl.innerHTML = toutes.map(v => `<option value="${v}">`).join('');
 }
 
-async function ajouterMarqueur(danseur, uid) {
-  if (!carte) return;
+async function ajouterMarqueur(danseur, uid) { /* carte supprimée */ }
 
-  const coords = await coordsVille(danseur.zone || '');
-  // Décalage aléatoire pour éviter superposition + respecter vie privée
-  const lat = coords[0] + (Math.random() - 0.5) * 0.04;
-  const lng = coords[1] + (Math.random() - 0.5) * 0.04;
-
-  const nom = danseur.nomAffiche || danseur.nom || danseur.pseudo || 'Artiste';
-  const metiersList = danseur.metiers || (danseur.styles && danseur.styles.length ? ['danseur'] : []);
-  const categorieLabel = getLabelCategorie(metiersList);
-  const specialiteLabel = metiersList.length ? (SPECIALITE_LABELS[metiersList[0]] || metiersList[0]) : '';
-
-  // Couleur dérivée de l'UID — toujours la même pour le même utilisateur
-  const MARKER_COLORS = ['#00f59b','#4f9fff','#9b4fff','#ff2d5e','#e8ff00'];
-  const uidHash = uid.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  const couleur = MARKER_COLORS[uidHash % MARKER_COLORS.length];
-
-  // Icône custom — background-image pour remplir tout le cadre sans débordement
-  const bgStyle = danseur.photo
-    ? `background-image:url('${danseur.photo}');background-size:cover;background-position:center;`
-    : '';
-  const fallback = danseur.photo ? '' : `<span class="hako-marker-fallback">${(nom[0] || '?').toUpperCase()}</span>`;
-
-  const icon = L.divIcon({
-    className: '',
-    html: `<div class="hako-marker" style="border-color:${couleur};box-shadow:0 4px 20px ${couleur}44;${bgStyle}">${fallback}</div>`,
-    iconSize: [42, 42],
-    iconAnchor: [21, 21],
-    popupAnchor: [0, -25]
-  });
-
-  const marker = L.marker([lat, lng], { icon, hakoUid: uid })
-    .bindPopup(`
-      <div style="min-width:160px;padding:4px">
-        <div class="popup-name">${nom}</div>
-        <div class="popup-styles">
-          <span class="popup-tag">${categorieLabel}</span>
-          ${specialiteLabel ? `<span class="popup-tag" style="opacity:0.7;">${specialiteLabel}</span>` : ''}
-        </div>
-        <div class="popup-zone">📍 ${danseur.zone || 'Zone non définie'}</div>
-        ${danseur.disponible ? '<div class="popup-dispo">✅ Disponible</div>' : ''}
-        <button onclick="closeMapFullscreen();showProfilPublic('${uid}')" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 12px;border-radius:10px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.3);color:#00f59b;font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;width:100%;justify-content:center;">👤 Voir le profil</button>
-        ${danseur.tel ? `<a href="sms:${danseur.tel}" style="display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:7px 12px;border-radius:10px;background:rgba(0,245,155,0.05);border:1px solid rgba(0,245,155,0.15);color:#00f59b;font-size:12px;font-weight:700;text-decoration:none;width:100%;justify-content:center;box-sizing:border-box;">💬 Envoyer un message</a>` : ''}
-      </div>
-    `)
-    .addTo(carte);
-
-  markersMap[uid] = marker;
-}
-
-async function chargerCarte() {
-  if (!window._db) { setTimeout(chargerCarte, 500); return; }
-  initCarte();
-
-  try {
-
-    const snap = await window._getDocs(window._query(
-      window._collection(window._db, 'danseurs'),
-      window._where('visibilite', 'in', ['public', 'amis'])
-    ));
-
-    tousLesDanseurs = [];
-    // Nettoyer anciens marqueurs
-    if (carte) carte.eachLayer(l => { if (l instanceof L.Marker) carte.removeLayer(l); });
-    markersMap = {};
-
-    snap.forEach(docSnap => {
-      const d = docSnap.data();
-      const uid = docSnap.id;
-      tousLesDanseurs.push({ ...d, uid });
-    });
-
-    // Ajouter les marqueurs en parallèle (await pour villes inconnues via Nominatim)
-    await Promise.all(tousLesDanseurs.map(d => ajouterMarqueur(d, d.uid)));
-
-    afficherListeDanseurs(tousLesDanseurs);
-    document.getElementById('map-count').textContent = tousLesDanseurs.length + ' artistes';
-    mettreAJourDatalistVilles();
-
-  } catch(e) {
-    console.error('Erreur chargement carte:', e);
-    document.getElementById('dancer-list').innerHTML =
-      '<div style="padding:20px;text-align:center;color:var(--red);font-size:13px;">❌ Erreur de chargement</div>';
-  }
-}
+async function chargerCarte() { /* carte supprimée */ }
 
 function afficherListeDanseurs(danseurs) {
   const list = document.getElementById('dancer-list');
@@ -15534,94 +15428,15 @@ function filtrerDanseurs() {
     });
   }
 
-  Object.entries(markersMap).forEach(([uid, marker]) => {
-    const visible = filtrés.some(d => d.uid === uid);
-    if (visible) { if (!carte.hasLayer(marker)) marker.addTo(carte); }
-    else { if (carte.hasLayer(marker)) carte.removeLayer(marker); }
-  });
-
   afficherListeDanseurs(filtrés);
   window._danseursFiltres = filtrés;
-
-  const count = filtrés.length;
-  const label = filtresEtatActifs.has('compatible') && filtresEtatActifs.size === 1
-    ? count + ' compatible' + (count > 1 ? 's' : '')
-    : count + ' artiste' + (count > 1 ? 's' : '');
-  document.getElementById('map-count').textContent = label;
-  // Sync drawer mobile
   if (window.syncDancerListMobile) syncDancerListMobile();
 }
 
 
-function centrerSurMoi() {
-  if (!navigator.geolocation) { alert('Géolocalisation non supportée'); return; }
-  navigator.geolocation.getCurrentPosition(pos => {
-    if (carte) carte.setView([pos.coords.latitude, pos.coords.longitude], 13, { animate: true });
-  }, () => alert('Position non disponible'));
-}
-
-let carteFS = null;
-
-function openMapFullscreen() {
-  const overlay = document.getElementById('map-fullscreen-overlay');
-  const inner = document.getElementById('map-fullscreen-inner');
-  cacherBarreReseau();
-  overlay.style.display = 'block';
-  document.body.style.overflow = 'hidden';
-  const closeBtn = document.getElementById('btn-map-fs-close');
-  if (closeBtn) closeBtn.style.display = 'flex';
-
-  // Sync compteur
-  const count = document.getElementById('map-count');
-  const fsCount = document.getElementById('map-fs-count');
-  if (count && fsCount) fsCount.textContent = count.textContent;
-
-  if (!carteFS) {
-    carteFS = L.map('map-fullscreen-inner', {
-      center: carte ? carte.getCenter() : [46.8, 2.3],
-      zoom: carte ? carte.getZoom() : 6,
-      zoomControl: false,
-      attributionControl: false
-    });
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18, attribution: '© OpenStreetMap'
-    }).addTo(carteFS);
-
-
-    // Copier les marqueurs existants
-    if (carte) {
-      carte.eachLayer(layer => {
-        if (layer instanceof L.Marker) {
-          const latlng = layer.getLatLng();
-          const opts = layer.options;
-          const clone = L.marker(latlng, { icon: opts.icon });
-          if (layer.getPopup()) {
-            clone.bindPopup(layer.getPopup().getContent(), { maxWidth: 280, closeButton: true });
-          }
-          clone.addTo(carteFS);
-        }
-      });
-    }
-  } else {
-    if (carte) carteFS.setView(carte.getCenter(), carte.getZoom());
-    setTimeout(() => carteFS.invalidateSize(), 100);
-  }
-
-  setTimeout(() => carteFS.invalidateSize(), 150);
-}
-
-function closeMapFullscreen() {
-  document.getElementById('map-fullscreen-overlay').style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-// Charger la carte quand on clique sur Réseau
-document.addEventListener('click', function(e) {
-  const btn = e.target.closest('[onclick]');
-  if (btn && btn.getAttribute('onclick')?.includes("'network'")) {
-    setTimeout(chargerCarte, 200);
-  }
-});
+function centrerSurMoi() { /* carte supprimée */ }
+function openMapFullscreen() { /* carte supprimée */ }
+function closeMapFullscreen() { /* carte supprimée */ }
 
 </script>
 
@@ -18203,7 +18018,6 @@ let _networkLieuxData = [];
 let _networkMapMarkers = [];
 
 function _clearNetworkMarkers() {
-  _networkMapMarkers.forEach(m => { if (carte) carte.removeLayer(m); });
   _networkMapMarkers = [];
 }
 
@@ -18299,14 +18113,7 @@ async function _placerMarqueursEvents() {
     const emoji = _typeEmoji(ev.type);
     const label = _typeLabel(ev.type);
     const dateStr = typeof _formatDate === 'function' ? _formatDate(_getDatePrincipale(ev)) : '';
-    const icon = L.divIcon({
-      className: '',
-      html: `<div style="width:36px;height:36px;border-radius:50%;background:rgba(8,8,16,0.9);border:2px solid ${couleur};box-shadow:0 0 12px ${couleur}66;display:flex;align-items:center;justify-content:center;font-size:16px;">${emoji}</div>`,
-      iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -22]
-    });
-    const m = L.marker(coords, { icon }).addTo(carte);
-    m.bindPopup(`<div style="min-width:180px;padding:4px;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;margin-bottom:6px;color:#fff;">${ev.titre || 'Événement'}</div><div style="font-size:12px;color:#5a5a72;margin-bottom:3px;">📅 ${dateStr}</div><div style="font-size:12px;color:#5a5a72;margin-bottom:3px;">📍 ${ev.ville || ''}</div><button onclick="if(typeof tousLesEvents==='undefined'||!tousLesEvents.length){showPage('agenda');}else{showPage('agenda');setTimeout(()=>ouvrirEvent('${ev.id}'),200);}" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 12px;border-radius:10px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.3);color:#00f59b;font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;width:100%;justify-content:center;">Voir l'événement →</button></div>`);
-    _networkMapMarkers.push(m);
+    /* marqueur carte supprimé */
   }
 }
 
@@ -18320,14 +18127,7 @@ async function _placerMarqueursLieux() {
     const isSalle = lieu._type === 'salle';
     const couleur = isSalle ? '#60a5fa' : '#00F59B';
     const emoji = isSalle ? '🏢' : '🎓';
-    const icon = L.divIcon({
-      className: '',
-      html: `<div style="width:36px;height:36px;border-radius:50%;background:rgba(8,8,16,0.9);border:2px solid ${couleur};box-shadow:0 0 12px ${couleur}66;display:flex;align-items:center;justify-content:center;font-size:16px;">${emoji}</div>`,
-      iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -22]
-    });
-    const m = L.marker(coords, { icon }).addTo(carte);
-    m.bindPopup(`<div style="min-width:160px;padding:4px;"><div class="popup-name">${lieu.nom || ''}</div><div class="popup-zone">📍 ${ville}${lieu.adresse ? ' · ' + lieu.adresse : ''}</div>${lieu.styles ? `<div class="popup-zone">💃 ${lieu.styles}</div>` : ''}<button onclick="showPage('salles')" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 12px;border-radius:10px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.3);color:#00f59b;font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;width:100%;justify-content:center;">Voir les lieux →</button></div>`);
-    _networkMapMarkers.push(m);
+    /* marqueur carte supprimé */
   }
 }
 
