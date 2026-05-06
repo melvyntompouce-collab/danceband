@@ -292,7 +292,7 @@ body.pwa #agenda-passes-toggle {
 }
 .hero-left{
   display:flex;flex-direction:column;justify-content:flex-start;
-  padding:calc(44px + 20px) 5% 80px 6%;
+  padding:calc(44px + 20px) 5% 32px 6%;
   position:relative;z-index:1;
 }
 .hero-right{
@@ -310,7 +310,7 @@ body.pwa #agenda-passes-toggle {
 }
 @media(max-width:768px){
   .hero-right{display:none;}
-  .hero-left{padding:20px 20px 12px;}
+  .hero-left{padding:20px 20px 0;}
 }
 
 .hero-badge{
@@ -1607,8 +1607,8 @@ footer{
   .hero-stats {
     display: flex;
     order: 10;
-    margin-top: 6px;
-    padding: 16px 8px;
+    margin-top: 0;
+    padding: 14px 8px;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 16px;
@@ -3302,7 +3302,7 @@ if (isPWA) {
           <div class="hero-stat-label">Métiers</div>
         </div>
         <div>
-          <div class="hero-stat-val">8</div>
+          <div class="hero-stat-val" id="stat-villes">8</div>
           <div class="hero-stat-label">Villes actives</div>
         </div>
       </div>
@@ -17696,6 +17696,24 @@ window.closeNavProfileMenu = function() {
     const el = document.getElementById('stat-artistes');
     if (el) el.textContent = '—';
   }
+})();
+
+// Charger le nombre de villes actives dynamiquement
+(async () => {
+  try {
+    const { getDocs, query, collection, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const snap = await getDocs(window._query(
+      window._collection(window._db, 'danseurs'),
+      window._where('visibilite', '!=', 'invisible')
+    ));
+    const villes = new Set();
+    snap.forEach(doc => {
+      const z = doc.data().zone;
+      if (z) villes.add(z.trim().toLowerCase());
+    });
+    const el = document.getElementById('stat-villes');
+    if (el && villes.size > 0) el.textContent = villes.size;
+  } catch(e) { /* silencieux */ }
 })();
 
 // ════════════════════════════════
