@@ -3302,7 +3302,7 @@ if (isPWA) {
           <div class="hero-stat-label">Métiers</div>
         </div>
         <div>
-          <div class="hero-stat-val" id="stat-villes">8</div>
+          <div class="hero-stat-val" style="font-size:0.65em;">+ de 100</div>
           <div class="hero-stat-label">Villes actives</div>
         </div>
       </div>
@@ -17698,23 +17698,6 @@ window.closeNavProfileMenu = function() {
   }
 })();
 
-// Charger le nombre de villes actives dynamiquement
-(async () => {
-  try {
-    const { getDocs, query, collection, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const snap = await getDocs(window._query(
-      window._collection(window._db, 'danseurs'),
-      window._where('visibilite', '!=', 'invisible')
-    ));
-    const villes = new Set();
-    snap.forEach(doc => {
-      const z = doc.data().zone;
-      if (z) villes.add(z.trim().toLowerCase());
-    });
-    const el = document.getElementById('stat-villes');
-    if (el && villes.size > 0) el.textContent = villes.size;
-  } catch(e) { /* silencieux */ }
-})();
 
 // ════════════════════════════════
 // BRACELET PAGE
