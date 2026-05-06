@@ -15516,7 +15516,7 @@ window.chargerRecommandationsExplore = async function() {
         containerPo.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Aucun post pour l\u2019instant</div>';
       } else {
         var htmlPo = '<div style="font-family:Syne,sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">Suggestions</div>';
-        htmlPo += posts.map(_renderPostCard).join('');
+        htmlPo += posts.map(_renderPostCardExplore).join('');
         containerPo.innerHTML = htmlPo;
       }
     } catch(e) {
@@ -15526,7 +15526,7 @@ window.chargerRecommandationsExplore = async function() {
 };
 
 // ── Rendu d'un post card explore (partagé recherche + suggestions) ──
-function _renderPostCard(p) {
+function _renderPostCardExplore(p) {
   var texte = p.content || p.texte || p.text || '';
   var auteur = p.authorName || p.auteurBlase || 'Artiste';
   var username = p.authorUsername ? '@' + p.authorUsername : '';
@@ -15604,7 +15604,7 @@ window._explorePostsVoirPlus = async function() {
     else _explorePosts_lastDoc = null;
     if (btn) btn.remove();
     var frag = document.createElement('div');
-    frag.innerHTML = results2.map(_renderPostCard).join('');
+    frag.innerHTML = results2.map(_renderPostCardExplore).join('');
     while (frag.firstChild) container2.appendChild(frag.firstChild);
     if (_explorePosts_lastDoc && snap2.size === _EXPLORE_POSTS_PAGE) {
       var btnEl = document.createElement('div');
@@ -15682,7 +15682,7 @@ window.rechercherExplore = async function(q) {
         container2.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Aucun post trouv\u00E9</div>';
         return;
       }
-      var html2 = results2.map(_renderPostCard).join('');
+      var html2 = results2.map(_renderPostCardExplore).join('');
       if (_explorePosts_lastDoc && snap2.size === _EXPLORE_POSTS_PAGE) html2 += _renderVoirPlusPosts();
       container2.innerHTML = html2;
     } catch(e) {
