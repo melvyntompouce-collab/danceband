@@ -1042,53 +1042,66 @@ body.pwa #network-mobile-bar {
 }
 .agenda-filter.on{background:rgba(77,159,255,0.08);border-color:var(--blue);color:var(--blue);}
 .agenda-grid{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:16px;
 }
-/* ── Event row compact ── */
+/* ── Event card verticale ── */
 .event-card{
   background:var(--card);border:1px solid var(--border);
-  border-radius:18px;overflow:hidden;
-  display:flex;align-items:stretch;
-  transition:border-color 0.2s;
-  position:relative;
+  border-radius:20px;overflow:hidden;
+  display:flex;flex-direction:column;
+  transition:border-color 0.2s, transform 0.2s;
+  position:relative;cursor:pointer;
 }
-.event-card:hover{border-color:rgba(255,255,255,0.14);}
+.event-card:hover{border-color:rgba(255,255,255,0.18);transform:translateY(-2px);}
 .ec-thumb{
-  width:88px;flex-shrink:0;position:relative;overflow:hidden;
+  width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;flex-shrink:0;
 }
-.ec-thumb-bg{position:absolute;inset:0;background-size:cover;background-position:center;}
-.ec-thumb-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.0) 60%,rgba(8,8,16,0.5) 100%);}
+.ec-thumb-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform 0.3s;}
+.event-card:hover .ec-thumb-bg{transform:scale(1.03);}
+.ec-thumb-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.0) 40%,rgba(8,8,16,0.75) 100%);}
+.ec-thumb-tags{
+  position:absolute;bottom:10px;left:10px;z-index:3;
+  display:flex;gap:5px;flex-wrap:wrap;
+}
+.ec-tag{
+  padding:3px 9px;border-radius:6px;
+  font-size:10px;font-weight:700;
+  font-family:'Syne',sans-serif;letter-spacing:0.6px;text-transform:uppercase;
+  background:rgba(8,8,16,0.82);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.14);white-space:nowrap;
+}
 .ec-type{
-  position:absolute;bottom:8px;left:8px;z-index:3;
-  padding:2px 8px;border-radius:6px;
+  position:absolute;top:10px;right:10px;z-index:3;
+  padding:3px 9px;border-radius:6px;
   font-size:9px;font-weight:700;
   font-family:'Syne',sans-serif;letter-spacing:0.8px;text-transform:uppercase;
-  background:rgba(8,8,16,0.85);backdrop-filter:blur(8px);
+  background:rgba(8,8,16,0.82);backdrop-filter:blur(10px);
   border:1px solid rgba(255,255,255,0.12);white-space:nowrap;
-  max-width:80px;overflow:hidden;text-overflow:ellipsis;
 }
 .ec-body{
-  flex:1;padding:12px 12px 12px 12px;
-  display:flex;flex-direction:column;justify-content:center;
-  min-width:0;
+  flex:1;padding:14px 14px 12px;
+  display:flex;flex-direction:column;
+  min-width:0;gap:8px;
 }
 .ec-title{
-  font-family:'Syne',sans-serif;
-  font-size:14px;font-weight:800;letter-spacing:0.2px;
-  line-height:1.2;margin-bottom:5px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-family:'Big Shoulders Display',sans-serif;
+  font-size:18px;font-weight:800;letter-spacing:0.2px;
+  line-height:1.15;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
-.ec-meta{display:flex;flex-direction:column;gap:3px;}
-.ec-mi{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ec-meta{display:flex;flex-direction:column;gap:4px;}
+.ec-mi{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ec-foot-row{
   display:flex;align-items:center;justify-content:space-between;
-  margin-top:8px;gap:8px;
+  margin-top:auto;padding-top:10px;
+  border-top:1px solid var(--border);
+  gap:8px;
 }
 .ec-price{
-  font-family:'Syne',sans-serif;font-size:13px;
-  font-weight:800;white-space:nowrap;
+  font-family:'Big Shoulders Display',sans-serif;font-size:18px;
+  font-weight:900;white-space:nowrap;letter-spacing:0.3px;
 }
 .ec-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .ec-icon-save{
@@ -1756,7 +1769,7 @@ body.pwa .page:not(#page-network):not(#page-conv) { padding-bottom: calc(60px + 
   /* Agenda */
   .agenda-page { padding: 24px 4%; }
   .agenda-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .agenda-grid { grid-template-columns: 1fr; gap: 16px; }
+  .agenda-grid { grid-template-columns: 1fr; gap: 12px; }
 
   /* Profile */
   .profile-page { padding: 24px 14px; }
@@ -9038,26 +9051,34 @@ function _renderEventCard(ev, passe) {
 
   const btnHtml = `<button class="ec-btn ec-btn-green" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')">En savoir plus</button>`;
 
+  // Tags sur l'image : styles + niveau
+  const tagsHtml = [
+    ev.styles ? `<span class="ec-tag" style="color:${cfg.couleur}">${ev.styles}</span>` : '',
+    ev.niveau && ev.niveau !== 'Tous niveaux' ? `<span class="ec-tag" style="color:var(--muted2)">${ev.niveau}</span>` : ''
+  ].filter(Boolean).join('');
+
   return `
-    ${ev.vedette && !passe ? `<div style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;margin-bottom:4px;border-radius:20px;background:rgba(255,217,61,0.1);border:1px solid rgba(255,217,61,0.25);">
-      <svg width="9" height="9" viewBox="0 0 24 24" fill="#ffd93d" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:9px;color:#ffd93d;letter-spacing:0.8px;text-transform:uppercase;">En vedette</span>
-    </div>` : ''}
-    <div class="event-card${passeClass}" style="${ev.vedette && !passe ? 'border-color:rgba(255,217,61,0.3);' : ''}">
-      <!-- VIGNETTE -->
+    <div class="event-card${passeClass}" style="${ev.vedette && !passe ? 'border-color:rgba(255,217,61,0.3);' : ''}" onclick="ouvrirEvent('${ev.id}')">
+      <!-- IMAGE PRINCIPALE -->
       <div class="ec-thumb">
         <div class="ec-thumb-bg" style="${ev.photoUrl ? `background-image:url('${ev.photoUrl}')` : `background:${cfg.bg}`}"></div>
         <div class="ec-thumb-overlay"></div>
+        <!-- Badge type en haut à droite -->
+        <span class="ec-type" style="color:${cfg.couleur}">${cfg.label}</span>
+        <!-- Tags styles/niveau en bas à gauche -->
+        ${tagsHtml ? `<div class="ec-thumb-tags">${tagsHtml}</div>` : ''}
         ${passe ? `<span class="ec-passe-tag">Terminé</span>` : ''}
+        ${ev.vedette && !passe ? `<div style="position:absolute;top:10px;left:10px;z-index:3;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;background:rgba(255,217,61,0.15);border:1px solid rgba(255,217,61,0.4);backdrop-filter:blur(8px);">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="#ffd93d" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:9px;color:#ffd93d;letter-spacing:0.8px;text-transform:uppercase;">Vedette</span>
+        </div>` : ''}
       </div>
-      <span class="ec-type" style="color:${cfg.couleur}">${cfg.label}</span>
       <!-- CORPS -->
       <div class="ec-body">
-        <div class="ec-title" onclick="event.stopPropagation();ouvrirEvent('${ev.id}')" style="cursor:pointer;font-size:15px;">${ev.titre || 'Événement'}</div>
+        <div class="ec-title">${ev.titre || 'Événement'}</div>
         <div class="ec-meta">
           <div class="ec-mi">${dateLine}</div>
           ${locLine ? `<div class="ec-mi">📍 ${locLine}</div>` : ''}
-          ${ev.styles ? `<div class="ec-mi">💃 ${ev.styles}</div>` : ''}
         </div>
         <div class="ec-foot-row">
           <span class="ec-price" style="color:${couleurPrix}">${prix}</span>
