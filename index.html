@@ -1853,6 +1853,11 @@ body.pwa .page:not(#page-network):not(#page-conv) { padding-bottom: calc(60px + 
 .salles-filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 20px; scrollbar-width: none; }
 .salles-filters::-webkit-scrollbar { display: none; }
 
+.salles-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
 .salle-card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -1918,6 +1923,64 @@ body.pwa .page:not(#page-network):not(#page-conv) { padding-bottom: calc(60px + 
 .salle-item-arrow { color: var(--muted); font-size: 14px; }
 .salle-item-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: rgba(0,245,155,0.08); color: var(--green); border: 1px solid rgba(0,245,155,0.15); white-space: nowrap; }
 
+/* ── Card salle/école verticale (style agenda) ── */
+.lieu-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+.lieu-card:hover { border-color: rgba(0,245,155,0.25); transform: translateY(-2px); }
+.lieu-card-thumb {
+  width: 100%; aspect-ratio: 16/9; position: relative; overflow: hidden; flex-shrink: 0;
+}
+.lieu-card-thumb-bg {
+  position: absolute; inset: 0; background-size: cover; background-position: center;
+  transition: transform 0.3s;
+}
+.lieu-card:hover .lieu-card-thumb-bg { transform: scale(1.03); }
+.lieu-card-thumb-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(8,8,16,0.75) 100%);
+}
+.lieu-card-initiales {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; font-size: 36px;
+  color: rgba(255,255,255,0.18); letter-spacing: 2px;
+}
+.lieu-card-badge {
+  position: absolute; top: 10px; right: 10px; z-index: 3;
+  padding: 3px 9px; border-radius: 6px;
+  font-size: 9px; font-weight: 700;
+  font-family: 'Syne', sans-serif; letter-spacing: 0.8px; text-transform: uppercase;
+  background: rgba(8,8,16,0.82); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.12); white-space: nowrap;
+}
+.lieu-card-tags-wrap {
+  position: absolute; bottom: 10px; left: 10px; z-index: 3;
+  display: flex; gap: 5px; flex-wrap: wrap;
+}
+.lieu-card-body {
+  flex: 1; padding: 14px 14px 12px;
+  display: flex; flex-direction: column; gap: 6px; min-width: 0;
+}
+.lieu-card-name {
+  font-family: 'Big Shoulders Display', sans-serif;
+  font-size: 18px; font-weight: 800; line-height: 1.15;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.lieu-card-meta { font-size: 12px; color: var(--muted2); display: flex; flex-direction: column; gap: 3px; }
+.lieu-card-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: auto; padding-top: 10px;
+  border-top: 1px solid var(--border); gap: 8px;
+}
+.lieu-card-price {
+  font-family: 'Big Shoulders Display', sans-serif; font-size: 18px;
+  font-weight: 900; white-space: nowrap; letter-spacing: 0.3px; color: var(--green);
+}
+
 /* ── Overlay détail salle/école ── */
 #salle-detail-overlay {
   display: none; position: fixed; inset: 0; z-index: 300;
@@ -1931,7 +1994,7 @@ body.pwa .page:not(#page-network):not(#page-conv) { padding-bottom: calc(60px + 
 
 @media (min-width: 769px) {
   .salles-page { max-width: 1200px !important; }
-  .salles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .salles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
   .salles-grid .salle-card { margin-bottom: 0; }
 }
 
@@ -5976,6 +6039,20 @@ if (isPWA) {
 
       <div style="display:flex;flex-direction:column;gap:14px;">
         <div class="form-group" style="margin:0">
+          <label class="form-label">Photo de couverture <span style="color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <div id="salle-photo-preview-wrap" style="display:none;position:relative;margin-bottom:10px;">
+            <div style="position:relative;width:100%;height:140px;overflow:hidden;border-radius:12px;">
+              <img id="salle-photo-preview" src="" alt="" style="position:absolute;left:0;width:100%;pointer-events:none;">
+              <button type="button" onclick="supprimerPhotoSalle()" style="position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;z-index:2;">✕</button>
+            </div>
+          </div>
+          <label id="salle-photo-label" for="salle-photo" style="display:flex;align-items:center;gap:10px;padding:14px;border-radius:12px;border:1.5px dashed var(--border);background:var(--bg2);cursor:pointer;transition:border-color 0.2s;">
+            <span style="font-size:20px;">🖼️</span>
+            <span style="font-size:13px;color:var(--muted2);">Choisir une image JPG ou PNG</span>
+          </label>
+          <input id="salle-photo" type="file" accept="image/*" style="display:none;" onchange="previewPhotoSalle(this)">
+        </div>
+        <div class="form-group" style="margin:0">
           <label class="form-label">Nom de la salle *</label>
           <input id="salle-nom" class="form-input" type="text" placeholder="Ex: Studio Groove Bordeaux" style="background:var(--bg2)">
         </div>
@@ -6064,6 +6141,20 @@ if (isPWA) {
       <div style="display:flex;flex-direction:column;gap:14px;">
 
         <!-- Infos de base -->
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Photo de couverture <span style="color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <div id="ecole-photo-preview-wrap" style="display:none;position:relative;margin-bottom:10px;">
+            <div style="position:relative;width:100%;height:140px;overflow:hidden;border-radius:12px;">
+              <img id="ecole-photo-preview" src="" alt="" style="position:absolute;left:0;width:100%;pointer-events:none;">
+              <button type="button" onclick="supprimerPhotoEcole()" style="position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;z-index:2;">✕</button>
+            </div>
+          </div>
+          <label id="ecole-photo-label" for="ecole-photo" style="display:flex;align-items:center;gap:10px;padding:14px;border-radius:12px;border:1.5px dashed var(--border);background:var(--bg2);cursor:pointer;transition:border-color 0.2s;">
+            <span style="font-size:20px;">🖼️</span>
+            <span style="font-size:13px;color:var(--muted2);">Choisir une image JPG ou PNG</span>
+          </label>
+          <input id="ecole-photo" type="file" accept="image/*" style="display:none;" onchange="previewPhotoEcole(this)">
+        </div>
         <div class="form-group" style="margin:0">
           <label class="form-label">Nom de l'école *</label>
           <input id="ecole-nom" class="form-input" type="text" placeholder="Ex: Studio Kizomba Paris" style="background:var(--bg2)">
@@ -9054,7 +9145,7 @@ function _renderEventCard(ev, passe) {
   // Tags sur l'image : styles + niveau
   const tagsHtml = [
     ev.styles ? `<span class="ec-tag" style="color:${cfg.couleur}">${ev.styles}</span>` : '',
-    ev.niveau && ev.niveau !== 'Tous niveaux' ? `<span class="ec-tag" style="color:var(--muted2)">${ev.niveau}</span>` : ''
+    ev.niveau ? `<span class="ec-tag" style="color:var(--muted2)">${ev.niveau}</span>` : ''
   ].filter(Boolean).join('');
 
   return `
@@ -10009,15 +10100,30 @@ function afficherEcoles(ecoles) {
   }
 
   grid.innerHTML = liste.map((e, i) => {
-    const niveauPrincipal = e.niveaux && e.niveaux[0] ? e.niveaux[0] : '';
-    return `<div class="salle-item" onclick="ouvrirDetailSalle('ecole', ${i})">
-      <div class="salle-item-left">
-        <div class="salle-item-name">${e.nom || 'Sans nom'}</div>
-        <div class="salle-item-city">${e.ville || ''}${e.adresse ? ' · ' + e.adresse : ''}</div>
+    const initiales = (e.nom || 'E').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,3);
+    const thumbBg = e.photoUrl
+      ? `background-image:url('${e.photoUrl}')`
+      : `background:linear-gradient(135deg,#0d2b3e,#1a0a2e)`;
+    const niveauxTags = (e.niveaux || []).map(n => `<span class="ec-tag" style="color:var(--muted2)">${n}</span>`).join('');
+    const styleTag = e.styles ? `<span class="ec-tag" style="color:var(--blue)">${e.styles}</span>` : '';
+    return `<div class="lieu-card" onclick="ouvrirDetailSalle('ecole', ${i})">
+      <div class="lieu-card-thumb">
+        <div class="lieu-card-thumb-bg" style="${thumbBg}"></div>
+        <div class="lieu-card-thumb-overlay"></div>
+        ${!e.photoUrl ? `<div class="lieu-card-initiales">${initiales}</div>` : ''}
+        <span class="lieu-card-badge" style="color:var(--blue)">École</span>
+        ${styleTag || niveauxTags ? `<div class="lieu-card-tags-wrap">${styleTag}${niveauxTags}</div>` : ''}
       </div>
-      <div class="salle-item-right">
-        ${niveauPrincipal && niveauPrincipal !== 'Débutant' ? `<span class="salle-item-tag">${niveauPrincipal}</span>` : ''}
-        <span class="salle-item-arrow">›</span>
+      <div class="lieu-card-body">
+        <div class="lieu-card-name">${e.nom || 'Sans nom'}</div>
+        <div class="lieu-card-meta">
+          <span>📍 ${e.ville || ''}${e.adresse ? ' · ' + e.adresse : ''}</span>
+          ${e.horaires && e.horaires.length ? `<span>🕐 ${e.horaires[0].jour} ${e.horaires[0].heure}</span>` : ''}
+        </div>
+        <div class="lieu-card-foot">
+          ${e.abonnements && e.abonnements.length ? `<span class="lieu-card-price">${e.abonnements[0].prix}${e.abonnements[0].devise||'€'}<span style="font-size:11px;font-weight:400;color:var(--muted);font-family:'DM Sans',sans-serif;"> / mois</span></span>` : '<span></span>'}
+          <button style="padding:7px 14px;border-radius:9px;background:rgba(77,159,255,0.1);color:var(--blue);border:1px solid var(--blue);font-weight:700;font-size:11px;font-family:'Syne',sans-serif;cursor:pointer;white-space:nowrap;" onclick="event.stopPropagation();ouvrirDetailSalle('ecole', ${i})">Voir</button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -10047,16 +10153,30 @@ function afficherSalles(salles) {
 
   grid.innerHTML = liste.map((s, i) => {
     const _sDevise = s.devise || '€';
-    const prixHtml = s.prix ? `<span class="salle-item-price">${s.prix}${_sDevise}<span style="font-size:10px;font-weight:400;color:var(--muted)">/h</span></span>` : '';
-
-    return `<div class="salle-item" onclick="ouvrirDetailSalle('studio', ${i})">
-      <div class="salle-item-left">
-        <div class="salle-item-name">${s.nom || 'Sans nom'}</div>
-        <div class="salle-item-city">${s.ville || ''}${s.adresse ? ' · ' + s.adresse : ''}</div>
+    const initiales = (s.nom || 'S').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,3);
+    const thumbBg = s.photoUrl
+      ? `background-image:url('${s.photoUrl}')`
+      : `background:linear-gradient(135deg,#0a2818,#1a1a0d)`;
+    const surfaceTag = s.surface ? `<span class="ec-tag" style="color:var(--muted2)">${s.surface} m²</span>` : '';
+    const dispoTag = s.disponible !== false ? `<span class="ec-tag" style="color:var(--green)">Disponible</span>` : `<span class="ec-tag" style="color:var(--red)">Indisponible</span>`;
+    return `<div class="lieu-card" onclick="ouvrirDetailSalle('studio', ${i})">
+      <div class="lieu-card-thumb">
+        <div class="lieu-card-thumb-bg" style="${thumbBg}"></div>
+        <div class="lieu-card-thumb-overlay"></div>
+        ${!s.photoUrl ? `<div class="lieu-card-initiales">${initiales}</div>` : ''}
+        <span class="lieu-card-badge" style="color:var(--green)">Studio</span>
+        <div class="lieu-card-tags-wrap">${dispoTag}${surfaceTag}</div>
       </div>
-      <div class="salle-item-right">
-        ${prixHtml}
-        <span class="salle-item-arrow">›</span>
+      <div class="lieu-card-body">
+        <div class="lieu-card-name">${s.nom || 'Sans nom'}</div>
+        <div class="lieu-card-meta">
+          <span>📍 ${s.ville || ''}${s.adresse ? ' · ' + s.adresse : ''}</span>
+          ${s.dispos && s.dispos.length ? `<span>📅 ${s.dispos.join(', ')}</span>` : ''}
+        </div>
+        <div class="lieu-card-foot">
+          ${s.prix ? `<span class="lieu-card-price">${s.prix}${_sDevise}<span style="font-size:11px;font-weight:400;color:var(--muted);font-family:'DM Sans',sans-serif;"> /h</span></span>` : '<span></span>'}
+          <button style="padding:7px 14px;border-radius:9px;background:rgba(0,245,155,0.08);color:var(--green);border:1px solid rgba(0,245,155,0.3);font-weight:700;font-size:11px;font-family:'Syne',sans-serif;cursor:pointer;white-space:nowrap;" onclick="event.stopPropagation();ouvrirDetailSalle('studio', ${i})">Voir</button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -11453,6 +11573,48 @@ function _initCropModal(initialCrop) {
   area.ontouchend = onUp;
 }
 
+window.previewPhotoSalle = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = document.getElementById('salle-photo-preview');
+    img.src = e.target.result;
+    document.getElementById('salle-photo-preview-wrap').style.display = 'block';
+    document.getElementById('salle-photo-label').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+};
+
+window.supprimerPhotoSalle = function() {
+  window._sallePhotoUrl = null;
+  document.getElementById('salle-photo').value = '';
+  document.getElementById('salle-photo-preview').src = '';
+  document.getElementById('salle-photo-preview-wrap').style.display = 'none';
+  document.getElementById('salle-photo-label').style.display = 'flex';
+};
+
+window.previewPhotoEcole = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = document.getElementById('ecole-photo-preview');
+    img.src = e.target.result;
+    document.getElementById('ecole-photo-preview-wrap').style.display = 'block';
+    document.getElementById('ecole-photo-label').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+};
+
+window.supprimerPhotoEcole = function() {
+  window._ecolePhotoUrl = null;
+  document.getElementById('ecole-photo').value = '';
+  document.getElementById('ecole-photo-preview').src = '';
+  document.getElementById('ecole-photo-preview-wrap').style.display = 'none';
+  document.getElementById('ecole-photo-label').style.display = 'flex';
+};
+
 window.supprimerPhotoEvent = function() {
   document.getElementById('ev-photo').value = '';
   document.getElementById('ev-photo-preview').src = '';
@@ -11648,6 +11810,12 @@ window.ouvrirFormSalle = function(salleId) {
   document.getElementById('admin-form-salle-title').textContent = 'AJOUTER UNE SALLE';
   document.getElementById('salle-submit-btn').textContent = 'Publier la salle →';
   document.querySelectorAll('#salle-dispos-pick input[type=checkbox]').forEach(cb => cb.checked = false);
+  // Reset photo
+  window._sallePhotoUrl = null;
+  document.getElementById('salle-photo').value = '';
+  document.getElementById('salle-photo-preview').src = '';
+  document.getElementById('salle-photo-preview-wrap').style.display = 'none';
+  document.getElementById('salle-photo-label').style.display = 'flex';
 
   // Mode édition
   if (salleId) {
@@ -11669,6 +11837,14 @@ window.ouvrirFormSalle = function(salleId) {
         document.getElementById('salle-contact').value = s.contact    || '';
         document.getElementById('salle-lien').value    = s.lienResa   || '';
         document.getElementById('salle-disponible').checked = s.disponible !== false;
+        // Charger photo existante
+        if (s.photoUrl) {
+          window._sallePhotoUrl = s.photoUrl;
+          const img = document.getElementById('salle-photo-preview');
+          img.src = s.photoUrl;
+          document.getElementById('salle-photo-preview-wrap').style.display = 'block';
+          document.getElementById('salle-photo-label').style.display = 'none';
+        }
         const dispos = s.dispos || [];
         document.querySelectorAll('#salle-dispos-pick input[type=checkbox]').forEach(cb => {
           cb.checked = dispos.includes(cb.value);
@@ -11707,6 +11883,27 @@ window.sauvegarderSalle = async function() {
   btn.disabled = true;
 
   const dispos = Array.from(document.querySelectorAll('#salle-dispos-pick input[type=checkbox]:checked')).map(cb => cb.value);
+
+  // Upload photo si nouvelle sélection
+  let sallePhotoUrl = window._sallePhotoUrl || null;
+  const sallePhotoFile = document.getElementById('salle-photo').files[0];
+  if (sallePhotoFile) {
+    try {
+      btn.textContent = '⏳ Upload photo...';
+      const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
+      const storage = getStorage();
+      const storageRef = ref(storage, `salles/${window._currentUid}/${Date.now()}_${sallePhotoFile.name}`);
+      const snap = await uploadBytes(storageRef, sallePhotoFile);
+      sallePhotoUrl = await getDownloadURL(snap.ref);
+      btn.textContent = '⏳ Enregistrement...';
+    } catch(e) {
+      errDiv.textContent = '❌ Erreur upload photo : ' + e.message;
+      errDiv.style.display = 'block';
+      btn.textContent = 'Publier la salle →'; btn.disabled = false;
+      return;
+    }
+  }
+
   const data = {
     nom,
     ville,
@@ -11719,6 +11916,7 @@ window.sauvegarderSalle = async function() {
     lienResa:    document.getElementById('salle-lien').value.trim() || null,
     disponible:  document.getElementById('salle-disponible').checked,
     dispos,
+    photoUrl:    sallePhotoUrl || null,
     updatedAt:   Date.now(),
   };
 
@@ -11816,6 +12014,12 @@ window.ouvrirFormEcole = function(ecoleId) {
   document.getElementById('ecole-horaires-list').innerHTML = '';
   document.getElementById('ecole-abos-list').innerHTML = '';
   _horaireCount = 0; _aboCount = 0;
+  // Reset photo
+  window._ecolePhotoUrl = null;
+  document.getElementById('ecole-photo').value = '';
+  document.getElementById('ecole-photo-preview').src = '';
+  document.getElementById('ecole-photo-preview-wrap').style.display = 'none';
+  document.getElementById('ecole-photo-label').style.display = 'flex';
 
   if (ecoleId) {
     document.getElementById('ecole-edit-id').value = ecoleId;
@@ -11835,6 +12039,14 @@ window.ouvrirFormEcole = function(ecoleId) {
         document.getElementById('ecole-lien-inscription').value = e.lienInscription || '';
         document.getElementById('ecole-desc').value   = e.description|| '';
         document.getElementById('ecole-styles').value = e.styles     || '';
+        // Charger photo existante
+        if (e.photoUrl) {
+          window._ecolePhotoUrl = e.photoUrl;
+          const img = document.getElementById('ecole-photo-preview');
+          img.src = e.photoUrl;
+          document.getElementById('ecole-photo-preview-wrap').style.display = 'block';
+          document.getElementById('ecole-photo-label').style.display = 'none';
+        }
         (e.niveaux || []).forEach(n => {
           const cb = document.querySelector(`#ecole-niveaux-pick input[value="${n}"]`);
           if (cb) cb.checked = true;
@@ -11899,6 +12111,26 @@ window.sauvegarderEcole = async function() {
     devise: div.querySelector('.ecole-abo-devise')?.value || '€',
   })).filter(a => a.nom);
 
+  // Upload photo si nouvelle sélection
+  let ecolePhotoUrl = window._ecolePhotoUrl || null;
+  const ecolePhotoFile = document.getElementById('ecole-photo').files[0];
+  if (ecolePhotoFile) {
+    try {
+      btn.textContent = '⏳ Upload photo...';
+      const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
+      const storage = getStorage();
+      const storageRef = ref(storage, `ecoles/${window._currentUid}/${Date.now()}_${ecolePhotoFile.name}`);
+      const snap = await uploadBytes(storageRef, ecolePhotoFile);
+      ecolePhotoUrl = await getDownloadURL(snap.ref);
+      btn.textContent = '⏳ Enregistrement...';
+    } catch(e) {
+      errDiv.textContent = '❌ Erreur upload photo : ' + e.message;
+      errDiv.style.display = 'block';
+      btn.textContent = "Publier l'école →"; btn.disabled = false;
+      return;
+    }
+  }
+
   const data = {
     nom, ville,
     cp:          document.getElementById('ecole-cp').value.trim(),
@@ -11910,6 +12142,7 @@ window.sauvegarderEcole = async function() {
     description: document.getElementById('ecole-desc').value.trim(),
     styles:      document.getElementById('ecole-styles').value.trim(),
     niveaux, horaires, abonnements,
+    photoUrl:    ecolePhotoUrl || null,
     updatedAt: Date.now(),
   };
 
