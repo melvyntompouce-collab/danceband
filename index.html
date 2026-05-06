@@ -9054,7 +9054,10 @@ async function chargerLandingCarousel() {
   if (!carousel) return;
   if (!window._db) { setTimeout(chargerLandingCarousel, 600); return; }
   try {
-    const snap = await window._getDocs(window._collection(window._db, 'evenements'));
+    const snap = await window._getDocs(window._query(
+      window._collection(window._db, 'evenements'),
+      window._limit(20)
+    ));
     const now = new Date();
     let events = [];
     snap.forEach(d => events.push({ id: d.id, ...d.data() }));
