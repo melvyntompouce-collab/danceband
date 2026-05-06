@@ -3191,6 +3191,14 @@ if (isPWA) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
         Enregistrés
       </button>
+      <button class="drawer-item" id="di-mes-reservations" onclick="chargerMesReservations();showPage('mes-reservations');closeDrawer();">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Mes réservations
+      </button>
+      <button class="drawer-item" id="di-mes-evenements" onclick="chargerMesEvenements();showPage('mes-evenements');closeDrawer();">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Mes événements
+      </button>
 
     </div>
 
@@ -6034,6 +6042,29 @@ if (isPWA) {
           </div>
         </div>
 
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.05);">Capacité & remboursement</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Nombre de places <span style="color:var(--muted);font-weight:400;">(optionnel)</span></label>
+            <input id="ev-capacite" class="form-input" type="number" min="1" placeholder="Ex: 200" style="background:var(--bg2)">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Remboursement jusqu'à</label>
+            <select id="ev-delai-remboursement" class="form-select" style="background:var(--bg2)">
+              <option value="0">Pas de remboursement</option>
+              <option value="2">2 jours avant</option>
+              <option value="3">3 jours avant</option>
+              <option value="5">5 jours avant</option>
+              <option value="7">7 jours avant</option>
+              <option value="14">14 jours avant</option>
+              <option value="30">30 jours avant</option>
+            </select>
+          </div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--muted2);line-height:1.6;">
+          Si les frais de service sont à la charge de l'acheteur, ils ne sont pas remboursés en cas d'annulation.
+        </div>
+
         <div id="orga-form-err" style="display:none;background:rgba(255,77,109,0.1);border:1px solid var(--red);border-radius:10px;padding:12px;font-size:13px;color:var(--red);"></div>
 
         <div style="display:flex;gap:10px;margin-top:8px;">
@@ -6518,7 +6549,8 @@ function showPage(id, isBack = false) {
     bracelet: '/kima', notifs: '/notifications', privacy: '/confidentialite', enregistres: '/enregistres',
     'form-event': '/creer-evenement', 'form-salle': '/creer-salle', 'form-ecole': '/creer-ecole', 'post-create': '/creer-post',
     cgu: '/cgu', cgv: '/cgv', mentions: '/mentions',
-    'profil-public': '/profil', 'share-event': '/event'
+    'profil-public': '/profil', 'share-event': '/event',
+    'mes-reservations': '/mes-reservations', 'mes-evenements': '/mes-evenements'
   };
   const _url = _routeMap[id] || '/';
   if (!isBack && window.location.pathname !== _url) {
@@ -6631,7 +6663,8 @@ window.addEventListener('popstate', function(e) {
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
     '/cgu': 'cgu', '/cgv': 'cgv', '/mentions': 'mentions',
-    '/creer-evenement': 'form-event', '/creer-salle': 'form-salle', '/creer-ecole': 'form-ecole', '/creer-post': 'post-create'
+    '/creer-evenement': 'form-event', '/creer-salle': 'form-salle', '/creer-ecole': 'form-ecole', '/creer-post': 'post-create',
+    '/mes-reservations': 'mes-reservations', '/mes-evenements': 'mes-evenements'
   };
   // Fermer les overlays ouverts
   // profil-public géré via goBack()
@@ -6656,7 +6689,8 @@ function _initRouter() {
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
     '/cgu': 'cgu', '/cgv': 'cgv', '/mentions': 'mentions',
-    '/creer-evenement': 'form-event', '/creer-salle': 'form-salle', '/creer-ecole': 'form-ecole', '/creer-post': 'post-create'
+    '/creer-evenement': 'form-event', '/creer-salle': 'form-salle', '/creer-ecole': 'form-ecole', '/creer-post': 'post-create',
+    '/mes-reservations': 'mes-reservations', '/mes-evenements': 'mes-evenements'
   };
   const pathname = window.location.pathname;
   // Gérer les URLs dynamiques
@@ -6706,7 +6740,23 @@ function _initRouter() {
     _routeEvent();
   } else {
     const page = _reverseRouteMap[pathname];
-    if (page && page !== 'home' && page !== 'auth') {
+    if (page === 'mes-reservations') {
+      function _routeMesResa() {
+        if (!window._db || !window._currentUid) { setTimeout(_routeMesResa, 300); return; }
+        showPage('mes-reservations', true);
+        chargerMesReservations();
+        _hideLoaderRouter();
+      }
+      _routeMesResa();
+    } else if (page === 'mes-evenements') {
+      function _routeMesEvs() {
+        if (!window._db || !window._currentUid) { setTimeout(_routeMesEvs, 300); return; }
+        showPage('mes-evenements', true);
+        chargerMesEvenements();
+        _hideLoaderRouter();
+      }
+      _routeMesEvs();
+    } else if (page && page !== 'home' && page !== 'auth') {
       history.replaceState({ page: page }, '', pathname);
       showPage(page, true);
     }
@@ -11848,6 +11898,232 @@ function _getPrixMin(ev) {
 // ──────────────────────────────────────────────────────────────────────────
 
 // Ouverture event accessible à tout profil complet (photo + nom + discipline + ville)
+// ══════════════════════════════════════════
+// MES RÉSERVATIONS
+// ══════════════════════════════════════════
+window.chargerMesReservations = async function() {
+  if (!window._currentUid || !window._db) return;
+  const listEl = document.getElementById('mes-reservations-list');
+  const loadEl = document.getElementById('mes-reservations-loading');
+  const emptyEl = document.getElementById('mes-reservations-empty');
+  listEl.innerHTML = '';
+  loadEl.style.display = 'block';
+  emptyEl.style.display = 'none';
+  try {
+    const { getDocs, collection, query, where, orderBy } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const q = query(collection(window._db, 'reservations'), where('acheteurUid', '==', window._currentUid), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    loadEl.style.display = 'none';
+    if (snap.empty) { emptyEl.style.display = 'block'; return; }
+    snap.forEach(docSnap => {
+      const r = { id: docSnap.id, ...docSnap.data() };
+      const dateEvent = r.dateEvent ? new Date(r.dateEvent).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+      const statut = r.statut || 'confirmé';
+      const statutColor = statut === 'annulé' ? 'var(--red)' : statut === 'présent' ? 'var(--green)' : 'var(--blue)';
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:border-color 0.2s;';
+      card.onmouseover = () => card.style.borderColor = 'rgba(0,245,155,0.3)';
+      card.onmouseout = () => card.style.borderColor = 'var(--border)';
+      card.onclick = () => window.ouvrirDetailBillet(r);
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.titreEvent || 'Événement'}</div>
+          <span style="flex-shrink:0;margin-left:10px;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;background:${statutColor}22;color:${statutColor};text-transform:uppercase;">${statut}</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted2);display:flex;flex-direction:column;gap:3px;">
+          ${dateEvent ? `<span>📅 ${dateEvent}</span>` : ''}
+          ${r.lieuEvent ? `<span>📍 ${r.lieuEvent}</span>` : ''}
+          <span>🎫 ${r.quantite || 1} billet${(r.quantite||1)>1?'s':''} · ${r.montant ? r.montant + '€' : 'Gratuit'}</span>
+        </div>
+      `;
+      listEl.appendChild(card);
+    });
+  } catch(e) {
+    console.error(e);
+    loadEl.style.display = 'none';
+    loadEl.textContent = 'Erreur de chargement.';
+    loadEl.style.display = 'block';
+  }
+};
+
+window.ouvrirDetailBillet = function(r) {
+  const overlay = document.getElementById('billet-detail-overlay');
+  const content = document.getElementById('billet-detail-content');
+  const maintenant = new Date();
+  const dateEvent = r.dateEvent ? new Date(r.dateEvent) : null;
+  const peutRembourser = r.delaiRemboursement > 0 && dateEvent && r.statut !== 'annulé' &&
+    (dateEvent - maintenant) / (1000 * 60 * 60 * 24) >= r.delaiRemboursement;
+  const dateEventStr = dateEvent ? dateEvent.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : '';
+
+  // Génération QR code
+  const qrId = 'billet-qr-' + r.id;
+  content.innerHTML = `
+    <div style="font-family:'Syne',sans-serif;font-weight:900;font-size:20px;margin-bottom:4px;">${r.titreEvent || 'Billet'}</div>
+    <div style="font-size:12px;color:var(--muted2);margin-bottom:20px;">${dateEventStr}${r.lieuEvent ? ' · ' + r.lieuEvent : ''}</div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div id="${qrId}" style="display:inline-block;background:#fff;padding:12px;border-radius:12px;"></div>
+      <div style="font-size:10px;color:var(--muted2);margin-top:8px;font-family:'DM Sans',sans-serif;">Présente ce QR code à l'entrée</div>
+    </div>
+    <div style="background:var(--bg2);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;font-size:13px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted2);">Billets</span><span>${r.quantite || 1} x ${r.prixUnitaire ? r.prixUnitaire + '€' : 'Gratuit'}</span></div>
+      ${r.fraisService ? `<div style="display:flex;justify-content:space-between;"><span style="color:var(--muted2);">Frais de service</span><span>${r.fraisService}€</span></div>` : ''}
+      <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:8px;font-weight:700;"><span>Total payé</span><span>${r.montant ? r.montant + '€' : 'Gratuit'}</span></div>
+    </div>
+    ${r.fraisService ? `<div style="font-size:11px;color:var(--muted2);margin-bottom:16px;line-height:1.5;">Les frais de service ne sont pas remboursables.</div>` : ''}
+    ${peutRembourser ? `
+    <button onclick="demanderRemboursement('${r.id}')" style="width:100%;padding:14px;border-radius:12px;background:transparent;border:1.5px solid var(--red);color:var(--red);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;margin-bottom:10px;">
+      Demander un remboursement
+    </button>` : (r.delaiRemboursement > 0 && r.statut !== 'annulé' ? `<div style="font-size:11px;color:var(--muted2);text-align:center;margin-bottom:10px;">Le délai de remboursement est dépassé.</div>` : '')}
+    ${r.statut !== 'annulé' ? `
+    <button onclick="annulerReservation('${r.id}')" style="width:100%;padding:14px;border-radius:12px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;">
+      Annuler la réservation
+    </button>` : ''}
+  `;
+  overlay.style.display = 'block';
+  // Générer QR code
+  if (window.QRCode) {
+    new QRCode(document.getElementById(qrId), { text: 'HAKO-BILLET-' + r.id, width: 160, height: 160, colorDark: '#000', colorLight: '#fff' });
+  }
+};
+
+window.fermerDetailBillet = function() {
+  document.getElementById('billet-detail-overlay').style.display = 'none';
+};
+
+window.annulerReservation = async function(reservationId) {
+  if (!confirm('Annuler cette réservation ? Cette action est irréversible.')) return;
+  try {
+    const { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    await updateDoc(doc(window._db, 'reservations', reservationId), { statut: 'annulé', annuléLe: new Date().toISOString() });
+    _showToast('Réservation annulée.');
+    fermerDetailBillet();
+    chargerMesReservations();
+  } catch(e) { console.error(e); _showToast('Erreur, réessaie.'); }
+};
+
+window.demanderRemboursement = async function(reservationId) {
+  if (!confirm('Demander un remboursement total ? Le montant du billet (hors frais de service) sera remboursé.')) return;
+  try {
+    const { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    await updateDoc(doc(window._db, 'reservations', reservationId), { statut: 'remboursement_demandé', remboursementLe: new Date().toISOString() });
+    _showToast('Demande de remboursement envoyée.');
+    fermerDetailBillet();
+    chargerMesReservations();
+  } catch(e) { console.error(e); _showToast('Erreur, réessaie.'); }
+};
+
+// ══════════════════════════════════════════
+// MES ÉVÉNEMENTS
+// ══════════════════════════════════════════
+window.chargerMesEvenements = async function() {
+  if (!window._currentUid || !window._db) return;
+  const listEl = document.getElementById('mes-evenements-list');
+  const loadEl = document.getElementById('mes-evenements-loading');
+  const emptyEl = document.getElementById('mes-evenements-empty');
+  listEl.innerHTML = '';
+  loadEl.style.display = 'block';
+  emptyEl.style.display = 'none';
+  try {
+    const { getDocs, collection, query, where, orderBy } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const q = query(collection(window._db, 'evenements'), where('organisateurUid', '==', window._currentUid), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    loadEl.style.display = 'none';
+    if (snap.empty) { emptyEl.style.display = 'block'; return; }
+    snap.forEach(docSnap => {
+      const ev = { id: docSnap.id, ...docSnap.data() };
+      const dateStr = ev.dates && ev.dates.length > 0 ? new Date(ev.dates[0].date).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' }) : '';
+      const inscrits = ev.inscrits || 0;
+      const capacite = ev.capacite || null;
+      const placesRestantes = capacite ? capacite - inscrits : null;
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:border-color 0.2s;';
+      card.onmouseover = () => card.style.borderColor = 'rgba(0,245,155,0.3)';
+      card.onmouseout = () => card.style.borderColor = 'var(--border)';
+      card.onclick = () => window.ouvrirInscritsEvent(ev);
+      card.innerHTML = `
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;flex:1;">${ev.titre || 'Événement'}</div>
+          <div style="flex-shrink:0;text-align:right;">
+            <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;color:var(--green);line-height:1;">${inscrits}</div>
+            <div style="font-size:10px;color:var(--muted2);">inscrit${inscrits>1?'s':''}</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--muted2);display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          ${dateStr ? `<span>📅 ${dateStr}</span>` : ''}
+          ${ev.ville ? `<span>📍 ${ev.ville}</span>` : ''}
+          ${capacite ? `<span style="color:${placesRestantes <= 0 ? 'var(--red)' : placesRestantes <= 10 ? 'var(--orange)' : 'var(--muted2)'};">🎟️ ${placesRestantes <= 0 ? 'Complet' : placesRestantes + ' place' + (placesRestantes>1?'s':'') + ' restante' + (placesRestantes>1?'s':'')}</span>` : ''}
+        </div>
+      `;
+      listEl.appendChild(card);
+    });
+  } catch(e) {
+    console.error(e);
+    loadEl.textContent = 'Erreur de chargement.';
+    loadEl.style.display = 'block';
+  }
+};
+
+window.ouvrirInscritsEvent = async function(ev) {
+  const overlay = document.getElementById('event-inscrits-overlay');
+  const listEl = document.getElementById('event-inscrits-list');
+  const titreEl = document.getElementById('event-inscrits-titre');
+  const statsEl = document.getElementById('event-inscrits-stats');
+  titreEl.textContent = ev.titre || 'Événement';
+  statsEl.textContent = 'Chargement des inscrits...';
+  listEl.innerHTML = '';
+  overlay.style.display = 'block';
+  try {
+    const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    const q = query(collection(window._db, 'reservations'), where('eventId', '==', ev.id));
+    const snap = await getDocs(q);
+    const inscrits = [];
+    snap.forEach(d => inscrits.push({ id: d.id, ...d.data() }));
+    const total = inscrits.length;
+    const presents = inscrits.filter(i => i.presence === true).length;
+    const capacite = ev.capacite || null;
+    statsEl.textContent = `${total} inscrit${total>1?'s':''} · ${presents} présent${presents>1?'s':''}${capacite ? ' · ' + (capacite - total) + ' place' + (capacite-total>1?'s':'') + ' restante' + (capacite-total>1?'s':'') : ''}`;
+    if (inscrits.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center;padding:32px 0;color:var(--muted2);font-size:13px;">Aucun inscrit pour l\'instant.</div>';
+      return;
+    }
+    inscrits.forEach(inscrit => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);';
+      const isPresent = inscrit.presence === true;
+      row.innerHTML = `
+        <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;overflow:hidden;">
+          ${inscrit.acheteurPhoto ? `<img src="${inscrit.acheteurPhoto}" style="width:100%;height:100%;object-fit:cover;">` : '🎭'}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${inscrit.acheteurNom || 'Participant'}</div>
+          <div style="font-size:11px;color:var(--muted2);">${inscrit.quantite||1} billet${(inscrit.quantite||1)>1?'s':''} · ${inscrit.montant ? inscrit.montant+'€' : 'Gratuit'}</div>
+        </div>
+        <button onclick="togglePresence('${inscrit.id}', ${isPresent}, this)" style="flex-shrink:0;padding:6px 12px;border-radius:20px;border:1.5px solid ${isPresent ? 'var(--green)' : 'var(--border)'};background:${isPresent ? 'rgba(0,245,155,0.12)' : 'transparent'};color:${isPresent ? 'var(--green)' : 'var(--muted2)'};font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;transition:all 0.2s;">
+          ${isPresent ? '✓ Présent' : 'Absent'}
+        </button>
+      `;
+      listEl.appendChild(row);
+    });
+  } catch(e) { console.error(e); statsEl.textContent = 'Erreur de chargement.'; }
+};
+
+window.togglePresence = async function(reservationId, estPresent, btn) {
+  const newVal = !estPresent;
+  try {
+    const { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
+    await updateDoc(doc(window._db, 'reservations', reservationId), { presence: newVal });
+    btn.textContent = newVal ? '✓ Présent' : 'Absent';
+    btn.style.borderColor = newVal ? 'var(--green)' : 'var(--border)';
+    btn.style.background = newVal ? 'rgba(0,245,155,0.12)' : 'transparent';
+    btn.style.color = newVal ? 'var(--green)' : 'var(--muted2)';
+    btn.onclick = () => togglePresence(reservationId, newVal, btn);
+  } catch(e) { console.error(e); _showToast('Erreur, réessaie.'); }
+};
+
+window.fermerInscritsEvent = function() {
+  document.getElementById('event-inscrits-overlay').style.display = 'none';
+};
+
 window.ouvrirFormEventPublic = function() {
   if (!window._currentUid || !window._db) {
     _showToast('Connecte-toi pour créer un événement.');
@@ -12386,6 +12662,8 @@ window.sauvegarderEvent = async function() {
     stripeAccountId: window._stripeAccountId || null,
     photoUrl:      photoUrl || null,
     photoCropY:    photoUrl ? (window._evCropY !== undefined ? window._evCropY : 50) : null,
+    capacite:      parseInt(document.getElementById('ev-capacite').value) || null,
+    delaiRemboursement: parseInt(document.getElementById('ev-delai-remboursement').value) || 0,
     organisateurUid: window._currentUid,
     updatedAt:     new Date().toISOString(),
   };
@@ -20590,6 +20868,61 @@ window.toggleFaq = function(el) {
       <div id="metier-detail-body" style="color:var(--muted2);font-size:13px;line-height:1.6;"></div>
     </div>
   </div>
+
+<!-- ═══ PAGE: MES RÉSERVATIONS ═══ -->
+<div class="page" id="page-mes-reservations" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div style="max-width:680px;margin:0 auto;padding:24px 20px calc(100px + env(safe-area-inset-bottom));">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <button onclick="showPage('feed')" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
+      <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-1px;">MES RÉSERVATIONS</div>
+    </div>
+    <div id="mes-reservations-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+    <div id="mes-reservations-loading" style="text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px;">Chargement...</div>
+    <div id="mes-reservations-empty" style="display:none;text-align:center;padding:60px 20px;color:var(--muted2);">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;opacity:0.4;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:8px;">Aucune réservation</div>
+      <div style="font-size:13px;opacity:0.6;">Tes billets achetés apparaîtront ici.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail billet (bottom sheet) -->
+<div id="billet-detail-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);" onclick="fermerDetailBillet()">
+  <div id="billet-detail-sheet" onclick="event.stopPropagation()" style="position:absolute;bottom:0;left:0;right:0;max-height:88vh;background:var(--card);border-radius:24px 24px 0 0;border:1px solid var(--border);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 24px calc(32px + env(safe-area-inset-bottom));">
+    <div style="width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 20px;"></div>
+    <div id="billet-detail-content"></div>
+  </div>
+</div>
+
+<!-- ═══ PAGE: MES ÉVÉNEMENTS ═══ -->
+<div class="page" id="page-mes-evenements" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div style="max-width:680px;margin:0 auto;padding:24px 20px calc(100px + env(safe-area-inset-bottom));">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <button onclick="showPage('feed')" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
+      <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-1px;">MES ÉVÉNEMENTS</div>
+    </div>
+    <div id="mes-evenements-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+    <div id="mes-evenements-loading" style="text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px;">Chargement...</div>
+    <div id="mes-evenements-empty" style="display:none;text-align:center;padding:60px 20px;color:var(--muted2);">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;opacity:0.4;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:8px;">Aucun événement créé</div>
+      <div style="font-size:13px;opacity:0.6;">Les événements que tu crées apparaîtront ici.</div>
+      <button onclick="ouvrirFormEventPublic()" style="margin-top:20px;padding:12px 24px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;border:none;cursor:pointer;">Créer un événement</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail inscrits event (bottom sheet) -->
+<div id="event-inscrits-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);" onclick="fermerInscritsEvent()">
+  <div id="event-inscrits-sheet" onclick="event.stopPropagation()" style="position:absolute;bottom:0;left:0;right:0;max-height:90vh;background:var(--card);border-radius:24px 24px 0 0;border:1px solid var(--border);display:flex;flex-direction:column;">
+    <div style="padding:20px 24px 0;flex-shrink:0;">
+      <div style="width:36px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 16px;"></div>
+      <div id="event-inscrits-titre" style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-bottom:4px;"></div>
+      <div id="event-inscrits-stats" style="font-size:12px;color:var(--muted2);margin-bottom:16px;"></div>
+    </div>
+    <div id="event-inscrits-list" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 24px calc(32px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;"></div>
+  </div>
+</div>
 
   <!-- Viewer posts profil (scroll vertical Instagram) -->
   <div id="profil-post-viewer" style="display:none;position:fixed;inset:0;z-index:400;background:#080810;flex-direction:column;">
