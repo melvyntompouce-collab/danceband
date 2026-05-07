@@ -2788,23 +2788,6 @@ body.pwa .page:not(#page-network):not(#page-conv) { padding-bottom: calc(60px + 
   }
 }
 
-
-
-/* ────────────────────────────────────────────────
-   HAKO — interface paiements discrète / Stripe Connect Express
-   DA: dark global + produit blanc/noir + accent #00f59b
-──────────────────────────────────────────────── */
-:root{--hako-green:#00f59b;--hako-dark:#050608;--hako-panel:#0b0d10;--hako-line:rgba(255,255,255,.10);--hako-soft:rgba(0,245,155,.12)}
-.hako-pay-surface{position:relative;overflow:hidden;background:linear-gradient(145deg,#07080b 0%,#0c0f13 62%,#030405 100%);border:1px solid rgba(255,255,255,.10);border-radius:24px;padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.35)}
-.hako-pay-surface:before{content:"";position:absolute;inset:-35%;background:radial-gradient(circle at 18% 8%,rgba(0,245,155,.18),transparent 28%),radial-gradient(circle at 82% 42%,rgba(0,245,155,.10),transparent 24%);pointer-events:none}.hako-pay-surface>*{position:relative;z-index:1}
-.hako-pay-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(0,245,155,.10);border:1px solid rgba(0,245,155,.24);color:var(--hako-green);font-family:'Syne',sans-serif;font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase}.hako-pay-dot{width:8px;height:8px;border-radius:50%;background:var(--hako-green);box-shadow:0 0 18px rgba(0,245,155,.8)}
-.hako-pay-title{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:clamp(32px,7vw,58px);line-height:.88;letter-spacing:-1px;text-transform:uppercase;margin:14px 0 10px}.hako-pay-title span{color:var(--hako-green)}.hako-pay-copy{font-size:13px;color:rgba(255,255,255,.66);line-height:1.65;margin:0 0 16px;max-width:560px}
-.hako-pay-card{background:#fff;color:#07080b;border-radius:20px;border:1px solid rgba(255,255,255,.18);box-shadow:0 20px 70px rgba(0,0,0,.35);overflow:hidden}.hako-pay-card-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.08);font-family:'Syne',sans-serif;font-weight:900;font-size:13px}.hako-pay-card-head .logo-dot{width:9px;height:9px;border-radius:50%;background:var(--hako-green);box-shadow:0 0 16px rgba(0,245,155,.65)}.hako-pay-card-body{padding:16px;display:grid;gap:12px}.hako-pay-field{display:grid;gap:6px}.hako-pay-field label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#777;font-weight:800}.hako-pay-input{height:42px;border-radius:11px;border:1px solid rgba(0,0,0,.12);background:#f7f7f7;padding:0 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:#111}.hako-pay-submit{height:44px;border:0;border-radius:12px;background:#050608;color:#fff;font-family:'Syne',sans-serif;font-weight:900;font-size:13px;cursor:pointer}.hako-pay-submit.green{background:var(--hako-green);color:#050608}.hako-pay-split{display:grid;grid-template-columns:130px 1fr;min-height:310px}.hako-pay-sidebar{background:#050608;color:#fff;padding:16px 12px;display:flex;flex-direction:column;gap:10px}.hako-pay-nav{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;color:rgba(255,255,255,.62);font-size:12px}.hako-pay-nav.active{background:rgba(0,245,155,.12);color:var(--hako-green)}.hako-pay-white{background:#fff;padding:18px;color:#050608}
-.hako-pay-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.hako-pay-option{border:1.5px solid rgba(255,255,255,.10);background:rgba(255,255,255,.045);border-radius:16px;padding:13px;cursor:pointer;transition:.2s}.hako-pay-option:hover,.hako-pay-option.active{border-color:rgba(0,245,155,.55);background:rgba(0,245,155,.08)}.hako-pay-option b{display:block;font-family:'Syne',sans-serif;font-size:13px;margin-bottom:4px}.hako-pay-option span{font-size:11px;color:rgba(255,255,255,.58);line-height:1.45}.hako-pay-benefits{display:grid;gap:8px;margin:14px 0}.hako-pay-benefit{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.74)}.hako-pay-check{width:18px;height:18px;border-radius:50%;background:rgba(0,245,155,.14);color:var(--hako-green);display:grid;place-items:center;font-size:11px;font-weight:900}
-.hako-connect-btn{width:100%;padding:14px 16px;border-radius:14px;background:var(--hako-green);color:#050608;border:0;font-family:'Syne',sans-serif;font-weight:900;font-size:14px;cursor:pointer;box-shadow:0 0 28px rgba(0,245,155,.18);display:flex;align-items:center;justify-content:center;gap:8px}.hako-connect-secondary{width:100%;padding:12px;border-radius:12px;background:transparent;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.70);font-family:'Syne',sans-serif;font-weight:800;font-size:12px;cursor:pointer}.hako-connected-pill{display:flex;align-items:center;gap:10px;padding:13px;border-radius:14px;background:rgba(0,245,155,.10);border:1px solid rgba(0,245,155,.24)}
-.hako-payment-modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.72);backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:18px}.hako-payment-modal.visible{display:flex}.hako-payment-dialog{width:min(940px,100%);max-height:92vh;overflow:auto;background:#050608;border:1px solid rgba(255,255,255,.12);border-radius:28px;box-shadow:0 30px 100px rgba(0,0,0,.65);position:relative}.hako-payment-dialog-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;font-size:18px;cursor:pointer;z-index:2}.hako-connect-flow{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:24px}.hako-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px}.hako-step{height:6px;border-radius:999px;background:rgba(255,255,255,.10)}.hako-step.active{background:var(--hako-green);box-shadow:0 0 18px rgba(0,245,155,.5)}.hako-revenue-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}.hako-revenue-tile{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px}.hako-revenue-tile strong{display:block;font-family:'Big Shoulders Display',sans-serif;font-size:30px;line-height:1;color:#fff}.hako-revenue-tile span{display:block;margin-top:6px;font-size:10px;color:rgba(255,255,255,.48);text-transform:uppercase;letter-spacing:.9px}.hako-mini-chart{height:116px;border-radius:18px;background:linear-gradient(180deg,rgba(0,245,155,.20),rgba(0,245,155,.02));border:1px solid rgba(0,245,155,.14);position:relative;overflow:hidden}.hako-mini-chart:after{content:"";position:absolute;left:20px;right:20px;bottom:28px;height:64px;background:linear-gradient(135deg,transparent 0 12%,rgba(0,245,155,.65) 12% 14%,transparent 14% 30%,rgba(0,245,155,.65) 30% 32%,transparent 32% 48%,rgba(0,245,155,.65) 48% 50%,transparent 50% 64%,rgba(0,245,155,.65) 64% 66%,transparent 66%)}
-@media(max-width:760px){.hako-connect-flow{grid-template-columns:1fr;padding:18px}.hako-pay-split{grid-template-columns:1fr}.hako-pay-sidebar{display:none}.hako-pay-options,.hako-revenue-grid{grid-template-columns:1fr 1fr}.hako-pay-card-body{padding:14px}.hako-pay-title{font-size:42px}}
-
 </style>
 
 <style id="feed-css">
@@ -5892,24 +5875,6 @@ if (isPWA) {
         </div>
       </div>
 
-      <!-- Interface paiements / revenus -->
-      <div class="hako-pay-surface" style="margin-bottom:22px;">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px;">
-          <div>
-            <div class="hako-pay-eyebrow"><span class="hako-pay-dot"></span> Mes revenus</div>
-            <div style="font-family:'Big Shoulders Display',sans-serif;font-size:42px;font-weight:900;line-height:.9;margin-top:12px;">PILOTE TES<br><span style="color:var(--hako-green);">VENTES.</span></div>
-          </div>
-          <button type="button" onclick="connecterStripe()" class="hako-connect-secondary" style="width:auto;padding:11px 14px;white-space:nowrap;">Connecter mes paiements</button>
-        </div>
-        <div class="hako-revenue-grid">
-          <div class="hako-revenue-tile"><strong id="hako-rev-brut">0€</strong><span>revenus bruts</span></div>
-          <div class="hako-revenue-tile"><strong id="hako-rev-net">0€</strong><span>après frais HAKO</span></div>
-          <div class="hako-revenue-tile"><strong id="hako-rev-billets">0</strong><span>billets vendus</span></div>
-          <div class="hako-revenue-tile"><strong id="hako-rev-next">—</strong><span>prochain virement</span></div>
-        </div>
-        <div class="hako-mini-chart"></div>
-      </div>
-
       <!-- Boutons actions -->
       <button onclick="ouvrirFormEvent()" style="width:100%;padding:16px;border-radius:16px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;border:none;cursor:pointer;margin-bottom:12px;">
         ＋ Créer un événement
@@ -6047,52 +6012,17 @@ if (isPWA) {
           <div id="ev-tarifs-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
           <button type="button" onclick="ajouterTarifEvent()" style="width:100%;padding:10px;border-radius:10px;background:transparent;border:1.5px dashed var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.4)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">＋ Ajouter un tarif</button>
         </div>
-        <!-- Billetterie — HAKO payments UX -->
+        <!-- Billetterie -->
         <div class="form-group" style="margin:0">
-          <div class="hako-pay-surface">
-            <div style="display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:stretch;">
-              <div>
-                <div class="hako-pay-eyebrow"><span class="hako-pay-dot"></span> Billetterie HAKO</div>
-                <div class="hako-pay-title" style="font-size:42px;margin-bottom:8px;">VENDS TES PLACES,<br><span>ENCAISSE DIRECT.</span></div>
-                <p class="hako-pay-copy">Active la billetterie seulement si ton événement est payant. Le reste de la création reste simple : tu publies ton event, puis HAKO te demande de connecter tes paiements au dernier moment.</p>
-                <div class="hako-pay-options" id="hako-ticket-mode">
-                  <div class="hako-pay-option" onclick="window.setHakoTicketMode && setHakoTicketMode('free')" id="hako-ticket-free">
-                    <b>Gratuit</b><span>Affichage simple, pas de paiement.</span>
-                  </div>
-                  <div class="hako-pay-option active" onclick="window.setHakoTicketMode && setHakoTicketMode('paid')" id="hako-ticket-paid">
-                    <b>Payant</b><span>Billetterie + revenus organisateur.</span>
-                  </div>
-                </div>
-                <div class="hako-pay-benefits">
-                  <div class="hako-pay-benefit"><span class="hako-pay-check">✓</span> Paiements sécurisés par Stripe Connect</div>
-                  <div class="hako-pay-benefit"><span class="hako-pay-check">✓</span> HAKO ne stocke jamais tes coordonnées bancaires</div>
-                  <div class="hako-pay-benefit"><span class="hako-pay-check">✓</span> Commission HAKO : 12% sur les billets vendus</div>
-                </div>
-                <div id="stripe-connect-status">
-                  <button type="button" onclick="connecterStripe()" id="btn-connecter-stripe" class="hako-connect-btn">Recevoir mes paiements →</button>
-                  <button type="button" onclick="window.openHakoPaymentsPreview && openHakoPaymentsPreview()" class="hako-connect-secondary" style="margin-top:8px;">Voir comment ça marche</button>
-                </div>
-              </div>
-              <div class="hako-pay-card" aria-hidden="true">
-                <div class="hako-pay-split">
-                  <div class="hako-pay-sidebar">
-                    <div class="hako-pay-card-head" style="padding:0 0 12px;border:0;color:#fff;"><span class="logo-dot"></span>HAKO</div>
-                    <div class="hako-pay-nav">Accueil</div>
-                    <div class="hako-pay-nav active">Events</div>
-                    <div class="hako-pay-nav">Mes billets</div>
-                    <div class="hako-pay-nav">Revenus</div>
-                  </div>
-                  <div class="hako-pay-white">
-                    <div style="font-family:'Syne',sans-serif;font-weight:900;font-size:18px;margin-bottom:14px;">Prix & billets</div>
-                    <div class="hako-pay-field"><label>Prix du billet</label><div class="hako-pay-input" style="display:flex;align-items:center;justify-content:space-between;"><span>25</span><b>€</b></div></div>
-                    <div class="hako-pay-field"><label>Nombre de places</label><div class="hako-pay-input" style="display:flex;align-items:center;justify-content:space-between;"><span>30</span><b>places</b></div></div>
-                    <div style="height:1px;background:rgba(0,0,0,.08);margin:4px 0;"></div>
-                    <div style="display:flex;justify-content:space-between;font-size:12px;color:#666;"><span>Frais HAKO</span><b style="color:#111;">12%</b></div>
-                    <button type="button" class="hako-pay-submit green">Publier l’événement</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <label class="form-label">Paiement via HAKO</label>
+          <div style="background:rgba(0,245,155,0.06);border:1px solid rgba(0,245,155,0.2);border-radius:12px;padding:14px;margin-bottom:10px;">
+            <div style="font-size:12px;color:var(--muted2);line-height:1.6;">Les paiements sont encaissés directement sur HAKO. HAKO prélève 12% de commission, le reste est viré sur ton compte bancaire.</div>
+          </div>
+          <div id="stripe-connect-status">
+            <button type="button" onclick="connecterStripe()" id="btn-connecter-stripe" style="width:100%;padding:12px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              Connecter mon compte bancaire
+            </button>
           </div>
         </div>
         <div class="form-group" style="margin:0">
@@ -6129,39 +6059,6 @@ if (isPWA) {
         <div style="display:flex;gap:10px;margin-top:8px;">
           <button onclick="fermerFormEvent()" style="flex:1;padding:14px;border-radius:12px;background:transparent;border:1.5px solid var(--border);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">Annuler</button>
           <button id="ev-submit-btn" onclick="sauvegarderEvent()" style="flex:2;padding:14px;border-radius:12px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;border:none;cursor:pointer;">Publier l'événement →</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ═══ MODAL: ONBOARDING PAIEMENTS HAKO / STRIPE CONNECT ═══ -->
-<div id="hako-connect-modal" class="hako-payment-modal">
-  <div class="hako-payment-dialog">
-    <button class="hako-payment-dialog-close" onclick="closeHakoConnectModal()">×</button>
-    <div class="hako-connect-flow">
-      <div class="hako-pay-surface" style="min-height:100%;">
-        <div class="hako-pay-eyebrow"><span class="hako-pay-dot"></span> Paiements organisateur</div>
-        <div class="hako-pay-title">PRESQUE PRÊT<br><span>À PUBLIER.</span></div>
-        <p class="hako-pay-copy">Pour vendre des billets et recevoir l’argent, connecte tes paiements. Tu restes dans l’expérience HAKO : Stripe s’occupe juste de la sécurité et des virements.</p>
-        <div class="hako-pay-benefits">
-          <div class="hako-pay-benefit"><span class="hako-pay-check">✓</span> Configuration en quelques minutes</div>
-          <div class="hako-pay-benefit"><span class="hako-pay-check">✓</span> Argent envoyé sur ton compte bancaire</div>
-          <div class="hako-pay-benefit"><span class="hako-pay-check">✓</span> Paiements, remboursements et litiges sécurisés</div>
-        </div>
-        <div class="hako-steps"><span class="hako-step active"></span><span class="hako-step active"></span><span class="hako-step"></span><span class="hako-step"></span></div>
-      </div>
-      <div class="hako-pay-card">
-        <div class="hako-pay-card-head"><span class="logo-dot"></span> HAKO · Connecter tes paiements</div>
-        <div class="hako-pay-card-body">
-          <div class="hako-pay-field"><label>Étape 1</label><div style="font-family:'Syne',sans-serif;font-weight:900;font-size:22px;line-height:1.05;">Crée ton compte de paiement</div></div>
-          <div class="hako-pay-field"><label>Email</label><div class="hako-pay-input" id="hako-connect-email-preview" style="display:flex;align-items:center;color:#777;">Ton email de connexion</div></div>
-          <div class="hako-pay-field"><label>Compte bancaire</label><div class="hako-pay-input" style="display:flex;align-items:center;justify-content:space-between;"><span>IBAN sécurisé</span><b>→</b></div></div>
-          <div class="hako-pay-field"><label>Identité</label><div class="hako-pay-input" style="display:flex;align-items:center;justify-content:space-between;"><span>Vérification obligatoire</span><b>✓</b></div></div>
-          <button type="button" class="hako-pay-submit green" id="hako-connect-start-btn" onclick="startStripeConnectFromHako()">Continuer avec HAKO →</button>
-          <button type="button" class="hako-pay-submit" style="background:#f2f2f2;color:#111;" onclick="closeHakoConnectModal()">Plus tard</button>
-          <div style="font-size:11px;color:#777;line-height:1.5;text-align:center;">Tu seras redirigé vers l’onboarding sécurisé Stripe Express uniquement pour les informations réglementaires.</div>
         </div>
       </div>
     </div>
@@ -21140,49 +21037,16 @@ async function verifierCompteStripeOrga() {
 
 function afficherStripeConnecte(accountId) {
   const statusDiv = document.getElementById('stripe-connect-status');
-  if (statusDiv) {
-    statusDiv.innerHTML = `<div class="hako-connected-pill">
-      <div style="width:10px;height:10px;border-radius:50%;background:var(--hako-green);box-shadow:0 0 18px rgba(0,245,155,.75);flex-shrink:0;"></div>
-      <div style="min-width:0;"><div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:900;color:#fff;">Paiements connectés</div><div style="font-size:11px;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${accountId}</div></div>
-    </div>`;
-  }
-  const revNext = document.getElementById('hako-rev-next');
-  if (revNext) revNext.textContent = 'Actif';
+  if (!statusDiv) return;
+  statusDiv.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.2);">
+    <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
+    <div><div style="font-size:13px;font-weight:600;color:var(--text);">Compte bancaire connecté</div><div style="font-size:11px;color:var(--muted2);">${accountId}</div></div>
+  </div>`;
 }
 
-
-window.setHakoTicketMode = function(mode) {
-  const free = document.getElementById('hako-ticket-free');
-  const paid = document.getElementById('hako-ticket-paid');
-  if (free && paid) {
-    free.classList.toggle('active', mode === 'free');
-    paid.classList.toggle('active', mode === 'paid');
-  }
-};
-
-window.openHakoPaymentsPreview = function(){
-  const modal = document.getElementById('hako-connect-modal');
-  const email = document.getElementById('hako-connect-email-preview');
-  const user = window._auth ? window._auth.currentUser : null;
-  if (email && user && user.email) email.textContent = user.email;
-  if (modal) modal.classList.add('visible');
-};
-
-window.closeHakoConnectModal = function(){
-  const modal = document.getElementById('hako-connect-modal');
-  if (modal) modal.classList.remove('visible');
-};
-
 window.connecterStripe = async function() {
-  openHakoPaymentsPreview();
-};
-
-window.startStripeConnectFromHako = async function() {
-  const btn = document.getElementById('hako-connect-start-btn');
-  if (btn) { btn.textContent = 'Connexion sécurisée...'; btn.disabled = true; }
-
-  const legacyBtn = document.getElementById('btn-connecter-stripe');
-  if (legacyBtn) { legacyBtn.innerHTML = 'Connexion sécurisée...'; legacyBtn.disabled = true; }
+  const btn = document.getElementById('btn-connecter-stripe');
+  if (btn) { btn.innerHTML = '⏳ Connexion...'; btn.disabled = true; }
   try {
     const user = window._auth ? window._auth.currentUser : null;
     if (!user || !user.email) throw new Error('Utilisateur non connecté');
@@ -21202,20 +21066,18 @@ window.startStripeConnectFromHako = async function() {
       stripeOnboardingComplete: false
     });
     window._stripeAccountId = data.accountId;
-    window.location.href = data.onboardingUrl;
+    window.open(data.onboardingUrl, '_blank');
     // Afficher message d'attente
     const statusDiv = document.getElementById('stripe-connect-status');
     if (statusDiv) statusDiv.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(255,200,0,0.08);border:1px solid rgba(255,200,0,0.2);">
       <div style="width:8px;height:8px;border-radius:50%;background:#ffc800;flex-shrink:0;"></div>
-      <div style="font-size:13px;color:var(--text);">Configuration lancée. Termine l’onboarding sécurisé, puis reviens publier ton événement.</div>
+      <div style="font-size:13px;color:var(--text);">En attente de validation de ton compte bancaire Stripe. Reviens ici une fois l'onboarding terminé.</div>
     </div>`;
   } catch(e) {
-    if (legacyBtn) { legacyBtn.innerHTML = 'Recevoir mes paiements →'; legacyBtn.disabled = false; }
-    if (btn) { btn.textContent = 'Continuer avec HAKO →'; btn.disabled = false; }
+    if (btn) { btn.innerHTML = 'Connecter mon compte bancaire'; btn.disabled = false; }
     const errDiv = document.getElementById('orga-form-err');
     if (errDiv) { errDiv.textContent = 'Erreur Stripe : ' + e.message; errDiv.style.display = 'block'; }
   }
-
 };
 
 window.ouvrirPaiementHako = async function(eventId) {
@@ -21527,27 +21389,6 @@ window.toggleFaq = function(el) {
     if (document.hidden) { cancelAnimationFrame(raf); }
     else { draw(); }
   });
-})();
-
-
-// Sync visuelle des tuiles revenus HAKO avec les stats existantes
-(function(){
-  function syncHakoRevenueTiles(){
-    const brut = document.getElementById('orga-stat-revenus')?.textContent || '0€';
-    const events = document.getElementById('orga-stat-events')?.textContent || '0';
-    const inscrits = document.getElementById('orga-stat-inscrits')?.textContent || '0';
-    const b = document.getElementById('hako-rev-brut');
-    const n = document.getElementById('hako-rev-net');
-    const bi = document.getElementById('hako-rev-billets');
-    if (b) b.textContent = brut;
-    if (bi) bi.textContent = inscrits;
-    if (n) {
-      const num = parseFloat(String(brut).replace(/[^0-9.,]/g,'').replace(',','.')) || 0;
-      n.textContent = num ? Math.round(num * .88) + '€' : '0€';
-    }
-  }
-  setInterval(syncHakoRevenueTiles, 1200);
-  window.syncHakoRevenueTiles = syncHakoRevenueTiles;
 })();
 </script>
 
