@@ -7377,9 +7377,7 @@ async function afficherEventsDashboard() {
   if (!section || !list || !window._db) return;
 
   try {
-    if (tousLesEvents.length === 0) {      const snap = await window._getDocs(window._collection(window._db, 'evenements'));
-      snap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
-    }
+    await _chargerTousLesEvents();
 
     const today = new Date().toISOString().split('T')[0];
     const events = tousLesEvents
@@ -7423,9 +7421,7 @@ async function afficherCompatiblesDashboard() {
   if (!section || !list || !window._monProfil || !window._db) return;
 
   try {
-    if (tousLesDanseurs.length === 0) {      const snap = await window._getDocs(window._query(window._collection(window._db, 'danseurs'), window._where('visibilite','in',['public','amis'])));
-      snap.forEach(d => tousLesDanseurs.push({ ...d.data(), uid: d.id }));
-    }
+    if (tousLesDanseurs.length === 0) { await _chargerTousLesDanseurs(); }
 
     const compatibles = tousLesDanseurs
       .filter(d => d.uid !== window._currentUid)
@@ -7463,9 +7459,7 @@ async function afficherFavorisDashboard() {
   if (mesFavoris.size === 0) { section.style.display = 'none'; return; }
 
   if (tousLesEvents.length === 0 && window._db) {
-    try {      const snap = await window._getDocs(window._collection(window._db, 'evenements'));
-      snap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
-    } catch(e) { return; }
+    try { await _chargerTousLesEvents(); } catch(e) { return; }
   }
 
   const favs = tousLesEvents.filter(e => mesFavoris.has(e.id)).slice(0, 3);
@@ -8280,10 +8274,7 @@ async function _initPostCreatePage() {
     const select = document.getElementById('post-event-select');
     if (select && window._db) {
       if (tousLesEvents.length === 0) {
-        try {
-          const snap = await window._getDocs(window._collection(window._db, 'evenements'));
-          snap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
-        } catch(e) {}
+        try { await _chargerTousLesEvents(); } catch(e) {}
       }
       select.innerHTML = '<option value="">Sélectionner un événement...</option>' +
         tousLesEvents.slice(0, 50).map(ev =>
@@ -8318,10 +8309,7 @@ window.partagerPostParMessage = async function(postId) {
   const mesAbos = new Set(moi?.abonnements || []);
   let contacts = [];
   if (tousLesDanseurs.length === 0) {
-    try {
-      const snap = await window._getDocs(window._query(window._collection(window._db, 'danseurs'), window._where('visibilite','in',['public','amis'])));
-      snap.forEach(d => tousLesDanseurs.push({ uid: d.id, ...d.data() }));
-    } catch(e) {}
+    try { await _chargerTousLesDanseurs(); } catch(e) {}
   }
   contacts = tousLesDanseurs.filter(d => d.uid !== window._currentUid && mesAbos.has(d.uid));
 
@@ -8457,6 +8445,17 @@ window.supprimerPost = async function(postId) {
   }
 };
 
+// ── Extraction keywords pour recherche posts ──
+function _extractKeywords(text) {
+  if (!text) return [];
+  return [...new Set(
+    text.toLowerCase()
+      .replace(/[^a-z0-9àâäéèêëîïôöùûüçœæ\s]/g, ' ')
+      .split(/\s+/)
+      .filter(w => w.length >= 3)
+  )].slice(0, 50);
+}
+
 window.publierPost = async function() {
   if (!window._currentUid || !window._db) return;
   const btn = document.getElementById('post-submit-btn');
@@ -8522,6 +8521,7 @@ window.publierPost = async function() {
   }
 
   try {
+    postData.keywords = _extractKeywords(postData.content);
     await window._addDoc(window._collection(window._db, 'posts'), postData);
     // Reset et retour feed
     window._postMediaFile = null;
@@ -8884,6 +8884,20 @@ document.querySelectorAll('.rk-tab').forEach(t => {
 // ════════════════════════════════
 
 let tousLesEvents = [];
+let _eventsCharged = false;
+
+async function _chargerTousLesEvents() {
+  if (_eventsCharged) return tousLesEvents;
+  if (!window._db) return tousLesEvents;
+  try {
+    const snap = await window._getDocs(window._collection(window._db, 'evenements'));
+    tousLesEvents = [];
+    snap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
+    _eventsCharged = true;
+  } catch(e) { console.error('Erreur chargement evenements:', e); }
+  return tousLesEvents;
+}
+
 let agendaFiltre = 'tous';
 let agendaCategorie = 'toutes';
 let agendaNiveau = 'tous';
@@ -9118,10 +9132,7 @@ async function chargerAgenda() {
 
   try {
 
-    const snap = await window._getDocs(window._collection(window._db, 'evenements'));
-
-    tousLesEvents = [];
-    snap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
+    await _chargerTousLesEvents();
     tousLesEvents.sort((a, b) => {
       const da = _toDate(_getDatePrincipale(a));
       const db2 = _toDate(_getDatePrincipale(b));
@@ -10072,10 +10083,9 @@ async function afficherWorkshopsPage() {
   if (tousLesEvents.length > 0) {
     source = tousLesEvents.filter(e => e.type === 'workshop');
   } else if (window._db) {
-    try {      const snap = await window._getDocs(window._collection(window._db, 'evenements'));
-      const evs = [];
-      snap.forEach(d => evs.push({ id: d.id, ...d.data() }));
-      source = evs.filter(e => e.type === 'workshop');
+    try {
+      await _chargerTousLesEvents();
+      source = tousLesEvents.filter(e => e.type === 'workshop');
     } catch(e) { console.error('Erreur workshops:', e); }
   }
 
@@ -10795,6 +10805,7 @@ window.publierPostHako = async function() {
       createdAt: window._serverTimestamp(),
     };
 
+    postData.keywords = _extractKeywords(postData.content);
     await window._addDoc(window._collection(window._db, 'posts'), postData);
 
     // Reset form
@@ -13097,7 +13108,7 @@ window.sauvegarderEvent = async function() {
       await window._addDoc(window._collection(window._db, 'evenements'), data);
     }
 
-    tousLesEvents = [];
+    tousLesEvents = []; _eventsCharged = false;
     const estEdition = !!eventEnEdition;
     const retour = window._formRetour || 'orga';
     eventEnEdition = null;
@@ -13526,10 +13537,7 @@ async function afficherFavorisProfile() {
 
   // Charger les events si pas encore chargés
   if (tousLesEvents.length === 0 && window._db) {
-    try {
-      const snap = await window._getDocs(window._collection(window._db, 'evenements'));
-      snap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
-    } catch(e) { console.error(e); return; }
+    try { await _chargerTousLesEvents(); } catch(e) { console.error(e); return; }
   }
 
   const favEvents = tousLesEvents.filter(e => mesFavoris.has(e.id));
@@ -14110,7 +14118,23 @@ document.addEventListener('click', function(e) {
 
 // ── Normaliser styles (string ou array) ──
 let tousLesDanseurs = [];
+let _danseursFetched = false;
 let filtreActif = 'tous';
+
+async function _chargerTousLesDanseurs() {
+  if (_danseursFetched) return tousLesDanseurs;
+  if (!window._db) return tousLesDanseurs;
+  try {
+    const snap = await window._getDocs(window._query(
+      window._collection(window._db, 'danseurs'),
+      window._where('visibilite', 'in', ['public', 'amis'])
+    ));
+    tousLesDanseurs = [];
+    snap.forEach(d => tousLesDanseurs.push({ uid: d.id, ...d.data() }));
+    _danseursFetched = true;
+  } catch(e) { console.error('Erreur chargement danseurs:', e); }
+  return tousLesDanseurs;
+}
 function normaliserStyles(styles) {
   if (!styles) return [];
   if (Array.isArray(styles)) return styles;
@@ -15868,18 +15892,9 @@ async function _rechercherProfilsFirestore(term, catFiltre) {
 
 // Conserver pour compat (suggestions initiales)
 async function _chargerTousProfils() {
-  if (_tousProfils.length > 0) return _tousProfils;
-  var attempts = 0;
-  while ((!window._db || !window._getDocs || !window._collection) && attempts < 20) {
-    await new Promise(function(r) { setTimeout(r, 300); });
-    attempts++;
-  }
-  if (!window._db) { console.error('Firebase non disponible'); return []; }
-  try {
-    var snap = await window._getDocs(window._collection(window._db, 'danseurs'));
-    snap.forEach(function(doc) { _tousProfils.push(Object.assign({ id: doc.id }, doc.data())); });
-  } catch(e) { console.error('Erreur chargement profils:', e); }
-  return _tousProfils;
+  // Utilise le cache central tousLesDanseurs
+  await _chargerTousLesDanseurs();
+  return tousLesDanseurs;
 }
 
 function _melangerTableau(arr) {
@@ -15998,18 +16013,29 @@ window._explorePostsVoirPlus = async function() {
   if (btn) btn.innerHTML = '\u23F3';
   try {
     var q = _explorePosts_query;
+    var mots = q ? q.toLowerCase().replace(/[^a-z0-9àâäéèêëîïôöùûüçœæ\s]/g, ' ').split(/\s+/).filter(function(w){ return w.length >= 3; }) : [];
     var snap2 = await window._getDocs(
-      window._query(window._collection(window._db, 'posts'),
-        window._orderBy('createdAt','desc'),
-        window._startAfter(_explorePosts_lastDoc),
-        window._limit(_EXPLORE_POSTS_PAGE)
-      )
+      mots.length > 0
+        ? window._query(window._collection(window._db, 'posts'),
+            window._where('keywords', 'array-contains', mots[0]),
+            window._orderBy('createdAt','desc'),
+            window._startAfter(_explorePosts_lastDoc),
+            window._limit(_EXPLORE_POSTS_PAGE)
+          )
+        : window._query(window._collection(window._db, 'posts'),
+            window._orderBy('createdAt','desc'),
+            window._startAfter(_explorePosts_lastDoc),
+            window._limit(_EXPLORE_POSTS_PAGE)
+          )
     );
     var results2 = [];
     snap2.forEach(function(doc) {
       var d = doc.data();
-      var texte = (d.texte || d.content || d.text || '').toLowerCase();
-      if (!q || texte.includes(q)) results2.push(Object.assign({ id: doc.id }, d));
+      if (mots.length > 1) {
+        var kw = d.keywords || [];
+        if (!mots.slice(1).every(function(m){ return kw.includes(m); })) return;
+      }
+      results2.push(Object.assign({ id: doc.id }, d));
     });
     if (snap2.size > 0) _explorePosts_lastDoc = snap2.docs[snap2.docs.length - 1];
     else _explorePosts_lastDoc = null;
@@ -16074,10 +16100,17 @@ window.rechercherExplore = async function(q) {
     container2.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">\u23F3 Recherche...</div>';
     try {
       if (!window._db || !window._getDocs) throw new Error('Firebase non pr\u00EAt');
+      // Découper en mots, requête sur le premier mot via array-contains
+      var mots = q.toLowerCase().replace(/[^a-z0-9àâäéèêëîïôöùûüçœæ\s]/g, ' ').split(/\s+/).filter(function(w){ return w.length >= 3; });
+      if (mots.length === 0) {
+        container2.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:40px 0;">Tape au moins 3 caractères</div>';
+        return;
+      }
       _explorePosts_query = q;
       _explorePosts_lastDoc = null;
       var snap2 = await window._getDocs(
         window._query(window._collection(window._db, 'posts'),
+          window._where('keywords', 'array-contains', mots[0]),
           window._orderBy('createdAt','desc'),
           window._limit(_EXPLORE_POSTS_PAGE)
         )
@@ -16085,8 +16118,12 @@ window.rechercherExplore = async function(q) {
       var results2 = [];
       snap2.forEach(function(doc) {
         var d = doc.data();
-        var texte = (d.texte || d.content || d.text || '').toLowerCase();
-        if (texte.includes(q)) results2.push(Object.assign({ id: doc.id }, d));
+        // Filtrer les mots supplémentaires côté client si plusieurs mots
+        if (mots.length > 1) {
+          var kw = d.keywords || [];
+          if (!mots.slice(1).every(function(m){ return kw.includes(m); })) return;
+        }
+        results2.push(Object.assign({ id: doc.id }, d));
       });
       if (snap2.size > 0) _explorePosts_lastDoc = snap2.docs[snap2.docs.length - 1];
       if (results2.length === 0) {
@@ -16202,6 +16239,36 @@ window._increment     = increment;
 window._orderBy     = orderBy;
 window._limit       = limit;
 window._onSnapshot  = onSnapshot;
+
+
+// ── Migration one-shot : ajouter keywords aux posts existants ──
+// Appeler depuis la console : window._migratePostsKeywords()
+window._migratePostsKeywords = async function() {
+  if (!window._db) { console.error('Firebase non prêt'); return; }
+  console.log('Migration keywords posts : démarrage...');
+  try {
+    const snap = await window._getDocs(window._collection(window._db, 'posts'));
+    let count = 0, skipped = 0;
+    const promises = [];
+    snap.forEach(function(d) {
+      const data = d.data();
+      if (data.keywords && data.keywords.length > 0) { skipped++; return; }
+      const text = data.content || data.texte || data.text || '';
+      const keywords = _extractKeywords(text);
+      if (keywords.length === 0) { skipped++; return; }
+      promises.push(
+        window._updateDoc(window._doc(window._db, 'posts', d.id), { keywords: keywords })
+          .then(function(){ count++; })
+      );
+    });
+    await Promise.all(promises);
+    console.log('Migration terminée : ' + count + ' posts mis à jour, ' + skipped + ' ignorés.');
+    alert('Migration terminée : ' + count + ' posts mis à jour.');
+  } catch(e) {
+    console.error('Erreur migration:', e);
+    alert('Erreur : ' + e.message);
+  }
+};
 
 // ════════════════════════════════
 // USERNAME — vérification unicité
@@ -16388,6 +16455,7 @@ window.inscrire = async function() {
     }
 
     await window._setDoc(window._doc(window._db, 'danseurs', uid), profileData);
+    _danseursFetched = false;
 
     okDiv.textContent = '✅ Compte créé ! Bienvenue sur HAKO !';
     okDiv.style.display = 'block';
@@ -16964,6 +17032,7 @@ window.sauvegarderIdentite = async function() {
       if (taken) { alert('⚠️ Ce nom d\'utilisateur est déjà pris'); return; }
     }
 
+    _danseursFetched = false;
     await window._setDoc(window._doc(window._db, 'danseurs', user.uid), {
       nom, blase, tel,
       nomLower: (nom || '').toLowerCase(),
@@ -18029,8 +18098,7 @@ async function chargerPageEnregistres() {
       } else {
         // Charger les events si besoin
         if (tousLesEvents.length === 0) {
-          const evSnap = await window._getDocs(window._collection(window._db, 'evenements'));
-          evSnap.forEach(d => tousLesEvents.push({ id: d.id, ...d.data() }));
+          await _chargerTousLesEvents();
         }
         const favEvents = tousLesEvents.filter(e => mesFavoris.has(e.id));
         if (eventsLoading) eventsLoading.style.display = 'none';
@@ -18793,10 +18861,9 @@ async function _chargerNetworkEvents() {
     return;
   }
   if (!window._db) return;
-  try {    const snap = await getDocs(collection(window._db, 'evenements'));
-    const all = [];
-    snap.forEach(d => all.push({ id: d.id, ...d.data() }));
-    _networkEventsData = all.filter(e => !_estPasse(e));
+  try {
+    await _chargerTousLesEvents();
+    _networkEventsData = tousLesEvents.filter(e => !_estPasse(e));
   } catch(e) { console.error(e); }
 }
 
