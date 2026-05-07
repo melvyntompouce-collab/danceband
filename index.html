@@ -4323,7 +4323,7 @@ if (isPWA) {
               <span class="privacy-bullet"></span>
               <div>
                 <strong>Commission HAKO</strong>
-                <span>HAKO prélève une commission de 10 % sur chaque vente de billet réalisée via la plateforme. Le montant restant est reversé à l'organisateur via son compte Stripe.</span>
+                <span>HAKO prélève une commission de 12 % sur chaque vente de billet réalisée via la plateforme. Le montant restant est reversé à l'organisateur via son compte Stripe.</span>
               </div>
             </li>
             <li>
@@ -4456,7 +4456,7 @@ if (isPWA) {
               <span class="privacy-bullet"></span>
               <div>
                 <strong>Prix affiché</strong>
-                <span>Le prix indiqué sur la page de l'événement est le prix total TTC payé par l'acheteur. Il inclut la commission HAKO de 10 %.</span>
+                <span>Le prix indiqué sur la page de l'événement est le prix total TTC payé par l'acheteur. Il inclut la commission HAKO de 12 %.</span>
               </div>
             </li>
             <li>
@@ -6045,7 +6045,7 @@ if (isPWA) {
           </div>
           <div id="billetterie-hako-fields" style="display:none;">
             <div style="background:rgba(0,245,155,0.06);border:1px solid rgba(0,245,155,0.2);border-radius:12px;padding:14px;margin-bottom:12px;">
-              <div style="font-size:12px;color:var(--muted2);line-height:1.6;">Les paiements sont encaissés directement sur HAKO. HAKO prélève 10% de commission, le reste est viré sur ton compte bancaire.</div>
+              <div style="font-size:12px;color:var(--muted2);line-height:1.6;">Les paiements sont encaissés directement sur HAKO. HAKO prélève 12% de commission, le reste est viré sur ton compte bancaire.</div>
             </div>
             <div id="stripe-connect-status">
               <button type="button" onclick="connecterStripe()" id="btn-connecter-stripe" style="width:100%;padding:12px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
@@ -8492,13 +8492,12 @@ window.publierPost = async function() {
   // Upload média si besoin
   if ((_postType === 'photo' || _postType === 'video') && _postMediaFile) {
     try {
-      const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
-      const _storage = getStorage();
+      const _storage = window._getStorage();
       const _ext = _postMediaFile.type.startsWith('video') ? 'mp4' : 'jpg';
       const _path = 'posts/' + window._currentUid + '/' + Date.now() + '.' + _ext;
-      const storageRef = ref(_storage, _path);
-      const snapshot = await uploadBytes(storageRef, window._postMediaFile);
-      postData.mediaUrl = await getDownloadURL(snapshot.ref);
+      const storageRef = window._storageRef(_storage, _path);
+      const snapshot = await window._uploadBytes(storageRef, window._postMediaFile);
+      postData.mediaUrl = await window._getDownloadURL(snapshot.ref);
     } catch(e) { console.error('Upload post:', e); return errMsg('Erreur lors de l\'upload. Vérifie ta connexion.'); }
   } else if (_postType === 'link') {
     const url = document.getElementById('post-link-url').value.trim();
@@ -10741,11 +10740,10 @@ window.uploaderLogoHako = async function(input) {
   const file = input.files[0];
   if (!file) return;
   try {
-    const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
-    const storage = getStorage();
-    const storageRef = ref(storage, 'hako/logo_officiel');
-    const snap = await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(snap.ref);
+    const storage = window._getStorage();
+    const storageRef = window._storageRef(storage, 'hako/logo_officiel');
+    const snap = await window._uploadBytes(storageRef, file);
+    const url = await window._getDownloadURL(snap.ref);
     window._hakoLogoUrl = url;
     await window._setDoc(window._doc(window._db, 'config', 'hako'), { logoUrl: url }, { merge: true });
     const prev = document.getElementById('hako-logo-preview');
@@ -10778,11 +10776,10 @@ window.publierPostHako = async function() {
   try {
     let photoUrl = null;
     if (window._hakoPostPhotoFile) {
-      const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
-      const storage = getStorage();
-      const storageRef = ref(storage, 'hako/posts/' + Date.now());
-      const snap = await uploadBytes(storageRef, window._hakoPostPhotoFile);
-      photoUrl = await getDownloadURL(snap.ref);
+      const storage = window._getStorage();
+      const storageRef = window._storageRef(storage, 'hako/posts/' + Date.now());
+      const snap = await window._uploadBytes(storageRef, window._hakoPostPhotoFile);
+      photoUrl = await window._getDownloadURL(snap.ref);
     }
 
     // Si épingler, désépingler l'ancien post épinglé
@@ -10914,11 +10911,10 @@ window.publierPostHako = async function() {
       }
       let update = { hakoType: type, content: texte, pinned: epingler || false };
       if (window._hakoPostPhotoFile) {
-        const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
-        const storage = getStorage();
-        const storageRef = ref(storage, 'hako/posts/' + Date.now());
-        const snap = await uploadBytes(storageRef, window._hakoPostPhotoFile);
-        update.mediaUrl = await getDownloadURL(snap.ref);
+        const storage = window._getStorage();
+        const storageRef = window._storageRef(storage, 'hako/posts/' + Date.now());
+        const snap = await window._uploadBytes(storageRef, window._hakoPostPhotoFile);
+        update.mediaUrl = await window._getDownloadURL(snap.ref);
         update.type = 'photo';
       }
       await window._updateDoc(window._doc(window._db, 'posts', window._hakoEditId), update);
@@ -11957,14 +11953,22 @@ window.chargerMesReservations = async function() {
   loadEl.style.display = 'block';
   emptyEl.style.display = 'none';
   try {
-    const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const q = query(collection(window._db, 'reservations'), where('acheteurUid', '==', window._currentUid));
-    const snap = await getDocs(q);
+    const q = window._query(window._collection(window._db, 'reservations'), window._where('acheteurUid', '==', window._currentUid));
+    const snap = await window._getDocs(q);
     loadEl.style.display = 'none';
     if (snap.empty) { emptyEl.style.display = 'block'; return; }
     const reservations = [];
     snap.forEach(docSnap => reservations.push({ id: docSnap.id, ...docSnap.data() }));
     reservations.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+    // Compléter titreEvent manquant via Firestore
+    await Promise.all(reservations.map(async r => {
+      if (!r.titreEvent && r.eventId) {
+        try {
+          const evSnap = await window._getDoc(window._doc(window._db, 'evenements', r.eventId));
+          if (evSnap.exists()) r.titreEvent = evSnap.data().titre || '';
+        } catch(e) {}
+      }
+    }));
     reservations.forEach(r => {
       const dateEvent = r.dateEvent ? new Date(r.dateEvent).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
       const statut = r.statut || 'confirmé';
@@ -12042,8 +12046,7 @@ window.fermerDetailBillet = function() {
 window.annulerReservation = async function(reservationId) {
   if (!confirm('Annuler cette réservation ? Cette action est irréversible.')) return;
   try {
-    const { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await updateDoc(doc(window._db, 'reservations', reservationId), { statut: 'annulé', annuléLe: new Date().toISOString() });
+    await window._updateDoc(window._doc(window._db, 'reservations', reservationId), { statut: 'annulé', annuléLe: new Date().toISOString() });
     _showToast('Réservation annulée.');
     fermerDetailBillet();
     chargerMesReservations();
@@ -12053,8 +12056,7 @@ window.annulerReservation = async function(reservationId) {
 window.demanderRemboursement = async function(reservationId) {
   if (!confirm('Demander un remboursement total ? Le montant du billet (hors frais de service) sera remboursé.')) return;
   try {
-    const { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await updateDoc(doc(window._db, 'reservations', reservationId), { statut: 'remboursement_demandé', remboursementLe: new Date().toISOString() });
+    await window._updateDoc(window._doc(window._db, 'reservations', reservationId), { statut: 'remboursement_demandé', remboursementLe: new Date().toISOString() });
     _showToast('Demande de remboursement envoyée.');
     fermerDetailBillet();
     chargerMesReservations();
@@ -12077,9 +12079,8 @@ window.chargerMesEvenements = async function() {
   loadEl.style.display = 'block';
   emptyEl.style.display = 'none';
   try {
-    const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const q = query(collection(window._db, 'evenements'), where('organisateurUid', '==', window._currentUid));
-    const snap = await getDocs(q);
+    const q = window._query(window._collection(window._db, 'evenements'), window._where('organisateurUid', '==', window._currentUid));
+    const snap = await window._getDocs(q);
     loadEl.style.display = 'none';
     if (snap.empty) { emptyEl.style.display = 'block'; return; }
     const evenements = [];
@@ -12096,8 +12097,8 @@ window.chargerMesEvenements = async function() {
     document.getElementById('global-stat-events').textContent = evenements.length;
 
     // Revenus totaux depuis les réservations
-    const qRes = query(collection(window._db, 'reservations'), where('organisateurUid', '==', window._currentUid));
-    const snapRes = await getDocs(qRes);
+    const qRes = window._query(window._collection(window._db, 'reservations'), window._where('organisateurUid', '==', window._currentUid));
+    const snapRes = await window._getDocs(qRes);
     let totalRevenus = 0;
     snapRes.forEach(d => { totalRevenus += parseFloat(d.data().montant) || 0; });
     const fmt = v => v % 1 === 0 ? v + '€' : v.toFixed(2) + '€';
@@ -12115,16 +12116,26 @@ window.chargerMesEvenements = async function() {
       document.getElementById('global-stat-remplissage').textContent = 'N/A';
     }
 
-    const now = new Date();
+    const today = new Date(); today.setHours(0,0,0,0);
+    function _getLastDateStr(ev) {
+      if (ev.dates && ev.dates.length > 0) {
+        const last = ev.dates[ev.dates.length - 1];
+        return (last && last.date) ? last.date : (typeof last === 'string' ? last : null);
+      }
+      if (Array.isArray(ev.date)) return ev.date[ev.date.length - 1] || null;
+      return ev.date || null;
+    }
     const actifs = evenements.filter(ev => {
-      if (!ev.dates || ev.dates.length === 0) return true;
-      const lastDate = new Date(ev.dates[ev.dates.length - 1].date);
-      return lastDate >= now;
+      const ds = _getLastDateStr(ev);
+      if (!ds) return true;
+      const lastDate = new Date(ds + 'T00:00:00');
+      return lastDate >= today;
     });
     const termines = evenements.filter(ev => {
-      if (!ev.dates || ev.dates.length === 0) return false;
-      const lastDate = new Date(ev.dates[ev.dates.length - 1].date);
-      return lastDate < now;
+      const ds = _getLastDateStr(ev);
+      if (!ds) return false;
+      const lastDate = new Date(ds + 'T00:00:00');
+      return lastDate < today;
     });
 
     // Fonction de création de card
@@ -12159,7 +12170,7 @@ window.chargerMesEvenements = async function() {
       } else {
         // Card large pour actifs (scroll horizontal)
         const card = document.createElement('div');
-        card.style.cssText = 'flex-shrink:0;width:200px;background:var(--card);border:1px solid var(--border);border-radius:16px;cursor:pointer;overflow:hidden;scroll-snap-align:start;transition:border-color 0.2s;display:flex;flex-direction:column;';
+        card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:16px;cursor:pointer;overflow:hidden;transition:border-color 0.2s;display:flex;flex-direction:column;';
         card.onmouseover = () => card.style.borderColor = 'rgba(0,245,155,0.4)';
         card.onmouseout = () => card.style.borderColor = 'var(--border)';
         card.onclick = () => window.ouvrirGestionEvent(ev);
@@ -12250,9 +12261,8 @@ window.chargerInscritsGestion = async function() {
   loadEl.style.display = 'block';
   emptyEl.style.display = 'none';
   try {
-    const { getDocs, collection, query, where } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const q = query(collection(window._db, 'reservations'), where('eventId', '==', _gestionEventCourant.id));
-    const snap = await getDocs(q);
+    const q = window._query(window._collection(window._db, 'reservations'), window._where('eventId', '==', _gestionEventCourant.id));
+    const snap = await window._getDocs(q);
     loadEl.style.display = 'none';
     const inscrits = [];
     snap.forEach(d => inscrits.push({ id: d.id, ...d.data() }));
@@ -12374,8 +12384,7 @@ window.chargerInscritsGestion = async function() {
 window.togglePresence = async function(reservationId, estPresent, btn) {
   const newVal = !estPresent;
   try {
-    const { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    await updateDoc(doc(window._db, 'reservations', reservationId), { presence: newVal });
+    await window._updateDoc(window._doc(window._db, 'reservations', reservationId), { presence: newVal });
     btn.textContent = newVal ? '✓ Présent' : 'Absent';
     btn.style.borderColor = newVal ? 'var(--green)' : 'var(--border)';
     btn.style.background = newVal ? 'rgba(0,245,155,0.12)' : 'transparent';
@@ -12456,8 +12465,7 @@ window.validerBillet = async function(billetId) {
   resultEl.style.border = '1px solid var(--border)';
   resultEl.innerHTML = '<div style="color:var(--muted2);font-size:13px;">Vérification...</div>';
   try {
-    const { getDoc, doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-    const snap = await getDoc(doc(window._db, 'reservations', billetId));
+    const snap = await window._getDoc(window._doc(window._db, 'reservations', billetId));
     if (!snap.exists()) {
       resultEl.style.background = 'rgba(255,77,109,0.1)';
       resultEl.style.border = '1px solid var(--red)';
@@ -12685,11 +12693,10 @@ window.sauvegarderSalle = async function() {
   if (sallePhotoFile) {
     try {
       btn.textContent = '⏳ Upload photo...';
-      const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
-      const storage = getStorage();
-      const storageRef = ref(storage, `salles/${window._currentUid}/${Date.now()}_${sallePhotoFile.name}`);
-      const snap = await uploadBytes(storageRef, sallePhotoFile);
-      sallePhotoUrl = await getDownloadURL(snap.ref);
+      const storage = window._getStorage();
+      const storageRef = window._storageRef(storage, `salles/${window._currentUid}/${Date.now()}_${sallePhotoFile.name}`);
+      const snap = await window._uploadBytes(storageRef, sallePhotoFile);
+      sallePhotoUrl = await window._getDownloadURL(snap.ref);
       btn.textContent = '⏳ Enregistrement...';
     } catch(e) {
       errDiv.textContent = '❌ Erreur upload photo : ' + e.message;
@@ -12925,11 +12932,10 @@ window.sauvegarderEcole = async function() {
   if (ecolePhotoFile) {
     try {
       btn.textContent = '⏳ Upload photo...';
-      const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
-      const storage = getStorage();
-      const storageRef = ref(storage, `ecoles/${window._currentUid}/${Date.now()}_${ecolePhotoFile.name}`);
-      const snap = await uploadBytes(storageRef, ecolePhotoFile);
-      ecolePhotoUrl = await getDownloadURL(snap.ref);
+      const storage = window._getStorage();
+      const storageRef = window._storageRef(storage, `ecoles/${window._currentUid}/${Date.now()}_${ecolePhotoFile.name}`);
+      const snap = await window._uploadBytes(storageRef, ecolePhotoFile);
+      ecolePhotoUrl = await window._getDownloadURL(snap.ref);
       btn.textContent = '⏳ Enregistrement...';
     } catch(e) {
       errDiv.textContent = '❌ Erreur upload photo : ' + e.message;
@@ -13472,10 +13478,10 @@ let mesFavoris = new Set();
 
 async function chargerFavoris() {
   if (!window._currentUid || !window._db) return;
-  try {    const snap = await window._getDoc(window._doc(window._db, 'danseurs', window._currentUid));
-    if (snap.exists()) {
-      mesFavoris = new Set(snap.data().favoris || []);
-    }
+  try {
+    // Réutilise les données déjà chargées par chargerProfil si disponibles
+    const d = window._monProfilData || (await window._getDoc(window._doc(window._db, 'danseurs', window._currentUid))).data();
+    mesFavoris = new Set((d && d.favoris) || []);
   } catch(e) { console.error(e); }
 }
 
@@ -13566,9 +13572,10 @@ let convOuverte = null;
 
 async function chargerAbonnements() {
   if (!window._currentUid || !window._db) return;
-  try {    const snap = await window._getDoc(window._doc(window._db, 'danseurs', window._currentUid));
-    if (snap.exists()) {
-      const d = snap.data();
+  try {
+    // Réutilise les données déjà chargées par chargerProfil si disponibles
+    const d = window._monProfilData || (await window._getDoc(window._doc(window._db, 'danseurs', window._currentUid))).data();
+    if (d) {
       mesAbonnements = new Set(d.abonnements || []);
       mesAbonnements.forEach(uid => mettreAJourBtnSuivre(uid, true));
       const statAbos = document.getElementById('ap-abonnements');
@@ -13576,14 +13583,14 @@ async function chargerAbonnements() {
     }
   } catch(e) { console.error('Abonnements:', e); }
 
-  // Comptage abonnés dans un try séparé pour ne pas bloquer
-  try {    const abonnesSnap = await window._getDocs(window._query(
-      window._collection(window._db, 'danseurs'),
-      window._where('abonnements', 'array-contains', window._currentUid)
-    ));
+  // Comptage abonnés en fire-and-forget — ne bloque plus le boot
+  window._getDocs(window._query(
+    window._collection(window._db, 'danseurs'),
+    window._where('abonnements', 'array-contains', window._currentUid)
+  )).then(abonnesSnap => {
     const statAbonnes = document.getElementById('ap-abonnes');
     if (statAbonnes) statAbonnes.textContent = abonnesSnap.size;
-  } catch(e) { console.error('Comptage abonnés:', e); }
+  }).catch(e => console.error('Comptage abonnés:', e));
 
   // Afficher bouton organisateur
   const orgaBtn = document.getElementById('orga-btn');
@@ -14538,8 +14545,6 @@ window.validerConnexionRapide = async function() {
   btn.textContent = 'Connexion...'; btn.disabled = true;
   if (errEl) errEl.style.display = 'none';
   try {
-    const { getAuth, signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js');
-    const auth = getAuth();
     await signInWithEmailAndPassword(auth, email, password);
     modal.style.display = 'none';
     _showToast('Connecté ! Réservation en cours...');
@@ -14581,8 +14586,6 @@ window.validerInscriptionRapide = async function() {
     if (!taken.empty) { btn.textContent = 'Créer mon compte et réserver →'; btn.disabled = false; return showErr('Ce username est déjà pris'); }
 
     // Créer le compte Firebase Auth
-    const { getAuth, createUserWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js');
-    const auth = getAuth();
     const cred = await createUserWithEmailAndPassword(auth, email, password);
     const uid = cred.user.uid;
 
@@ -16196,6 +16199,8 @@ function closeMapFullscreen() { /* carte supprimée */ }
 <!-- ═══ FIREBASE AUTH ═══ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL }
+  from "https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js";
 import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, where, updateDoc, deleteDoc, addDoc, getCountFromServer, orderBy, limit, arrayUnion, arrayRemove, serverTimestamp, startAfter, increment, onSnapshot }
   from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
@@ -16239,6 +16244,10 @@ window._increment     = increment;
 window._orderBy     = orderBy;
 window._limit       = limit;
 window._onSnapshot  = onSnapshot;
+window._getStorage    = getStorage;
+window._storageRef    = storageRef;
+window._uploadBytes   = uploadBytes;
+window._getDownloadURL = getDownloadURL;
 
 
 // ── Migration one-shot : ajouter keywords aux posts existants ──
@@ -16767,11 +16776,10 @@ window.sauvegarderCartePro = async function() {
     // Upload book si nouveau fichier sélectionné
     if (window._proBookFile) {
       try {
-        const { getStorage, ref, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js');
-        const storage = getStorage();
-        const storageRef = ref(storage, 'pro_books/' + user.uid + '/' + window._proBookName);
-        const snapshot = await uploadBytes(storageRef, window._proBookFile);
-        proData.pro_book_url = await getDownloadURL(snapshot.ref);
+        const storage = window._getStorage();
+        const storageRef = window._storageRef(storage, 'pro_books/' + user.uid + '/' + window._proBookName);
+        const snapshot = await window._uploadBytes(storageRef, window._proBookFile);
+        proData.pro_book_url = await window._getDownloadURL(snapshot.ref);
         proData.pro_book_name = window._proBookName;
         window._proBookUrl = proData.pro_book_url;
         window._proBookFile = null;
@@ -17109,6 +17117,7 @@ window.sauvegarderIdentite = async function() {
 }
 window.deconnecter = async function() {
   await signOut(auth);
+  window._monProfilData = null;
   window.showPage('home');
   mettreAJourNav(null);
 }
@@ -17145,6 +17154,7 @@ window.supprimerCompte = async function() {
     // 4. Réinitialiser l'état local
     window._currentUid = null;
     window._monProfil  = null;
+    window._monProfilData = null;
     window._photoFile  = null;
 
     closeDrawer();
@@ -17175,6 +17185,8 @@ async function chargerProfil(uid) {
     const snap = await window._getDoc(window._doc(window._db, 'danseurs', uid));
     if (!snap.exists()) return;
     const d = snap.data();
+    // Stocker les données brutes pour éviter les re-fetch dans chargerFavoris/chargerAbonnements
+    window._monProfilData = d;
 
     // ── Photo ──
     if (d.photo) {
@@ -21024,7 +21036,7 @@ window.ouvrirPaiementHako = async function(eventId) {
   document.getElementById('hako-payment-event-info').innerHTML = `
     <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-bottom:4px;">${ev.titre}</div>
     <div style="font-size:22px;font-weight:800;color:var(--green);font-family:'Syne',sans-serif;">${prix}€</div>
-    <div style="font-size:11px;color:var(--muted);margin-top:2px;">10% de frais de service inclus</div>`;
+    <div style="font-size:11px;color:var(--muted);margin-top:2px;">12% de frais de service inclus</div>`;
   try {
     const res = await fetch('/api/create-payment-intent', {
       method: 'POST',
@@ -21061,8 +21073,7 @@ window.confirmerPaiementHako = async function() {
     });
     if (error) throw new Error(error.message);
     if (_paymentEventId) {
-      const { increment } = await import('https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js');
-      await window._updateDoc(window._doc(window._db, 'evenements', _paymentEventId), { inscrits: increment(1) });
+      await window._updateDoc(window._doc(window._db, 'evenements', _paymentEventId), { inscrits: window._increment(1) });
     }
     fermerPaiementHako();
     alert('✅ Paiement réussi ! Tu es inscrit.');
@@ -21396,8 +21407,11 @@ window.toggleFaq = function(el) {
         </div>
       </div>
     </div>
-    <!-- Events actifs (scroll horizontal) -->
-    <div id="mes-evenements-list" style="display:flex;gap:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 20px 4px;scroll-snap-type:x mandatory;scrollbar-width:none;"></div>
+    <!-- Events actifs (grille 2x2 scroll vertical) -->
+    <div style="padding:0 20px;margin-bottom:12px;">
+      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Événements à venir</div>
+    </div>
+    <div id="mes-evenements-list" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 20px 4px;"></div>
     <!-- Events terminés (section repliable) -->
     <div id="mes-evenements-termines-wrap" style="display:none;padding:0 20px;margin-top:24px;">
       <button onclick="toggleTermines()" style="display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;padding:0;margin-bottom:12px;">
