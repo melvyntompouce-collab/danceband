@@ -5984,10 +5984,6 @@ if (isPWA) {
 
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.05);">Où</div>
         <div class="form-group" style="margin:0">
-          <label class="form-label">Ville</label>
-          <input id="ev-ville" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon..." autocomplete="off" style="background:var(--bg2)">
-        </div>
-        <div class="form-group" style="margin:0">
           <label class="form-label">Adresse complète</label>
           <input id="ev-adresse" class="form-input" type="text" placeholder="Ex: Le Rex Club, Paris 10e" style="background:var(--bg2)">
         </div>
@@ -6018,7 +6014,7 @@ if (isPWA) {
         </div>
         <!-- Billetterie -->
         <div class="form-group" style="margin:0">
-          <label class="form-label">Paiement via HAKO <span style="font-size:11px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <label class="form-label">Paiement via HAKO</label>
           <div style="background:rgba(0,245,155,0.06);border:1px solid rgba(0,245,155,0.2);border-radius:12px;padding:14px;margin-bottom:10px;">
             <div style="font-size:12px;color:var(--muted2);line-height:1.6;">Les paiements sont encaissés directement sur HAKO. HAKO prélève 12% de commission, le reste est viré sur ton compte bancaire.</div>
           </div>
@@ -13056,7 +13052,6 @@ window.modifierEvent = async function(id) {
     updateFormType(_disc);
     document.getElementById('ev-type').value = ev.type || 'soiree';
     _loadDatesList(ev);
-    document.getElementById('ev-ville').value  = ev.ville   || 'Paris';
     _loadTarifsList(ev);
     document.getElementById('ev-adresse').value   = ev.adresse    || '';
     document.getElementById('ev-niveau').value = ev.niveau  || 'Tous niveaux';
@@ -13094,6 +13089,15 @@ window.sauvegarderEvent = async function() {
 
   if (!titre) { errDiv.textContent = '⚠️ Le titre est obligatoire'; errDiv.style.display = 'block'; return; }
 
+  // Vérifier Stripe si event payant
+  const _tarifs = (window._evTarifs || []).filter(t => parseFloat(t.prix) > 0);
+  if (_tarifs.length > 0 && !window._stripeAccountId) {
+    errDiv.textContent = '⚠️ Un compte bancaire doit être connecté pour publier un événement payant.';
+    errDiv.style.display = 'block';
+    document.getElementById('stripe-connect-status')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
   const btn = document.getElementById('ev-submit-btn');
   btn.textContent = '⏳ Publication...';
   btn.disabled = true;
@@ -13126,7 +13130,6 @@ window.sauvegarderEvent = async function() {
     type:          document.getElementById('ev-type').value,
     discipline:    document.getElementById('ev-discipline').value,
     dates:         (window._evDates || []).filter(d => d.date).map(d => ({date: d.date, dateFin: d.dateFin || '', heure: d.heure || ''})),
-    ville:         document.getElementById('ev-ville').value,
     tarifs:        (window._evTarifs || []).map(t => ({ label: t.label || '', prix: parseFloat(t.prix) || 0, devise: t.devise || '€' })),
     adresse:       document.getElementById('ev-adresse').value,
     stylesEvent:   _getStylesSelectionnes(),
@@ -21001,6 +21004,7 @@ let _stripeElements = null;
 let _paymentEventId = null;
 
 window.validerLienInscription = function(input) {
+  if (window._monRole === 'admin') return true; // admins : aucune restriction
   const DOMAINES_BLOQUES = ['billetweb.fr', 'usquarenow.com', 'shotgun.live'];
   const errEl = document.getElementById('ev-lien-inscription-error');
   if (!errEl) return true;
@@ -21208,16 +21212,6 @@ window.importerDepuisInsta = function() {
     var timeStr = h + ':' + m;
     var timeInput = document.querySelector('#ev-dates-list input[type="time"]');
     if (timeInput && !timeInput.value) { timeInput.value = timeStr; remplis.push('heure'); }
-  }
-
-  // ── Ville : recherche villes connues
-  var villesFR = ['Paris','Lyon','Marseille','Bordeaux','Toulouse','Nantes','Strasbourg','Montpellier','Lille','Nice','Rennes','Grenoble','Toulon','Angers','Dijon','Nîmes','Aix-en-Provence','Saint-Étienne','Brest','Rouen','Reims','Tours','Metz','Nancy','Cannes','Antibes','Bron','Villeurbanne'];
-  var champVille = document.getElementById('ev-ville');
-  if (champVille && !champVille.value) {
-    for (var i = 0; i < villesFR.length; i++) {
-      var re = new RegExp('\\b' + villesFR[i] + '\\b', 'i');
-      if (re.test(texte)) { champVille.value = villesFR[i]; remplis.push('ville'); break; }
-    }
   }
 
   // ── Prix : "10€", "10 euros", "gratuit", "free", "15e"
