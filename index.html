@@ -5994,8 +5994,11 @@ if (isPWA) {
 
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.05);">Qui / quoi</div>
         <div class="form-group" style="margin:0">
-          <label class="form-label">Styles de danse</label>
-          <input id="ev-styles" class="form-input" type="text" placeholder="Ex: Kizomba, Semba, Tarraxo" style="background:var(--bg2)">
+          <label class="form-label">Styles <span style="color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <select id="ev-styles-select" class="form-select" style="background:var(--bg2);margin-bottom:8px;" onchange="ajouterStyleEvent(this)">
+            <option value="">Ajouter un style...</option>
+          </select>
+          <div id="ev-styles-chips" style="display:flex;flex-wrap:wrap;gap:6px;min-height:0;"></div>
         </div>
         <div class="form-group" style="margin:0">
           <label class="form-label">Niveau</label>
@@ -6006,24 +6009,6 @@ if (isPWA) {
             <option>Avancé</option>
           </select>
         </div>
-        <div class="form-group" style="margin:0">
-          <label class="form-label">Vibe musicale <span style="color:var(--muted);font-weight:400;">(optionnel)</span></label>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;" id="ev-vibe-chips">
-            <button type="button" class="vibe-chip" data-vibe="Afro" onclick="toggleVibeChip(this)">🌍 Afro</button>
-            <button type="button" class="vibe-chip" data-vibe="Afrobeats" onclick="toggleVibeChip(this)">🥁 Afrobeats</button>
-            <button type="button" class="vibe-chip" data-vibe="Amapiano" onclick="toggleVibeChip(this)">🎹 Amapiano</button>
-            <button type="button" class="vibe-chip" data-vibe="R&B" onclick="toggleVibeChip(this)">🎵 R&B</button>
-            <button type="button" class="vibe-chip" data-vibe="Hip-Hop" onclick="toggleVibeChip(this)">🎤 Hip-Hop</button>
-            <button type="button" class="vibe-chip" data-vibe="Rap" onclick="toggleVibeChip(this)">🎙️ Rap</button>
-            <button type="button" class="vibe-chip" data-vibe="Dancehall" onclick="toggleVibeChip(this)">🌴 Dancehall</button>
-            <button type="button" class="vibe-chip" data-vibe="Reggaeton" onclick="toggleVibeChip(this)">🔥 Reggaeton</button>
-            <button type="button" class="vibe-chip" data-vibe="House" onclick="toggleVibeChip(this)">🎧 House</button>
-            <button type="button" class="vibe-chip" data-vibe="Techno" onclick="toggleVibeChip(this)">⚡ Techno</button>
-            <button type="button" class="vibe-chip" data-vibe="UK Garage" onclick="toggleVibeChip(this)">🔊 UK Garage</button>
-            <button type="button" class="vibe-chip" data-vibe="Kuduro" onclick="toggleVibeChip(this)">🇦🇴 Kuduro</button>
-            <button type="button" class="vibe-chip" data-vibe="Latino" onclick="toggleVibeChip(this)">💃 Latino</button>
-          </div>
-        </div>
 
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.05);">Pratique</div>
         <div class="form-group" style="margin:0">
@@ -6031,28 +6016,23 @@ if (isPWA) {
           <div id="ev-tarifs-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
           <button type="button" onclick="ajouterTarifEvent()" style="width:100%;padding:10px;border-radius:10px;background:transparent;border:1.5px dashed var(--border);color:var(--muted2);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(0,245,155,0.4)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted2)'">＋ Ajouter un tarif</button>
         </div>
-        <!-- Mode billetterie -->
+        <!-- Billetterie -->
         <div class="form-group" style="margin:0">
-          <label class="form-label">Billetterie</label>
-          <div style="display:flex;gap:8px;margin-bottom:12px;">
-            <button type="button" id="btn-billetterie-externe" onclick="setBilletterieMode('externe')" style="flex:1;padding:10px;border-radius:10px;background:var(--green);color:#080810;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;border:none;cursor:pointer;">Lien d'inscription</button>
-            <button type="button" id="btn-billetterie-hako" onclick="setBilletterieMode('hako')" style="flex:1;padding:10px;border-radius:10px;background:var(--bg2);color:var(--muted2);font-family:'Syne',sans-serif;font-weight:700;font-size:12px;border:1.5px solid var(--border);cursor:pointer;">Paiement via HAKO</button>
+          <label class="form-label">Paiement via HAKO <span style="font-size:11px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <div style="background:rgba(0,245,155,0.06);border:1px solid rgba(0,245,155,0.2);border-radius:12px;padding:14px;margin-bottom:10px;">
+            <div style="font-size:12px;color:var(--muted2);line-height:1.6;">Les paiements sont encaissés directement sur HAKO. HAKO prélève 12% de commission, le reste est viré sur ton compte bancaire.</div>
           </div>
-          <div id="billetterie-externe-fields">
-            <input id="ev-lien-inscription" class="form-input" type="url" placeholder="https://forms.google.com/..." style="background:var(--bg2);" oninput="validerLienInscription(this)">
-            <div id="ev-lien-inscription-error" style="display:none;font-size:12px;color:#ff4d6d;margin-top:6px;font-family:'DM Sans',sans-serif;"></div>
+          <div id="stripe-connect-status">
+            <button type="button" onclick="connecterStripe()" id="btn-connecter-stripe" style="width:100%;padding:12px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              Connecter mon compte bancaire
+            </button>
           </div>
-          <div id="billetterie-hako-fields" style="display:none;">
-            <div style="background:rgba(0,245,155,0.06);border:1px solid rgba(0,245,155,0.2);border-radius:12px;padding:14px;margin-bottom:12px;">
-              <div style="font-size:12px;color:var(--muted2);line-height:1.6;">Les paiements sont encaissés directement sur HAKO. HAKO prélève 12% de commission, le reste est viré sur ton compte bancaire.</div>
-            </div>
-            <div id="stripe-connect-status">
-              <button type="button" onclick="connecterStripe()" id="btn-connecter-stripe" style="width:100%;padding:12px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                Connecter mon compte bancaire
-              </button>
-            </div>
-          </div>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Lien d'inscription <span style="font-size:11px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <input id="ev-lien-inscription" class="form-input" type="url" placeholder="https://forms.google.com/..." style="background:var(--bg2);" oninput="validerLienInscription(this)">
+          <div id="ev-lien-inscription-error" style="display:none;font-size:12px;color:#ff4d6d;margin-top:6px;font-family:'DM Sans',sans-serif;"></div>
         </div>
 
         <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.05);">Capacité & remboursement</div>
@@ -9080,6 +9060,7 @@ const TYPES_PAR_DISCIPLINE_FORM = {
 };
 
 function updateFormType(discipline) {
+  _updateStylesSelect(discipline);
   const sel = document.getElementById('ev-type');
   if (!sel) return;
   const opts = TYPES_PAR_DISCIPLINE_FORM[discipline] || TYPES_PAR_DISCIPLINE_FORM.danse;
@@ -9506,7 +9487,7 @@ function ouvrirEvent(id) {
       <div style="font-size:13px;color:var(--muted2);">${dateLine}</div>
       <div style="font-size:13px;color:var(--muted2);">📍 ${ev.ville || ''}${(ev.adresse||ev.lieu) ? ' · ' + (ev.adresse||ev.lieu) : ''}</div>
       ${ev.styles ? `<div style="font-size:13px;color:var(--muted2);">💃 ${ev.styles}</div>` : ''}
-      ${ev.vibe ? `<div style="font-size:13px;color:var(--muted2);">🎵 ${ev.vibe}</div>` : ''}
+      ${ev.stylesEvent && ev.stylesEvent.length ? `<div style="font-size:13px;color:var(--muted2);">${ev.stylesEvent.join(' · ')}</div>` : ''}
       ${ev.niveau ? `<div style="font-size:13px;color:var(--muted2);">⭐ ${ev.niveau}</div>` : ''}
       ${ev.organisateur ? `<div style="font-size:13px;color:var(--muted2);">👤 Organisé par ${ev.organisateur}</div>` : ''}
     </div>
@@ -11791,22 +11772,57 @@ window.supprimerPhotoEvent = function() {
   window._evCropY = 50;
 }
 
-// ── Vibe musicale ──
-window.toggleVibeChip = function(btn) {
-  btn.classList.toggle('on');
+// ── Styles événement ──
+const EV_STYLES_PAR_DISCIPLINE = {
+  danse: ['Afro','Bachata','Bharata Natyam','Breakdance','Capoeira','Claquettes','Classique','Commercial','Danse Orientale','Dancehall','Electro','Experimental','Heels','Hip-Hop','House','K-Pop','Kizomba','Krump','Litefeet','Locking','Modern Jazz','New Style','Pole Dance','Popping','Salsa','Samba','Street Jazz','Tango','Voguing','Zouk'],
+  musique: ['Afrobeat','Amapiano','Dancehall','Électro','Funk','Gospel','Hip-Hop','House','Jazz','Kizomba / Semba','Latin','Pop','R&B','Reggae / Dancehall','RnB','Soul','Techno','Trap'],
+  audiovisuel: ['Battle','Clip musical','Court-métrage','Documentaire','Événement','Freestyle','Mode','Montage','Portrait','Pub / Promo','Reportage','Sport','Studio'],
+  autre: ['Compétition','Démonstration','Exposition','Festival','Initiation','Performance','Showcase','Spectacle']
 };
 
-function setVibeChips(vibes) {
-  const chips = document.querySelectorAll('#ev-vibe-chips .vibe-chip');
-  const list = (vibes || '').split(',').map(v => v.trim().toLowerCase()).filter(Boolean);
-  chips.forEach(c => {
-    c.classList.toggle('on', list.includes(c.dataset.vibe.toLowerCase()));
-  });
+window._evStylesSelectionnes = [];
+
+window.ajouterStyleEvent = function(select) {
+  const val = select.value;
+  if (!val) return;
+  select.value = '';
+  if (window._evStylesSelectionnes.includes(val)) return;
+  window._evStylesSelectionnes.push(val);
+  _renderStylesChips();
+};
+
+window.supprimerStyleEvent = function(style) {
+  window._evStylesSelectionnes = window._evStylesSelectionnes.filter(s => s !== style);
+  _renderStylesChips();
+};
+
+function _renderStylesChips() {
+  const container = document.getElementById('ev-styles-chips');
+  if (!container) return;
+  container.innerHTML = window._evStylesSelectionnes.map(s => `
+    <span style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;background:rgba(0,245,155,0.1);border:1px solid rgba(0,245,155,0.3);font-size:12px;font-family:'DM Sans',sans-serif;color:var(--green);">
+      ${s}
+      <button type="button" onclick="supprimerStyleEvent('${s.replace(/'/g,"\'")}')" style="background:none;border:none;cursor:pointer;color:var(--green);font-size:14px;line-height:1;padding:0;display:flex;align-items:center;">✕</button>
+    </span>`).join('');
 }
 
-function getVibeSelectionnes() {
-  return [...document.querySelectorAll('#ev-vibe-chips .vibe-chip.on')]
-    .map(c => c.dataset.vibe).join(', ');
+function _updateStylesSelect(discipline) {
+  const select = document.getElementById('ev-styles-select');
+  if (!select) return;
+  const liste = EV_STYLES_PAR_DISCIPLINE[discipline] || EV_STYLES_PAR_DISCIPLINE.autre;
+  select.innerHTML = '<option value="">Ajouter un style...</option>' +
+    liste.map(s => `<option value="${s}">${s}</option>`).join('');
+  window._evStylesSelectionnes = [];
+  _renderStylesChips();
+}
+
+function _setStylesSelectionnes(stylesArr) {
+  window._evStylesSelectionnes = Array.isArray(stylesArr) ? [...stylesArr] : (stylesArr ? stylesArr.split(',').map(s=>s.trim()).filter(Boolean) : []);
+  _renderStylesChips();
+}
+
+function _getStylesSelectionnes() {
+  return window._evStylesSelectionnes || [];
 }
 
 
@@ -12614,7 +12630,7 @@ window.ouvrirFormEvent = function() {
   eventEnEdition = null;
   document.getElementById('orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
   document.getElementById('ev-submit-btn').textContent = 'Publier l\'événement →';
-  ['ev-titre','ev-adresse','ev-styles','ev-desc','ev-lien-inscription'].forEach(id => {
+  ['ev-titre','ev-adresse','ev-desc','ev-lien-inscription'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -12628,13 +12644,8 @@ window.ouvrirFormEvent = function() {
   document.getElementById('ev-photo-label').style.display = 'flex';
   document.getElementById('ev-photo-label-text').textContent = 'Choisir une image JPG ou PNG';
   window._evPhotoUrl = null;
-  setVibeChips('');
-  // Lien externe réservé aux admins et organisateurs
-  const isPrivileged = window._monRole === 'admin' || window._monRole === 'organisateur';
-  const btnExterne = document.getElementById('btn-billetterie-externe');
-  if (btnExterne) btnExterne.style.display = isPrivileged ? '' : 'none';
-  // Forcer HAKO par défaut pour les artistes lambda
-  if (!isPrivileged) setBilletterieMode('hako');
+  _updateStylesSelect(document.getElementById('ev-discipline')?.value || 'danse');
+  verifierCompteStripeOrga();
   window._formRetour = currentPage;
   showPage('form-event');
 }
@@ -13048,10 +13059,9 @@ window.modifierEvent = async function(id) {
     document.getElementById('ev-ville').value  = ev.ville   || 'Paris';
     _loadTarifsList(ev);
     document.getElementById('ev-adresse').value   = ev.adresse    || '';
-    document.getElementById('ev-styles').value = ev.styles  || '';
     document.getElementById('ev-niveau').value = ev.niveau  || 'Tous niveaux';
     document.getElementById('ev-lien-inscription').value = ev.lienInscription || '';
-    setVibeChips(ev.vibe || '');
+    _setStylesSelectionnes(ev.stylesEvent || ev.styles || []);
     document.getElementById('ev-desc').value   = ev.description || '';
 
     // Photo de couverture
@@ -13119,8 +13129,7 @@ window.sauvegarderEvent = async function() {
     ville:         document.getElementById('ev-ville').value,
     tarifs:        (window._evTarifs || []).map(t => ({ label: t.label || '', prix: parseFloat(t.prix) || 0, devise: t.devise || '€' })),
     adresse:       document.getElementById('ev-adresse').value,
-    styles:        document.getElementById('ev-styles').value,
-    vibe:          getVibeSelectionnes(),
+    stylesEvent:   _getStylesSelectionnes(),
     niveau:        document.getElementById('ev-niveau').value,
     description:   document.getElementById('ev-desc').value,
     lienInscription: document.getElementById('ev-lien-inscription') ? document.getElementById('ev-lien-inscription').value.trim() || null : null,
@@ -13176,7 +13185,7 @@ window.sauvegarderEvent = async function() {
       setTimeout(() => { errDiv.style.display = 'none'; errDiv.style.color = ''; }, 3000);
       btn.textContent = 'Publier l\'événement →';
       document.getElementById('orga-form-title').textContent = 'CRÉER UN ÉVÉNEMENT';
-      ['ev-titre','ev-adresse','ev-styles','ev-desc','ev-lien-inscription'].forEach(id => {
+      ['ev-titre','ev-adresse','ev-desc','ev-lien-inscription'].forEach(id => {
         const el = document.getElementById(id); if (el) el.value = '';
       });
       _resetTarifsList();
@@ -13188,7 +13197,7 @@ window.sauvegarderEvent = async function() {
       document.getElementById('ev-photo-label').style.display = 'flex';
       document.getElementById('ev-photo-label-text').textContent = 'Choisir une image JPG ou PNG';
       window._evPhotoUrl = null;
-      setVibeChips('');
+      _updateStylesSelect(document.getElementById('ev-discipline')?.value || 'danse');
       document.getElementById('orga-form').scrollIntoView({ behavior: 'smooth' });
     }
   } catch(e) {
@@ -21009,23 +21018,7 @@ window.validerLienInscription = function(input) {
   return true;
 };
 
-window.setBilletterieMode = function(mode) {
-  window._billetterieMode = mode;
-  const btnExterne = document.getElementById('btn-billetterie-externe');
-  const btnHako = document.getElementById('btn-billetterie-hako');
-  const fieldsExterne = document.getElementById('billetterie-externe-fields');
-  const fieldsHako = document.getElementById('billetterie-hako-fields');
-  if (mode === 'externe') {
-    btnExterne.style.background = 'var(--green)'; btnExterne.style.color = '#080810'; btnExterne.style.border = 'none';
-    btnHako.style.background = 'var(--bg2)'; btnHako.style.color = 'var(--muted2)'; btnHako.style.border = '1.5px solid var(--border)';
-    fieldsExterne.style.display = 'block'; fieldsHako.style.display = 'none';
-  } else {
-    btnHako.style.background = 'var(--green)'; btnHako.style.color = '#080810'; btnHako.style.border = 'none';
-    btnExterne.style.background = 'var(--bg2)'; btnExterne.style.color = 'var(--muted2)'; btnExterne.style.border = '1.5px solid var(--border)';
-    fieldsExterne.style.display = 'none'; fieldsHako.style.display = 'block';
-    verifierCompteStripeOrga();
-  }
-};
+
 
 async function verifierCompteStripeOrga() {
   if (!window._currentUid) return;
