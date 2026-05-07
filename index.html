@@ -12073,7 +12073,36 @@ window.chargerMesEvenements = async function() {
     if (snap.empty) { emptyEl.style.display = 'block'; return; }
     const evenements = [];
     snap.forEach(docSnap => evenements.push({ id: docSnap.id, ...docSnap.data() }));
-    evenements.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+    evenements.sort((a, b) => {
+      const da = a.dates && a.dates.length > 0 ? a.dates[0].date : '';
+      const db2 = b.dates && b.dates.length > 0 ? b.dates[0].date : '';
+      return da.localeCompare(db2);
+    });
+
+    // Stats globales
+    const statsWrap = document.getElementById('mes-evenements-stats');
+    if (statsWrap) statsWrap.style.display = 'block';
+    document.getElementById('global-stat-events').textContent = evenements.length;
+
+    // Revenus totaux depuis les réservations
+    const qRes = query(collection(window._db, 'reservations'), where('organisateurUid', '==', window._currentUid));
+    const snapRes = await getDocs(qRes);
+    let totalRevenus = 0;
+    snapRes.forEach(d => { totalRevenus += parseFloat(d.data().montant) || 0; });
+    const fmt = v => v % 1 === 0 ? v + '€' : v.toFixed(2) + '€';
+    document.getElementById('global-stat-revenus').textContent = fmt(totalRevenus);
+
+    // Taux de remplissage moyen (events avec capacité définie)
+    const evecCapacite = evenements.filter(ev => ev.capacite && ev.capacite > 0);
+    if (evecCapacite.length > 0) {
+      const tauxTotal = evecCapacite.reduce((s, ev) => s + Math.min(100, Math.round(((ev.inscrits || 0) / ev.capacite) * 100)), 0);
+      const tauxMoyen = Math.round(tauxTotal / evecCapacite.length);
+      const elTaux = document.getElementById('global-stat-remplissage');
+      elTaux.textContent = tauxMoyen + '%';
+      elTaux.style.color = tauxMoyen >= 70 ? 'var(--green)' : tauxMoyen >= 40 ? 'var(--orange)' : 'var(--blue)';
+    } else {
+      document.getElementById('global-stat-remplissage').textContent = 'N/A';
+    }
 
     const now = new Date();
     const actifs = evenements.filter(ev => {
@@ -21282,6 +21311,23 @@ window.toggleFaq = function(el) {
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:0 20px;">
       <button onclick="showPage('feed')" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
       <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-1px;">MES ÉVÉNEMENTS</div>
+    </div>
+    <!-- Stats globales -->
+    <div id="mes-evenements-stats" style="display:none;padding:0 20px;margin-bottom:24px;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+          <div id="global-stat-events" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;color:var(--green);line-height:1;">0</div>
+          <div style="font-size:10px;color:var(--muted2);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Événements</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+          <div id="global-stat-revenus" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;color:var(--text);line-height:1;">0€</div>
+          <div style="font-size:10px;color:var(--muted2);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Revenus</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+          <div id="global-stat-remplissage" style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;color:var(--blue);line-height:1;">0%</div>
+          <div style="font-size:10px;color:var(--muted2);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;">Remplissage</div>
+        </div>
+      </div>
     </div>
     <!-- Events actifs (scroll horizontal) -->
     <div id="mes-evenements-list" style="display:flex;gap:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 20px 4px;scroll-snap-type:x mandatory;scrollbar-width:none;"></div>
