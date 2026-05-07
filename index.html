@@ -12058,7 +12058,11 @@ window.chargerMesEvenements = async function() {
   const listEl = document.getElementById('mes-evenements-list');
   const loadEl = document.getElementById('mes-evenements-loading');
   const emptyEl = document.getElementById('mes-evenements-empty');
+  const terminesWrap = document.getElementById('mes-evenements-termines-wrap');
+  const terminesList = document.getElementById('mes-evenements-termines-list');
   listEl.innerHTML = '';
+  if (terminesList) terminesList.innerHTML = '';
+  if (terminesWrap) terminesWrap.style.display = 'none';
   loadEl.style.display = 'block';
   emptyEl.style.display = 'none';
   try {
@@ -12070,37 +12074,100 @@ window.chargerMesEvenements = async function() {
     const evenements = [];
     snap.forEach(docSnap => evenements.push({ id: docSnap.id, ...docSnap.data() }));
     evenements.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
-    evenements.forEach(ev => {
-      const dateStr = ev.dates && ev.dates.length > 0 ? new Date(ev.dates[0].date).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' }) : '';
+
+    const now = new Date();
+    const actifs = evenements.filter(ev => {
+      if (!ev.dates || ev.dates.length === 0) return true;
+      const lastDate = new Date(ev.dates[ev.dates.length - 1].date);
+      return lastDate >= now;
+    });
+    const termines = evenements.filter(ev => {
+      if (!ev.dates || ev.dates.length === 0) return false;
+      const lastDate = new Date(ev.dates[ev.dates.length - 1].date);
+      return lastDate < now;
+    });
+
+    // Fonction de création de card
+    function makeCard(ev, compact) {
+      const dateStr = ev.dates && ev.dates.length > 0
+        ? new Date(ev.dates[0].date).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' })
+        : '';
       const inscrits = ev.inscrits || 0;
-      const capacite = ev.capacite || null;
-      const placesRestantes = capacite ? capacite - inscrits : null;
-      const card = document.createElement('div');
-      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:border-color 0.2s;';
-      card.onmouseover = () => card.style.borderColor = 'rgba(0,245,155,0.3)';
-      card.onmouseout = () => card.style.borderColor = 'var(--border)';
-      card.onclick = () => window.ouvrirGestionEvent(ev);
-      card.innerHTML = `
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;flex:1;">${ev.titre || 'Événement'}</div>
-          <div style="flex-shrink:0;text-align:right;">
-            <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:22px;color:var(--green);line-height:1;">${inscrits}</div>
+      const hasPhoto = ev.photoUrl || ev.photo;
+
+      if (compact) {
+        // Card compacte pour terminés (liste verticale)
+        const card = document.createElement('div');
+        card.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;cursor:pointer;opacity:0.7;transition:opacity 0.2s;';
+        card.onmouseover = () => card.style.opacity = '1';
+        card.onmouseout = () => card.style.opacity = '0.7';
+        card.onclick = () => window.ouvrirGestionEvent(ev);
+        card.innerHTML = `
+          <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,rgba(0,245,155,0.15),rgba(123,79,255,0.15));flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+            ${hasPhoto ? `<img src="${hasPhoto}" style="width:100%;height:100%;object-fit:cover;">` : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity="0.4"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>'}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${ev.titre || 'Événement'}</div>
+            <div style="font-size:11px;color:var(--muted2);">${dateStr}${ev.ville ? ' · ' + ev.ville : ''}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:18px;color:var(--muted2);line-height:1;">${inscrits}</div>
             <div style="font-size:10px;color:var(--muted2);">inscrit${inscrits>1?'s':''}</div>
           </div>
-        </div>
-        <div style="font-size:12px;color:var(--muted2);display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
-          ${dateStr ? `<span>📅 ${dateStr}</span>` : ''}
-          ${ev.ville ? `<span>📍 ${ev.ville}</span>` : ''}
-          ${capacite ? `<span style="color:${placesRestantes <= 0 ? 'var(--red)' : placesRestantes <= 10 ? 'var(--orange)' : 'var(--muted2)'};">🎟️ ${placesRestantes <= 0 ? 'Complet' : placesRestantes + ' place' + (placesRestantes>1?'s':'') + ' restante' + (placesRestantes>1?'s':'')}</span>` : ''}
-        </div>
-      `;
-      listEl.appendChild(card);
-    });
+        `;
+        return card;
+      } else {
+        // Card large pour actifs (scroll horizontal)
+        const card = document.createElement('div');
+        card.style.cssText = 'flex-shrink:0;width:200px;background:var(--card);border:1px solid var(--border);border-radius:16px;cursor:pointer;overflow:hidden;scroll-snap-align:start;transition:border-color 0.2s;display:flex;flex-direction:column;';
+        card.onmouseover = () => card.style.borderColor = 'rgba(0,245,155,0.4)';
+        card.onmouseout = () => card.style.borderColor = 'var(--border)';
+        card.onclick = () => window.ouvrirGestionEvent(ev);
+        card.innerHTML = `
+          <div style="height:100px;background:linear-gradient(135deg,rgba(0,245,155,0.12),rgba(123,79,255,0.12));overflow:hidden;flex-shrink:0;">
+            ${hasPhoto ? `<img src="${hasPhoto}" style="width:100%;height:100%;object-fit:cover;">` : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>'}
+          </div>
+          <div style="padding:12px;flex:1;display:flex;flex-direction:column;gap:6px;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${ev.titre || 'Événement'}</div>
+            <div style="font-size:11px;color:var(--muted2);">${dateStr}</div>
+            ${ev.ville ? `<div style="font-size:11px;color:var(--muted2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">📍 ${ev.ville}</div>` : ''}
+            <div style="margin-top:auto;display:flex;align-items:baseline;gap:4px;">
+              <span style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:24px;color:var(--green);line-height:1;">${inscrits}</span>
+              <span style="font-size:11px;color:var(--muted2);">inscrit${inscrits>1?'s':''}</span>
+            </div>
+          </div>
+        `;
+        return card;
+      }
+    }
+
+    // Actifs en scroll horizontal
+    if (actifs.length === 0 && termines.length > 0) {
+      emptyEl.style.display = 'block';
+    }
+    actifs.forEach(ev => listEl.appendChild(makeCard(ev, false)));
+
+    // Terminés en liste verticale repliée
+    if (termines.length > 0 && terminesWrap && terminesList) {
+      terminesWrap.style.display = 'block';
+      const label = document.getElementById('mes-evenements-termines-label');
+      if (label) label.textContent = `Terminés (${termines.length})`;
+      termines.forEach(ev => terminesList.appendChild(makeCard(ev, true)));
+    }
   } catch(e) {
     console.error(e);
     loadEl.textContent = 'Erreur de chargement.';
     loadEl.style.display = 'block';
   }
+};
+
+window.toggleTermines = function() {
+  const list = document.getElementById('mes-evenements-termines-list');
+  const chevron = document.getElementById('mes-evenements-termines-chevron');
+  if (!list) return;
+  const isOpen = list.style.display !== 'none';
+  list.style.display = isOpen ? 'none' : 'flex';
+  if (chevron) chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
 };
 
 // ══════════════════════════════════════════
@@ -21211,12 +21278,21 @@ window.toggleFaq = function(el) {
 
 <!-- ═══ PAGE: MES ÉVÉNEMENTS ═══ -->
 <div class="page" id="page-mes-evenements" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
-  <div style="max-width:680px;margin:0 auto;padding:24px 20px calc(100px + env(safe-area-inset-bottom));">
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+  <div style="padding:24px 0 calc(100px + env(safe-area-inset-bottom));">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:0 20px;">
       <button onclick="showPage('feed')" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;line-height:1;">←</button>
       <div style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:28px;letter-spacing:-1px;">MES ÉVÉNEMENTS</div>
     </div>
-    <div id="mes-evenements-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+    <!-- Events actifs (scroll horizontal) -->
+    <div id="mes-evenements-list" style="display:flex;gap:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 20px 4px;scroll-snap-type:x mandatory;scrollbar-width:none;"></div>
+    <!-- Events terminés (section repliable) -->
+    <div id="mes-evenements-termines-wrap" style="display:none;padding:0 20px;margin-top:24px;">
+      <button onclick="toggleTermines()" style="display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;padding:0;margin-bottom:12px;">
+        <span id="mes-evenements-termines-label" style="font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:var(--muted2);letter-spacing:1px;text-transform:uppercase;"></span>
+        <svg id="mes-evenements-termines-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted2);transition:transform 0.2s;transform:rotate(0deg);"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div id="mes-evenements-termines-list" style="display:none;flex-direction:column;gap:10px;"></div>
+    </div>
     <div id="mes-evenements-loading" style="text-align:center;padding:40px 20px;color:var(--muted2);font-size:13px;">Chargement...</div>
     <div id="mes-evenements-empty" style="display:none;text-align:center;padding:60px 20px;color:var(--muted2);">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;opacity:0.4;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
