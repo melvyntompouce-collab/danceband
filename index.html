@@ -17649,6 +17649,12 @@ async function chargerProfil(uid) {
     window._monProfil  = { ...d, uid };
     window._monRole    = d.role || null;
 
+    // Re-rendre le feed si déjà chargé (menu 3 points absent avant auth)
+    if (typeof _feedPosts !== 'undefined' && _feedPosts.length > 0) {
+      const _fl = document.getElementById('feed-list');
+      if (_fl) _fl.innerHTML = _feedPosts.map(_renderPostCard).join('');
+    }
+
     mettreAJourNav(d);
     mettreAJourBadgeNotif(d.notifications || []);
     if (window._onAuthReady) {
