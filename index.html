@@ -7489,6 +7489,31 @@ function _renderPostCard(post) {
   const liked = (post.likes || []).includes(window._currentUid);
   const saved = (post._savedByMe) || false;
 
+  // Compatibilité app mobile HAKO + ancien site
+  // App mobile : description, mediaUrl, videoUrl, thumbnailUrl, linkPreview, category, city, eventDate
+  // Ancien site : content, mediaUrl, linkTitle, eventName...
+  const postText = (post.description || post.content || post.text || post.texte || '').toString();
+  const safePostText = postText.replace(/</g, '&lt;');
+  const postMediaUrl = post.mediaUrl || post.imageUrl || post.image || post.photo || '';
+  const postVideoUrl = post.videoUrl || postMediaUrl || '';
+  const postThumbUrl = post.thumbnailUrl || postMediaUrl || '';
+  const postCategory = post.category || post.badge || '';
+  const postCity = post.city || '';
+  const postEventDate = post.eventDate || '';
+  const postLikesCount =
+    typeof post.likesCount === 'number'
+      ? post.likesCount
+      : Array.isArray(post.likes)
+        ? post.likes.length
+        : 0;
+
+  const postInfoHtml = (postCategory || postCity || postEventDate)
+    ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px;">
+        ${postCategory ? `<span style="font-size:10px;font-weight:900;letter-spacing:1px;color:var(--green);background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.22);padding:3px 8px;border-radius:999px;">${postCategory}</span>` : ''}
+        ${(postCity || postEventDate) ? `<span style="font-size:11px;color:var(--muted2);padding:3px 0;">${postCity ? '📍 ' + postCity : ''}${postCity && postEventDate ? ' · ' : ''}${postEventDate || ''}</span>` : ''}
+      </div>`
+    : '';
+
   // ── Post HAKO officiel ──
   if (post.isHakoOfficial) {
     const _HAKO_TYPES = {
@@ -7522,14 +7547,29 @@ function _renderPostCard(post) {
   }
 
   let mediaHtml = '';
-  if (post.type === 'photo' && post.mediaUrl) {
-    mediaHtml = `<img class="feed-card-media" src="${post.mediaUrl}" alt="" loading="lazy" onclick="this.requestFullscreen?.()">`;
-  } else if (post.type === 'video' && post.mediaUrl) {
-    mediaHtml = `<video class="feed-card-media" src="${post.mediaUrl}" controls playsinline></video>`;
+
+  if (post.type === 'photo' && postMediaUrl) {
+    mediaHtml = `<img class="feed-card-media" src="${postMediaUrl}" alt="" loading="lazy" onclick="this.requestFullscreen?.()">`;
+  } else if (post.type === 'video' && postVideoUrl) {
+    mediaHtml = `<video class="feed-card-media" src="${postVideoUrl}" poster="${postThumbUrl || ''}" controls playsinline></video>`;
   } else if (post.type === 'link' && post.linkUrl) {
+    const linkTitle =
+      post.linkPreview?.title ||
+      post.linkTitle ||
+      post.linkPreview?.description ||
+      post.linkUrl;
+
+    const linkImage = post.linkPreview?.image || '';
+
+    let linkDomain = post.linkPreview?.domain || post.linkUrl;
+    try {
+      linkDomain = new URL(post.linkUrl).hostname.replace('www.', '');
+    } catch(e) {}
+
     mediaHtml = `<div class="feed-card-link" onclick="window.open('${post.linkUrl}','_blank')">
-      <div class="feed-card-link-domain">${(new URL(post.linkUrl)).hostname.replace('www.','')}</div>
-      <div class="feed-card-link-title">${post.linkTitle || post.linkUrl}</div>
+      ${linkImage ? `<img src="${linkImage}" alt="" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px;margin-bottom:10px;">` : ''}
+      <div class="feed-card-link-domain">${linkDomain}</div>
+      <div class="feed-card-link-title">${linkTitle}</div>
     </div>`;
   } else if (post.type === 'event_share' && post.eventRef) {
     mediaHtml = `<div class="feed-card-event" onclick="showPage('agenda');setTimeout(()=>ouvrirEvent('${post.eventRef}'),300)">
@@ -7590,12 +7630,13 @@ function _renderPostCard(post) {
       </div>
       ${menuPost}
     </div>
-    ${post.content ? `<div class="feed-card-content">${post.content.replace(/</g,'&lt;')}</div>` : ''}
+    ${postInfoHtml}
+    ${postText ? `<div class="feed-card-content">${safePostText}</div>` : ''}
     ${mediaHtml}
     <div class="feed-card-actions">
       <button class="feed-action-btn${liked ? ' liked' : ''}" onclick="toggleLikePost('${post.id}',this)" id="like-btn-${post.id}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="${liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        <span id="like-count-${post.id}" onclick="event.stopPropagation();voirLikeurs('${post.id}')" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px;">${post.likesCount || 0}</span>
+        <span id="like-count-${post.id}" onclick="event.stopPropagation();voirLikeurs('${post.id}')" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px;">${postLikesCount}</span>
       </button>
       <button class="feed-action-btn" onclick="toggleCommentaires('${post.id}')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -7752,7 +7793,7 @@ async function toggleLikePost(postId, btn) {
     await window._updateDoc(ref, { likes: window._arrayUnion(window._currentUid), likesCount: post.likesCount });
     // Envoyer notif au propriétaire du post (pas à soi-même)
     if (post.authorId && post.authorId !== window._currentUid) {
-      _envoyerNotifPost(post.authorId, 'like_post', window._currentUid, postId, post.content);
+      _envoyerNotifPost(post.authorId, 'like_post', window._currentUid, postId, post.description || post.content || '');
     }
   }
   if (countEl) countEl.textContent = post.likesCount;
