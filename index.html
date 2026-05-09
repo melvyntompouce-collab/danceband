@@ -8367,16 +8367,38 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.togglePostMenu = function(postId) {
-  const menu = document.getElementById('post-menu-' + postId);
-  if (!menu) return;
-  const isOpen = menu.style.display === 'block';
-  // Fermer tous les autres menus
-  document.querySelectorAll('[id^="post-menu-"]').forEach(m => m.style.display = 'none');
-  menu.style.display = isOpen ? 'none' : 'block';
+  // Menu global en position:fixed pour échapper au overflow:hidden des feed-card
+  let gm = document.getElementById('global-post-menu');
+  if (!gm) {
+    gm = document.createElement('div');
+    gm.id = 'global-post-menu';
+    gm.style.cssText = 'position:fixed;z-index:9999;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.6);min-width:180px;display:none;';
+    document.body.appendChild(gm);
+  }
+  const sourceMenu = document.getElementById('post-menu-' + postId);
+  const btn = event.currentTarget || event.target;
+  const isOpen = gm.style.display === 'block' && gm.dataset.postId === postId;
+  gm.style.display = 'none';
+  if (isOpen || !sourceMenu) return;
+  gm.innerHTML = sourceMenu.innerHTML;
+  gm.dataset.postId = postId;
+  const rect = btn.getBoundingClientRect();
+  const menuW = 180;
+  let left = rect.right - menuW;
+  let top = rect.bottom + 4;
+  if (left < 8) left = 8;
+  if (top + 220 > window.innerHeight) top = rect.top - 220;
+  gm.style.left = left + 'px';
+  gm.style.top = top + 'px';
+  gm.style.display = 'block';
 };
 
-// Fermer les menus post au clic extérieur
+// Fermer le menu global au clic extérieur
 document.addEventListener('click', function(e) {
+  const gm = document.getElementById('global-post-menu');
+  if (gm && !gm.contains(e.target) && !e.target.closest('button[onclick*="togglePostMenu"]')) {
+    gm.style.display = 'none';
+  }
   if (!e.target.closest('[id^="post-menu-"]') && !e.target.closest('button[onclick*="togglePostMenu"]')) {
     document.querySelectorAll('[id^="post-menu-"]').forEach(m => m.style.display = 'none');
   }
