@@ -8445,6 +8445,8 @@ window.sauvegarderModifPost = async function(postId) {
 
 window.supprimerPost = async function(postId) {
   if (!confirm('Supprimer ce post définitivement ?')) return;
+  const gm = document.getElementById('global-post-menu');
+  if (gm) gm.style.display = 'none';
   try {
     await window._deleteDoc(window._doc(window._db, 'posts', postId));
     const card = document.getElementById('post-card-' + postId);
