@@ -6849,7 +6849,24 @@ window.toggleEditMetier = function(metier, btn) {
 window.previewPhoto = function(input) {
   if (!input.files || !input.files[0]) return;
   const file = input.files[0];
-  if (file.size > 10 * 1024 * 1024) { alert('⚠️ Photo trop lourde — max 10MB'); return; }
+
+  // Important : on ne stocke plus la photo en base64 dans Firestore.
+  // On garde seulement le fichier ici, puis on l'upload dans Firebase Storage au moment de sauvegarder.
+  if (!file.type || !file.type.startsWith('image/')) {
+    alert('⚠️ Choisis une image valide.');
+    input.value = '';
+    return;
+  }
+  if (file.size > 3 * 1024 * 1024) {
+    alert('⚠️ Photo trop lourde — max 3MB');
+    input.value = '';
+    return;
+  }
+
+  window._profilePhotoFile = file;
+  window._photoBase64 = null;
+  window._photoDeleted = false;
+
   const reader = new FileReader();
   reader.onload = function(e) {
     const src = e.target.result;
@@ -6863,13 +6880,14 @@ window.previewPhoto = function(input) {
     const editImg   = document.getElementById('edit-avatar-img');
     if (editEmoji) editEmoji.style.display = 'none';
     if (editImg)   { editImg.src = src; editImg.style.display = 'block'; }
-    window._photoBase64 = src;
   };
   reader.readAsDataURL(file);
 }
 
 window.supprimerPhoto = function() {
+  window._profilePhotoFile = null;
   window._photoBase64 = null;
+  window._photoDeleted = true;
   ['ph-avatar-emoji','edit-avatar-emoji'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'block';
@@ -17179,6 +17197,29 @@ window.sauvegarderIdentite = async function() {
       if (taken) { alert('⚠️ Ce nom d\'utilisateur est déjà pris'); return; }
     }
 
+    let photoUrl = (window._monProfil?.photoUrl || window._monProfil?.photo || window._monProfilData?.photoUrl || window._monProfilData?.photo || '');
+
+    if (window._photoDeleted) {
+      photoUrl = '';
+    }
+
+    if (window._profilePhotoFile) {
+      if (!window._getStorage || !window._storageRef || !window._uploadBytes || !window._getDownloadURL) {
+        throw new Error('Firebase Storage n’est pas prêt sur cette page.');
+      }
+
+      const storage = window._getStorage();
+      const safeName = (window._profilePhotoFile.name || 'profil.jpg')
+        .replace(/[^a-zA-Z0-9._-]/g, '_')
+        .slice(-80);
+      const photoRef = window._storageRef(
+        storage,
+        `profile_photos/${user.uid}/${Date.now()}_${safeName}`
+      );
+      const snap = await window._uploadBytes(photoRef, window._profilePhotoFile);
+      photoUrl = await window._getDownloadURL(snap.ref);
+    }
+
     _danseursFetched = false;
     await window._setDoc(window._doc(window._db, 'danseurs', user.uid), {
       nom, blase, tel,
@@ -17192,7 +17233,7 @@ window.sauvegarderIdentite = async function() {
       affichageType, nomAffiche,
       ...(styles.length > 0 ? { styles } : {}),
       ...(genres.length > 0 ? { genres } : {}),
-      ...(window._photoBase64 ? { photo: window._photoBase64 } : {}),
+      ...(photoUrl ? { photoUrl, photo: photoUrl } : { photoUrl: '', photo: '' }),
       ...metierData
     }, { merge: true });
 
@@ -17206,7 +17247,7 @@ window.sauvegarderIdentite = async function() {
     const p = window._monProfil || {};
     const xpUpdates = {};
     // Photo de profil (une seule fois)
-    if (window._photoBase64 && !p.xpPhotoDonne) {
+    if (photoUrl && !p.xpPhotoDonne) {
       xpUpdates.xpPhotoDonne = true;
       setTimeout(() => window.gainXP(20, 'first_photo'), 800);
     }
@@ -17223,7 +17264,7 @@ window.sauvegarderIdentite = async function() {
     }
     // Profil complet : photo + (styles ou métier) + ville + bio (une seule fois)
     const bio = document.getElementById('profil-bio')?.value?.trim() || p.bio || '';
-    const aPhoto  = !!(window._photoBase64 || p.photo);
+    const aPhoto  = !!(photoUrl || p.photoUrl || p.photo);
     const aStyles = styles.length > 0 || metiersSauv.length > 0 || (p.styles && p.styles.length > 0) || (p.metiers && p.metiers.length > 0);
     const aVille  = !!(ville || p.ville);
     const aBio    = !!(bio);
@@ -17236,6 +17277,12 @@ window.sauvegarderIdentite = async function() {
       await window._setDoc(window._doc(window._db, 'danseurs', user.uid), xpUpdates, { merge: true });
       if (window._monProfil) Object.assign(window._monProfil, xpUpdates);
     }
+
+    if (window._monProfil) Object.assign(window._monProfil, photoUrl ? { photoUrl, photo: photoUrl } : { photoUrl: '', photo: '' });
+    if (window._monProfilData) Object.assign(window._monProfilData, photoUrl ? { photoUrl, photo: photoUrl } : { photoUrl: '', photo: '' });
+    window._profilePhotoFile = null;
+    window._photoBase64 = null;
+    window._photoDeleted = false;
 
     // Afficher confirmation
     const msg = document.getElementById('edit-save-msg');
@@ -17328,17 +17375,29 @@ async function chargerProfil(uid) {
     window._monProfilData = d;
 
     // ── Photo ──
-    if (d.photo) {
+    const profilPhotoUrl = d.photoUrl || d.photo || '';
+    if (profilPhotoUrl) {
       ['ph-avatar-emoji','edit-avatar-emoji'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
       });
       ['ph-avatar-img','edit-avatar-img'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) { el.src = d.photo; el.style.display = 'block'; }
+        if (el) { el.src = profilPhotoUrl; el.style.display = 'block'; }
       });
-      window._photoBase64 = d.photo;
+    } else {
+      ['ph-avatar-emoji','edit-avatar-emoji'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'block';
+      });
+      ['ph-avatar-img','edit-avatar-img'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.src = ''; el.style.display = 'none'; }
+      });
     }
+    window._photoBase64 = null;
+    window._profilePhotoFile = null;
+    window._photoDeleted = false;
 
     // ── Nom affiché ──
     const nomAffiche = d.nomAffiche || d.pseudo || d.nom || 'Mon profil';
