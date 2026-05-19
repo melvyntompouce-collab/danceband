@@ -7767,11 +7767,9 @@ function chargerPlusPostsFeed() { chargerFeed(); }
 async function initPostEpingle() {
   if (!window._db || !window._currentUid) return;
   try {
-    const snap = await window._getDocs(
-      window._query(window._collection(window._db, 'posts'), window._where('pinned', '==', true), window._limit(1))
-    );
-    if (!snap.empty) return; // déjà créé
-    await window._addDoc(window._collection(window._db, 'posts'), {
+    const snap = await window._getDoc(window._doc(window._db, 'posts', 'hako_welcome_post'));
+if (snap.exists()) return;
+    await window._setDoc(window._doc(window._db, 'posts', 'hako_welcome_post'), {
       authorId: window._currentUid,
       authorName: 'HAKO',
       authorEmoji: '🟢',
