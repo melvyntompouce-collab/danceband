@@ -5693,12 +5693,35 @@ if (isPWA) {
 
     <!-- Liste conversations -->
     <div id="msg-list" style="display:none;">
-      <div id="conversations-list">
-        <div style="text-align:center;padding:40px;color:var(--muted);font-size:14px;">⏳ Chargement...</div>
+
+      <!-- Onglets -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;">
+        <button id="msg-tab-messages" onclick="switchMsgTab('messages')"
+          style="flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--green);background:rgba(0,245,155,0.12);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all 0.2s;">
+          Messages
+        </button>
+        <button id="msg-tab-invitations" onclick="switchMsgTab('invitations')"
+          style="flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:transparent;color:var(--muted2);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all 0.2s;position:relative;">
+          Invitations
+          <span id="msg-invit-badge" style="display:none;position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;font-size:10px;font-weight:800;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center;font-family:'Syne',sans-serif;"></span>
+        </button>
       </div>
+
+      <!-- Onglet Messages -->
+      <div id="msg-panel-messages">
+        <div id="conversations-list">
+          <div style="text-align:center;padding:40px;color:var(--muted);font-size:14px;">⏳ Chargement...</div>
+        </div>
+      </div>
+
+      <!-- Onglet Invitations -->
+      <div id="msg-panel-invitations" style="display:none;">
+        <div id="invitations-list">
+          <div style="text-align:center;padding:40px;color:var(--muted);font-size:14px;">⏳ Chargement...</div>
+        </div>
+      </div>
+
     </div>
-
-
 
   </div>
 </div>
@@ -8335,14 +8358,12 @@ window.partagerPostParMessage = async function(postId) {
   const post = _feedPosts.find(p => p.id === postId);
   if (!post) return;
 
-  // Construire la liste des contacts (abonnements mutuels)
-  const moi = window._monProfil;
-  const mesAbos = new Set(moi?.abonnements || []);
+  // Construire la liste des contacts (tous les artistes sauf soi)
   let contacts = [];
   if (tousLesDanseurs.length === 0) {
     try { await _chargerTousLesDanseurs(); } catch(e) {}
   }
-  contacts = tousLesDanseurs.filter(d => d.uid !== window._currentUid && mesAbos.has(d.uid));
+  contacts = tousLesDanseurs.filter(d => d.uid !== window._currentUid);
 
   // Créer ou réutiliser le sélecteur inline
   let picker = document.getElementById('feed-share-picker');
@@ -8362,7 +8383,7 @@ window.partagerPostParMessage = async function(postId) {
       <button onclick="document.getElementById('feed-share-picker').remove()" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">✕</button>
     </div>
     ${contacts.length === 0
-      ? `<div style="text-align:center;padding:32px 0;color:var(--muted2);font-size:13px;">Aucun contact pour l'instant.<br>Suis des artistes pour leur envoyer des posts.</div>`
+      ? `<div style="text-align:center;padding:32px 0;color:var(--muted2);font-size:13px;">Aucun artiste trouvé.</div>`
       : contacts.map(c => {
           const nom = c.nomAffiche || c.pseudo || 'Artiste';
           const avatarHtml = c.photo
@@ -8397,6 +8418,21 @@ async function envoyerPostEnMessage(postId, destUid, destNom, destPhoto) {
       date: nowIso,
       updatedAt: window._serverTimestamp ? window._serverTimestamp() : nowIso
     }, { merge: true });
+    
+    await window._setDoc(
+  window._doc(window._db, 'conversations', convId),
+  {
+    id: convId,
+    participants: [window._currentUid, convOuverte],
+    dernierMessage: messageText,
+    lastMessage: messageText,
+    lastMessageSenderId: window._currentUid,
+    date: nowIso,
+    updatedAt: window._serverTimestamp ? window._serverTimestamp() : nowIso,
+    unreadBy: [convOuverte],
+  },
+  { merge: true }
+);
 
     await window._addDoc(window._collection(window._db, 'conversations', convId, 'messages'), {
       de: window._currentUid,
@@ -13798,6 +13834,33 @@ window.toggleSuivre = async function(targetUid) {
 // ════════════════════════════════
 // MESSAGERIE
 // ════════════════════════════════
+// ── Switcher onglet messages / invitations ──
+window.switchMsgTab = function(tab) {
+  const tabMsg  = document.getElementById('msg-tab-messages');
+  const tabInv  = document.getElementById('msg-tab-invitations');
+  const panMsg  = document.getElementById('msg-panel-messages');
+  const panInv  = document.getElementById('msg-panel-invitations');
+  if (tab === 'messages') {
+    tabMsg.style.borderColor = 'var(--green)';
+    tabMsg.style.background  = 'rgba(0,245,155,0.12)';
+    tabMsg.style.color       = 'var(--green)';
+    tabInv.style.borderColor = 'var(--border)';
+    tabInv.style.background  = 'transparent';
+    tabInv.style.color       = 'var(--muted2)';
+    panMsg.style.display = 'block';
+    panInv.style.display = 'none';
+  } else {
+    tabInv.style.borderColor = 'var(--green)';
+    tabInv.style.background  = 'rgba(0,245,155,0.12)';
+    tabInv.style.color       = 'var(--green)';
+    tabMsg.style.borderColor = 'var(--border)';
+    tabMsg.style.background  = 'transparent';
+    tabMsg.style.color       = 'var(--muted2)';
+    panMsg.style.display = 'none';
+    panInv.style.display = 'block';
+  }
+};
+
 async function chargerMessages() {
   if (!window._currentUid || !window._db) {
     if (!window._currentUid && window._db) {
@@ -13813,65 +13876,104 @@ async function chargerMessages() {
   document.getElementById('msg-list').style.display = 'block';
 
   try {
+    // Charger toutes les conversations où je suis participant
+    const convsSnap = await window._getDocs(window._query(
+      window._collection(window._db, 'conversations'),
+      window._where('participants', 'array-contains', window._currentUid)
+    ));
 
-    // Charger mon profil pour avoir mes abonnements
-    const moi = await window._getDoc(window._doc(window._db, 'danseurs', window._currentUid));
-    if (!moi.exists()) return;
-    const moiData = moi.data();
-    const mesAbos = moiData.abonnements || [];
+    const convs = convsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    // Trouver les amis mutuels (abonnement mutuel)
-    const amisMutuels = [];
-    for (const uid of mesAbos) {
-      const ami = await window._getDoc(window._doc(window._db, 'danseurs', uid));
-      if (ami.exists()) {
-        const amiData = ami.data();
-        const amiAbos = amiData.abonnements || [];
-        if (amiAbos.includes(window._currentUid)) {
-          amisMutuels.push({ uid, ...amiData });
-        }
+    // Séparer acceptées et invitations en attente
+    const acceptees  = convs.filter(c => !c.statut || c.statut === 'acceptée');
+    const invitations = convs.filter(c => c.statut === 'en_attente' && c.initiateur !== window._currentUid);
+
+    // Badge invitations
+    const badge = document.getElementById('msg-invit-badge');
+    if (badge) {
+      if (invitations.length > 0) {
+        badge.textContent = invitations.length;
+        badge.style.display = 'inline-flex';
+      } else {
+        badge.style.display = 'none';
       }
     }
 
-    const list = document.getElementById('conversations-list');
-
-    if (amisMutuels.length === 0) {
-      list.innerHTML = `
+    // ── Afficher conversations acceptées ──
+    const listMsg = document.getElementById('conversations-list');
+    if (acceptees.length === 0) {
+      listMsg.innerHTML = `
         <div style="text-align:center;padding:60px 20px;">
-          <div style="font-size:48px;margin-bottom:16px;">🤝</div>
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-bottom:8px;">Aucun ami mutuel pour l'instant</div>
-          <div style="font-size:13px;color:var(--muted2);line-height:1.6;">Suis des artistes et attend qu'ils te suivent en retour pour pouvoir leur écrire</div>
+          <div style="font-size:48px;margin-bottom:16px;">💬</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-bottom:8px;">Aucune conversation</div>
+          <div style="font-size:13px;color:var(--muted2);line-height:1.6;">Visite un profil et envoie un message pour démarrer une conversation</div>
           <button onclick="showPage('network')" style="margin-top:20px;padding:12px 24px;border-radius:12px;background:var(--green);color:#080810;font-weight:800;font-size:13px;border:none;cursor:pointer;font-family:'Syne',sans-serif;">Explorer le réseau →</button>
         </div>`;
-      return;
+    } else {
+      // Trier par date du dernier message
+      acceptees.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      const rows = await Promise.all(acceptees.map(c => _buildConvRow(c, false)));
+      listMsg.innerHTML = rows.join('');
     }
 
-    // Afficher les conversations
-    list.innerHTML = amisMutuels.map(ami => {
-      const nom = ami.nomAffiche || ami.nom || ami.pseudo || 'Artiste';
-      const convId = [window._currentUid, ami.uid].sort().join('_');
-      return `
-        <div onclick="ouvrirConversation('${ami.uid}','${nom}','${ami.photo || ''}')"
-          style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:18px;margin-bottom:10px;cursor:pointer;transition:all 0.2s;"
-          onmouseover="this.style.borderColor='rgba(0,245,155,0.2)'"
-          onmouseout="this.style.borderColor='var(--border)'">
-          <div style="width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;position:relative;">
-            ${ami.photo ? `<img src="${ami.photo}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:16px;">` : '💃'}
-          </div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;">${nom}</div>
-            <div style="font-size:12px;color:var(--muted2);margin-top:2px;">📍 ${ami.zone || ''}</div>
-          </div>
-          <div style="font-size:20px;color:var(--muted);">→</div>
+    // ── Afficher invitations en attente ──
+    const listInv = document.getElementById('invitations-list');
+    if (invitations.length === 0) {
+      listInv.innerHTML = `
+        <div style="text-align:center;padding:60px 20px;">
+          <div style="font-size:48px;margin-bottom:16px;">📨</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-bottom:8px;">Aucune invitation</div>
+          <div style="font-size:13px;color:var(--muted2);line-height:1.6;">Les messages de personnes que tu ne suis pas apparaîtront ici</div>
         </div>`;
-    }).join('');
+    } else {
+      invitations.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      const rows = await Promise.all(invitations.map(c => _buildConvRow(c, true)));
+      listInv.innerHTML = rows.join('');
+    }
 
   } catch(e) {
     console.error('Erreur messagerie:', e);
   }
 }
 
-async function ouvrirConversation(uid, nom, photo) {
+// ── Construire une ligne de conversation ──
+async function _buildConvRow(conv, isInvitation) {
+  try {
+    const autreUid = conv.participants.find(p => p !== window._currentUid);
+    if (!autreUid) return '';
+    const snap = await window._getDoc(window._doc(window._db, 'danseurs', autreUid));
+    if (!snap.exists()) return '';
+    const p   = snap.data();
+    const nom = p.nomAffiche || p.nom || p.pseudo || 'Artiste';
+    const photo = p.photo || '';
+    const dernierMsg = conv.dernierMessage || conv.lastMessage || '';
+    const avatarHtml = photo
+      ? `<img src="${photo}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:16px;">`
+      : '💃';
+    const badge = isInvitation
+      ? `<span style="padding:3px 8px;border-radius:8px;background:rgba(255,170,0,0.15);border:1px solid rgba(255,170,0,0.4);color:var(--yellow);font-size:10px;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:0.5px;">INVITATION</span>`
+      : '';
+    return `
+      <div onclick="ouvrirConversation('${autreUid}','${nom.replace(/'/g,"\\'")}','${photo}','${isInvitation ? 'en_attente' : 'acceptée'}')"
+        style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:18px;margin-bottom:10px;cursor:pointer;transition:all 0.2s;"
+        onmouseover="this.style.borderColor='rgba(0,245,155,0.2)'"
+        onmouseout="this.style.borderColor='var(--border)'">
+        <div style="width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;position:relative;">
+          ${avatarHtml}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${nom}</div>
+            ${badge}
+          </div>
+          <div style="font-size:12px;color:var(--muted2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${dernierMsg || '📍 ' + (p.zone || '')}</div>
+        </div>
+        <div style="font-size:20px;color:var(--muted);">→</div>
+      </div>`;
+  } catch(e) { return ''; }
+}
+
+async function ouvrirConversation(uid, nom, photo, statut) {
   convOuverte = uid;
   document.getElementById('conv-name').textContent = nom;
 
@@ -13885,7 +13987,17 @@ async function ouvrirConversation(uid, nom, photo) {
     }
   }
 
-  // Naviguer vers la page conv (vraie page, pas overlay)
+  // Bannière invitation (visible pour le destinataire)
+  const banniereEl = document.getElementById('conv-invitation-banner');
+  if (banniereEl) {
+    if (statut === 'en_attente') {
+      banniereEl.style.display = 'flex';
+    } else {
+      banniereEl.style.display = 'none';
+    }
+  }
+
+  // Naviguer vers la page conv
   showPage('conv');
   document.body.classList.add('conv-ouverte');
 
@@ -13909,6 +14021,32 @@ function fermerConversation() {
   if (window._msgListener) { window._msgListener(); window._msgListener = null; }
   showPage('messages', true);
 }
+
+window.accepterInvitation = async function() {
+  if (!convOuverte || !window._currentUid || !window._db) return;
+  try {
+    const convId = [window._currentUid, convOuverte].sort().join('_');
+    await window._updateDoc(window._doc(window._db, 'conversations', convId), {
+      statut: 'acceptée'
+    });
+    const banniereEl = document.getElementById('conv-invitation-banner');
+    if (banniereEl) banniereEl.style.display = 'none';
+    // Mettre à jour le badge invitations
+    chargerMessages();
+  } catch(e) { console.error('Erreur acceptation:', e); }
+};
+
+window.refuserInvitation = async function() {
+  if (!convOuverte || !window._currentUid || !window._db) return;
+  try {
+    const convId = [window._currentUid, convOuverte].sort().join('_');
+    await window._updateDoc(window._doc(window._db, 'conversations', convId), {
+      statut: 'refusée'
+    });
+    fermerConversation();
+    chargerMessages();
+  } catch(e) { console.error('Erreur refus:', e); }
+};
 
 async function chargerMessagesConv(uid) {
   try {
@@ -14225,12 +14363,28 @@ window.arreterEnregistrement = async function() {
 async function _envoyerDansConv(data) {
   try {
     const convId = [window._currentUid, convOuverte].sort().join('_');
-
     const nowIso = new Date().toISOString();
     const messageText = data.texte || '';
 
+    // Vérifier si la conv existe déjà
+    const convSnap = await window._getDoc(window._doc(window._db, 'conversations', convId));
+    let statut = 'acceptée';
+
+    if (!convSnap.exists()) {
+      // Premier message : vérifier si la cible nous suit
+      const cibleSnap = await window._getDoc(window._doc(window._db, 'danseurs', convOuverte));
+      const cibleAbos = cibleSnap.exists() ? (cibleSnap.data().abonnements || []) : [];
+      const cibleNousSuit = cibleAbos.includes(window._currentUid);
+      statut = cibleNousSuit ? 'acceptée' : 'en_attente';
+    } else {
+      // Conv existante : conserver le statut actuel
+      statut = convSnap.data().statut || 'acceptée';
+    }
+
     await window._setDoc(window._doc(window._db, 'conversations', convId), {
       participants: [window._currentUid, convOuverte],
+      initiateur: convSnap.exists() ? (convSnap.data().initiateur || window._currentUid) : window._currentUid,
+      statut,
       dernierMessage: messageText,
       lastMessage: messageText,
       lastMessageSenderId: window._currentUid,
@@ -14249,14 +14403,22 @@ async function _envoyerDansConv(data) {
       ...data
     });
 
+    // Notification au destinataire
+    const notifType = statut === 'en_attente' ? 'invitation_message' : 'nouveau_message';
     await window._updateDoc(window._doc(window._db, 'danseurs', convOuverte), {
       notifications: window._arrayUnion({
-        type: 'nouveau_message',
+        type: notifType,
         de: window._currentUid,
         date: new Date().toISOString(),
         lu: false
       })
     });
+
+    // Si invitation acceptée, masquer la bannière
+    if (statut === 'acceptée') {
+      const banniereEl = document.getElementById('conv-invitation-banner');
+      if (banniereEl) banniereEl.style.display = 'none';
+    }
   } catch(e) { console.error('Erreur envoi:', e); }
 }
 
@@ -15036,9 +15198,9 @@ window.showProfilPublic = async function(uid) {
       }
     }
 
-    // ── Bouton message — amis mutuels uniquement ──
+    // ── Bouton message — visible pour tous sauf soi-même ──
     const btnMsg = document.getElementById('ap-btn-message');
-    if (btnMsg) btnMsg.style.display = (!estMoi && estAmiMutuel) ? 'flex' : 'none';
+    if (btnMsg) btnMsg.style.display = (!estMoi) ? 'flex' : 'none';
 
     // ── Bouton téléphone ──
     const btnTel = document.getElementById('ap-btn-tel');
@@ -15486,7 +15648,20 @@ window.ouvrirMessageDepuisProfil = function() {
   if (!artisteCourant) return;
   fermerProfilPublic();
   showPage('messages');
-  setTimeout(() => ouvrirConversation(artisteCourant, document.getElementById('ap-name')?.textContent || '', ''), 300);
+  setTimeout(async () => {
+    // Charger le statut réel de la conversation
+    let statut = 'acceptée';
+    try {
+      const convId = [window._currentUid, artisteCourant].sort().join('_');
+      const convSnap = await window._getDoc(window._doc(window._db, 'conversations', convId));
+      if (convSnap.exists()) {
+        const d = convSnap.data();
+        // Bannière visible seulement si je suis le destinataire (pas l'initiateur)
+        if (d.statut === 'en_attente' && d.initiateur !== window._currentUid) statut = 'en_attente';
+      }
+    } catch(e) {}
+    ouvrirConversation(artisteCourant, document.getElementById('ap-name')?.textContent || '', '', statut);
+  }, 300);
 }
 
 window.appellerArtiste = function() {
@@ -21137,7 +21312,21 @@ function _renderDrawerLieux() {
     <div id="conv-avatar" style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💃</div>
     <div>
       <div id="conv-name" style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;"></div>
-      <div id="conv-status" style="font-size:11px;color:var(--green);">✅ Amis mutuels</div>
+    </div>
+  </div>
+
+  <!-- Bannière invitation en attente -->
+  <div id="conv-invitation-banner" style="display:none;flex-shrink:0;padding:12px 16px;background:rgba(255,170,0,0.08);border-bottom:1px solid rgba(255,170,0,0.25);flex-direction:column;gap:10px;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:18px;">📨</span>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--yellow);">Invitation à discuter</div>
+        <div style="font-size:11px;color:var(--muted2);margin-top:1px;">Cette personne ne fait pas partie de tes abonnements</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="accepterInvitation()" style="flex:1;padding:10px;border-radius:12px;background:rgba(0,245,155,0.15);border:1.5px solid rgba(0,245,155,0.4);color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;">Accepter</button>
+      <button onclick="refuserInvitation()" style="flex:1;padding:10px;border-radius:12px;background:rgba(255,77,109,0.1);border:1.5px solid rgba(255,77,109,0.3);color:var(--red);font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;">Refuser</button>
     </div>
   </div>
 
