@@ -8409,30 +8409,18 @@ async function envoyerPostEnMessage(postId, destUid, destNom, destPhoto) {
   const texte = `📌 Post de ${post.authorName || 'Artiste'} :\n${post.content ? post.content.slice(0, 120) + (post.content.length > 120 ? '…' : '') : '[Média]'}\n\nhako.sphere — voir dans le feed`;
   try {
     const nowIso = new Date().toISOString();
-
-    await window._setDoc(window._doc(window._db, 'conversations', convId), {
-      participants: [window._currentUid, destUid],
-      dernierMessage: texte,
-      lastMessage: texte,
-      lastMessageSenderId: window._currentUid,
-      date: nowIso,
-      updatedAt: window._serverTimestamp ? window._serverTimestamp() : nowIso
-    }, { merge: true });
     
-    await window._setDoc(
-  window._doc(window._db, 'conversations', convId),
-  {
-    id: convId,
-    participants: [window._currentUid, convOuverte],
-    dernierMessage: messageText,
-    lastMessage: messageText,
-    lastMessageSenderId: window._currentUid,
-    date: nowIso,
-    updatedAt: window._serverTimestamp ? window._serverTimestamp() : nowIso,
-    unreadBy: [destUid],
-  },
-  { merge: true }
-);
+    
+   await window._setDoc(window._doc(window._db, 'conversations', convId), {
+  id: convId,
+  participants: [window._currentUid, destUid],
+  dernierMessage: texte,
+  lastMessage: texte,
+  lastMessageSenderId: window._currentUid,
+  unreadBy: [destUid],
+  date: window._serverTimestamp ? window._serverTimestamp() : nowIso,
+  updatedAt: window._serverTimestamp ? window._serverTimestamp() : nowIso
+}, { merge: true });
 
     await window._addDoc(window._collection(window._db, 'conversations', convId, 'messages'), {
       de: window._currentUid,
