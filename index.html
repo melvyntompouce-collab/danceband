@@ -4050,7 +4050,7 @@ if (isPWA) {
           <p>
             HAKO propose aux organisateurs d'activer une billetterie directe via Stripe Connect.
             Dans ce cadre, HAKO agit en tant que plateforme intermédiaire et perçoit une commission
-            de 10 % sur chaque transaction. Le reste est reversé directement à l'organisateur
+            de 4 % sur chaque transaction. Les artistes disposant d'un abonnement Premium (disponible sur l'application mobile HAKO) bénéficient d'une commission réduite à 2 %. Le reste est reversé directement à l'organisateur
             via son compte Stripe.
           </p>
           <p>
@@ -4323,7 +4323,7 @@ if (isPWA) {
               <span class="privacy-bullet"></span>
               <div>
                 <strong>Commission HAKO</strong>
-                <span>HAKO prélève une commission de 12 % sur chaque vente de billet réalisée via la plateforme. Le montant restant est reversé à l'organisateur via son compte Stripe.</span>
+                <span>HAKO prélève une commission de 4 % sur chaque vente de billet réalisée via la plateforme. Les artistes disposant d'un abonnement Premium (disponible sur l'application mobile HAKO) bénéficient d'une commission réduite à 2 %. Le montant restant est reversé à l'organisateur via son compte Stripe.</span>
               </div>
             </li>
             <li>
@@ -4456,14 +4456,14 @@ if (isPWA) {
               <span class="privacy-bullet"></span>
               <div>
                 <strong>Prix affiché</strong>
-                <span>Le prix indiqué sur la page de l'événement est le prix total TTC payé par l'acheteur. Il inclut la commission HAKO de 12 %.</span>
+                <span>Le prix indiqué sur la page de l'événement est le prix total TTC payé par l'acheteur. Il inclut les frais de service HAKO.</span>
               </div>
             </li>
             <li>
               <span class="privacy-bullet"></span>
               <div>
                 <strong>Commission HAKO</strong>
-                <span>HAKO prélève 10 % du montant de chaque transaction en tant que frais de service de plateforme. Ce montant est déduit automatiquement avant reversement à l'organisateur.</span>
+                <span>HAKO prélève 4 % du montant de chaque transaction en tant que frais de service de plateforme. Les artistes disposant d'un abonnement Premium (disponible sur l'application mobile HAKO) bénéficient d'un taux réduit à 2 %. Ce montant est déduit automatiquement avant reversement à l'organisateur.</span>
               </div>
             </li>
             <li>
@@ -6016,7 +6016,7 @@ if (isPWA) {
         <div class="form-group" style="margin:0">
           <label class="form-label">Paiement via HAKO</label>
           <div style="background:rgba(0,245,155,0.06);border:1px solid rgba(0,245,155,0.2);border-radius:12px;padding:14px;margin-bottom:10px;">
-            <div style="font-size:12px;color:var(--muted2);line-height:1.6;">Les paiements sont encaissés directement sur HAKO. HAKO prélève 12% de commission, le reste est viré sur ton compte bancaire.</div>
+            <div style="font-size:12px;color:var(--muted2);line-height:1.6;">Les paiements sont encaissés directement sur HAKO. HAKO prélève 4% de commission (2% avec l'abonnement Premium sur l'appli), le reste est viré sur ton compte bancaire.</div>
           </div>
           <div id="stripe-connect-status">
             <button type="button" onclick="connecterStripe()" id="btn-connecter-stripe" style="width:100%;padding:12px;border-radius:12px;background:var(--bg2);border:1.5px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
@@ -12436,7 +12436,7 @@ window.chargerInscritsGestion = async function() {
     const actifs = inscrits.filter(i => i.statut !== 'annulé' && i.statut !== 'remboursé');
     const totalEncaisse = inscrits.reduce((s, i) => s + (parseFloat(i.montant) || 0), 0);
     const revAttendu = actifs.reduce((s, i) => s + (parseFloat(i.montant) || 0), 0);
-    const commission = revAttendu * 0.12;
+    const commission = revAttendu * 0.04;
     const net = revAttendu - commission;
     const fmt = v => v % 1 === 0 ? v + '€' : v.toFixed(2) + '€';
     const elTotal = document.getElementById('gestion-rev-total');
@@ -21674,7 +21674,7 @@ window.toggleFaq = function(el) {
         </div>
         <div style="height:1px;background:rgba(255,255,255,0.06);"></div>
         <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:13px;color:var(--muted2);">Commission HAKO (12%)</span>
+          <span style="font-size:13px;color:var(--muted2);">Commission HAKO (4%)</span>
           <span id="gestion-rev-commission" style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--muted2);">0€</span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;">
