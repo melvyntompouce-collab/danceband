@@ -8429,7 +8429,7 @@ async function envoyerPostEnMessage(postId, destUid, destNom, destPhoto) {
     lastMessageSenderId: window._currentUid,
     date: nowIso,
     updatedAt: window._serverTimestamp ? window._serverTimestamp() : nowIso,
-    unreadBy: [convOuverte],
+    unreadBy: [destUid],
   },
   { merge: true }
 );
@@ -14382,15 +14382,20 @@ async function _envoyerDansConv(data) {
     }
 
     await window._setDoc(window._doc(window._db, 'conversations', convId), {
-      participants: [window._currentUid, convOuverte],
-      initiateur: convSnap.exists() ? (convSnap.data().initiateur || window._currentUid) : window._currentUid,
-      statut,
-      dernierMessage: messageText,
-      lastMessage: messageText,
-      lastMessageSenderId: window._currentUid,
-      date: nowIso,
-      updatedAt: window._serverTimestamp ? window._serverTimestamp() : nowIso
-    }, { merge: true });
+  id: convId,
+  participants: [window._currentUid, convOuverte],
+  initiateur: convSnap.exists() ? (convSnap.data().initiateur || window._currentUid) : window._currentUid,
+  statut,
+  conversationStatus: statut === 'en_attente' ? 'pending' : 'accepted',
+  requestedBy: convSnap.exists() ? (convSnap.data().requestedBy || window._currentUid) : window._currentUid,
+  requestedTo: convSnap.exists() ? (convSnap.data().requestedTo || convOuverte) : convOuverte,
+  dernierMessage: messageText,
+  lastMessage: messageText,
+  lastMessageSenderId: window._currentUid,
+  unreadBy: [convOuverte],
+  date: window._serverTimestamp ? window._serverTimestamp() : nowIso,
+  updatedAt: window._serverTimestamp ? window._serverTimestamp() : nowIso
+}, { merge: true });
 
     await window._addDoc(window._collection(window._db, 'conversations', convId, 'messages'), {
       de: window._currentUid,
