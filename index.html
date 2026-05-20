@@ -3743,8 +3743,31 @@ if (isPWA) {
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Ta ville</label>
+        <div id="signup-section-parolier" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">Genres musicaux</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="signup-genres-parolier">
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Hip-Hop / Rap</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">R&B</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Soul</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Afrobeat</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Pop</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Jazz</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Gospel</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Reggae / Dancehall</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Latin</button>
+              <button type="button" class="style-tag" onclick="toggleStyle2(this)">Électro</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Niveau <span style="color:var(--muted);font-weight:400">(optionnel)</span></label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;" id="signup-niveaux-parolier">
+              <button type="button" class="style-tag" onclick="toggleSignupSingle(this,'signup-niveaux-parolier')">Amateur</button>
+              <button type="button" class="style-tag" onclick="toggleSignupSingle(this,'signup-niveaux-parolier')">Semi-pro</button>
+              <button type="button" class="style-tag" onclick="toggleSignupSingle(this,'signup-niveaux-parolier')">Professionnel</button>
+            </div>
+          </div>
+        </div>
           <input id="signup-zone" class="form-input" type="text" list="villes-datalist" placeholder="Ex: Paris, Lyon, Montpellier..." autocomplete="off">
           <datalist id="villes-datalist"></datalist>
         </div>
@@ -6935,7 +6958,7 @@ window.updateSignupSpecialites = function(categorie) {
     cfg.specialites.map(s => `<option value="${s}">${SPECIALITE_LABELS[s] || s}</option>`).join('');
   wrap.style.display = 'block';
   // Reset sections
-  ['danseur','photographe','videaste','beatmaker','realisateur','scenographe','dj','musicien','chanteur',
+  ['danseur','photographe','videaste','beatmaker','realisateur','scenographe','dj','musicien','chanteur','parolier',
    'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode',
    'styliste','maquilleur','coiffeur_mode','costumier','nail_artiste','monteur',
    'bijoutier','linograveur','ceramiste','tatoueur','sculpteur','maroquinier'].forEach(t => {
@@ -6953,7 +6976,7 @@ function toggleSignupType(btn, type) {
   if (btn) { document.querySelectorAll('.style-tag[data-type]').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
   _signupTypes.add(type);
   // Afficher la section correspondante
-  ['danseur','photographe','videaste','beatmaker','realisateur','scenographe','dj','musicien','chanteur',
+  ['danseur','photographe','videaste','beatmaker','realisateur','scenographe','dj','musicien','chanteur','parolier',
    'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode',
    'styliste','maquilleur','coiffeur_mode','costumier','nail_artiste','monteur',
    'bijoutier','linograveur','ceramiste','tatoueur','sculpteur','maroquinier'].forEach(t => {
@@ -14396,7 +14419,7 @@ function afficherListeDanseurs(danseurs) {
     return;
   }
 
-  const METIER_ICONS = { danseur:'💃', photographe:'📷', videaste:'🎥', beatmaker:'🎧', realisateur:'🎬', scenographe:'🎪', dj:'🎛️', musicien:'🎸', chanteur:'🎤', comedien:'🎭', performeur:'✨', mannequin:'🪞', styliste:'👗', maquilleur:'💄', coiffeur_mode:'💈', costumier:'🧵', nail_artiste:'💅', dessinateur:'✏️', peintre:'🖌️', graphiste:'🖥️', illustrateur:'🖼️', designer:'🎨', designer_mode:'👔' };
+  const METIER_ICONS = { danseur:'💃', photographe:'📷', videaste:'🎥', beatmaker:'🎧', realisateur:'🎬', scenographe:'🎪', dj:'🎛️', musicien:'🎸', chanteur:'🎤', parolier:'✍️', comedien:'🎭', performeur:'✨', mannequin:'🪞', styliste:'👗', maquilleur:'💄', coiffeur_mode:'💈', costumier:'🧵', nail_artiste:'💅', dessinateur:'✏️', peintre:'🖌️', graphiste:'🖥️', illustrateur:'🖼️', designer:'🎨', designer_mode:'👔' };
   list.innerHTML = danseurs.map(d => {
     const nom = d.nomAffiche || d.nom || d.pseudo || 'Artiste';
     const metiers = d.metiers || (d.styles && d.styles.length ? ['danseur'] : []);
@@ -14918,7 +14941,7 @@ window.showProfilPublic = async function(uid) {
       dj:           '🎛️ DJ',
       musicien:     '🎸 Musicien·ne',
       chanteur:     '🎤 Chanteur·se / Rappeur·se',
-      comedien:     '🎭 Comédien·ne',
+      parolier:     '✍️ Parolier·ère',
       performeur:   '✨ Performeur·se',
       mannequin:    '🪞 Mannequin',
       styliste:     '👗 Styliste',
@@ -15489,7 +15512,7 @@ let filtresMetierActifs = new Set();
 const CATEGORIES_ARTISTE = {
   scene:       { label:'🎭 Scène',        specialites: ['danseur','comedien','performeur'] },
   mode:        { label:'👗 Mode',          specialites: ['mannequin','styliste','maquilleur','coiffeur_mode','costumier','designer_mode','nail_artiste'] },
-  musique:     { label:'🎵 Musique',       specialites: ['beatmaker','dj','musicien','chanteur'] },
+  musique:     { label:'🎵 Musique',       specialites: ['beatmaker','dj','musicien','chanteur','parolier'] },
   audiovisuel: { label:'🎬 Audiovisuel',  specialites: ['photographe','videaste','realisateur','scenographe','monteur'] },
   arts_visuels:{ label:'🎨 Arts Visuels', specialites: ['dessinateur','peintre','graphiste','illustrateur','designer'] },
   artisanat:   { label:'🪡 Artisanat',    specialites: ['bijoutier','linograveur','ceramiste','tatoueur','sculpteur','maroquinier'] },
@@ -15497,7 +15520,7 @@ const CATEGORIES_ARTISTE = {
 
 const SPECIALITE_LABELS = {
   danseur:'💃 Danseur·se', comedien:'🎭 Comédien·ne', mannequin:'🪞 Mannequin', performeur:'✨ Performeur·se',
-  beatmaker:'🎧 Beatmaker', dj:'🎛️ DJ', musicien:'🎸 Musicien·ne', chanteur:'🎤 Chanteur·se',
+  beatmaker:'🎧 Beatmaker', dj:'🎛️ DJ', musicien:'🎸 Musicien·ne', chanteur:'🎤 Chanteur·se', parolier:'✍️ Parolier·ère',
   photographe:'📷 Photographe', videaste:'🎥 Vidéaste', realisateur:'🎬 Réalisateur·rice', scenographe:'🎪 Scénographe / Set Designer', monteur:'🎞️ Monteur·se',
   dessinateur:'✏️ Dessinateur·rice', peintre:'🖌️ Peintre', graphiste:'🖥️ Graphiste', illustrateur:'🖼️ Illustrateur·rice',
   styliste:'👗 Styliste', maquilleur:'💄 Maquilleur·se', coiffeur_mode:'💈 Coiffeur·se artistique', costumier:'🧵 Costumier·ère', nail_artiste:'💅 Nail Artiste',
@@ -15612,7 +15635,7 @@ window.setMapStyleFiltreMobile = function(val) {
 window.updateEditSpecialites = function() {}; // conservé pour compatibilité
 window.applyEditSpecialite   = function() {}; // conservé pour compatibilité
 
-const ALL_EDIT_METIERS = ['danseur','photographe','videaste','beatmaker','realisateur','scenographe','dj','musicien','chanteur',
+const ALL_EDIT_METIERS = ['danseur','photographe','videaste','beatmaker','realisateur','scenographe','dj','musicien','chanteur','parolier',
   'comedien','mannequin','performeur','dessinateur','peintre','graphiste','illustrateur','designer','designer_mode',
   'styliste','maquilleur','coiffeur_mode','costumier','nail_artiste','monteur',
   'bijoutier','linograveur','ceramiste','tatoueur','sculpteur','maroquinier'];
@@ -16520,6 +16543,11 @@ window.inscrire = async function() {
     .map(t => t.textContent);
   const niveauChanteur = document.querySelector('#signup-niveaux-chanteur .style-tag.selected')?.textContent || '';
 
+  // Champs parolier
+  const genresParolier = [...document.querySelectorAll('#signup-genres-parolier .style-tag.selected')]
+    .map(t => t.textContent);
+  const niveauParolier = document.querySelector('#signup-niveaux-parolier .style-tag.selected')?.textContent || '';
+
   // Validation
   errDiv.style.display = 'none';
   const cguCheck = document.getElementById('signup-cgu');
@@ -16592,6 +16620,10 @@ window.inscrire = async function() {
     if (metiers.includes('chanteur')) {
       profileData.genresChanteur = genresChanteur;
       profileData.niveauChanteur = niveauChanteur;
+    }
+    if (metiers.includes('parolier')) {
+      profileData.genresParolier = genresParolier;
+      profileData.niveauParolier = niveauParolier;
     }
 
     await window._setDoc(window._doc(window._db, 'danseurs', uid), profileData);
@@ -16708,7 +16740,7 @@ function syncProSectionsFromMetiers() {
   // Utilise les chips pro dédiés (data-pro-metier)
   const proChips = document.querySelectorAll('[data-pro-metier].selected');
   const proMetiers = [...proChips].map(b => b.getAttribute('data-pro-metier'));
-  const ALL_PRO_SECTIONS = ['danseur','photographe','videaste','realisateur','scenographe','beatmaker','dj','musicien','chanteur',
+  const ALL_PRO_SECTIONS = ['danseur','photographe','videaste','realisateur','scenographe','beatmaker','dj','musicien','chanteur','parolier',
     'mannequin','styliste','maquilleur','coiffeur_mode','costumier','nail_artiste','designer','designer_mode',
     'comedien','performeur','dessinateur','peintre','illustrateur','graphiste'];
   ALL_PRO_SECTIONS.forEach(m => {
@@ -17162,6 +17194,10 @@ window.sauvegarderIdentite = async function() {
     metierData.genresChanteur = [...document.querySelectorAll('#edit-genres-chanteur .style-tag.selected')].map(t => t.textContent.trim());
     metierData.niveauChanteur = document.querySelector('#edit-niveaux-chanteur .style-tag.selected')?.textContent.trim() || '';
   }
+  if (metiersSauv.includes('parolier')) {
+    metierData.genresParolier = [...document.querySelectorAll('#edit-genres-parolier .style-tag.selected')].map(t => t.textContent.trim());
+    metierData.niveauParolier = document.querySelector('#edit-niveaux-parolier .style-tag.selected')?.textContent.trim() || '';
+  }
 
   try {
     // Vérifier unicité username si modifié
@@ -17527,6 +17563,18 @@ async function chargerProfil(uid) {
         });
       }
     }
+    if (metiers.includes('parolier')) {
+      (d.genresParolier || []).forEach(s => {
+        document.querySelectorAll('#edit-genres-parolier .style-tag').forEach(tag => {
+          if (tag.textContent === s) tag.classList.add('selected');
+        });
+      });
+      if (d.niveauParolier) {
+        document.querySelectorAll('#edit-niveaux-parolier .style-tag').forEach(tag => {
+          if (tag.textContent === d.niveauParolier) tag.classList.add('selected');
+        });
+      }
+    }
 
     // ── Toggles plateformes ──
     const pv = d.plateformesVisibles || {};
@@ -17569,7 +17617,7 @@ async function chargerProfil(uid) {
         dj:           '🎛️ DJ',
         musicien:     '🎸 Musicien·ne',
         chanteur:     '🎤 Chanteur·se',
-        comedien:     '🎭 Comédien·ne',
+        parolier:     '✍️ Parolier·ère',
         performeur:   '✨ Performeur·se',
         mannequin:    '🪞 Mannequin',
         styliste:     '👗 Styliste',
@@ -17653,7 +17701,7 @@ async function chargerProfil(uid) {
       const METIER_LABELS_SHORT = {
         danseur:'Danseur·se', photographe:'Photographe', videaste:'Vidéaste',
         beatmaker:'Beatmaker', realisateur:'Réalisateur·rice', dj:'DJ',
-        musicien:'Musicien·ne', chanteur:'Chanteur·se', comedien:'Comédien·ne',
+        musicien:'Musicien·ne', chanteur:'Chanteur·se', parolier:'Parolier·ère', comedien:'Comédien·ne',
         performeur:'Performeur·se', mannequin:'Mannequin', styliste:'Styliste',
         maquilleur:'Maquilleur·se', coiffeur_mode:'Coiffeur·se artistique', nail_artiste:'Nail Artiste',
         costumier:'Costumier·ère', dessinateur:'Dessinateur·rice', peintre:'Peintre',
@@ -18330,7 +18378,7 @@ window.ouvrirDetailMetier = function(metier) {
     videaste:     '🎥 Vidéaste',         beatmaker:    '🎧 Beatmaker',
     realisateur:  '🎬 Réalisateur·rice', dj:           '🎛️ DJ',
     musicien:     '🎸 Musicien·ne',      chanteur:     '🎤 Chanteur·se / Rappeur·se',
-    comedien:     '🎭 Comédien·ne',      performeur:   '✨ Performeur·se',
+    parolier:     '✍️ Parolier·ère',     comedien:     '🎭 Comédien·ne',
     mannequin:    '🪞 Mannequin',         styliste:     '👗 Styliste',
     maquilleur:   '💄 Maquilleur·se',    coiffeur_mode:'💈 Coiffeur·se artistique',
     costumier:    '🧵 Costumier·ère',    designer_mode:'👔 Designer Mode',
@@ -18373,6 +18421,9 @@ window.ouvrirDetailMetier = function(metier) {
   } else if (metier === 'chanteur') {
     body += tags('Genres', d.genresChanteur);
     body += row('Niveau', d.niveauChanteur);
+  } else if (metier === 'parolier') {
+    body += tags('Genres', d.genresParolier);
+    body += row('Niveau', d.niveauParolier);
   }
 
   if (!body) body = '<div style="color:var(--muted);font-size:13px;">Aucun détail renseigné.</div>';
@@ -19514,6 +19565,7 @@ function _renderDrawerLieux() {
                 <button type="button" class="edit-metier-chip" data-metier="dj" onclick="toggleEditMetier('dj',this)">🎛️ DJ</button>
                 <button type="button" class="edit-metier-chip" data-metier="musicien" onclick="toggleEditMetier('musicien',this)">🎸 Musicien·ne</button>
                 <button type="button" class="edit-metier-chip" data-metier="chanteur" onclick="toggleEditMetier('chanteur',this)">🎤 Chanteur·se</button>
+                <button type="button" class="edit-metier-chip" data-metier="parolier" onclick="toggleEditMetier('parolier',this)">✍️ Parolier·ère</button>
               </div>
             </div>
 
@@ -19810,7 +19862,30 @@ function _renderDrawerLieux() {
           </div>
         </div>
 
-        <!-- MODE -->
+        <!-- CHAMPS PAROLIER (édition) -->
+        <div id="edit-section-parolier" style="display:none;">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;">✍️ Genres musicaux</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;" id="edit-genres-parolier">
+              <button class="style-tag" onclick="toggleStyle(this)">Hip-Hop / Rap</button>
+              <button class="style-tag" onclick="toggleStyle(this)">R&amp;B</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Soul</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Afrobeat</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Pop</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Jazz</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Gospel</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Reggae / Dancehall</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Latin</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Électro</button>
+            </div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:8px;">Niveau</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;" id="edit-niveaux-parolier">
+              <button class="style-tag" onclick="toggleStyle(this)">Amateur</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Semi-pro</button>
+              <button class="style-tag" onclick="toggleStyle(this)">Professionnel</button>
+            </div>
+          </div>
+        </div>
         <div id="edit-section-mannequin" style="display:none;">
           <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;">
             <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px;">🪞 Univers mannequin</div>
@@ -20012,6 +20087,7 @@ function _renderDrawerLieux() {
                   <button type="button" class="edit-metier-chip" data-pro-metier="dj" onclick="toggleProMetier('dj',this)">🎛️ DJ</button>
                   <button type="button" class="edit-metier-chip" data-pro-metier="musicien" onclick="toggleProMetier('musicien',this)">🎸 Musicien·ne</button>
                   <button type="button" class="edit-metier-chip" data-pro-metier="chanteur" onclick="toggleProMetier('chanteur',this)">🎤 Chanteur·se</button>
+                  <button type="button" class="edit-metier-chip" data-pro-metier="parolier" onclick="toggleProMetier('parolier',this)">✍️ Parolier·ère</button>
                 </div>
               </div>
               <div>
@@ -20433,7 +20509,37 @@ function _renderDrawerLieux() {
               </div>
             </div>
 
-            <!-- MANNEQUIN -->
+            <!-- PAROLIER -->
+            <div id="pro-section-parolier" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
+              <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">✍️ Parolier·ère</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div>
+                  <label class="form-label">Genres musicaux</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-genres-parolier">
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-genres-parolier')">Hip-Hop / Rap</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-genres-parolier')">R&amp;B</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-genres-parolier')">Soul</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-genres-parolier')">Afrobeat</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-genres-parolier')">Pop</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-genres-parolier')">Gospel</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-genres-parolier')">Latin</button>
+                    <button type="button" class="style-tag" onclick="toggleProChip(this,'pro-genres-parolier')">Électro</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Niveau</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;" id="pro-niveau-parolier">
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-niveau-parolier')">Amateur</button>
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-niveau-parolier')">Semi-pro</button>
+                    <button type="button" class="style-tag" onclick="toggleProSingle(this,'pro-niveau-parolier')">Professionnel</button>
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">Projets / Crédits</label>
+                  <input id="pro-credits-parolier" class="form-input" type="text" placeholder="Ex: EP X avec Y, Album Z..." style="background:var(--bg2);">
+                </div>
+              </div>
+            </div>
             <div id="pro-section-mannequin" style="display:none;border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">
               <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">🪞 Mannequin</div>
               <div style="display:flex;flex-direction:column;gap:10px;">
