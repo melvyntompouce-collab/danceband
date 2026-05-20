@@ -13864,13 +13864,36 @@ async function chargerMessages() {
   document.getElementById('msg-list').style.display = 'block';
 
   try {
-    // Charger toutes les conversations où je suis participant
+    // ── Stratégie hybride ──
+    // 1. Nouvelles convs avec champ participants (array-contains)
     const convsSnap = await window._getDocs(window._query(
       window._collection(window._db, 'conversations'),
       window._where('participants', 'array-contains', window._currentUid)
     ));
+    const convsMap = {};
+    convsSnap.docs.forEach(d => { convsMap[d.id] = { id: d.id, ...d.data() }; });
 
-    const convs = convsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // 2. Anciennes convs sans champ participants : reconstruire depuis mes abonnements
+    const moiSnap = await window._getDoc(window._doc(window._db, 'danseurs', window._currentUid));
+    const mesAbos = moiSnap.exists() ? (moiSnap.data().abonnements || []) : [];
+
+    // Chercher aussi les gens qui me suivent (pour voir leurs invitations éventuelles)
+    // On reconstruit les IDs de conversation potentiels depuis mes abonnements
+    const convIdsARechercher = mesAbos.map(uid => [window._currentUid, uid].sort().join('_'));
+
+    await Promise.all(convIdsARechercher.map(async convId => {
+      if (convsMap[convId]) return; // déjà chargée
+      try {
+        const snap = await window._getDoc(window._doc(window._db, 'conversations', convId));
+        if (snap.exists()) {
+          const d = snap.data();
+          // Anciennes convs sans statut → acceptées par défaut
+          convsMap[convId] = { id: convId, statut: 'acceptée', participants: [window._currentUid], ...d };
+        }
+      } catch(e) {}
+    }));
+
+    const convs = Object.values(convsMap);
 
     // Séparer acceptées et invitations en attente
     const acceptees  = convs.filter(c => !c.statut || c.statut === 'acceptée');
@@ -13927,7 +13950,15 @@ async function chargerMessages() {
 // ── Construire une ligne de conversation ──
 async function _buildConvRow(conv, isInvitation) {
   try {
-    const autreUid = conv.participants.find(p => p !== window._currentUid);
+    // Déduire l'autre uid depuis conv.participants ou depuis l'ID (uid1_uid2)
+    let autreUid;
+    if (conv.participants && Array.isArray(conv.participants)) {
+      autreUid = conv.participants.find(p => p !== window._currentUid);
+    } else {
+      // Ancienne conv : ID = uid1_uid2 (triés)
+      const parts = conv.id.split('_');
+      autreUid = parts.find(p => p !== window._currentUid);
+    }
     if (!autreUid) return '';
     const snap = await window._getDoc(window._doc(window._db, 'danseurs', autreUid));
     if (!snap.exists()) return '';
