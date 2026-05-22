@@ -6,7 +6,7 @@ export default function handler(req, res) {
       apps: [],
       details: [
         {
-          appIDs: ["TON_TEAM_ID.com.meltmpc.hako-app"],
+          appIDs: ["4FX5UKQRR3.com.meltmpc.hako-app"],
           components: [
             { "/": "/payment-success*" },
             { "/": "/payment-cancelled*" }
