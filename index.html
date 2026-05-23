@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="HAKO">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#00f59b">
-<meta name="description" content="HAKO connecte les artistes, les événements et les organisateurs : profils publics, agenda, réservations, partage et outils pro.">
+<meta name="description" content="Le premier réseau social connecté pour les artistes">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <title>HAKO — Le réseau des artistes</title>
@@ -2788,46 +2788,6 @@ body.pwa .page:not(#page-network):not(#page-conv) { padding-bottom: calc(60px + 
   }
 }
 
-
-/* ── SECTION FEATURES APP À JOUR ── */
-.app-features-update{
-  padding:42px 5% 24px;
-  background:linear-gradient(180deg,var(--bg) 0%,rgba(0,245,155,0.025) 100%);
-}
-.app-features-update-inner{max-width:1180px;margin:0 auto;}
-.app-features-kicker{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:6px 12px;border-radius:999px;
-  background:rgba(0,245,155,0.08);border:1px solid rgba(0,245,155,0.18);
-  color:var(--green);font-family:'Syne',sans-serif;font-weight:800;font-size:10px;
-  letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;
-}
-.app-features-title{
-  font-family:'Big Shoulders Display',sans-serif;font-size:clamp(38px,5vw,72px);
-  line-height:.92;font-weight:900;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px;
-}
-.app-features-sub{font-size:15px;color:var(--muted2);line-height:1.7;max-width:680px;margin-bottom:26px;}
-.app-features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
-.app-feature-mini{
-  background:rgba(18,18,31,.86);border:1px solid var(--border);border-radius:18px;padding:18px;
-  min-height:154px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s,transform .2s;
-}
-.app-feature-mini:hover{border-color:rgba(0,245,155,.24);transform:translateY(-2px);}
-.app-feature-mini-icon{
-  width:38px;height:38px;border-radius:13px;display:flex;align-items:center;justify-content:center;
-  background:rgba(0,245,155,.08);border:1px solid rgba(0,245,155,.16);font-size:18px;
-}
-.app-feature-mini-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--text);line-height:1.25;}
-.app-feature-mini-text{font-size:12px;color:var(--muted2);line-height:1.55;}
-.app-web-note{
-  margin-top:16px;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:16px 18px;
-  background:rgba(255,255,255,.035);display:flex;gap:12px;align-items:flex-start;
-}
-.app-web-note strong{font-family:'Syne',sans-serif;font-size:13px;color:var(--green);display:block;margin-bottom:3px;}
-.app-web-note span{font-size:12px;color:var(--muted2);line-height:1.6;}
-@media(max-width:900px){.app-features-grid{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:560px){.app-features-update{padding:32px 20px 16px}.app-features-grid{grid-template-columns:1fr}.app-feature-mini{min-height:auto}.app-web-note{flex-direction:column}}
-
 </style>
 
 <style id="feed-css">
@@ -3345,7 +3305,7 @@ if (isPWA) {
         <span class="accent">create</span>
         <span class="filled">connect</span>
       </h1>
-      <p class="hero-sub">HAKO connecte les artistes, les événements et les organisateurs : profils publics, agenda, réservations, messagerie, partage et outils pro.</p>
+      <p class="hero-sub">La plateforme conçue pour les artistes. Trouvez des partenaires, découvrez des événements, construisez votre présence.</p>
       <div class="hero-actions">
         <a class="btn-primary" href="#" onclick="showPage('auth')">Créer mon profil →</a>
         <a class="btn-secondary" href="#" onclick="showPage('agenda')">Voir l'agenda</a>
@@ -3442,74 +3402,13 @@ if (isPWA) {
     </div>
   </section>
 
-
-  <!-- FEATURES APP À JOUR -->
-  <section class="app-features-update">
-    <div class="app-features-update-inner">
-      <div class="app-features-kicker"><span class="logo-dot"></span> HAKO aujourd’hui</div>
-      <h2 class="app-features-title">Plus qu’une vitrine,<br><span style="color:var(--green);">un vrai outil terrain.</span></h2>
-      <p class="app-features-sub">Le site présente l’essentiel, mais l’expérience complète se fait dans l’app : publier, échanger, réserver, organiser et faire découvrir son profil ou ses événements avec des liens partageables.</p>
-
-      <div class="app-features-grid">
-        <div class="app-feature-mini">
-          <div class="app-feature-mini-icon">◎</div>
-          <div class="app-feature-mini-title">Profils publics & artistiques</div>
-          <div class="app-feature-mini-text">Chaque artiste peut centraliser son identité, ses contenus, ses liens, ses métiers et ses informations visibles.</div>
-        </div>
-        <div class="app-feature-mini">
-          <div class="app-feature-mini-icon">▶</div>
-          <div class="app-feature-mini-title">Posts, photos & vidéos</div>
-          <div class="app-feature-mini-text">Feed social, carrousels photo, vidéos verticales, likes, commentaires, favoris et actions sur ses propres posts.</div>
-        </div>
-        <div class="app-feature-mini">
-          <div class="app-feature-mini-icon">↗</div>
-          <div class="app-feature-mini-title">Partage intelligent</div>
-          <div class="app-feature-mini-text">Partage natif ou en conversation HAKO pour envoyer un post, une vidéo, un profil ou un événement à quelqu’un.</div>
-        </div>
-        <div class="app-feature-mini">
-          <div class="app-feature-mini-icon">✦</div>
-          <div class="app-feature-mini-title">Agenda & réservations</div>
-          <div class="app-feature-mini-text">Événements gratuits, billetterie externe ou paiement via HAKO selon le choix de l’organisateur.</div>
-        </div>
-        <div class="app-feature-mini">
-          <div class="app-feature-mini-icon">⌁</div>
-          <div class="app-feature-mini-title">Recherche & carte</div>
-          <div class="app-feature-mini-text">Découverte d’artistes et d’événements par discipline, métier, ville, proximité et filtres de recherche.</div>
-        </div>
-        <div class="app-feature-mini">
-          <div class="app-feature-mini-icon">◈</div>
-          <div class="app-feature-mini-title">Espace organisateur</div>
-          <div class="app-feature-mini-text">Création d’événements, gestion des infos, tarifs, liens, photos, réservations et accès organisateur.</div>
-        </div>
-        <div class="app-feature-mini">
-          <div class="app-feature-mini-icon">▣</div>
-          <div class="app-feature-mini-title">Tickets & scan QR</div>
-          <div class="app-feature-mini-text">Réservations, billets, contrôle d’accès et outils pensés pour gérer les entrées plus simplement.</div>
-        </div>
-        <div class="app-feature-mini">
-          <div class="app-feature-mini-icon">⚑</div>
-          <div class="app-feature-mini-title">Admin, sécurité & signalement</div>
-          <div class="app-feature-mini-text">Outils d’administration, modération, signalement, paramètres, confidentialité et gestion de compte.</div>
-        </div>
-      </div>
-
-      <div class="app-web-note">
-        <div class="app-feature-mini-icon">→</div>
-        <div>
-          <strong>Le bon rôle du site</strong>
-          <span>Le web sert surtout à présenter HAKO, afficher les contenus publics et rediriger vers l’app. Les actions avancées restent dans l’app pour éviter de maintenir deux plateformes complètes en parallèle.</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- CTA FINAL -->
   <div class="landing-cta-final">
     <h2 style="font-family:'Big Shoulders Display',sans-serif;font-weight:900;letter-spacing:-1px;">
       <span style="color:#fff;">REJOINS</span><br>
       <span style="color:var(--green);">HAKO</span>
     </h2>
-    <p>La communauté des artistes qui publient, partagent, réservent et organisent leurs événements au même endroit.</p>
+    <p>La communauté des artistes qui bougent, créent et se connectent.</p>
     <a class="btn-primary" href="#" onclick="showPage('auth')" style="display:inline-block;width:auto;max-width:100%;box-sizing:border-box;">Créer mon profil gratuitement →</a>
   </div>
 
@@ -3520,7 +3419,7 @@ if (isPWA) {
         <div class="logo-dot"></div>
         hako
       </div>
-      <p class="footer-desc">La plateforme des artistes : profils publics, agenda, posts, réservations, organisateurs et outils de découverte.</p>
+      <p class="footer-desc">La plateforme des artistes qui créent, bougent et se connectent.</p>
     </div>
     <div>
       <div class="footer-col-title">Navigation</div>
