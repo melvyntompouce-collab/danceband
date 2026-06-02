@@ -11,6 +11,22 @@
     {
       "source": "/payment-cancelled",
       "destination": "/index.html"
+    },
+    {
+      "source": "/profile/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/profil/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/event/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/video/:path*",
+      "destination": "/index.html"
     }
   ]
 }
