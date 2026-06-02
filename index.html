@@ -2788,6 +2788,103 @@ body.pwa .page:not(#page-network):not(#page-conv) { padding-bottom: calc(60px + 
   }
 }
 
+
+/* ── MODALE CONNEXION REQUISE POUR LIENS PARTAGÉS ── */
+#login-required-modal{
+  position:fixed;
+  inset:0;
+  z-index:10050;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(0,0,0,0.72);
+  backdrop-filter:blur(10px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease;
+}
+#login-required-modal.visible{
+  opacity:1;
+  pointer-events:auto;
+}
+.login-required-panel{
+  width:100%;
+  max-width:420px;
+  background:var(--card);
+  border:1px solid rgba(0,245,155,0.22);
+  border-radius:24px;
+  padding:26px 22px 22px;
+  box-shadow:0 24px 80px rgba(0,0,0,.45);
+  transform:translateY(18px) scale(.98);
+  transition:transform .25s ease;
+}
+#login-required-modal.visible .login-required-panel{
+  transform:translateY(0) scale(1);
+}
+.login-required-icon{
+  width:58px;
+  height:58px;
+  border-radius:18px;
+  background:rgba(0,245,155,0.08);
+  border:1px solid rgba(0,245,155,0.22);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 16px;
+  font-size:25px;
+}
+.login-required-title{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:21px;
+  text-align:center;
+  margin-bottom:8px;
+  color:var(--text);
+}
+.login-required-text{
+  font-size:13px;
+  line-height:1.6;
+  color:var(--muted2);
+  text-align:center;
+  margin-bottom:20px;
+}
+.login-required-actions{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.login-required-primary,
+.login-required-secondary{
+  width:100%;
+  border-radius:14px;
+  padding:14px 16px;
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:14px;
+  cursor:pointer;
+  border:none;
+}
+.login-required-primary{
+  background:var(--green);
+  color:#080810;
+}
+.login-required-secondary{
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  color:var(--text);
+}
+.login-required-close{
+  margin-top:12px;
+  width:100%;
+  background:transparent;
+  border:none;
+  color:var(--muted);
+  font-size:12px;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer;
+}
+
 </style>
 
 <style id="feed-css">
@@ -16518,6 +16615,80 @@ function closeMapFullscreen() { /* carte supprimée */ }
 
 </script>
 
+
+<!-- ═══ MODALE: CONNEXION REQUISE POUR PROFIL PARTAGÉ ═══ -->
+<div id="login-required-modal" aria-hidden="true">
+  <div class="login-required-panel">
+    <div class="login-required-icon">🔒</div>
+    <div class="login-required-title">Connecte-toi pour voir ce profil</div>
+    <div class="login-required-text">
+      Ce profil HAKO est accessible depuis l’application ou avec un compte connecté.
+      Connecte-toi pour continuer vers le profil partagé.
+    </div>
+    <div class="login-required-actions">
+      <button class="login-required-primary" type="button" onclick="loginRequiredGoLogin()">Se connecter</button>
+      <button class="login-required-secondary" type="button" onclick="loginRequiredGoSignup()">Créer un compte</button>
+    </div>
+    <button class="login-required-close" type="button" onclick="fermerModaleConnexionProfil()">Retour à l’accueil</button>
+  </div>
+</div>
+
+<script>
+window._hakoPendingProfileUrl = null;
+
+window.ouvrirModaleConnexionProfil = function(profileUrl) {
+  const modal = document.getElementById('login-required-modal');
+  window._hakoPendingProfileUrl = profileUrl || window.location.pathname;
+  try { sessionStorage.setItem('hako_redirect_url', window._hakoPendingProfileUrl); } catch(e) {}
+  if (window.showPage) window.showPage('home');
+  if (modal) {
+    modal.classList.add('visible');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+};
+
+window.fermerModaleConnexionProfil = function() {
+  const modal = document.getElementById('login-required-modal');
+  if (modal) {
+    modal.classList.remove('visible');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+  if (window.showPage) window.showPage('home');
+};
+
+window.loginRequiredGoLogin = function() {
+  const modal = document.getElementById('login-required-modal');
+  if (modal) modal.classList.remove('visible');
+  try {
+    sessionStorage.setItem('hako_redirect_url', window._hakoPendingProfileUrl || window.location.pathname);
+  } catch(e) {}
+  if (window.showPage) window.showPage('auth');
+  setTimeout(function(){
+    if (window.switchTab) {
+      const loginTab = document.querySelector('.auth-tab[data-tab="tab-login"]');
+      window.switchTab(loginTab, 'tab-login');
+    }
+    const email = document.getElementById('login-email');
+    if (email) email.focus();
+  }, 80);
+};
+
+window.loginRequiredGoSignup = function() {
+  const modal = document.getElementById('login-required-modal');
+  if (modal) modal.classList.remove('visible');
+  try {
+    sessionStorage.setItem('hako_redirect_url', window._hakoPendingProfileUrl || window.location.pathname);
+  } catch(e) {}
+  if (window.showPage) window.showPage('auth');
+  setTimeout(function(){
+    if (window.switchTab) {
+      const signupTab = document.querySelector('.auth-tab[data-tab="tab-signup"]');
+      window.switchTab(signupTab, 'tab-signup');
+    }
+  }, 80);
+};
+</script>
+
 <!-- ═══ FIREBASE AUTH ═══ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
@@ -18753,7 +18924,7 @@ onAuthStateChanged(auth, async (user) => {
     const _pathname = window.location.pathname;
     const _usernameMatch = _pathname.match(/^\/\@(.+)$/);
     const _eventMatch    = _pathname.match(/^\/event\/(.+)$/);
-    const _profilMatch   = _pathname.match(/^\/profil\/(.+)$/);
+    const _profilMatch   = _pathname.match(/^\/(?:profil|profile)\/(.+)$/);
 
     // Fonction utilitaire pour masquer le loader
     function _hideLoader() {
@@ -18777,11 +18948,15 @@ onAuthStateChanged(auth, async (user) => {
       })();
     } else if (_profilMatch) {
       const _pid = _profilMatch[1];
-      (function _retry(){
-        if(!window._db||!window.showProfilPublic){setTimeout(_retry,300);return;}
-        showProfilPublic(_pid);
-        _hideLoader();
-      })();
+      const _profileUrl = '/profile/' + _pid;
+      try { sessionStorage.setItem('hako_redirect_url', _profileUrl); } catch(e) {}
+      if (history.replaceState) history.replaceState({}, '', _profileUrl);
+      if (window.ouvrirModaleConnexionProfil) {
+        window.ouvrirModaleConnexionProfil(_profileUrl);
+      } else {
+        window.showPage('auth');
+      }
+      _hideLoader();
     } else {
       // Toute autre page protégée : mémoriser et rediriger vers home
       if (_pathname !== '/' && _pathname !== '/connexion') {
@@ -18794,7 +18969,7 @@ onAuthStateChanged(auth, async (user) => {
   // Masquer le splash seulement si ce n'est pas une route dynamique
   // (les routes dynamiques masquent elles-mêmes le loader via _hideLoaderRouter)
   const _loaderPath = window.location.pathname;
-  const _isDynamic = /^\/profil\/|^\/event\/|^\/@/.test(_loaderPath);
+  const _isDynamic = /^\/(?:profil|profile)\/|^\/event\/|^\/@/.test(_loaderPath);
   if (!_isDynamic) {
     const loader = document.getElementById('app-loader');
     if (loader) {
