@@ -6694,7 +6694,7 @@ function goBack() {
 // ── Gestion bouton retour navigateur ──
 window.addEventListener('popstate', function(e) {
   const _reverseRouteMap = {
-    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profil-public',
+    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profil-public', '/profile': 'profil-public',
     '/agenda': 'agenda', '/messages': 'messages',
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
@@ -6720,7 +6720,7 @@ window.addEventListener('popstate', function(e) {
 // ── Router au chargement ──
 function _initRouter() {
   const _reverseRouteMap = {
-    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profil-public',
+    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profil-public', '/profile': 'profil-public',
     '/agenda': 'agenda', '/messages': 'messages',
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
@@ -6730,7 +6730,7 @@ function _initRouter() {
   };
   const pathname = window.location.pathname;
   // Gérer les URLs dynamiques
-  const profileMatch = pathname.match(/^\/profil\/(.+)$/);
+  const profileMatch = pathname.match(/^\/(?:profil|profile)\/(.+)$/);
   const usernameMatch = pathname.match(/^\/@(.+)$/);
   const eventMatch = pathname.match(/^\/event\/(.+)$/);
   const gestionEventMatch = pathname.match(/^\/mes-evenements\/(.+)$/);
@@ -7054,7 +7054,7 @@ function afficherDashboard(d) {
 
   // Activer feed si aucune URL spécifique n'est demandée
   const _reverseRouteMap = {
-    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profil-public',
+    '/': 'home', '/connexion': 'auth', '/reseau': 'network', '/profil': 'profil-public', '/profile': 'profil-public',
     '/agenda': 'agenda', '/messages': 'messages', '/feed': 'feed',
     '/organisateur': 'orga', '/admin': 'admin', '/classement': 'ranking', '/salles': 'salles',
     '/kima': 'bracelet', '/notifications': 'notifs', '/confidentialite': 'privacy',
@@ -13898,9 +13898,8 @@ async function chargerMessages() {
           <button onclick="showPage('network')" style="margin-top:20px;padding:12px 24px;border-radius:12px;background:var(--green);color:#080810;font-weight:800;font-size:13px;border:none;cursor:pointer;font-family:'Syne',sans-serif;">Explorer le réseau →</button>
         </div>`;
     } else {
-      // Trier par date du dernier message (Timestamp Firestore ou string ISO)
-      const toMs = d => d?.toMillis ? d.toMillis() : d?.seconds ? d.seconds * 1000 : new Date(d || 0).getTime();
-      acceptees.sort((a, b) => toMs(b.date) - toMs(a.date));
+      // Trier par date du dernier message
+      acceptees.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
       const rows = await Promise.all(acceptees.map(c => _buildConvRow(c, false)));
       listMsg.innerHTML = rows.join('');
     }
@@ -13915,8 +13914,7 @@ async function chargerMessages() {
           <div style="font-size:13px;color:var(--muted2);line-height:1.6;">Les messages de personnes que tu ne suis pas apparaîtront ici</div>
         </div>`;
     } else {
-      const toMs = d => d?.toMillis ? d.toMillis() : d?.seconds ? d.seconds * 1000 : new Date(d || 0).getTime();
-      invitations.sort((a, b) => toMs(b.date) - toMs(a.date));
+      invitations.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
       const rows = await Promise.all(invitations.map(c => _buildConvRow(c, true)));
       listInv.innerHTML = rows.join('');
     }
